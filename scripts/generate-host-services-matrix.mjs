@@ -120,7 +120,8 @@ const acceptance=await validateAcceptanceLedger({
   catalog,contracts:JSON.parse(contractsText),ledger:JSON.parse(ledgerText),
   load:io.load,readSource:io.readSource,readCommittedSource:io.readCommittedSource,verifyCommit:io.verifyCommit,
 })
-const buildEvidence=await read('docs/host-services/build-evidence.json')
+// Original build logs are privately archived. Do not publish a dangling receipt
+// or treat unavailable historical evidence as current platform acceptance.
 const constraintsPath='docs/host-services/platform-constraints.json',constraintsText=await read(constraintsPath),constraints=JSON.parse(constraintsText)
 const restrictions=new Map(),parameterLimits=new Map()
 for(const entry of constraints.restrictions){
@@ -143,7 +144,7 @@ const matrix={schemaVersion:2,protocolVersion:catalog.protocolVersion,baseLibrar
   implementationStateDefinitions:{missing:'No implementation source found; a protected boundary alone does not count',partial:'Core bridge/facade or implementation has an unresolved provider or parameter scope',available:'Concrete core or platform implementation source found; acceptance remains separate',requiresHostService:'Installed client requires a configured host account/payment backend'},
   responsibilityDefinitions:responsibilities.definitions,
   responsibilities:{path:responsibilitiesPath,sha256:createHash('sha256').update(responsibilitiesText).digest('hex')},
-  evidence:[{path:'docs/host-services/build-evidence.json',sha256:createHash('sha256').update(buildEvidence).digest('hex'),kind:'build-and-protocol-only',deviceAcceptance:false,merchantAcceptance:false}],sources,
+  evidence:[],sources,
   acceptanceContracts:{path:contractsPath,sha256:createHash('sha256').update(contractsText).digest('hex')},
   acceptanceLedger:{path:ledgerPath,sha256:createHash('sha256').update(ledgerText).digest('hex')},
   platformConstraints:{path:constraintsPath,sha256:createHash('sha256').update(constraintsText).digest('hex')},

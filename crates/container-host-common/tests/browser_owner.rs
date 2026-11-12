@@ -9,7 +9,7 @@ use container_ir::{
     RendererProfile, RendererProfiles, Route, RouteKind, Template, ViewNode, ViewPoint, ViewRect,
     ViewSize, RENDERING_MANIFEST_SCHEMA_VERSION, VIEW_PRESENTATION_VERSION,
 };
-use container_runtime::{BrowserViewSubmission, SessionConfig, SessionError};
+use container_runtime::{BrowserViewSubmission, SessionConfig, SessionError, ViewExecutionPolicy};
 use serde_json::{json, Value};
 
 const SESSION: &str = "browser-owner";
@@ -112,6 +112,11 @@ impl Fixture {
                 session_id: SESSION.into(),
                 engine,
                 browser_view_enabled: true,
+                // Ownership contracts have no latency claim. Keep VM setup
+                // bounded without coupling them to the production 50 ms limit.
+                view_execution: ViewExecutionPolicy {
+                    batch_timeout_ms: 2_000,
+                },
                 ..Default::default()
             },
         )

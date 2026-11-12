@@ -178,16 +178,16 @@ function canonicalJavaScript(value) {
 }
 const javascriptShape = node => sha256(JSON.stringify(canonicalJavaScript(node)))
 const reviewedJavaScriptShapes = Object.freeze({
-  "finiteNotifications": "628ff816a66ac1fc3f663ae8b939d94c63fb31df7d94a7ba8c8d04cf8ca0dbed",
+  "finiteNotifications": "03e6eb2ef4a54c35489276c39f534ae8a53dde00c74104c4d2a11f1e87cbb4d4",
   "logManager": "8bbe05244b02c9dfd3b7b3f1d0c9aace9a14dd73f42ecf5dcbca94a02d70ea2b",
   "scheduler": "d0c7e48095d5287863bd300a6740be485748f48920f09e4ad77a3b251c72339e",
-  "installer": "e2bbd4db42109248023ac1aaf281d6c953ad7e64312065c1c42317658c24d9af",
-  "lifecycle": "cd43ab466e53aac0e380b9327fb8181f502f09ea51540c7aa2909782847aa9fe",
+  "installer": "0233e8ae61b96d0f92288797708c81b32c107e407d2c429e26ac9457474c8f01",
+  "lifecycle": "1f555c771395a58b8bd42e05cfc63c70e93b35e548e36edb246ebeacc1d11971",
   "routeCleanup": "b7295e63230bc296900bae33db9e52cae4b24b69ca6500ecd4f405e00cca5114",
   "pageNotFoundCleanup": "6629b09f211fe584c4ecbb38271206d1211b359c9ffcc9902e5b0d817468a60b",
-  "unhandledRejectionRemoval": "a7a09ac90320c79e8720188384236fb4490622e47966410d432bf260877e0b37",
+  "unhandledRejectionRemoval": "8f16bc8103d2d26e8d39f5789af95aebf3ba647a4ec402977c7d59a4e9e10135",
   "windowResizeRemoval": "ff062042e31dc7c507fcb432972788b7dd1e63b242871584f2ede8d176d10ef0",
-  "cleanupBoundary": "22ad48318f0b18bd8710e9d1ea34a9027cbb9af8135b8197e41aa3f98c45c129",
+  "cleanupBoundary": "43bd008d976ffde0234b531a49e955e9258244ae147fd8055bdd3257d44f6e9b",
   "performanceDisconnect": "2f894aea5749e14c65f934529d673cd59d308f61b23171d153b749504784cf47"
 })
 function javascriptTokens(source) {
@@ -326,127 +326,178 @@ function conditionalCeiling(tokens) {
   parts.push(condition.slice(start))
   return { condition, parts, partial: tokens.slice(open + 1, end), full: tokens.slice(otherwise + 1, closeCode(tokens, otherwise)) }
 }
-// This source-evidence grant deliberately binds the entire reviewed Rust
-// bootstrap file. A partial Rust tokenizer cannot establish string emission or
-// name binding. Even benign edits require an explicit new byte-pin review.
-const reviewedEnvironmentSha256 = 'd5afa90e66506ca5fe392a7dcc0e4e66e9a6b005ecd177aafe49c891081dc61c'
-// The same boundary covers native scheduler drivers and their parameter, cfg,
-// import and caller context. Method-body token identity cannot bind these.
-// These hashes identify reviewed source; they do not prove compiled semantics
-// or actual host pumps. Any change, including Rust trivia, requires review.
-const reviewedSchedulerRustSha256 = Object.freeze({
-  "quickjs": "2568572c17689bb6b5d3d807c4494f117b26266d5b69413468e1f3244b89289c",
-  "v8": "c450b47b1a7d064c17c95a70cfc645b64baa202fa9bd017380f3e5ed909eff46",
-  "runtime": "2c9fd77bd8761aaff33afb6087242333f71ef86c8d5138b6f58dc6b38c6d184d",
-  "runtimeTurnScheduler": "4fa75f511dd8655da2e540b6a3487d39a48116f2143577d1817586a00ca2b3b6"
-})
-
-// Cleanup evidence additionally binds native owner/registration and route policy
-// context. Full files include imports, parameters, cfg and callers. These are
-// reviewed source identities, never native execution or platform acceptance.
-const reviewedCleanupRustSha256 = Object.freeze({
-  "runtimeRoutes": "3c68225296921d4471643c47daced375f8f09f350970db1eb1d8a4fd56a9ade8",
-  "hostServices": "6ef82c53b4173927267c9c91eda28889f0220e48b9cc5b0c5741b590d06edbb2"
-})
-
-// These additional complete sources bind terminal native ownership and the
-// absence of implicit manifest grants for the two retained listener removals.
-// Shared bootstrap/Session/engine/host registry identities above remain required.
-const reviewedRetainedRemovalSourceSha256 = Object.freeze({
-  "runtimeLifecycle": "5b48c668e941f7a5699264575543108994cf52b3c919924d7842b2756d0b4b80",
-  "manifestPacker": "42ae579c16baf71fec5699d3a466e22cf93e8d75f17e428881648922d1ba3276"
-})
-
-// Full identities cover the private active-id replacement, cancellation/ACK
-// and retained native capture/retirement context. The hub AST and all shared
-// bootstrap/engine/Session identities below are required as well. These are
-// source-review grants, never native execution or public SDK acceptance.
-const reviewedFiniteNotificationSourceSha256 = Object.freeze({
-  "finiteNotificationResources": "40e629a4cba3d4dff1e2fe68d9de15fc16b8ce0b3926650318f27d2920b6bc59",
+// One reviewed byte identity per source, shared by every evidence scope.
+// Update only after reviewing the complete delta and its boundary tests; see
+// docs/host-services/source-review.md. These pins never grant SDK acceptance.
+const reviewedSourceSha256 = Object.freeze({
+  "quickjs": "855618bfcf2198e2ddca196f733b1b3e7625a5c448e8c2a60ed5208fc7b8d6bd",
+  "v8": "70a0a54ba87bd8995ea2038df7e01669206df8d913a72dc3971acb259f94aafa",
+  "runtime": "8eda90abc1f99af28c1efda5dc3a5b22c000b6839aeb7a23b88b14b360989276",
+  "runtimeTurnScheduler": "4fa75f511dd8655da2e540b6a3487d39a48116f2143577d1817586a00ca2b3b6",
+  "runtimeRoutes": "2c6d7576fa806268005af696cdf1a7f0b054249cb37cf1f70e529fd459be415e",
+  "hostServices": "fa059a3b1da09361c00da6ee3c29e4aee7d5c9762cc313d1e5576fbd0194ca60",
   "runtimeLifecycle": "5b48c668e941f7a5699264575543108994cf52b3c919924d7842b2756d0b4b80",
   "manifestPacker": "42ae579c16baf71fec5699d3a466e22cf93e8d75f17e428881648922d1ba3276",
-  "coreAssembly": "8390f126edfca697a19e8ec3ecd257f7960c5c36de2499bf7e3db2b9d035c8d0",
-  "quickjsExecution": "c8c1dc74b22b0954e6a2524ba26dd9e4512771c928253f5a054a7fd6495213b0",
-  "terminalResources": "072d04a08a6141bf4da22496b3764a58447d54a93e6b0c31888d18cf0bce7622",
-  "engineExecution": "dcb1004751b96f078a103b937d8ebe731105f4a95507f0261342a3940435f51d"
-})
-
-// Exact reviewed object-owner source bytes include the shared private hub,
-// primitive factory/receiver binding, typed native retirement before Promise
-// settlement, complete creator cancellation and retained ACK. Shared consumers
-// above keep their exact updated identities; no old/new identity alternatives.
-const reviewedObjectNotificationSourceSha256 = Object.freeze({
-  "finiteNotifications": "1a3a03df2d203d1a4104752b67224578940106ac2cbf8f986cfd2de2f9ff8032",
-  "boundary": "dcc5ea4d4d5579c41243d9f51cbb016cd5bb60e334cc23f8818a4b0811504b94",
-  "hostInstaller": "39a1d792dc3bf3b7d1dd4899d0f459f21af5e33b1eb3905bfe958e0b3f2d0e48",
-  "quickjs": "2568572c17689bb6b5d3d807c4494f117b26266d5b69413468e1f3244b89289c",
-  "v8": "c450b47b1a7d064c17c95a70cfc645b64baa202fa9bd017380f3e5ed909eff46",
   "finiteNotificationResources": "40e629a4cba3d4dff1e2fe68d9de15fc16b8ce0b3926650318f27d2920b6bc59",
-  "hostServices": "6ef82c53b4173927267c9c91eda28889f0220e48b9cc5b0c5741b590d06edbb2",
-  "asyncHost": "5374301e39469b1759187b636f47045b383e5471270391c688400d949fbb4d2a"
-})
-
-// Full source identities bind the dedicated journal and both real diagnostic consumers.
-const reviewedLogManagerRustSha256 = Object.freeze({
-  "logJournal": "332a7d543327192e419a8ae8d15b2594cff418de266133a3f7fcb96514d78c1f",
-  "nativeProvider": "5a97b475417ab77edf75d2c4a6984fb70565f81db7c798973202a39ba24774d2",
-  "simulatorWeb": "99815135af22c7c208a385cdc64bfb7f765a50f0afd47db4b67063c25b206a05",
-  "asyncHost": "5374301e39469b1759187b636f47045b383e5471270391c688400d949fbb4d2a",
-  "snapshots": "9f42b04de5564eecad51b3396af3087a8c34f91c29415ad8a0c05cf0d6d6d4fb",
-  "runtimeLifecycle": "5b48c668e941f7a5699264575543108994cf52b3c919924d7842b2756d0b4b80",
-  "coreAssembly": "8390f126edfca697a19e8ec3ecd257f7960c5c36de2499bf7e3db2b9d035c8d0",
+  "coreAssembly": "3c537fa5e0fccf44dcce64f73f8c387d58c9a4a5be22eca3fd74b92767902591",
   "quickjsExecution": "c8c1dc74b22b0954e6a2524ba26dd9e4512771c928253f5a054a7fd6495213b0",
   "terminalResources": "072d04a08a6141bf4da22496b3764a58447d54a93e6b0c31888d18cf0bce7622",
   "engineExecution": "dcb1004751b96f078a103b937d8ebe731105f4a95507f0261342a3940435f51d",
-  "webHost": "d35216df0c4103ddb28da41581feca3161063c343e04dbf3b47273e401959152",
-  "coreManifest": "f2ab23d131f8db3c086873ebffe081b0d0afef1ee5d83b09e6d8bb8c5da8f661",
-  "workspaceManifest": "4df435ec1ac744a153c2f1a921f837e9ad575461b58be86b17bc019aa6ecc264",
-  "workspaceLock": "945f7c7a2e52d6ed29467616ef77133e6adc4125807786f337d6e6d9b10a4d9c",
-  "manifestPacker": "42ae579c16baf71fec5699d3a466e22cf93e8d75f17e428881648922d1ba3276"
-})
-
-const reviewedPerformanceSourceSha256 = Object.freeze({
-  "environment": "d5afa90e66506ca5fe392a7dcc0e4e66e9a6b005ecd177aafe49c891081dc61c",
-  "coreAssembly": "8390f126edfca697a19e8ec3ecd257f7960c5c36de2499bf7e3db2b9d035c8d0",
+  "finiteNotifications": "bfae0275239b3d6cc98ad9b9e7b2be15f5808af2504db60d3f5e13e011a819ec",
+  "boundary": "66b718761ec282646b8e1c4e7c7506ad32f285c7dfc714c4af0cef8da4047629",
+  "hostInstaller": "5197f8df3b7c273fb70430bd2de1bf6c3fae352a4d7c476f27d26a944991f40e",
+  "asyncHost": "5374301e39469b1759187b636f47045b383e5471270391c688400d949fbb4d2a",
+  "logJournal": "332a7d543327192e419a8ae8d15b2594cff418de266133a3f7fcb96514d78c1f",
+  "nativeProvider": "e3489594fa0eb1aa3ec37d36d95c6c0fed3c93f60f7f3b073c4acb1ee9204824",
+  "simulatorWeb": "99815135af22c7c208a385cdc64bfb7f765a50f0afd47db4b67063c25b206a05",
+  "snapshots": "9f42b04de5564eecad51b3396af3087a8c34f91c29415ad8a0c05cf0d6d6d4fb",
+  "webHost": "1dcbf654da6cc5e77ac0f7003761bc39045b8e7058e664adf281270e0978a49f",
+  "coreManifest": "7d1ea5920ce8f189074e99405f4325843831412aee5e0239c9a15efe62d7511a",
+  "workspaceManifest": "b4b42531ff0258486c26f055c2d614f8431e686c13b430928d814c0c2484194b",
+  "workspaceLock": "7c673d4cb74af2e3de2092280cd82c2fb1e986b5a56e556af92d8e7ad40d9095",
+  "environment": "c67ea05a80cd516662fb841c56e82ed88c1f9e65ab130b7f415e3a0b87ef29d7",
   "moduleOwner": "bfbd9c03906c7cb7355b5f6bc2ee90a65f4379a2d8f984f5f55fd43473152960",
   "performanceLifetime": "0d1535cb4d1ba22eb488828cac290b3a8610604cb1490263b8329d97870bd577",
   "engineBatch": "cbe83a3ec34f118994d568a05014ace743dcb1359610a69868f121435d5eec45",
-  "hostInstaller": "39a1d792dc3bf3b7d1dd4899d0f459f21af5e33b1eb3905bfe958e0b3f2d0e48",
-  "lifecycleNotifications": "7648be246c7dab41d77e709c02e03c78266d5533f280f557e0170085902bd9b7",
-  "runtimeLifecycle": "5b48c668e941f7a5699264575543108994cf52b3c919924d7842b2756d0b4b80",
-  "asyncHost": "5374301e39469b1759187b636f47045b383e5471270391c688400d949fbb4d2a",
-  "runtime": "2c9fd77bd8761aaff33afb6087242333f71ef86c8d5138b6f58dc6b38c6d184d",
-  "quickjs": "2568572c17689bb6b5d3d807c4494f117b26266d5b69413468e1f3244b89289c",
-  "v8": "c450b47b1a7d064c17c95a70cfc645b64baa202fa9bd017380f3e5ed909eff46"
-})
-const reviewedBufferURLSourceSha256 = Object.freeze({
+  "lifecycleNotifications": "30f624b3231f8513b24fe66e04654a364faa18c5a51f57953a5beedb02d7d89f",
   "bufferURLs": "ba48c4775debafcc5bdb2ad275882a08c6cfd6725a275bc6712f62bcd114cb3e",
   "bufferURLStore": "6669205abc4afd633c1f784c0d7c05aad9fbbbcec80840d55091bc0cd3c0fce5",
   "bufferURLProjection": "690d885a67a7f969c2744b179ac85b4e77c8624cfb2721a41313697a5b517c7e",
   "imageResources": "f859ccee08d6fec8b1c01816e5b2d4da02f8e4c17f6aae8c4b0ecfe7eec02ded",
   "workerDOM": "adbae704cafb1442551708d4fca56f63c6afb47ec235a9006e72e4313ca5921d",
-  "workerRuntime": "790704708e98a570a887fcec4877c78175f324316df2185f9469bfdd124acfae",
-  "coreManifest": "f2ab23d131f8db3c086873ebffe081b0d0afef1ee5d83b09e6d8bb8c5da8f661",
-  "commonHost": "fee1a1d93b0e09386f7f2f448432edaee21214db62d284e0badc77cecea24f09",
-  "environment": "d5afa90e66506ca5fe392a7dcc0e4e66e9a6b005ecd177aafe49c891081dc61c",
-  "quickjs": "2568572c17689bb6b5d3d807c4494f117b26266d5b69413468e1f3244b89289c",
-  "v8": "c450b47b1a7d064c17c95a70cfc645b64baa202fa9bd017380f3e5ed909eff46",
-  "runtime": "2c9fd77bd8761aaff33afb6087242333f71ef86c8d5138b6f58dc6b38c6d184d",
-  "runtimeLifecycle": "5b48c668e941f7a5699264575543108994cf52b3c919924d7842b2756d0b4b80",
-  "asyncHost": "5374301e39469b1759187b636f47045b383e5471270391c688400d949fbb4d2a",
-  "hostServices": "6ef82c53b4173927267c9c91eda28889f0220e48b9cc5b0c5741b590d06edbb2",
-  "browserView": "e62db89be873f7ee03a1a47b7e3415f260823043b4b989b554f368a7ec8df6cd",
-  "webHost": "d35216df0c4103ddb28da41581feca3161063c343e04dbf3b47273e401959152",
-  "renderer": "c4d8b278dd6c83b844490cb0d45481c9b963cba719ce6a86436e840529787dcd",
-  "boundary": "dcc5ea4d4d5579c41243d9f51cbb016cd5bb60e334cc23f8818a4b0811504b94",
-  "hostInstaller": "39a1d792dc3bf3b7d1dd4899d0f459f21af5e33b1eb3905bfe958e0b3f2d0e48",
-  "lifecycleNotifications": "7648be246c7dab41d77e709c02e03c78266d5533f280f557e0170085902bd9b7",
-  "coreAssembly": "8390f126edfca697a19e8ec3ecd257f7960c5c36de2499bf7e3db2b9d035c8d0",
-  "quickjsExecution": "c8c1dc74b22b0954e6a2524ba26dd9e4512771c928253f5a054a7fd6495213b0",
-  "terminalResources": "072d04a08a6141bf4da22496b3764a58447d54a93e6b0c31888d18cf0bce7622",
-  "engineExecution": "dcb1004751b96f078a103b937d8ebe731105f4a95507f0261342a3940435f51d",
-  "workspaceLock": "945f7c7a2e52d6ed29467616ef77133e6adc4125807786f337d6e6d9b10a4d9c"
+  "workerRuntime": "2ed207869872ed6f3d224bed8f11657df57adff75e5b4fbd20804fbcb370ae26",
+  "commonHost": "1b2f6c4e49f6399d79d2f2a2d9bad0c46572e17059bbe3fa39848f66aa4c007c",
+  "browserView": "e5f775f3e7e7cabda15ce514bb9d7124b81eaa00fcb6ad2268d4fb26bf1b4a2e",
+  "renderer": "b1a8f36c1bb64fbb3052d271c0e802895865dcce1d77ce58abc0b5fa511eca3a"
 })
+function selectReviewedSources(...ids) {
+  return Object.freeze(Object.fromEntries(ids.map(id => {
+    assert(sourcePaths[id] && reviewedSourceSha256[id], `Unreviewed source identity: ${id}`)
+    return [id, reviewedSourceSha256[id]]
+  })))
+}
+
+// This source-evidence grant deliberately binds the entire reviewed Rust
+// bootstrap file. A partial Rust tokenizer cannot establish string emission or
+// name binding. Even benign edits require an explicit new byte-pin review.
+const reviewedEnvironmentSha256 = reviewedSourceSha256.environment
+// The same boundary covers native scheduler drivers and their parameter, cfg,
+// import and caller context. Method-body token identity cannot bind these.
+// These hashes identify reviewed source; they do not prove compiled semantics
+// or actual host pumps. Any change, including Rust trivia, requires review.
+const reviewedSchedulerRustSha256 = selectReviewedSources(
+  'quickjs',
+  'v8',
+  'runtime',
+  'runtimeTurnScheduler',
+)
+
+// Cleanup evidence additionally binds native owner/registration and route policy
+// context. Full files include imports, parameters, cfg and callers. These are
+// reviewed source identities, never native execution or platform acceptance.
+const reviewedCleanupRustSha256 = selectReviewedSources(
+  'runtimeRoutes',
+  'hostServices',
+)
+
+// These additional complete sources bind terminal native ownership and the
+// absence of implicit manifest grants for the two retained listener removals.
+// Shared bootstrap/Session/engine/host registry identities above remain required.
+const reviewedRetainedRemovalSourceSha256 = selectReviewedSources(
+  'runtimeLifecycle',
+  'manifestPacker',
+)
+
+// Full identities cover the private active-id replacement, cancellation/ACK
+// and retained native capture/retirement context. The hub AST and all shared
+// bootstrap/engine/Session identities below are required as well. These are
+// source-review grants, never native execution or public SDK acceptance.
+const reviewedFiniteNotificationSourceSha256 = selectReviewedSources(
+  'finiteNotificationResources',
+  'runtimeLifecycle',
+  'manifestPacker',
+  'coreAssembly',
+  'quickjsExecution',
+  'terminalResources',
+  'engineExecution',
+)
+
+// Exact reviewed object-owner source bytes include the shared private hub,
+// primitive factory/receiver binding, typed native retirement before Promise
+// settlement, complete creator cancellation and retained ACK. Shared consumers
+// above keep their exact updated identities; no old/new identity alternatives.
+const reviewedObjectNotificationSourceSha256 = selectReviewedSources(
+  'finiteNotifications',
+  'boundary',
+  'hostInstaller',
+  'quickjs',
+  'v8',
+  'finiteNotificationResources',
+  'hostServices',
+  'asyncHost',
+)
+
+// Full source identities bind the dedicated journal and both real diagnostic consumers.
+const reviewedLogManagerRustSha256 = selectReviewedSources(
+  'logJournal',
+  'nativeProvider',
+  'simulatorWeb',
+  'asyncHost',
+  'snapshots',
+  'runtimeLifecycle',
+  'coreAssembly',
+  'quickjsExecution',
+  'terminalResources',
+  'engineExecution',
+  'webHost',
+  'coreManifest',
+  'workspaceManifest',
+  'workspaceLock',
+  'manifestPacker',
+)
+
+const reviewedPerformanceSourceSha256 = selectReviewedSources(
+  'environment',
+  'coreAssembly',
+  'moduleOwner',
+  'performanceLifetime',
+  'engineBatch',
+  'hostInstaller',
+  'lifecycleNotifications',
+  'runtimeLifecycle',
+  'asyncHost',
+  'runtime',
+  'quickjs',
+  'v8',
+)
+const reviewedBufferURLSourceSha256 = selectReviewedSources(
+  'bufferURLs',
+  'bufferURLStore',
+  'bufferURLProjection',
+  'imageResources',
+  'workerDOM',
+  'workerRuntime',
+  'coreManifest',
+  'commonHost',
+  'environment',
+  'quickjs',
+  'v8',
+  'runtime',
+  'runtimeLifecycle',
+  'asyncHost',
+  'hostServices',
+  'browserView',
+  'webHost',
+  'renderer',
+  'boundary',
+  'hostInstaller',
+  'lifecycleNotifications',
+  'coreAssembly',
+  'quickjsExecution',
+  'terminalResources',
+  'engineExecution',
+  'workspaceLock',
+)
 
 // This inventory lists actual implementation/bridge regions. Catalog owner is
 // only the security boundary and is never sufficient implementation evidence.
@@ -1315,7 +1366,16 @@ export async function inventoryCoreApis(catalog, read) {
   // public array alone cannot establish the concrete listener contract.
   const errors = units.errorNotifications.text
   assert(units.environment.text.includes('include_str!("error-notifications.js")'), 'Shared error notification hub installation changed')
-  assert(containsAll(errors, ['let callbacks = create(null);', "put(wx, 'onError'", "put(wx, 'offError'", 'callbacks[index] !== callback', 'callback === undefined', 'const pending = snapshot();', 'generation !== admitted', 'if (reporting) return null;', 'retired = true;', "put(policy, 'wx.onError', nextOn ? 'partial' : 'unsupported')"]), 'Private error listener ownership or finite removal changed')
+  assert(containsAll(errors, ['let callbacks = create(null);', "put(wx, 'onError'", "put(wx, 'offError'", 'callbacks[index] !== callback', 'callback === undefined', 'const pending = snapshot();', 'generation !== admitted', 'retired = true;', "put(policy, 'wx.onError', nextOn ? 'partial' : 'unsupported')"]), 'Private error listener ownership or finite removal changed')
+  const errorClosure = javascriptIife(javascriptProgram(errors), '__container_error_notifications')
+  const errorReporter = errorClosure.body.filter(node => node.type === 'FunctionDeclaration' && node.id.name === 'report')
+  assert(errorReporter.length === 1 && javascriptDirectStatement(errorReporter[0].body, `
+    if (reporting) {
+      if (__container_conformance_runtime_logs) __container_conformance_runtime_logs.invalidate();
+      if (typeof __container_conformance_exceptions !== "undefined" && __container_conformance_exceptions) __container_conformance_exceptions.invalidate();
+      return null;
+    }
+  `), 'Private error recursion guard or observation invalidation changed')
   assert((units.hostInstaller.text.match(/__container_error_notifications\.install\(capabilities\)/g) || []).length === 2
     && units.lifecycleNotifications.text.includes('__container_error_notifications.retire();'), 'Trusted error notification publication or retirement changed')
   const runtimeOwned = between(units.hostServices.text, 'pub(super) fn runtime_owned(', '#[derive(Default)]')

@@ -5,7 +5,9 @@ use container_bridge::{op, BridgeEnvelope};
 use container_core::EngineKind;
 use container_ir::*;
 use container_render_skia::Renderer;
-use container_runtime::{BrowserLiveViewSubmission, BrowserViewSubmission, Session, SessionConfig};
+use container_runtime::{
+    BrowserLiveViewSubmission, BrowserViewSubmission, Session, SessionConfig, ViewExecutionPolicy,
+};
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 
@@ -163,6 +165,11 @@ fn fixture_with_browser_sources(
             engine,
             renderer_override: (!route_profile).then_some(RendererProfile::WebView),
             browser_view_enabled: true,
+            // This fixture checks protocol authority, not rendering latency.
+            // Explicit bridge deadlines still shorten this finite allowance.
+            view_execution: ViewExecutionPolicy {
+                batch_timeout_ms: 2_000,
+            },
             ..Default::default()
         },
     )

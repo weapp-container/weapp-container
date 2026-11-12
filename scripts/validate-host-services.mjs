@@ -15,6 +15,7 @@ mkdirSync(out,{recursive:true});
 const sdkSourcePlatforms=['android','desktop','flutter','ios'];
 const sdkSourceGates=sdkSourcePlatforms.map(platform=>[`sdk-source-inventory-${platform}`,['node','tools/source-inventory.mjs'],join(root,'sdk',platform)]);
 const gates=[
+ ['matrix-source-snapshot',['node','scripts/generate-host-services-matrix.mjs','--check']],
  ['catalog-and-producer',['node','--test','scripts/cpp-api-inventory.test.mjs','scripts/core-api-inventory.test.mjs','scripts/host-api-matrix.test.mjs','scripts/host-api-matrix-io.test.mjs','scripts/sdk-native-build.test.mjs','scripts/dev-player-runtime-archives.test.mjs','scripts/platform-runtime-archives.test.mjs','scripts/lib/harmony-artifact-contract.test.mjs','scripts/browser-dev-artifacts.test.mjs','scripts/build-native-hosts.test.mjs','scripts/sdk-licenses.test.mjs','scripts/sdk-android-consumer.test.mjs']],
  ['scheduler',['node','--test','scripts/api-completion-compat.test.mjs','scripts/api-owner-context.test.mjs','scripts/nexttick-api-owner.test.mjs','scripts/nexttick-contract.test.mjs','scripts/route-transaction.test.mjs','scripts/scheduler-canvas-owner.test.mjs','scripts/scheduler-framework-boundaries.test.mjs','scripts/turn-scheduler-candidate.test.mjs']],
  ['runtime',['cargo','test','-p','container-runtime','--features','quickjs-native,v8-native','--locked','host_services_contract','--','--test-threads=1']],

@@ -34,6 +34,16 @@ function changedRead(target, before, after, expected = 1) {
   }
 }
 
+for (const [name, before, after] of [
+  ['disabled recursion guard', 'if (reporting) {', 'if (false) {'],
+  ['lost log observation invalidation', 'if (__container_conformance_runtime_logs) __container_conformance_runtime_logs.invalidate();', ''],
+  ['lost exception observation invalidation', 'if (typeof __container_conformance_exceptions !== "undefined" && __container_conformance_exceptions) __container_conformance_exceptions.invalidate();', ''],
+  ['unreachable recursion guard', 'if (reporting) {', 'return null; if (reporting) {'],
+]) test(`error source inventory rejects ${name}`, async () => {
+  await assert.rejects(inventoryCoreApis(catalog, changedRead('crates/container-core/src/error-notifications.js', before, after)),
+    /Private error recursion guard or observation invalidation changed/)
+})
+
 test('source inventory includes both engines, concrete core functions and caller-supplied snapshot provenance', async () => {
   const result = await inventoryCoreApis(catalog, read)
   assert.equal(Object.keys(result.sources).length, 134)

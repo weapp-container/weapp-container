@@ -71,15 +71,7 @@
     "path": "docs/host-services/api-responsibilities.json",
     "sha256": "ed2730074a1aae2d2e6559f99584927690795561e97aad7155c73a744f4a4378"
   },
-  "evidence": [
-    {
-      "path": "docs/host-services/build-evidence.json",
-      "sha256": "43716c6b1319ea4960106f446cd5ad199eece80447713ec0d099a81f8e6dce5c",
-      "kind": "build-and-protocol-only",
-      "deviceAcceptance": false,
-      "merchantAcceptance": false
-    }
-  ],
+  "evidence": [],
   "sources": {
     "android": [
       {
@@ -1340,7 +1332,7 @@
       },
       {
         "path": "sdk/desktop/src/device_apis_windows.cpp",
-        "sha256": "eb81577e11eb9489b0139946e0d0f60eed6e9550951506973b3f00c4a73a9392",
+        "sha256": "8b8fffb51ba9e60fd6c05c0e4443d1fcc0b1ed53010b0f1c5bf2f2b90b469718",
         "registeredApis": [
           "object:DownloadTask.abort",
           "object:DownloadTask.offHeadersReceived",
@@ -1557,15 +1549,15 @@
     "core": {
       "workspaceManifest": {
         "path": "Cargo.toml",
-        "sha256": "4df435ec1ac744a153c2f1a921f837e9ad575461b58be86b17bc019aa6ecc264"
+        "sha256": "b4b42531ff0258486c26f055c2d614f8431e686c13b430928d814c0c2484194b"
       },
       "workspaceLock": {
         "path": "Cargo.lock",
-        "sha256": "945f7c7a2e52d6ed29467616ef77133e6adc4125807786f337d6e6d9b10a4d9c"
+        "sha256": "7c673d4cb74af2e3de2092280cd82c2fb1e986b5a56e556af92d8e7ad40d9095"
       },
       "coreAssembly": {
         "path": "crates/container-core/src/lib.rs",
-        "sha256": "8390f126edfca697a19e8ec3ecd257f7960c5c36de2499bf7e3db2b9d035c8d0"
+        "sha256": "3c537fa5e0fccf44dcce64f73f8c387d58c9a4a5be22eca3fd74b92767902591"
       },
       "quickjsExecution": {
         "path": "crates/container-engine-quickjs/src/execution.rs",
@@ -1601,19 +1593,19 @@
       },
       "workerRuntime": {
         "path": "examples/hosts/web-wasm/worker-runtime.mjs",
-        "sha256": "790704708e98a570a887fcec4877c78175f324316df2185f9469bfdd124acfae"
+        "sha256": "2ed207869872ed6f3d224bed8f11657df57adff75e5b4fbd20804fbcb370ae26"
       },
       "coreManifest": {
         "path": "crates/container-core/Cargo.toml",
-        "sha256": "f2ab23d131f8db3c086873ebffe081b0d0afef1ee5d83b09e6d8bb8c5da8f661"
+        "sha256": "7d1ea5920ce8f189074e99405f4325843831412aee5e0239c9a15efe62d7511a"
       },
       "commonHost": {
         "path": "crates/container-host-common/src/lib.rs",
-        "sha256": "fee1a1d93b0e09386f7f2f448432edaee21214db62d284e0badc77cecea24f09"
+        "sha256": "1b2f6c4e49f6399d79d2f2a2d9bad0c46572e17059bbe3fa39848f66aa4c007c"
       },
       "runtime": {
         "path": "crates/container-runtime/src/lib.rs",
-        "sha256": "2c9fd77bd8761aaff33afb6087242333f71ef86c8d5138b6f58dc6b38c6d184d"
+        "sha256": "8eda90abc1f99af28c1efda5dc3a5b22c000b6839aeb7a23b88b14b360989276"
       },
       "snapshots": {
         "path": "crates/container-runtime/src/host_environment.rs",
@@ -1625,19 +1617,19 @@
       },
       "geometry": {
         "path": "crates/container-runtime/src/host_geometry.rs",
-        "sha256": "07236c47327d08780d25a5180ead8414597abb14ca9a3259559772c9790b354e"
+        "sha256": "11cf95a9ef96448939eec58f5777f8320927eb93b3dc9c1eaf0d6bfbe8d1ca7b"
       },
       "windowMetrics": {
         "path": "crates/container-runtime/src/window_metrics.rs",
-        "sha256": "38435a93d7402d6d7fc5153be77bd6eb1f30d52b4600b238a2a954259eb40b47"
+        "sha256": "dbbf442bbad47558b926fa4aefeb9a6ce7ce5f64f424c7b9cc173e81e6f007b4"
       },
       "nativeProvider": {
         "path": "crates/container-sdk/src/lib.rs",
-        "sha256": "5a97b475417ab77edf75d2c4a6984fb70565f81db7c798973202a39ba24774d2"
+        "sha256": "e3489594fa0eb1aa3ec37d36d95c6c0fed3c93f60f7f3b073c4acb1ee9204824"
       },
       "hostServices": {
         "path": "crates/container-runtime/src/host_services.rs",
-        "sha256": "6ef82c53b4173927267c9c91eda28889f0220e48b9cc5b0c5741b590d06edbb2"
+        "sha256": "fa059a3b1da09361c00da6ee3c29e4aee7d5c9762cc313d1e5576fbd0194ca60"
       },
       "asyncHost": {
         "path": "crates/container-runtime/src/async_host.rs",
@@ -1645,11 +1637,11 @@
       },
       "boundary": {
         "path": "crates/container-core/src/host-bridge.js",
-        "sha256": "dcc5ea4d4d5579c41243d9f51cbb016cd5bb60e334cc23f8818a4b0811504b94"
+        "sha256": "66b718761ec282646b8e1c4e7c7506ad32f285c7dfc714c4af0cef8da4047629"
       },
       "console": {
         "path": "crates/container-core/src/dev-console.js",
-        "sha256": "9daa7a581ec575ae38d400b719d4936036afc9f6465ac58d94e331a51557ce4c"
+        "sha256": "257aa6ebdde8db1779fe508e457880e6f94abbde5c2ca210d360facb5c7fdccc"
       },
       "logManager": {
         "path": "crates/container-core/src/log-manager.js",
@@ -1665,7 +1657,7 @@
       },
       "environment": {
         "path": "crates/container-core/src/host_environment.rs",
-        "sha256": "d5afa90e66506ca5fe392a7dcc0e4e66e9a6b005ecd177aafe49c891081dc61c"
+        "sha256": "c67ea05a80cd516662fb841c56e82ed88c1f9e65ab130b7f415e3a0b87ef29d7"
       },
       "syncFiles": {
         "path": "crates/container-runtime/src/sync_files.rs",
@@ -1713,11 +1705,11 @@
       },
       "lifecycleNotifications": {
         "path": "crates/container-core/src/lifecycle-notifications.js",
-        "sha256": "7648be246c7dab41d77e709c02e03c78266d5533f280f557e0170085902bd9b7"
+        "sha256": "30f624b3231f8513b24fe66e04654a364faa18c5a51f57953a5beedb02d7d89f"
       },
       "errorNotifications": {
         "path": "crates/container-core/src/error-notifications.js",
-        "sha256": "7d9c7b452a1901d50376bc66c18562987c18542f082bb94a063947d0ff69e9b2"
+        "sha256": "bc7034338df9c3b6def88d607327fe66ac52af69f1556de4360a74af3c565b7b"
       },
       "pageNotFoundNotifications": {
         "path": "crates/container-core/src/page-not-found-notifications.js",
@@ -1725,7 +1717,7 @@
       },
       "unhandledRejections": {
         "path": "crates/container-core/src/unhandled-rejections.js",
-        "sha256": "d52cd35f18fc8cf2dc8e52e406f0f7a3d13bf2c5501fd31b8472c00b87da8715"
+        "sha256": "614ca41e2bf9d0b32a2fa63da920887dddbe7e91de86a4d70dc6f6e7fb45ef6f"
       },
       "windowResizeNotifications": {
         "path": "crates/container-core/src/window-resize-notifications.js",
@@ -1733,7 +1725,7 @@
       },
       "finiteNotifications": {
         "path": "crates/container-core/src/finite-notifications.js",
-        "sha256": "1a3a03df2d203d1a4104752b67224578940106ac2cbf8f986cfd2de2f9ff8032"
+        "sha256": "bfae0275239b3d6cc98ad9b9e7b2be15f5808af2504db60d3f5e13e011a819ec"
       },
       "finiteNotificationResources": {
         "path": "crates/container-runtime/src/finite_notifications.rs",
@@ -1781,11 +1773,11 @@
       },
       "runtimeRoutes": {
         "path": "crates/container-runtime/src/route_transaction.rs",
-        "sha256": "3c68225296921d4471643c47daced375f8f09f350970db1eb1d8a4fd56a9ade8"
+        "sha256": "2c6d7576fa806268005af696cdf1a7f0b054249cb37cf1f70e529fd459be415e"
       },
       "hostInstaller": {
         "path": "crates/container-core/src/host-environment-install.js",
-        "sha256": "39a1d792dc3bf3b7d1dd4899d0f459f21af5e33b1eb3905bfe958e0b3f2d0e48"
+        "sha256": "5197f8df3b7c273fb70430bd2de1bf6c3fae352a4d7c476f27d26a944991f40e"
       },
       "mediaQueries": {
         "path": "crates/container-core/src/media-query-observers.js",
@@ -1797,11 +1789,11 @@
       },
       "observerComponents": {
         "path": "crates/container-runtime/src/components.rs",
-        "sha256": "0fa606f02203e4cc395d068ee47c561a04df68adcaf4ae576bbcd4793a0eee47"
+        "sha256": "a96fa8eb3e0189cda09f86b8ee625fda82920dfaec766ffab63d198574fbb3d6"
       },
       "browserView": {
         "path": "crates/container-runtime/src/browser_view.rs",
-        "sha256": "e62db89be873f7ee03a1a47b7e3415f260823043b4b989b554f368a7ec8df6cd"
+        "sha256": "e5f775f3e7e7cabda15ce514bb9d7124b81eaa00fcb6ad2268d4fb26bf1b4a2e"
       },
       "renderProfiles": {
         "path": "crates/container-ir/src/rendering.rs",
@@ -1809,11 +1801,11 @@
       },
       "sdkFfi": {
         "path": "crates/container-sdk-ffi/src/lib.rs",
-        "sha256": "45875878bbb88ebbfe424c6c4ba72a476403d284ac45c12a07b3a8266731bf85"
+        "sha256": "387df9022af44918fc78d3fd2dd1e94d933820cb35b5dcf63112ca9bf1ab9fa5"
       },
       "webHost": {
         "path": "crates/container-host-web/src/lib.rs",
-        "sha256": "d35216df0c4103ddb28da41581feca3161063c343e04dbf3b47273e401959152"
+        "sha256": "1dcbf654da6cc5e77ac0f7003761bc39045b8e7058e664adf281270e0978a49f"
       },
       "selectorQueries": {
         "path": "crates/container-core/src/selector-query.js",
@@ -1837,11 +1829,11 @@
       },
       "domPresenter": {
         "path": "examples/hosts/web-wasm/dom-presenter.mjs",
-        "sha256": "985a5e03360ebcd6cbceb7b2d3e8e472bffc73c415a136a1dcc4ce66eaae0014"
+        "sha256": "228c85d3a36edc731b68e8e68f7bfe8f1b052ada819010c8c9595869105869db"
       },
       "domSessionClient": {
         "path": "examples/hosts/web-wasm/dom-session-client.mjs",
-        "sha256": "6724ae4b58467a73b9468d2708d1542805a956e36067c21e3324939a2de0a6b9"
+        "sha256": "e2e07c8acc477be994cfcbf17bbfdc398f2b990e11c17739597312bad1d8ddc3"
       },
       "pageMirror": {
         "path": "crates/container-core/src/page-mirror.js",
@@ -1873,11 +1865,11 @@
       },
       "irAssembly": {
         "path": "crates/container-ir/src/lib.rs",
-        "sha256": "c3b5a76030a53f39e1615fa8c487895ae42e47e1b750d8ba36f04d1525875de3"
+        "sha256": "e61e197da99a861f8005f95a01971481cb24028877926e63275b68892619957f"
       },
       "irMarkup": {
         "path": "crates/container-ir/src/markup.rs",
-        "sha256": "92f77cb17d71b3f831d89f07bb37d0b453384806d9c89cac4ff2910e13cb649b"
+        "sha256": "7a55057f66050ba65352ab2a748f1b41b87f81687907100bd7a4403370ea9663"
       },
       "irBindingProvenance": {
         "path": "crates/container-ir/src/binding_provenance.rs",
@@ -1949,7 +1941,7 @@
       },
       "presentationScheduler": {
         "path": "examples/hosts/web-wasm/presentation-scheduler.mjs",
-        "sha256": "0175f64e4e21a276b4ea466c30769090daa39087cf3d1d1122e7980b2a400a71"
+        "sha256": "720286b5de9eb6e409b230271652a025c8d8780afc638d354e4679a043927b7e"
       },
       "workerBridgeTransport": {
         "path": "examples/hosts/web-wasm/worker-bridge-transport.mjs",
@@ -1957,11 +1949,11 @@
       },
       "workerSessionClient": {
         "path": "examples/hosts/web-wasm/worker-session-client.mjs",
-        "sha256": "2ddc97905b702b623a11aedbfa25dbaac62d647b0b0ffe1d884dca09ff5c6714"
+        "sha256": "cb0ec559f1cdff86ca755e6f91e2b4ded8dd938759c15e13c0a422a69ad4b8a1"
       },
       "workerWebSession": {
         "path": "examples/hosts/web-wasm/worker-web-session.mjs",
-        "sha256": "03bd71db61656a517fa1e6df505c51589ec424b56bb0a49a3813ab50a3fbd52e"
+        "sha256": "d4c924619f44c1ed52dc0e8df0e13002abb2d43842ac35a36d45712886630533"
       },
       "canvas": {
         "path": "crates/container-core/src/canvas.js",
@@ -1981,11 +1973,11 @@
       },
       "canvasService": {
         "path": "crates/container-render-skia/src/canvas_service.rs",
-        "sha256": "573f85511e35f860f28f545ea5bf58c4a3630b4d0c6222c40f94470d6ed72ccc"
+        "sha256": "4e6b3933b8289a9ddf44c01e6b27e4d62a40d91d30737a32064dc761bd660956"
       },
       "canvasRaster": {
         "path": "crates/container-render-skia/src/lib.rs",
-        "sha256": "a76e980c3738cf6fa7aaaef8e5a97c278ddf28794b9af39a0f34c4923e23ff85"
+        "sha256": "2ddcbc80bcc05b41c570f2366710031f8f0a77682efa066e8c179bab442d8551"
       },
       "canvasStroke": {
         "path": "crates/container-render-skia/src/canvas_stroke.rs",
@@ -1993,11 +1985,11 @@
       },
       "quickjs": {
         "path": "crates/container-engine-quickjs/src/lib.rs",
-        "sha256": "2568572c17689bb6b5d3d807c4494f117b26266d5b69413468e1f3244b89289c"
+        "sha256": "855618bfcf2198e2ddca196f733b1b3e7625a5c448e8c2a60ed5208fc7b8d6bd"
       },
       "v8": {
         "path": "crates/container-engine-v8/src/lib.rs",
-        "sha256": "c450b47b1a7d064c17c95a70cfc645b64baa202fa9bd017380f3e5ed909eff46"
+        "sha256": "70a0a54ba87bd8995ea2038df7e01669206df8d913a72dc3971acb259f94aafa"
       },
       "observers": {
         "path": "crates/container-runtime/src/observers.rs",
@@ -2009,7 +2001,7 @@
       },
       "renderer": {
         "path": "crates/container-runtime/src/render_backend.rs",
-        "sha256": "c4d8b278dd6c83b844490cb0d45481c9b963cba719ce6a86436e840529787dcd"
+        "sha256": "b1a8f36c1bb64fbb3052d271c0e802895865dcce1d77ce58abc0b5fa511eca3a"
       },
       "tabBar": {
         "path": "crates/container-core/src/tab-bar.js",
@@ -2057,7 +2049,7 @@
       },
       "flutterIos": {
         "path": "sdk/flutter/weapp_container_ios/ios/Classes/WeappContainerIosPlugin.swift",
-        "sha256": "3aa5b0645b00d8bbbb25d9cc1556f2ba6f8594a3f43307a8970e39b2d91ffaf7"
+        "sha256": "c383198c8a7e9f16b0ab16874410ec24dc73155871cbb325af5f38b198d17a2d"
       },
       "iosTypes": {
         "path": "sdk/ios/Sources/WeappContainer/Types.swift",
@@ -2103,7 +2095,7 @@
   },
   "platformConstraints": {
     "path": "docs/host-services/platform-constraints.json",
-    "sha256": "dea4f16aa4158d279e0182fe2dca2549a0aad5dbac7de0047311c109a8b25e01"
+    "sha256": "1949c9aa874defd19d94227c84db75ef862fa6d9f72c81744b743e90fe0a9d1c"
   },
   "globalProperties": [
     {
@@ -86077,7 +86069,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -86277,7 +86269,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -86477,7 +86469,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -86685,7 +86677,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -86885,7 +86877,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -87085,7 +87077,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -87285,7 +87277,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -102868,7 +102860,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -103081,7 +103073,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -103294,7 +103286,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -103507,7 +103499,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -103720,7 +103712,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -103933,7 +103925,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -104133,7 +104125,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -104333,7 +104325,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -104541,7 +104533,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -104741,7 +104733,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -104941,7 +104933,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -105141,7 +105133,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -105292,7 +105284,7 @@
               "object:Ndef.isConnected"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -105443,7 +105435,7 @@
               "object:Ndef.isConnected"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -105594,7 +105586,7 @@
               "object:Ndef.isConnected"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -106356,7 +106348,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -106578,7 +106570,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -106800,7 +106792,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -107022,7 +107014,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -107244,7 +107236,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -107466,7 +107458,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -107688,7 +107680,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -107910,7 +107902,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -108110,7 +108102,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -108323,7 +108315,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -108523,7 +108515,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -108880,7 +108872,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -109102,7 +109094,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -109302,7 +109294,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -109502,7 +109494,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -110399,7 +110391,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -110621,7 +110613,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -110843,7 +110835,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -111065,7 +111057,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -111287,7 +111279,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -111509,7 +111501,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -111709,7 +111701,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -111909,7 +111901,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -112109,7 +112101,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -112309,7 +112301,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -112509,7 +112501,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -112709,7 +112701,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -112909,7 +112901,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -113109,7 +113101,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -113309,7 +113301,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -113509,7 +113501,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -113709,7 +113701,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -113909,7 +113901,7 @@
               "object:NfcV.transceive"
             ],
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+              "docs/host-services/WEB-NFC.md"
             ],
             "officialSources": [
               "https://w3c-cg.github.io/web-nfc/"
@@ -191430,7 +191422,7 @@
             "scope": "General-purpose iOS containers using public platform APIs",
             "reason": "Apple provides no general-purpose Wi-Fi scanning API. HotspotHelper requires an Apple-approved entitlement and is restricted to hotspot integration; it cannot be used as a general container scanning service.",
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-platform-constraints/apple-tn3111.json",
+              "sdk/ios/examples/host-services/WIFI-APIS.md",
               "sdk/ios/test/evidence/host-services-wifi-development.json"
             ],
             "officialSources": [
@@ -207696,7 +207688,7 @@
             "scope": "General-purpose iOS containers using public platform APIs",
             "reason": "Apple provides no general-purpose Wi-Fi scanning API. HotspotHelper requires an Apple-approved entitlement and is restricted to hotspot integration; it cannot be used as a general container scanning service.",
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-platform-constraints/apple-tn3111.json",
+              "sdk/ios/examples/host-services/WIFI-APIS.md",
               "sdk/ios/test/evidence/host-services-wifi-development.json"
             ],
             "officialSources": [
@@ -233858,7 +233850,7 @@
             "scope": "General-purpose iOS containers using public platform APIs",
             "reason": "Apple provides no general-purpose Wi-Fi scanning API. HotspotHelper requires an Apple-approved entitlement and is restricted to hotspot integration; it cannot be used as a general container scanning service.",
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-platform-constraints/apple-tn3111.json",
+              "sdk/ios/examples/host-services/WIFI-APIS.md",
               "sdk/ios/test/evidence/host-services-wifi-development.json"
             ],
             "officialSources": [
@@ -266575,7 +266567,7 @@
             "scope": "General-purpose iOS containers using public platform APIs",
             "reason": "Apple provides no general-purpose Wi-Fi scanning API. HotspotHelper requires an Apple-approved entitlement and is restricted to hotspot integration; it cannot be used as a general container scanning service.",
             "evidence": [
-              "docs/host-services/evidence/2026-11-02-platform-constraints/apple-tn3111.json",
+              "sdk/ios/examples/host-services/WIFI-APIS.md",
               "sdk/ios/test/evidence/host-services-wifi-development.json"
             ],
             "officialSources": [

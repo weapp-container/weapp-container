@@ -209,11 +209,15 @@ fn fixture_sources(
     let mut config = SessionConfig {
         engine,
         page_render_mode: PageRenderMode::ExternalFrame,
+        // Query ownership and cancellation are semantic contracts. The
+        // default-policy and deadline tests cover the separate 50 ms limit.
+        view_execution: ViewExecutionPolicy {
+            batch_timeout_ms: 2_000,
+        },
         ..Default::default()
     };
     config.host.window_width = 320;
     config.host.window_height = 480;
-    assert_eq!(config.view_execution.batch_timeout_ms, 50);
     let mut session = Session::new(manifest, config).unwrap();
     success(
         &mut session,

@@ -12,7 +12,7 @@
       "scope": "General-purpose iOS containers using public platform APIs",
       "reason": "Apple provides no general-purpose Wi-Fi scanning API. HotspotHelper requires an Apple-approved entitlement and is restricted to hotspot integration; it cannot be used as a general container scanning service.",
       "evidence": [
-        "docs/host-services/evidence/2026-11-02-platform-constraints/apple-tn3111.json",
+        "sdk/ios/examples/host-services/WIFI-APIS.md",
         "sdk/ios/test/evidence/host-services-wifi-development.json"
       ],
       "officialSources": [
@@ -179,7 +179,7 @@
         "object:NfcV.transceive"
       ],
       "evidence": [
-        "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+        "docs/host-services/WEB-NFC.md"
       ],
       "officialSources": [
         "https://w3c-cg.github.io/web-nfc/"
@@ -195,7 +195,7 @@
         "object:Ndef.isConnected"
       ],
       "evidence": [
-        "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+        "docs/host-services/WEB-NFC.md"
       ],
       "officialSources": [
         "https://w3c-cg.github.io/web-nfc/"

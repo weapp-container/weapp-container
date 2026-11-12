@@ -28,6 +28,11 @@ node scripts/generate-host-services-matrix.mjs --check
 平台依据的限制记录在 [platform-constraints.json](./platform-constraints.json)，
 逐项进入矩阵。部分参数不可用时保留独立的 `parameterLimit`，不把整个 API 判为不适用。
 
+来源身份的复核方式见 [API 来源审定](./source-review.md)。原始构建日志保存在
+[私有历史档案](../archived-evidence.md)，公开矩阵的 `evidence` 不引用缺失的旧文件。
+当前公开验收账本没有可分发的实际验收报告，所有平台均无
+`implementedAndAccepted` 单元格。下文提到的旧执行记录只描述历史，不是当前源码的验收凭据。
+
 矩阵 v2 保留 `owner` 的注册与安全边界，新增独立的 `responsibility`，按运行时、
 设备适配器、宿主业务服务及微信生态服务清点全部 1265 项。
 [`api-responsibilities.json`](./api-responsibilities.json) 用固定名称摘要校验完整性，
@@ -52,8 +57,8 @@ node scripts/generate-host-services-matrix.mjs --check
 验收由 [`acceptance-contracts.json`](./acceptance-contracts.json) 声明逐项审查的
 参数、平台条件及 SDK/引擎范围，再由 [`acceptance-ledger.json`](./acceptance-ledger.json)
 引用绑定源码、产物、日志与清理记录的报告。生成器验证这些证据后才允许升级状态，
-不从旧构建记录自动导入验收结果。当前台账包含已审查的 Web Base64 四条完整链路，以及 `wx.canIUse`、`wx.getWindowInfo`、
-`wx.getSystemSetting`、`wx.getAppBaseInfo`、`wx.getDeviceInfo` 的有限参数范围；其余真实 SDK、硬件和商户证据仍需分别提供。格式和检查规则见
+不从旧构建记录自动导入验收结果。历史台账曾记录 Web Base64 链路，以及 `wx.canIUse`、`wx.getWindowInfo`、
+`wx.getSystemSetting`、`wx.getAppBaseInfo`、`wx.getDeviceInfo` 的有限参数范围；这些原始证据未随公开源码分发，当前台账不保留其已验收评级。真实 SDK、硬件和商户证据仍需分别提供。格式和检查规则见
 [ACCEPTANCE.md](./ACCEPTANCE.md)。
 
 Android/iOS/鸿蒙台账从实际适配器的 `supportedApis` 和注册语句读取；桌面从
