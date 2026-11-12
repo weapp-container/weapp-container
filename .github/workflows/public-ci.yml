@@ -73,4 +73,4 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a cargo test -p container-host-desktop -p container-simulator --features container-simulator/desktop-window --locked x11_gl_drawable_renders_resizes_reloads_and_detaches -- --ignored --test-threads=1 --nocapture
       # Deadline-sensitive engine contracts share the runner's CPU budget.
-      - run: cargo test --workspace --locked -- --test-threads=1
+      - run: cargo test --workspace --no-fail-fast --locked -- --test-threads=1
