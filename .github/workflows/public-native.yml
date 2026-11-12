@@ -116,7 +116,10 @@ jobs:
           packages: platform-tools
       - name: Install pinned Android NDK
         if: matrix.android
-        run: sdkmanager 'ndk;27.1.12297006'
+        shell: bash
+        run: |
+          sdkmanager 'ndk;27.1.12297006'
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
       - name: Build versioned native SDK
         run: node scripts/sdk-native-build.mjs --target ${{ matrix.target }}
       - name: Collect notices for the exact native feature graph

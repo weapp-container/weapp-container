@@ -15,6 +15,7 @@ concurrency:
 
 env:
   CARGO_INCREMENTAL: '0'
+  RUSTUP_TOOLCHAIN: '1.99.1'
 
 jobs:
   source:
@@ -32,6 +33,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - run: pnpm install --frozen-lockfile
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
       - run: pnpm submodule:verify
       - run: pnpm opensource:check && pnpm docs:check
       - run: node scripts/generate-host-services-matrix.mjs --check
@@ -60,6 +63,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: '1.99.1'
           components: rustfmt, clippy
       - uses: ./.github/actions/setup-linux-native
       - uses: ./.github/actions/cache-downloads
