@@ -3694,9 +3694,9 @@ while :; do sleep 0.05; done
                     // and reload semantics, not cold native View latency.
                     // Keep a finite budget under parallel test contention;
                     // production defaults and dedicated deadline gates stay unchanged.
-                    semantic_view_execution: Some(container_runtime::ViewExecutionPolicy {
+                    view_execution: container_runtime::ViewExecutionPolicy {
                         batch_timeout_ms: 2_000,
-                    }),
+                    },
                     ..Default::default()
                 },
             );

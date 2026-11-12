@@ -159,10 +159,10 @@ pub struct SimulatorConfig {
     pub route: Option<String>,
     pub launch_options: Value,
     pub initial_data: Value,
-    /// Finite headroom for semantic fixtures that initialize cold native View
-    /// realms. Product builds and tests that omit this retain runtime defaults.
-    #[cfg(test)]
-    pub(crate) semantic_view_execution: Option<container_runtime::ViewExecutionPolicy>,
+    /// Finite View execution policy forwarded to the runtime, including across
+    /// development reloads. Defaults to the runtime's 50 ms batch limit; outer
+    /// engine and bridge deadlines can only shorten this allowance.
+    pub view_execution: container_runtime::ViewExecutionPolicy,
 }
 
 impl Default for SimulatorConfig {
@@ -183,8 +183,7 @@ impl Default for SimulatorConfig {
             route: None,
             launch_options: json!({}),
             initial_data: json!({}),
-            #[cfg(test)]
-            semantic_view_execution: None,
+            view_execution: container_runtime::ViewExecutionPolicy::default(),
         }
     }
 }
@@ -537,8 +536,7 @@ impl Simulator {
             page_render_mode: config.page_render_mode,
             renderer_override: config.renderer_override,
             browser_view_enabled: config.browser_view_enabled,
-            #[cfg(test)]
-            view_execution: config.semantic_view_execution.clone().unwrap_or_default(),
+            view_execution: config.view_execution.clone(),
             host: HostMetadata {
                 kind: HostKind::Desktop,
                 platform: "simulator".to_owned(),
@@ -1851,8 +1849,7 @@ pub fn default_session_config(config: &SimulatorConfig) -> SessionConfig {
         page_render_mode: config.page_render_mode,
         renderer_override: config.renderer_override,
         browser_view_enabled: config.browser_view_enabled,
-        #[cfg(test)]
-        view_execution: config.semantic_view_execution.clone().unwrap_or_default(),
+        view_execution: config.view_execution.clone(),
         host: HostMetadata {
             kind: HostKind::Desktop,
             platform: "simulator".to_owned(),
@@ -1880,6 +1877,16 @@ mod tests {
     };
     use container_render_skia::Renderer;
     use std::sync::atomic::{AtomicU64, Ordering};
+
+    #[test]
+    fn simulator_view_policy_defaults_match_runtime() {
+        let config = SimulatorConfig::default();
+        assert_eq!(config.view_execution.batch_timeout_ms, 50);
+        assert_eq!(
+            default_session_config(&config).view_execution,
+            container_runtime::ViewExecutionPolicy::default()
+        );
+    }
 
     static TEST_PACK_ID: AtomicU64 = AtomicU64::new(0);
 
