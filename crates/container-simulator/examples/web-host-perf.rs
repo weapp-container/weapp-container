@@ -15,6 +15,7 @@ use std::env;
 use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream};
 use std::path::PathBuf;
+#[cfg(any(target_os = "macos", target_os = "freebsd", target_os = "windows"))]
 use std::process::Command;
 use std::thread;
 use std::time::{Duration, Instant};
