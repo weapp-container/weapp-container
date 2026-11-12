@@ -41,6 +41,7 @@ jobs:
     # mobile GPU report, performance report, or ledger entry is incomplete.
     # Keep the step's outcome visible and upload its JSON so missing/blocked/
     # unknown evidence can never be mistaken for a passing skeleton build.
+    # Preserve the failed job outcome as well as the diagnostic report.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -62,7 +63,6 @@ jobs:
           node scripts/check-dual-renderer-gates.mjs --validate-only
       - name: Run near-parity gate audit
         id: audit
-        continue-on-error: true
         run: node scripts/check-near-parity-gates.mjs --out artifacts/near-parity-gates.json
       - name: Preserve audit status in the job log
         if: always()
