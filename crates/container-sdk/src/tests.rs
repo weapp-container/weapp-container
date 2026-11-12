@@ -3011,8 +3011,13 @@ fn persistent_storage_is_lossless_exclusive_and_async_close_releases_lock() {
     let flushed = session.command("flushStorage", json!({})).unwrap();
     assert_eq!(flushed["pending"], true);
     let result = session.command("close", json!({})).unwrap();
-    assert_eq!(result["pending"], true);
-    assert_eq!(session.state().unwrap()["status"], "closing");
+    // The storage worker can complete before begin_close's first poll. Both
+    // outcomes must agree with the reported state and still release the lock.
+    assert_eq!(result["pending"], !session.closed);
+    assert_eq!(
+        session.state().unwrap()["status"],
+        if session.closed { "closed" } else { "closing" }
+    );
     until(&mut session, |s| s.closed);
     let events = session.take_events();
     assert!(events

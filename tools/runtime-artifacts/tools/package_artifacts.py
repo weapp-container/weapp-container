@@ -416,7 +416,7 @@ def wrapper_input(component, platform, arch, architectures, install_dir, natives
         require({name for name, _ in maven_files} == {item["file"] for item in receipt["mavenArtifacts"]}, "Maven installation contains unlisted files")
         aars = [path for name, path in maven_files if name.endswith(".aar")]
         require(len(aars) == 1, "Android SDK must contain exactly one pinned release AAR")
-        expected_aar = f"maven/com/sonofmagic/weapp/weapp-container-android/{VERSION}/weapp-container-android-{VERSION}.aar"
+        expected_aar = f"maven/io/github/weapp-container/weapp-container-android/{VERSION}/weapp-container-android-{VERSION}.aar"
         require(aars[0].relative_to(install_dir).as_posix() == expected_aar, "Maven AAR coordinate/version mismatch")
         verify_aar(aars[0], natives, receipt.get("binaries"))
         add_tree(files, install_dir / "maven", "maven/")

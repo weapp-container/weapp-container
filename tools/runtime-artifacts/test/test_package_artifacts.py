@@ -311,7 +311,7 @@ class PackagerBoundaryTests(unittest.TestCase):
 
     def make_android(self):
         for target in ANDROID:self.make_native(target)
-        install=self.root/"android-install";path=install/f"maven/com/sonofmagic/weapp/weapp-container-android/{packager.VERSION}/weapp-container-android-{packager.VERSION}.aar";path.parent.mkdir(parents=True)
+        install=self.root/"android-install";path=install/f"maven/io/github/weapp-container/weapp-container-android/{packager.VERSION}/weapp-container-android-{packager.VERSION}.aar";path.parent.mkdir(parents=True)
         binaries=[]
         with zipfile.ZipFile(path,"w",compression=zipfile.ZIP_DEFLATED) as archive:
             archive.writestr("AndroidManifest.xml",b"public wrapper fixture manifest")
