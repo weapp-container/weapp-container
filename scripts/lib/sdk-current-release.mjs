@@ -8,7 +8,7 @@ import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { assertDistributionIdentity, verifyDistributionArtifact } from './showcase-policy.mjs';
 import { SHOWCASE_NATIVE_FONT, verifyShowcaseNativeFontArtifact } from './showcase-native-font.mjs';
 
-export const SDK_RELEASE_VERSION = '0.1.0-preview.6.0';
+export const SDK_RELEASE_VERSION = '0.1.0-preview.7.0';
 const sourceCommitPattern = /^[a-f0-9]{40}$/;
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const nativeTargets = NATIVE_TARGETS;

@@ -38,6 +38,8 @@ jobs:
       - run: node --test scripts/core-api-inventory.test.mjs scripts/host-api-matrix.test.mjs scripts/host-api-matrix-io.test.mjs
       - run: pnpm naming:check && pnpm naming:test
       - run: pnpm container:manifest:test
+      - run: npm install --ignore-scripts --no-audit --no-fund
+        working-directory: sdk/react-native
       - run: pnpm sdk:contracts:test
       - run: pnpm runtime:artifacts:test
       - run: node --test scripts/check-open-source.test.mjs scripts/check-doc-links.test.mjs scripts/verify-submodule.test.mjs scripts/sdk-licenses.test.mjs scripts/sdk-native-build.test.mjs scripts/check-product-naming.test.mjs scripts/check-toolchain.test.mjs
