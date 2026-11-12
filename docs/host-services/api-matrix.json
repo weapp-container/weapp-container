@@ -1553,7 +1553,7 @@
       },
       "workspaceLock": {
         "path": "Cargo.lock",
-        "sha256": "7c673d4cb74af2e3de2092280cd82c2fb1e986b5a56e556af92d8e7ad40d9095"
+        "sha256": "3f4c7fd5a757ca07a89801ca47339c54cb5ca81652d5f475d85a13eab3a35189"
       },
       "coreAssembly": {
         "path": "crates/container-core/src/lib.rs",
@@ -1601,11 +1601,11 @@
       },
       "commonHost": {
         "path": "crates/container-host-common/src/lib.rs",
-        "sha256": "1b2f6c4e49f6399d79d2f2a2d9bad0c46572e17059bbe3fa39848f66aa4c007c"
+        "sha256": "7819ab02d61f7472cd05eac8e23ccb1916bb381eba272fef979c19257fcd481f"
       },
       "runtime": {
         "path": "crates/container-runtime/src/lib.rs",
-        "sha256": "8eda90abc1f99af28c1efda5dc3a5b22c000b6839aeb7a23b88b14b360989276"
+        "sha256": "766fd602d4a2699e623b79ba50e3d4a012601da291e82aae7b1740434169d3e4"
       },
       "snapshots": {
         "path": "crates/container-runtime/src/host_environment.rs",
@@ -1977,7 +1977,7 @@
       },
       "canvasRaster": {
         "path": "crates/container-render-skia/src/lib.rs",
-        "sha256": "2ddcbc80bcc05b41c570f2366710031f8f0a77682efa066e8c179bab442d8551"
+        "sha256": "df9ae033e95121932c83e57755f437f28ad10185e6daeae1d07aaf1d950290b7"
       },
       "canvasStroke": {
         "path": "crates/container-render-skia/src/canvas_stroke.rs",
