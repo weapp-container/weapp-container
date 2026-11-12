@@ -433,10 +433,11 @@ def wrapper_input(component, platform, arch, architectures, install_dir, natives
             external_sha = None
     elif component == "ios-sdk":
         check_wrapper_artifacts(install_dir, receipt.get("artifacts"))
-        required = ["Package.swift", "WeappContainer.podspec", "LICENSE", "CONTRACT.md", "README.md", "ORIGIN.json"]
+        required = ["Package.swift", "WeappContainer.podspec", "LICENSE", "CONTRACT.md", "README.md", "README.en.md", "ORIGIN.json"]
         for name in required:
             add(files, name, content(input_file(install_dir, name)))
         add_tree(files, install_dir / "Sources", "Sources/")
+        add_tree(files, install_dir / "docs", "docs/")
         framework = install_dir / "Frameworks/WeappContainerNative.xcframework"
         info = plistlib.loads(input_file(framework, "Info.plist").read_bytes())
         libraries = info.get("AvailableLibraries", [])
@@ -493,7 +494,7 @@ def wrapper_input(component, platform, arch, architectures, install_dir, natives
                 add(files, "platform-notices/" + native["target"] + "/" + name[len("platform-notices/"):], item)
     if component != "android-sdk":
         for artifact in receipt["artifacts"]:
-            require(artifact["file"] in files and files[artifact["file"]]["sha256"] == artifact["sha256"], "Packaged wrapper artifact inventory differs from its validated installation")
+            require(artifact["file"] in files and files[artifact["file"]]["sha256"] == artifact["sha256"], "Packaged wrapper artifact inventory differs from its validated installation: " + artifact["file"])
     return files, {"wrapperSourceCommit": receipt["sourceCommit"], "wrapperReceiptSha256": receipt_sha, "wrapperReceiptFile": receipt_name,
                    "externalValidationSha256": external_sha, "validationStatus": status, "deviceExecution": receipt.get("deviceExecution", "not-recorded")}
 

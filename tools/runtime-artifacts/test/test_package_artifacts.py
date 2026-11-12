@@ -430,8 +430,9 @@ class PackagerBoundaryTests(unittest.TestCase):
     def make_ios(self):
         for target in IOS:self.make_native(target)
         install=self.root/"ios-install";install.mkdir()
-        for name in ["Package.swift","WeappContainer.podspec","LICENSE","CONTRACT.md","README.md","ORIGIN.json"]:
+        for name in ["Package.swift","WeappContainer.podspec","LICENSE","CONTRACT.md","README.md","README.en.md","ORIGIN.json"]:
             (install/name).write_text("{}\n" if name.endswith(".json") else "Public wrapper structural fixture\n")
+        (install/"docs").mkdir();(install/"docs/INSTALL.md").write_text("Public installation notes\n")
         sources=install/"Sources/WeappContainer";sources.mkdir(parents=True);(sources/"Container.swift").write_text("// Authored public wrapper fixture\n")
         framework=install/"Frameworks/WeappContainerNative.xcframework";framework.mkdir(parents=True)
         entries=[]
@@ -460,6 +461,8 @@ class PackagerBoundaryTests(unittest.TestCase):
         with tarfile.open(self.out/pin["fileName"]) as archive:
             self.assertIn("Frameworks/WeappContainerNative.xcframework/Info.plist",archive.getnames())
             self.assertIn("Sources/WeappContainer/Container.swift",archive.getnames())
+            self.assertIn("README.en.md",archive.getnames())
+            self.assertIn("docs/INSTALL.md",archive.getnames())
             self.assertEqual(json.loads(archive.extractfile("build.json").read())["status"],"built")
 
     def test_ios_cannot_repin_a_foreign_simulator_archive(self):
