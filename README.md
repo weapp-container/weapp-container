@@ -6,6 +6,8 @@
 
 [在线示例](https://container.weapp.dev) · [架构](docs/architecture.md) · [模拟器](docs/simulator.md) · [SDK](docs/sdk-repositories.md) · [贡献指南](CONTRIBUTING.md)
 
+公开预览版 `0.1.0-preview.7.0` 的核心运行库、iOS、Desktop 和 CocoaPods Specs 已提供公开下载。npm、Maven Central 和 pub.dev 尚未全部发布；安装命令、验证范围及阻塞项见[发布状态](docs/public-sdk-release.zh-CN.md)（[English](docs/public-sdk-release.md)）。
+
 ## 从源码开始
 
 需要 Git、Node.js **24.18+ / 24.x**、pnpm **10.15.1**、Rust stable 和宿主 C/C++ 工具链。首次构建需要下载公开的 Rust、QuickJS 和 Skia 依赖；macOS 使用 Xcode Command Line Tools。平台构建细节见 [Rust 构建说明](docs/rust-build-cache.md)。

@@ -19,10 +19,24 @@ test('producer policy, source contract, downloader and schema share reviewed ide
   const schema = await json('tools/runtime-artifacts/manifest.schema.json');
   assert.deepEqual(schema.allOf[0].then.properties.runtimeVersion.enum, LEGACY_RUNTIME_VERSIONS);
 });
-test('all committed default SDK locks retain their validated historical repository', async () => {
+test('all historical SDK locks retain their validated historical repository', async () => {
   for (const sdk of ['contract', 'android', 'ios', 'desktop', 'flutter', 'react-native']) {
     const manifest = await json(`sdk/${sdk}/runtime-artifacts.lock.json`);
     assert.equal(manifest.source.repository, 'weapp-container/runtime-artifacts');
     for (const artifact of manifest.artifacts) selectArtifact(manifest, { version: manifest.runtimeVersion, abiVersion: manifest.abiVersion, ...artifact });
   }
+});
+test('all SDK current pins match the same complete public runtime release', async () => {
+  const name = `runtime-artifacts.${SDK_RELEASE_VERSION}.lock.json`;
+  const reference = await read(`sdk/contract/${name}`);
+  for (const sdk of ['contract', 'android', 'ios', 'desktop', 'flutter', 'react-native']) {
+    assert.deepEqual(await read(`sdk/${sdk}/${name}`), reference, `sdk/${sdk} release closure differs`);
+  }
+  const manifest = JSON.parse(reference);
+  assert.equal(manifest.runtimeVersion, SDK_RELEASE_VERSION);
+  assert.equal(manifest.abiVersion, 1);
+  assert.deepEqual(manifest.source, { repository: RUNTIME_REPOSITORY, releaseTag: `runtime-v${SDK_RELEASE_VERSION}` });
+  assert.equal(manifest.artifacts.filter(asset => asset.component === 'runtime').length, 9);
+  assert.equal(manifest.artifacts.length, 14);
+  for (const artifact of manifest.artifacts) selectArtifact(manifest, { version: SDK_RELEASE_VERSION, abiVersion: 1, ...artifact });
 });
