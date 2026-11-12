@@ -5,12 +5,28 @@ import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { delimiter, resolve } from 'node:path';
+import { portableNativeReceipt } from './lib/sdk-portable-native-receipt.mjs';
+
+test('public native evidence preserves build identity without compiler locations', () => {
+  const receipt = { sourceCommit: 'a'.repeat(40), sourceDirty: false,
+    targetDir: '/runner/private/cache', toolchain: { rustc: 'rustc 1.99.1' },
+    cppAbiValidation: { status: 'passed', binarySha256: 'b'.repeat(64), compileCommand: ['clang++', '/runner/private/source.cpp'] },
+    artifacts: [{ file: 'runtime.a', bytes: 4, sha256: 'c'.repeat(64) }] };
+  const portable = portableNativeReceipt(receipt, 'd'.repeat(64));
+  assert.equal(JSON.stringify(portable).includes('/runner/'), false);
+  assert.equal(portable.sourceCommit, receipt.sourceCommit);
+  assert.deepEqual(portable.artifacts, receipt.artifacts);
+  assert.deepEqual(portable.toolchain, receipt.toolchain);
+  assert.equal(portable.cppAbiValidation.binarySha256, receipt.cppAbiValidation.binarySha256);
+  assert.equal(portable.producerEvidenceSha256, 'd'.repeat(64));
+  assert.equal(receipt.cppAbiValidation.compileCommand[1], '/runner/private/source.cpp');
+});
 
 function fixture() {
   const directory = realpathSync(mkdtempSync(resolve(tmpdir(), 'native-build-preflight-')));
   const root = resolve(directory, 'source'), tools = resolve(directory, 'tools');
   mkdirSync(resolve(root, 'scripts/lib'), { recursive: true }); mkdirSync(tools);
-  for (const name of ['sdk-native-build.mjs', 'lib/sdk-current-release.mjs', 'lib/sdk-skia-input.mjs', 'lib/sdk-native-features.mjs', 'lib/showcase-policy.mjs', 'lib/showcase-native-font.mjs', 'lib/sdk-native-hardening.mjs', 'lib/sdk-darwin-hardening.mjs']) cpSync(new URL(name, import.meta.url), resolve(root, 'scripts', name));
+  for (const name of ['sdk-native-build.mjs', 'lib/sdk-current-release.mjs', 'lib/sdk-skia-input.mjs', 'lib/sdk-native-features.mjs', 'lib/showcase-policy.mjs', 'lib/showcase-native-font.mjs', 'lib/sdk-native-hardening.mjs', 'lib/sdk-darwin-hardening.mjs', 'lib/sdk-portable-native-receipt.mjs']) cpSync(new URL(name, import.meta.url), resolve(root, 'scripts', name));
   writeFileSync(resolve(root, '.gitignore'), 'artifacts/\ntarget/\n');
   const git = args => { const result = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr); };
   git(['init', '-q']); git(['add', '.']); git(['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'source fixture']);

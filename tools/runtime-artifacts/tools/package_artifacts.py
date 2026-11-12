@@ -24,6 +24,7 @@ POLICY = json.loads((REPO / "policy.json").read_text())
 VERSION = POLICY["runtimeVersion"]
 ABI_VERSION = POLICY["abiVersion"]
 HEADER_SHA256 = POLICY["headerSha256"]
+GL_HEADER_SHA256 = POLICY["glHeaderSha256"]
 CONTRACT_LICENSE_SHA256 = POLICY["contractLicenseSha256"]
 REPOSITORY = POLICY["repository"]
 RELEASE_TAG = "runtime-v" + VERSION
@@ -37,8 +38,8 @@ TARGETS = {
     "x86_64-apple-ios": ("ios", "x86_64-simulator", ["libweapp_container_sdk.a"], ["quickjs-native-ios", "skia-gpu-metal"]),
     "aarch64-apple-darwin": ("macos", "arm64", ["libweapp_container_sdk.a", "libweapp_container_sdk.dylib"], ["quickjs-native", "skia-gpu-metal"]),
     "x86_64-apple-darwin": ("macos", "x86_64", ["libweapp_container_sdk.a", "libweapp_container_sdk.dylib"], ["quickjs-native", "skia-gpu-metal"]),
-    "x86_64-pc-windows-msvc": ("windows", "x86_64", ["weapp_container_sdk.lib"], ["quickjs-native", "skia-backend"]),
-    "x86_64-unknown-linux-gnu": ("linux", "x86_64", ["libweapp_container_sdk.a", "libweapp_container_sdk.so"], ["quickjs-native", "skia-backend"]),
+    "x86_64-pc-windows-msvc": ("windows", "x86_64", ["weapp_container_sdk.dll", "weapp_container_sdk.dll.lib"], ["quickjs-native", "skia-gpu-gles"]),
+    "x86_64-unknown-linux-gnu": ("linux", "x86_64", ["libweapp_container_sdk.a", "libweapp_container_sdk.so"], ["quickjs-native", "skia-gpu-gles"]),
 }
 LIBRARIES = {"libweapp_container_sdk.a", "libweapp_container_sdk.so", "libweapp_container_sdk.dylib", "libc++_shared.so", "weapp_container_sdk.lib", "weapp_container_sdk.dll", "weapp_container_sdk.dll.lib"}
 FORBIDDEN_PARTS = {".git", "node_modules", "target", ".gradle", ".dart_tool", ".cache", "cache", "caches", ".cxx", "__pycache__", ".env", ".npmrc", ".netrc", ".gitconfig", "credentials", "id_rsa", "id_ed25519", ".DS_Store", ".build", ".idea", ".pub-cache", ".ninja_log", ".ninja_deps", "CMakeFiles"}
@@ -194,9 +195,9 @@ def validate_native_receipt(receipt, target, expected_source, identity_only=Fals
         name = safe_name(item.get("file"))
         require(name not in names, "Duplicate native artifact")
         names.add(name)
-        require(name in allowed_libraries or name == "weapp_container_sdk.h" or re.fullmatch(r"platform-notices/(?:[A-Za-z0-9._-]+-)?(?:NOTICE|LICENSE|COPYING)(?:[._-][A-Za-z0-9._-]+)?", name), "Native artifact is outside the allowlist: " + name)
+        require(name in allowed_libraries or name in {"weapp_container_sdk.h", "weapp_container_sdk_gl.h"} or re.fullmatch(r"platform-notices/(?:[A-Za-z0-9._-]+-)?(?:NOTICE|LICENSE|COPYING)(?:[._-][A-Za-z0-9._-]+)?", name), "Native artifact is outside the allowlist: " + name)
         require(re.fullmatch(r"[0-9a-f]{64}", item.get("sha256", "")) and type(item.get("bytes")) is int and 0 < item["bytes"] <= MAX_BYTES, "Invalid native digest/size")
-    require(set(required + ["weapp_container_sdk.h"]).issubset(names), "Native receipt omits required library/header")
+    require(set(required + ["weapp_container_sdk.h", "weapp_container_sdk_gl.h"]).issubset(names), "Native receipt omits required library/header")
     if platform == "android":
         require(any(name.startswith("platform-notices/") for name in names), "Android NDK platform notices are required")
     return {item["file"]: item for item in artifacts}
@@ -227,7 +228,7 @@ def native_input(native_root, licenses_root, target, expected_source):
     receipt_path = input_file(directory, "build.json")
     receipt, receipt_sha = read_json(receipt_path)
     artifacts = validate_native_receipt(receipt, target, expected_source)
-    required = set(TARGETS[target][2]) | {"weapp_container_sdk.h"}
+    required = set(TARGETS[target][2]) | {"weapp_container_sdk.h", "weapp_container_sdk_gl.h"}
     distributed = {name: item for name, item in artifacts.items() if name in required or name.startswith("platform-notices/")}
     excluded = [{**item, "validation": "producer-receipt-only-not-distributed"} for name, item in artifacts.items() if name not in distributed]
     files = {"build.json": content(receipt_path)}
@@ -246,6 +247,7 @@ def native_input(native_root, licenses_root, target, expected_source):
             library_header(item["source"], target)
         add(files, name, item)
     require(files["weapp_container_sdk.h"]["sha256"] == HEADER_SHA256, "Public header differs from the fixed reviewed contract")
+    require(files["weapp_container_sdk_gl.h"]["sha256"] == GL_HEADER_SHA256, "Desktop GL extension header differs from the fixed reviewed contract")
     license_file = input_file(directory, "RUNTIME-LICENSE")
     require(license_file.read_bytes() == (REPO / "RUNTIME-LICENSE").read_bytes(), "Runtime license differs from release policy")
     add(files, "RUNTIME-LICENSE", content(license_file))
@@ -304,10 +306,13 @@ def hash_range(path, offset, size):
             size -= len(chunk)
     return digest.hexdigest()
 
+def verify_installed_core(path, natives, name):
+    require(len(natives) == 1 and name in natives[0]["files"], "Installed core file requires one declared native slice")
+    require(content(path)["sha256"] == natives[0]["files"][name]["sha256"], "Installed core archive differs from native slice")
+
 def verify_archive_slices(path, natives):
     if len(natives) == 1:
-        expected = natives[0]["files"]["weapp_container_sdk.lib" if path.suffix == ".lib" else "libweapp_container_sdk.a"]
-        require(content(path)["sha256"] == expected["sha256"], "Installed core archive differs from native slice")
+        verify_installed_core(path, natives, path.name)
         return
     with path.open("rb") as source:
         header = source.read(8)
@@ -459,10 +464,14 @@ def wrapper_input(component, platform, arch, architectures, install_dir, natives
         external_sha = None
     else:
         check_wrapper_artifacts(install_dir, receipt.get("artifacts"))
-        library = input_file(install_dir, "lib/" + ("weapp_container_sdk.lib" if platform == "windows" else "libweapp_container_sdk.a"))
-        verify_archive_slices(library, natives)
+        if platform == "windows":
+            verify_installed_core(input_file(install_dir, "lib/weapp_container_sdk.dll.lib"), natives, "weapp_container_sdk.dll.lib")
+            verify_installed_core(input_file(install_dir, "bin/weapp_container_sdk.dll"), natives, "weapp_container_sdk.dll")
+        else:
+            library = input_file(install_dir, "lib/libweapp_container_sdk.a")
+            verify_archive_slices(library, natives)
         require(content(input_file(install_dir, "include/weapp_container_sdk.h"))["sha256"] == HEADER_SHA256, "Desktop public header mismatch")
-        for name in ["lib", "include", "share"]:
+        for name in (["lib", "include", "share", "bin"] if platform == "windows" else ["lib", "include", "share"]):
             add_tree(files, install_dir / name, name + "/")
         add(files, "package.json", generated(receipt))
         external_sha = None
