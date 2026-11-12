@@ -77,14 +77,22 @@ export function publishVerifiedRelease(plan, directory, notesFile, invoke = run)
   assert.equal(plan.tag, `runtime-v${policy.runtimeVersion}`);
   assert.equal(invoke('git', ['rev-parse', 'HEAD']).trim(), plan.sourceCommit, 'Publication checkout must match producer source');
   assert.equal(invoke('git', ['status', '--porcelain', '--untracked-files=all', '--ignore-submodules=none']).trim(), '', 'Publication requires clean committed source');
-  absent(`repos/${repo}/releases/tags/${plan.tag}`, invoke);
+  const pages = JSON.parse(invoke('gh', ['api', '--paginate', '--slurp', `repos/${repo}/releases?per_page=100`]));
+  assert.ok(Array.isArray(pages) && pages.every(Array.isArray), 'Cannot inspect existing releases and drafts');
+  assert.ok(!pages.flat().some(release => release.tag_name === plan.tag), 'Immutable publication refuses an existing release or draft');
   absent(`repos/${repo}/git/ref/tags/${plan.tag}`, invoke);
-  invoke('gh', ['release', 'create', plan.tag, '--repo', repo, '--target', plan.sourceCommit,
-    '--draft', '--prerelease', '--title', plan.tag, '--notes-file', notesFile]);
+  const created = JSON.parse(invoke('gh', ['api', `repos/${repo}/releases`, '--method', 'POST',
+    '-f', `tag_name=${plan.tag}`, '-f', `target_commitish=${plan.sourceCommit}`,
+    '-F', 'draft=true', '-F', 'prerelease=true', '-f', `name=${plan.tag}`, '-F', `body=@${notesFile}`]));
+  assert.ok(Number.isSafeInteger(created.id) && created.id > 0, 'Draft creation returned no release ID');
+  const endpoint = `repos/${repo}/releases/${created.id}`;
   // No --clobber: interruption leaves a draft for explicit inspection, never silently overwrites it.
   for (const file of plan.files) invoke('gh', ['release', 'upload', plan.tag, join(directory, file.name), '--repo', repo]);
-  const release = JSON.parse(invoke('gh', ['api', `repos/${repo}/releases/tags/${plan.tag}`]));
+  // Unpublished drafts may be absent from the tag endpoint. Preserve the returned ID.
+  const release = JSON.parse(invoke('gh', ['api', endpoint]));
+  assert.equal(release.id, created.id);
   assert.equal(release.draft, true);
+  assert.equal(release.prerelease, true);
   assert.equal(release.tag_name, plan.tag);
   assert.equal(release.target_commitish, plan.sourceCommit);
   assert.equal(release.assets.length, plan.files.length);
@@ -95,7 +103,7 @@ export function publishVerifiedRelease(plan, directory, notesFile, invoke = run)
     assert.equal(matches[0].size, file.size);
     assert.equal(matches[0].digest, `sha256:${file.sha256}`, 'GitHub digest must match the reviewed local bytes');
   }
-  invoke('gh', ['release', 'edit', plan.tag, '--repo', repo, '--draft=false', '--latest=false']);
+  invoke('gh', ['api', endpoint, '--method', 'PATCH', '-F', 'draft=false', '-F', 'prerelease=true', '-f', 'make_latest=false']);
   return { status: 'published', repository: repo, tag: plan.tag, sourceCommit: plan.sourceCommit };
 }
 
