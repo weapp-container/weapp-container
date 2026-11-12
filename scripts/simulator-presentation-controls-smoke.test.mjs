@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process'
 import { chmod, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import test from 'node:test'
 import { collectObservedEvidence, exclusiveFocus, explicitLauncherSource, logicalPoint, parseOptions, scrollTop, selectorFieldsQuery, wheelDriverDelta } from './simulator-presentation-controls-smoke.mjs'
 
@@ -12,11 +13,15 @@ test('controls evidence requires an explicit new output directory and validates 
   assert.throws(() => parseOptions(['--out', 'evidence', '--engine', 'other']), /quickjs or v8/)
   assert.throws(() => parseOptions(['--out', 'evidence', '--headed']), /unknown option/)
   assert.equal(parseOptions(['--out', 'evidence']).engine, 'quickjs')
-  assert.ok(parseOptions(['--out', 'evidence']).binary.endsWith('/target/release/weapp-simulator'))
+  assert.equal(parseOptions(['--out', 'evidence']).binary, fileURLToPath(new URL(
+    `../target/release/weapp-simulator${process.platform === 'win32' ? '.exe' : ''}`, import.meta.url,
+  )))
   assert.deepEqual(parseOptions(['--help']), { help: true })
 })
 
-test('explicit CLI launcher preserves owned PID and treats executable paths as data', async () => {
+test('POSIX CLI launcher preserves owned PID and treats executable paths as data', {
+  skip: process.platform === 'win32' ? 'requires POSIX exec and /bin/sh' : false,
+}, async () => {
   const directory = await mkdtemp(join(tmpdir(), 'weapp-controls-launcher-'))
   try {
     const binary = join(directory, "binary '$(printf unsafe)' `printf unsafe`"), wrapper = join(directory, 'launcher')
