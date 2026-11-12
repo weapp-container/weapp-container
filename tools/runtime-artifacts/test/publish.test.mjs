@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { publishVerifiedRelease } from '../tools/publish.mjs';
 
-const plan = { repository: 'weapp-container/weapp-container', tag: 'runtime-v0.1.0-preview.6.0',
+const plan = { repository: 'weapp-container/weapp-container', tag: 'runtime-v0.1.0-preview.7.0',
   sourceCommit: 'a'.repeat(40), files: [{ name: 'manifest.json', size: 23, sha256: 'b'.repeat(64) }] };
 function github(overrides = {}) {
   const calls = []; let created = false;

@@ -519,7 +519,7 @@ dependencies = [
 
 [[package]]
 name = "container-sdk"
-version = "0.1.0-preview.6.0"
+version = "0.1.0-preview.7.0"
 dependencies = [
  "container-bridge",
  "container-core",
@@ -537,7 +537,7 @@ dependencies = [
 
 [[package]]
 name = "container-sdk-ffi"
-version = "0.1.0-preview.6.0"
+version = "0.1.0-preview.7.0"
 dependencies = [
  "container-render-skia",
  "container-sdk",

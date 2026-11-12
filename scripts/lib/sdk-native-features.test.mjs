@@ -44,7 +44,7 @@ test('mode and feature provenance survives all native wrapper projections and re
     for (const patch of [{ viewDiagnostics: undefined }, { viewDiagnostics: 'invalid' }, { features: [...plan.features, 'unknown-feature'] }, { features: [...plan.features, plan.features[0]] }, { sdkVersion: '0.1.0-preview.5.3' }]) assert.throws(() => assertNativeProducer({ ...receipt, ...patch }));
     if (mode !== 'off') assert.throws(() => assertNativeProducer({ ...receipt, viewDiagnostics: 'off' }));
   }
-  assert.equal(SDK_RELEASE_VERSION, '0.1.0-preview.6.0');
+  assert.equal(SDK_RELEASE_VERSION, '0.1.0-preview.7.0');
 });
 
 test('diagnostic Cargo features remain opt-in and weakly forward both engine providers', () => {
