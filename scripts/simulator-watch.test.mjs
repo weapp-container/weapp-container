@@ -487,6 +487,21 @@ test('public API discovery supports bin symlinks and pnpm wrapper targets', t =>
   assert.equal(discoverWeappVite(custom), null)
 })
 
+test('package wrapper discovery needs only the public export, without warming bin resolution', t => {
+  const f = fixture(t)
+  const root = fakePackage(f)
+  const bin = resolve(f.root, 'node_modules/.bin')
+  mkdirSync(bin, { recursive: true })
+  symlinkSync(root, resolve(f.root, 'node_modules/weapp-vite'), 'junction')
+  const cmd = resolve(bin, 'wv.cmd')
+  writeFileSync(cmd, '@ECHO off\nnode weapp-vite-package-wrapper %*\n')
+  assert.equal(discoverWeappVite(cmd).entry, resolve(root, 'dist/index.mjs'))
+  writeFileSync(resolve(root, 'package.json'), JSON.stringify({
+    name: 'weapp-vite', exports: { './private': './dist/index.mjs' },
+  }))
+  assert.equal(discoverWeappVite(cmd), null, 'an installation without a public root stays unsupported')
+})
+
 test('symlinked native entry publishes before import, overrides production mode, and cleans up on SIGTERM', { timeout: 5_000 }, async t => {
   const f = fixture(t)
   const root = fakePackage(f)

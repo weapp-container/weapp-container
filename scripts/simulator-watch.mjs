@@ -312,10 +312,15 @@ export function discoverWeappVite(binary) {
     const source = readFileSync(candidate, 'utf8')
     // Windows .cmd and package-manager wrappers are often regular files.
     if (source.includes('weapp-vite')) {
-      try {
-        packageRoots.add(dirname(createRequire(pathToFileURL(candidate)).resolve('weapp-vite/package.json')))
-      } catch {
-        // A workspace shim can still identify its bin through a relative target.
+      // A package may expose its public compiler entry without exporting
+      // package.json. Locate the nearest installation through Node's lookup
+      // directories, then let publicEntry validate its name and public export.
+      for (const directory of createRequire(pathToFileURL(candidate)).resolve.paths('weapp-vite') ?? []) {
+        const root = resolve(directory, 'weapp-vite')
+        if (existsSync(root)) {
+          packageRoots.add(root)
+          break
+        }
       }
     }
     const shim = source.match(/^# cmd-shim-target=(.+)$/m)
