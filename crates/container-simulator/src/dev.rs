@@ -5840,6 +5840,7 @@ while :; do sleep 0.05; done
         drop(supervisor);
         wait_for_process_exit(&fixture.pid);
     }
+    #[cfg(unix)]
     fn browser_preparation_input(path: PathBuf) -> BrowserRuntimePreparation {
         use crate::browser_dev_runtime_receipt::{ProducerExpected, RuntimeBundleRenderer};
         BrowserRuntimePreparation {
