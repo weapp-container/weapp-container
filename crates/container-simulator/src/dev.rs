@@ -3477,18 +3477,20 @@ mod tests {
         );
         let args = command
             .get_args()
-            .map(|arg| arg.to_string_lossy().into_owned())
+            .map(|arg| arg.to_os_string())
             .collect::<Vec<_>>();
         assert_eq!(
             args,
             vec![
-                "/tmp/workspace/scripts/simulator-watch.mjs",
-                "--project",
-                "/tmp/reference-app",
-                "--wv-bin",
-                "/tmp/custom-wv",
-                "--output-root",
-                "/tmp/reference-app/dist",
+                Path::new("/tmp/workspace")
+                    .join("scripts/simulator-watch.mjs")
+                    .into_os_string(),
+                "--project".into(),
+                "/tmp/reference-app".into(),
+                "--wv-bin".into(),
+                "/tmp/custom-wv".into(),
+                "--output-root".into(),
+                "/tmp/reference-app/dist".into(),
             ]
         );
     }
@@ -3692,9 +3694,9 @@ while :; do sleep 0.05; done
                     // and reload semantics, not cold native View latency.
                     // Keep a finite budget under parallel test contention;
                     // production defaults and dedicated deadline gates stay unchanged.
-                    semantic_view_execution: Some(container_runtime::ViewExecutionPolicy {
+                    view_execution: container_runtime::ViewExecutionPolicy {
                         batch_timeout_ms: 2_000,
-                    }),
+                    },
                     ..Default::default()
                 },
             );
@@ -5840,6 +5842,7 @@ while :; do sleep 0.05; done
         drop(supervisor);
         wait_for_process_exit(&fixture.pid);
     }
+    #[cfg(unix)]
     fn browser_preparation_input(path: PathBuf) -> BrowserRuntimePreparation {
         use crate::browser_dev_runtime_receipt::{ProducerExpected, RuntimeBundleRenderer};
         BrowserRuntimePreparation {

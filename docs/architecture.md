@@ -1,5 +1,8 @@
 # 容器架构
 
+桌面窗口、嵌入视图与 Flutter 外壳的取舍，以及已实现和待验收的边界，见
+[桌面跨平台架构与后续方向](desktop-architecture.md)。
+
 ```text
 weapp-vite build
     ├── 原始微信目录（供官方 DevTools）

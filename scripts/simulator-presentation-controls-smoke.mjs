@@ -24,7 +24,7 @@ const requiredChecks = ['headlessFixedDefaults', 'savedPreferencesAfterRestart',
   'restore2xBeforeHmr', 'browserZoomRestoresLocally', 'wxssHmrAt2x', 'wxmlHmrAt2x', 'samePreviewLiveDpr', 'activePreviewAutoDpr']
 
 export function parseOptions(args) {
-  const options = { binary: join(root, 'target/release/weapp-simulator'), engine: 'quickjs' }
+  const options = { binary: join(root, 'target', 'release', process.platform === 'win32' ? 'weapp-simulator.exe' : 'weapp-simulator'), engine: 'quickjs' }
   for (let index = 0; index < args.length; index++) {
     const name = args[index]
     if (name === '--help' || name === '-h') return { help: true }

@@ -4785,10 +4785,20 @@ impl SkiaRenderer {
     #[cfg(feature = "skia-gpu-gles")]
     pub fn attach_gl_context_with(
         &mut self,
-        resolver: impl FnMut(&str) -> *const std::ffi::c_void,
+        mut resolver: impl FnMut(&str) -> *const std::ffi::c_void,
     ) -> Result<(), RenderError> {
-        let interface = skia::gpu::gl::Interface::new_load_with(resolver)
-            .ok_or(RenderError::Unsupported("skia-gpu-gl-interface"))?;
+        let interface = skia::gpu::gl::Interface::new_load_with(|name| {
+            // Skia probes optional EGL functions too. GLX/WGL loaders may
+            // return non-null stubs for foreign API names, which crash when
+            // called. This GL resolver is independent of the window-system
+            // API; attach_gles_context retains the native EGL loader path.
+            if name.starts_with("gl") {
+                resolver(name)
+            } else {
+                std::ptr::null()
+            }
+        })
+        .ok_or(RenderError::Unsupported("skia-gpu-gl-interface"))?;
         self.attach_gl_interface(interface)
     }
 

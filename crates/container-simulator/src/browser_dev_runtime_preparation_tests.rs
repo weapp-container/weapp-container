@@ -1,7 +1,9 @@
 use super::*;
 use crate::browser_dev_runtime_receipt::RuntimeBundleRenderer;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+#[cfg(unix)]
+use std::time::Instant;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 struct Fixture(PathBuf);
 impl Fixture {

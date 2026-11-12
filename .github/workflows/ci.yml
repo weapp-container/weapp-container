@@ -355,7 +355,7 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Tests
-        run: cargo test --workspace --locked -- --test-threads=1
+        run: cargo test --workspace --no-fail-fast --locked -- --test-threads=1
       - name: Simulator snapshot client boundaries
         run: node --test scripts/simulator-snapshot-client.test.mjs scripts/simulator-watch.test.mjs scripts/simulator-source-credit-close.test.mjs scripts/simulator-source-credit-terminal.test.mjs scripts/simulator-source-credit-watch.test.mjs scripts/simulator-dev-harness.test.mjs scripts/simulator-dev-assertions.test.mjs scripts/simulator-embed-client.test.mjs scripts/simulator-inspector-client.test.mjs scripts/simulator-reconnect-client.test.mjs scripts/simulator-presentation-client.test.mjs scripts/simulator-scroll-metrics.test.mjs scripts/simulator-scroll-driver.test.mjs scripts/simulator-presentation-controls-smoke.test.mjs scripts/simulator-sse-proxy.test.mjs scripts/simulator-reference-fixture.test.mjs scripts/style-module-boundary-smoke.test.mjs scripts/component-custom-events-smoke.test.mjs scripts/component-relations-smoke.test.mjs scripts/simulator-cli-harness.test.mjs
       - name: Test iOS portable pack loader without a device
@@ -371,7 +371,12 @@ jobs:
         run: swift build --package-path examples/hosts/ios --target WeappContainerHost
       - name: Simulator desktop CLI and input diagnostic tests
         # These tests bind an ephemeral loopback surface without opening a window.
-        run: cargo test -p container-simulator --features desktop-window --bin weapp-simulator --locked
+        run: cargo test -p container-simulator --features desktop-window --bin weapp-simulator --locked -- --test-threads=1
+      - name: X11 GL drawable lifecycle (Mesa software driver)
+        if: runner.os == 'Linux'
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a cargo test -p container-host-desktop -p container-simulator --features container-simulator/desktop-window --locked x11_gl_drawable_renders_resizes_reloads_and_detaches -- --ignored --test-threads=1 --nocapture
       - name: Host feature smoke
         if: runner.os != 'Windows'
         run: bash scripts/host-feature-smoke.sh

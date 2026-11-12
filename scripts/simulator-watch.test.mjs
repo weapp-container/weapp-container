@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
 import { execFileSync, spawn } from 'node:child_process'
-import { mkdtempSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -487,7 +487,22 @@ test('public API discovery supports bin symlinks and pnpm wrapper targets', t =>
   assert.equal(discoverWeappVite(custom), null)
 })
 
-test('symlinked native entry publishes before import, overrides production mode, and cleans up on SIGTERM', { timeout: 5_000 }, async t => {
+test('package wrapper discovery needs only the public export, without warming bin resolution', t => {
+  const f = fixture(t)
+  const root = fakePackage(f)
+  const bin = resolve(f.root, 'node_modules/.bin')
+  mkdirSync(bin, { recursive: true })
+  symlinkSync(root, resolve(f.root, 'node_modules/weapp-vite'), 'junction')
+  const cmd = resolve(bin, 'wv.cmd')
+  writeFileSync(cmd, '@ECHO off\nnode weapp-vite-package-wrapper %*\n')
+  assert.equal(discoverWeappVite(cmd).entry, resolve(root, 'dist/index.mjs'))
+  writeFileSync(resolve(root, 'package.json'), JSON.stringify({
+    name: 'weapp-vite', exports: { './private': './dist/index.mjs' },
+  }))
+  assert.equal(discoverWeappVite(cmd), null, 'an installation without a public root stays unsupported')
+})
+
+test('symlinked native entry publishes before import, overrides production mode, and follows platform termination semantics', { timeout: 5_000 }, async t => {
   const f = fixture(t)
   const root = fakePackage(f)
   const marker = resolve(f.root, 'native-import.json')
@@ -552,8 +567,16 @@ test('symlinked native entry publishes before import, overrides production mode,
   assert.equal(f.receipts().find(row => row.kind === 'success').compilerCommit, effective)
   assert.equal(f.receipts().filter(row => row.kind !== 'success').some(row => Object.hasOwn(row, 'compilerCommit')), false)
   child.kill('SIGTERM')
-  assert.deepEqual(await done, { code: 0, signal: null })
-  assert.equal(readFileSync(closedMarker, 'utf8'), 'closed')
+  if (process.platform === 'win32') {
+    // Node uses TerminateProcess here, so no JS signal handler can drain the
+    // compiler. Programmatic AbortController cleanup is covered above on all
+    // platforms; this assertion must not claim a graceful external shutdown.
+    assert.deepEqual(await done, { code: null, signal: 'SIGTERM' })
+    assert.equal(existsSync(closedMarker), false)
+  } else {
+    assert.deepEqual(await done, { code: 0, signal: null })
+    assert.equal(readFileSync(closedMarker, 'utf8'), 'closed')
+  }
 })
 
 test('custom builder owns receipts, receives documented args/env, and exits on cancellation', async t => {
@@ -562,8 +585,9 @@ test('custom builder owns receipts, receives documented args/env, and exits on c
   const marker = resolve(f.root, 'custom-args.json')
   writeFileSync(binary, `
     import { writeFileSync } from 'node:fs';
-    writeFileSync(process.env.TEST_MARKER, JSON.stringify({ args: process.argv.slice(2), session: process.env.WEAPP_CONTAINER_SIMULATOR_SESSION_ID }));
     writeFileSync(process.env.WEAPP_CONTAINER_SIMULATOR_RECEIPT_DIR + '/receipts/00000000000000000001.json', JSON.stringify({ protocolVersion: '1.0', sessionId: process.env.WEAPP_CONTAINER_SIMULATOR_SESSION_ID, sequence: 1, kind: 'building' }));
+    // The marker is a readiness barrier for both arguments and the receipt.
+    writeFileSync(process.env.TEST_MARKER, JSON.stringify({ args: process.argv.slice(2), session: process.env.WEAPP_CONTAINER_SIMULATOR_SESSION_ID }));
     setInterval(() => {}, 1000);
   `)
   const abort = new AbortController()
@@ -586,18 +610,24 @@ test('custom builder owns receipts, receives documented args/env, and exits on c
 })
 
 test('adapter option parsing keeps custom binary and requires explicit absolute roots', () => {
-  assert.throws(() => parseOptions(['--project', 'relative', '--output-root', '/tmp/out']), /absolute/)
-  const parsed = parseOptions(['--project', '/tmp/project', '--output-root', '/tmp/out', '--wv-bin', '/tmp/fake.mjs'], {
-    WEAPP_CONTAINER_SIMULATOR_RECEIPT_DIR: '/tmp/receipt', WEAPP_CONTAINER_SIMULATOR_SESSION_ID: 'session',
+  const project = resolve(tmpdir(), 'watch-options-project')
+  const outputRoot = resolve(tmpdir(), 'watch-options-out')
+  const binary = resolve(tmpdir(), 'watch-options-fake.mjs')
+  const receiptRoot = resolve(tmpdir(), 'watch-options-receipt')
+  assert.throws(() => parseOptions(['--project', 'relative', '--output-root', outputRoot]), /absolute/)
+  const parsed = parseOptions(['--project', project, '--output-root', outputRoot, '--wv-bin', binary], {
+    WEAPP_CONTAINER_SIMULATOR_RECEIPT_DIR: receiptRoot, WEAPP_CONTAINER_SIMULATOR_SESSION_ID: 'session',
   })
-  assert.equal(parsed.binary, '/tmp/fake.mjs')
-  assert.equal(parsed.receiptRoot, '/tmp/receipt')
+  assert.equal(parsed.project, project)
+  assert.equal(parsed.outputRoot, outputRoot)
+  assert.equal(parsed.binary, binary)
+  assert.equal(parsed.receiptRoot, receiptRoot)
   assert.equal(parsed.sessionId, 'session')
   assert.equal(parsed.watchBackend, 'auto')
-  assert.equal(parseOptions(['--project', '/tmp/project', '--output-root', '/tmp/out'], {
+  assert.equal(parseOptions(['--project', project, '--output-root', outputRoot], {
     WEAPP_CONTAINER_SIMULATOR_WATCH_BACKEND: 'native',
   }).watchBackend, 'native')
-  assert.throws(() => parseOptions(['--project', '/tmp/project', '--output-root', '/tmp/out'], {
+  assert.throws(() => parseOptions(['--project', project, '--output-root', outputRoot], {
     WEAPP_CONTAINER_SIMULATOR_WATCH_BACKEND: 'invalid',
   }), /ERR_WATCH_BACKEND/)
 })

@@ -121,3 +121,45 @@ pixel SHA-256. Its `surfaceBackend` is `softbuffer-raster` and `gpuSurface`
 remains `false`; a CPU window presentation cannot satisfy a Skia/Metal/Vulkan
 GPU gate. On a headless runner the report is `blocked`, which is distinct from
 either a passed native window or a failed runtime.
+
+## Native GL windows on Windows and Linux
+
+`gl-window` adds `GlWindowPresenter` using winit 0.30 and glutin 0.32. It owns
+an OpenGL 3.3 core context and single-sample window drawable. Windows uses WGL;
+Linux uses GLX/EGL on X11 and EGL on Wayland. No GTK dependency is introduced
+for the standalone window. The existing C/C++ Desktop SDK remains a separate
+embedding adapter (including its GTK 3 parent-view contract).
+
+The presenter receives the application's existing `HostSession`. It attaches
+the context through the shared explicit GL symbol resolver and renders the
+retained scene directly to framebuffer 0 before swapping buffers. It queries
+the actual renderer attachment after hot reload instead of caching a session
+id. A minimized zero-size drawable revokes the submitted-frame flag; it must
+receive a new frame after restoring/resizing.
+
+All calls and session replacement/destruction must stay on the event-loop
+thread. Call `detach_session` before dropping the presenter or its loaded
+session: it drains submitted commands and releases Skia while GL is current.
+If the context is lost, it abandons the Skia handles and returns the error.
+The context and surface are destroyed before their window. The simulator
+performs this teardown on both normal exit and event-loop failure.
+
+Known CPU GL drivers are rejected by the public constructor. Driver detection
+does not establish hardware execution. `has_gpu_surface` means a frame was
+submitted to the GL drawable and swap succeeded; it does not claim GPU
+completion or screen presentation. `--software` remains the explicit CPU
+choice in the simulator.
+
+Compile the integration and run its display test on Linux:
+
+```sh
+cargo check -p container-simulator --features desktop-window --locked
+LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a cargo test -p container-host-desktop -p container-simulator \
+  --features container-simulator/desktop-window --locked x11_gl_drawable_renders_resizes_reloads_and_detaches \
+  -- --ignored --test-threads=1 --nocapture
+```
+
+Only that in-module test permits a CPU GL driver. It checks window framebuffer pixels before swap,
+minimize/resize, runtime replacement, detach, and the public driver's rejection
+policy. Xvfb/Mesa results cover X11 GL integration; Windows, Wayland and physical
+GPU execution require their own runners.

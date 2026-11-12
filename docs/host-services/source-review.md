@@ -34,6 +34,26 @@ API 清单的来源身份保存在 [检查器](../../scripts/core-api-inventory.
 生产默认值仍为 50 ms，SDK 的默认装载路径仍使用该值；配置默认值、外层截止时间、
 取消、中断和故障后权限撤销继续由专门测试验证。夹具结果不证明 50 ms 性能门槛通过。
 
+Simulator 配置透传运行时已有的有限 `ViewExecutionPolicy`，替换仅单元测试可用的
+配置字段，使集成测试也能明确选择语义测试预算。默认值继续为 50 ms；初始装载、
+开发重载与 `default_session_config` 使用同一策略，运行时仍校验策略并收紧外层期限。
+
+## 2026-11-12 桌面 GL 宿主复核
+
+以本次 PR 的基线逐文件复核以下差异，更新 `runtime`、`commonHost`、
+`workspaceLock` 三个完整来源身份。能力评级、验收契约与验收账本保持不变。
+
+| 来源 | 变化与保留的边界 |
+| --- | --- |
+| `container-runtime/src/lib.rs` | 增加被动 GL 附着查询，只读取已存在的 renderer；不创建 GPU 状态，不改变调度器、预算或呈现权限。 |
+| `container-host-common/src/lib.rs` | 转发被动查询及显式 GL loader；未装载会话继续报错，GL context 的线程、current 状态及 teardown 仍由宿主管理。 |
+| `container-render-skia/src/lib.rs` | 显式 GL loader 拒绝非 GL 函数名，避免 GLX/WGL 对 EGL 名称返回不可调用的非空地址；原生 EGL 附着入口保留原有路径。 |
+| `Cargo.lock` | 为桌面呈现加入 glutin/glow 及其传递依赖，既有依赖版本不变；重名 Objective-C 依赖显式标注版本。 |
+
+复核同时覆盖独立桌面宿主的 resize、零尺寸失效、重载、呈现回执及退出清理。
+Linux Xvfb/Mesa 集成测试验证真实 GL drawable 的像素、resize、重载和 detach；
+该结果不代表 Windows、Wayland 或物理设备验收，也不提升任何 SDK 验收状态。
+
 ## 后续更新
 
 1. 找到上次审定的完整来源，审阅到当前文件的差异，确认授权、所有权、生命周期、预算及失败语义。
