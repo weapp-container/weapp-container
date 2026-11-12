@@ -38,7 +38,7 @@ jobs:
       - run: pnpm container:manifest:test
       - run: pnpm sdk:contracts:test
       - run: pnpm runtime:artifacts:test
-      - run: node --test scripts/check-open-source.test.mjs scripts/check-doc-links.test.mjs scripts/verify-submodule.test.mjs scripts/sdk-licenses.test.mjs scripts/sdk-native-build.test.mjs
+      - run: node --test scripts/check-open-source.test.mjs scripts/check-doc-links.test.mjs scripts/verify-submodule.test.mjs scripts/sdk-licenses.test.mjs scripts/sdk-native-build.test.mjs scripts/check-product-naming.test.mjs scripts/check-toolchain.test.mjs
 
   rust:
     name: Rust workspace
