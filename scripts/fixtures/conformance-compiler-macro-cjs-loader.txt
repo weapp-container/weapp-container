@@ -1,0 +1,139 @@
+async function loadFromBundledFile(fileName, bundledCode, options, dependencies) {return await __weappConformanceObserver.span("loadFromBundledFile",{fileName,bundledCode,options:Object.fromEntries(Object.entries(options??{}).map(([key,value])=>[key,typeof value==='function'?{unsupportedFunction:true}:value])),dependencies},async()=>{
+	const cacheConfig = resolveCacheOptions(fileName, options);;__weappConformanceObserver.record("cacheConfig",{fileName,cacheConfig});
+	if (cacheConfig.enabled) {
+		const cached = await maybeReadCache(cacheConfig, options);
+		if (cached) {
+			if (!cached.mod) cacheConfig.onEvent?.({
+				type: "hit",
+				key: cacheConfig.key
+			});
+			return importCachedCode(cached, options);
+		}
+		cacheConfig.onEvent?.({
+			type: "miss",
+			key: cacheConfig.key
+		});
+	}
+	const { isESM } = options;
+	if (isESM) {
+		const tempOutput = cacheConfig.enabled ? await storeCacheOutput(cacheConfig, bundledCode, options, dependencies) : await resolveTempOutputFile(fileName, bundledCode, options);
+		const outfile = tempOutput?.outfile;
+		const cleanup = tempOutput?.cleanup;
+		let mod;
+		const req = options.require || dynamicImport;;__weappConformanceObserver.record("req",{fileName,outfile,format:options.format,defaultRequire:req===dynamicImport,bundledCode,dependencies});
+		try {
+			mod = await req(outfile, { format: options.format });;__weappConformanceObserver.record("after:mod = await req(outfile",{fileName,outfile,format:options.format});
+			if (cacheConfig.enabled && tempOutput?.cacheMeta) {
+				await writeCacheMeta(cacheConfig, tempOutput.cacheMeta);
+				cacheConfig.onEvent?.({
+					type: "store",
+					key: cacheConfig.key
+				});
+				writeMemoryCache(cacheConfig, mod, tempOutput.cacheMeta);
+			}
+			return mod;
+		} finally {
+			if (!cacheConfig.enabled) await cleanup?.();
+		}
+	} else {
+		const extension = path.extname(fileName);
+		const realFileName = await promisifiedRealpath(fileName);
+		const originalLoader = _require.extensions[extension];
+		const fallbackLoader = originalLoader ?? _require.extensions[".js"];
+		const compileLoader = (module, filename) => {return __weappConformanceObserver.spanSync("cjs-compile-loader",{fileName,realFileName,filename,bundledCode,extension,selected:filename===realFileName},()=>{
+			if (filename === realFileName) module._compile(bundledCode, filename);
+			else fallbackLoader(module, filename);});
+		};
+		let raw;
+		try {
+			__weappConformanceObserver.record("cjs-extension-before",{fileName,realFileName,extension,originalLoaderType:typeof originalLoader,fallbackLoaderType:typeof fallbackLoader});_require.extensions[extension] = compileLoader;__weappConformanceObserver.record("cjs-extension-installed",{fileName,realFileName,extension,installed:_require.extensions[extension]===compileLoader});
+			delete _require.cache[_require.resolve(fileName)];__weappConformanceObserver.record("cjs-cache-cleared",{fileName,realFileName,cacheAbsent:_require.cache[realFileName]===undefined});
+			__weappConformanceObserver.record("cjs-require-before",{fileName,realFileName,extension,defaultRequire:true,bundledCode,dependencies});raw = _require(fileName);__weappConformanceObserver.record("cjs-require-after",{fileName,realFileName,extension});
+			return raw.__esModule ? raw.default : raw;
+		} finally {
+			if (originalLoader) _require.extensions[extension] = originalLoader;
+			else delete _require.extensions[extension];__weappConformanceObserver.record("cjs-extension-restored",{fileName,realFileName,extension,restored:originalLoader?_require.extensions[extension]===originalLoader:!Object.hasOwn(_require.extensions,extension)});
+			if (cacheConfig.enabled && raw !== void 0) {
+				const cachedPath = await storeCacheOutput(cacheConfig, bundledCode, options, dependencies);
+				await writeCacheMeta(cacheConfig, cachedPath.cacheMeta);
+				cacheConfig.onEvent?.({
+					type: "store",
+					key: cacheConfig.key
+				});
+				writeMemoryCache(cacheConfig, raw.__esModule ? raw.default : raw, cachedPath.cacheMeta);
+			}
+		}
+	}
+});}
+function findNearestPackageData(basedir, packageCache) {
+	const originalBasedir = basedir;
+	while (basedir) {
+		if (packageCache) {
+			const cached = getFnpdCache(packageCache, basedir, originalBasedir);
+			if (cached) return cached;
+		}
+		const pkgPath = path.join(basedir, "package.json");
+		if (((regular)=>{if(__weappConformanceObserver.context()?.kind==="detectModuleType")__weappConformanceObserver.record("module-type-stat",{pkgPath,regular});return regular;})(tryStatSync(pkgPath)?.isFile())) try {
+			const pkgData = loadPackageData(pkgPath);
+			if (packageCache) setFnpdCache(packageCache, pkgData, basedir, originalBasedir);
+			return pkgData;
+		} catch {}
+		const nextBasedir = path.dirname(basedir);
+		if (nextBasedir === basedir) break;
+		basedir = nextBasedir;
+	}
+	return null;
+}
+function loadPackageData(pkgPath) {
+	const data = JSON.parse(stripBomTag(fs.readFileSync(pkgPath, "utf-8")));if(__weappConformanceObserver.context()?.kind==="detectModuleType")__weappConformanceObserver.record("module-type-package",{pkgPath,data});
+	const pkgDir = normalizePath(path.dirname(pkgPath));
+	const { sideEffects } = data;
+	let hasSideEffects;
+	if (typeof sideEffects === "boolean") hasSideEffects = () => sideEffects;
+	else if (Array.isArray(sideEffects)) {
+		if (sideEffects.length <= 0) hasSideEffects = () => false;
+		else {
+			const finalPackageSideEffects = sideEffects.map((sideEffect) => {
+				if (sideEffect.includes("/")) return sideEffect;
+				return `**/${sideEffect}`;
+			});
+			hasSideEffects = createFilter$1(finalPackageSideEffects, null, { resolve: pkgDir });
+		}
+	} else hasSideEffects = () => null;
+	const resolvedCache = {};
+	return {
+		dir: pkgDir,
+		data,
+		hasSideEffects,
+		setResolvedCache(key, entry, options) {
+			resolvedCache[getResolveCacheKey(key, options)] = entry;
+		},
+		getResolvedCache(key, options) {
+			return resolvedCache[getResolveCacheKey(key, options)];
+		}
+	};
+}
+function normalizePath(id) {
+	return path.posix.normalize(isWindows ? slash(id) : id);
+}
+function tryStatSync(file) {
+	try {
+		return fs.statSync(file, { throwIfNoEntry: false });
+	} catch {}
+}
+function isFilePathESM(filePath, packageCache) {
+	if (MJS_MTS_EXT_RE.test(filePath)) return true;
+	else if (CJS_CTS_EXT_RE.test(filePath)) return false;
+	else try {
+		return findNearestPackageData(path.dirname(filePath), packageCache)?.data.type === "module";
+	} catch {
+		return false;
+	}
+}
+function stripBomTag(content) {
+	if (content.charCodeAt(0) === 65279) return content.slice(1);
+	return content;
+}
+function detectModuleType(resolvedPath) {return __weappConformanceObserver.spanSync("detectModuleType",{resolvedPath},()=>{
+	return ((isESM)=>{__weappConformanceObserver.record("module-type-result",{resolvedPath,isESM,deno:typeof process.versions.deno === "string"});return isESM;})(typeof process.versions.deno === "string" || isFilePathESM(resolvedPath));});
+}

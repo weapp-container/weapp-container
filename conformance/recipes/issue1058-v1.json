@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-issue-1058-template-tags-runtime",
+      "sourceSha256": "00adf03eed85511cd47f33867ed6e1dc897ade9c043671ff6f05a361feb180ea",
+      "fixture": {
+        "path": "conformance/recipes/fixtures/issue1058/fixture.json",
+        "sha256": "08218d453bb33e45b8c2411227f60991963a70f9e935e522a3bb360601d2c062",
+        "bytes": 11713
+      },
+      "resources": {
+        "0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064",
+          "sha256": "0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064",
+          "bytes": 163917
+        },
+        "0d44c6f276e19dbf83a101523d24f8e4c1781bd31a7feef1a36b80ae10925157": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/0d44c6f276e19dbf83a101523d24f8e4c1781bd31a7feef1a36b80ae10925157",
+          "sha256": "0d44c6f276e19dbf83a101523d24f8e4c1781bd31a7feef1a36b80ae10925157",
+          "bytes": 786
+        },
+        "1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf",
+          "sha256": "1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf",
+          "bytes": 280
+        },
+        "168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592",
+          "sha256": "168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592",
+          "bytes": 72
+        },
+        "1f15da45e296b3433a52e6955d2a86a94280de4fb2cd72f8bc859c7bfbd1269d": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/1f15da45e296b3433a52e6955d2a86a94280de4fb2cd72f8bc859c7bfbd1269d",
+          "sha256": "1f15da45e296b3433a52e6955d2a86a94280de4fb2cd72f8bc859c7bfbd1269d",
+          "bytes": 908
+        },
+        "270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4",
+          "sha256": "270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4",
+          "bytes": 834
+        },
+        "2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7",
+          "sha256": "2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7",
+          "bytes": 76
+        },
+        "3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e",
+          "sha256": "3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e",
+          "bytes": 92
+        },
+        "4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646",
+          "sha256": "4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646",
+          "bytes": 23
+        },
+        "607663aa5b1eeb43f07565607d3f5cb6c63694402c3646f77170f21cc297a363": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/607663aa5b1eeb43f07565607d3f5cb6c63694402c3646f77170f21cc297a363",
+          "sha256": "607663aa5b1eeb43f07565607d3f5cb6c63694402c3646f77170f21cc297a363",
+          "bytes": 8
+        },
+        "652767de8b637a9833682f8cfbafaef74702eb52b17232e71dabeeeaf863c20a": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/652767de8b637a9833682f8cfbafaef74702eb52b17232e71dabeeeaf863c20a",
+          "sha256": "652767de8b637a9833682f8cfbafaef74702eb52b17232e71dabeeeaf863c20a",
+          "bytes": 21
+        },
+        "6e69e0c0351dd282beccfbfa4bd823ff77d76944c31e6129067811ffaa2c6171": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/6e69e0c0351dd282beccfbfa4bd823ff77d76944c31e6129067811ffaa2c6171",
+          "sha256": "6e69e0c0351dd282beccfbfa4bd823ff77d76944c31e6129067811ffaa2c6171",
+          "bytes": 17
+        },
+        "6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d",
+          "sha256": "6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d",
+          "bytes": 1483
+        },
+        "7cbe3c8b21facc3e160a46a9c49748dd13f45d221244db8123b5a0a195d66a34": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/7cbe3c8b21facc3e160a46a9c49748dd13f45d221244db8123b5a0a195d66a34",
+          "sha256": "7cbe3c8b21facc3e160a46a9c49748dd13f45d221244db8123b5a0a195d66a34",
+          "bytes": 10
+        },
+        "95604159b93a3567b3af99b2d6806b0f1250c49f7536b65200d47e1b0c4f3f1e": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/95604159b93a3567b3af99b2d6806b0f1250c49f7536b65200d47e1b0c4f3f1e",
+          "sha256": "95604159b93a3567b3af99b2d6806b0f1250c49f7536b65200d47e1b0c4f3f1e",
+          "bytes": 33
+        },
+        "9a5efd01444c5589367b9fab1bc2796ec757da3a5a610ab532f2943f390b06f9": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/9a5efd01444c5589367b9fab1bc2796ec757da3a5a610ab532f2943f390b06f9",
+          "sha256": "9a5efd01444c5589367b9fab1bc2796ec757da3a5a610ab532f2943f390b06f9",
+          "bytes": 18
+        },
+        "aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71",
+          "sha256": "aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71",
+          "bytes": 904
+        },
+        "c457152af0c0251cf7d24933ee5cd733b00a0d7475d1d034189b62a2bdc2864f": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/c457152af0c0251cf7d24933ee5cd733b00a0d7475d1d034189b62a2bdc2864f",
+          "sha256": "c457152af0c0251cf7d24933ee5cd733b00a0d7475d1d034189b62a2bdc2864f",
+          "bytes": 150
+        },
+        "da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3",
+          "sha256": "da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3",
+          "bytes": 2719
+        },
+        "f15114431d8e9671a7c7858be5616bc14b6fa59f414e480f9d004ce0d5090e51": {
+          "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/f15114431d8e9671a7c7858be5616bc14b6fa59f414e480f9d004ce0d5090e51",
+          "sha256": "f15114431d8e9671a7c7858be5616bc14b6fa59f414e480f9d004ce0d5090e51",
+          "bytes": 8
+        }
+      },
+      "collector": {
+        "path": "conformance/recipes/issue1058-collector.mjs",
+        "sha256": "227ee8a5a4166fdada2c65cf25344f9bf64bf7cbe3853558bb854e1efe1ecdf5",
+        "bytes": 6173
+      },
+      "collectorInputs": []
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "restrictions": [
+    {
+      "host": "ios",
+      "apis": [
+        "wx.getWifiList",
+        "wx.onGetWifiList",
+        "wx.offGetWifiList",
+        "wx.setWifiList"
+      ],
+      "scope": "General-purpose iOS containers using public platform APIs",
+      "reason": "Apple provides no general-purpose Wi-Fi scanning API. HotspotHelper requires an Apple-approved entitlement and is restricted to hotspot integration; it cannot be used as a general container scanning service.",
+      "evidence": [
+        "docs/host-services/evidence/2026-11-02-platform-constraints/apple-tn3111.json",
+        "sdk/ios/test/evidence/host-services-wifi-development.json"
+      ],
+      "officialSources": [
+        "https://developer.apple.com/documentation/technotes/tn3111-ios-wifi-api-overview"
+      ]
+    },
+    {
+      "host": "ios",
+      "apis": [
+        "wx.onWifiConnected",
+        "wx.offWifiConnected"
+      ],
+      "scope": "Complete WifiInfo events in a general-purpose iOS container",
+      "reason": "The public fetchCurrent result guarantees SSID, BSSID and security type. Its signalStrength is HotspotHelper-only and it has no frequency property. Use the separately registered partial-info subscription; a complete measurement cannot be fabricated.",
+      "evidence": [
+        "sdk/ios/examples/host-services/WIFI-APIS.md",
+        "sdk/ios/test/evidence/host-services-wifi-development.json"
+      ],
+      "officialSources": [
+        "https://developer.apple.com/documentation/networkextension/nehotspotnetwork/fetchcurrent(completionhandler:)"
+      ]
+    },
+    {
+      "host": "android",
+      "apis": [
+        "wx.setWifiList"
+      ],
+      "scope": "WeChat base library 3.17.3 locked method semantics",
+      "reason": "The locked official API contract documents setWifiList as an iOS-only callback for the iOS system Wi-Fi list. Android has no corresponding platform-specific callback contract.",
+      "evidence": [
+        "sdk/ios/test/evidence/host-services-wifi-development.json",
+        "crates/container-runtime/src/host-api-catalog.json"
+      ],
+      "officialSources": [
+        "https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.setWifiList.html"
+      ]
+    },
+    {
+      "host": "ios",
+      "evidence": [
+        "sdk/ios/examples/host-services/NFC-CONTRACT.json"
+      ],
+      "officialSources": [
+        "https://developer.apple.com/documentation/corenfc/nfctagreadersession",
+        "https://developer.apple.com/documentation/corenfc/nfcmifaretag",
+        "https://developer.apple.com/documentation/corenfc/nfciso7816tag"
+      ],
+      "apis": [
+        "object:NFCAdapter.getMifareClassic",
+        "object:MifareClassic.close",
+        "object:MifareClassic.connect",
+        "object:MifareClassic.getMaxTransceiveLength",
+        "object:MifareClassic.isConnected",
+        "object:MifareClassic.setTimeout",
+        "object:MifareClassic.transceive"
+      ],
+      "scope": "CoreNFC public tag-reader technologies",
+      "reason": "The locked public NFCMiFareTag header lists Ultralight, Plus and DESFire and explicitly excludes Crypto1. MIFARE Classic authentication/transceive cannot be implemented through that interface."
+    },
+    {
+      "host": "ios",
+      "evidence": [
+        "sdk/ios/examples/host-services/NFC-CONTRACT.json"
+      ],
+      "officialSources": [
+        "https://developer.apple.com/documentation/corenfc/nfctagreadersession",
+        "https://developer.apple.com/documentation/corenfc/nfcmifaretag",
+        "https://developer.apple.com/documentation/corenfc/nfciso7816tag"
+      ],
+      "apis": [
+        "object:NFCAdapter.getNfcA",
+        "object:NFCAdapter.getNfcB",
+        "object:NfcA.close",
+        "object:NfcA.connect",
+        "object:NfcA.getAtqa",
+        "object:NfcA.getMaxTransceiveLength",
+        "object:NfcA.getSak",
+        "object:NfcA.isConnected",
+        "object:NfcA.setTimeout",
+        "object:NfcA.transceive",
+        "object:NfcB.close",
+        "object:NfcB.connect",
+        "object:NfcB.getMaxTransceiveLength",
+        "object:NfcB.isConnected",
+        "object:NfcB.setTimeout",
+        "object:NfcB.transceive"
+      ],
+      "scope": "CoreNFC public ISO14443 tag interfaces",
+      "reason": "NFCTagReaderSession exposes ISO7816, MiFare, ISO15693 and FeliCa. It provides no generic raw NFC-A/B interface or public ATQA/SAK access. These leaves cannot be replaced by APDU calls."
+    },
+    {
+      "host": "ios",
+      "evidence": [
+        "sdk/ios/examples/host-services/NFC-CONTRACT.json"
+      ],
+      "officialSources": [
+        "https://developer.apple.com/documentation/corenfc/nfctagreadersession",
+        "https://developer.apple.com/documentation/corenfc/nfcmifaretag",
+        "https://developer.apple.com/documentation/corenfc/nfciso7816tag"
+      ],
+      "apis": [
+        "object:IsoDep.getMaxTransceiveLength",
+        "object:MifareUltralight.getMaxTransceiveLength"
+      ],
+      "scope": "CoreNFC public hardware length queries",
+      "reason": "The locked NFCISO7816Tag and NFCMiFareTag public headers expose no hardware maximum transceive-length getter. A guessed or framing-only limit must not be returned as a measured hardware limit."
+    },
+    {
+      "host": "web",
+      "scope": "Web NFC raw technology interfaces",
+      "reason": "Web NFC exposes NDEF message operations and no native raw NFC technology interfaces. These tag technology factories and methods cannot be backed by its public API.",
+      "apis": [
+        "object:IsoDep.close",
+        "object:IsoDep.connect",
+        "object:IsoDep.getHistoricalBytes",
+        "object:IsoDep.getMaxTransceiveLength",
+        "object:IsoDep.isConnected",
+        "object:IsoDep.setTimeout",
+        "object:IsoDep.transceive",
+        "object:MifareClassic.close",
+        "object:MifareClassic.connect",
+        "object:MifareClassic.getMaxTransceiveLength",
+        "object:MifareClassic.isConnected",
+        "object:MifareClassic.setTimeout",
+        "object:MifareClassic.transceive",
+        "object:MifareUltralight.close",
+        "object:MifareUltralight.connect",
+        "object:MifareUltralight.getMaxTransceiveLength",
+        "object:MifareUltralight.isConnected",
+        "object:MifareUltralight.setTimeout",
+        "object:MifareUltralight.transceive",
+        "object:NFCAdapter.getIsoDep",
+        "object:NFCAdapter.getMifareClassic",
+        "object:NFCAdapter.getMifareUltralight",
+        "object:NFCAdapter.getNfcA",
+        "object:NFCAdapter.getNfcB",
+        "object:NFCAdapter.getNfcF",
+        "object:NFCAdapter.getNfcV",
+        "object:NfcA.close",
+        "object:NfcA.connect",
+        "object:NfcA.getAtqa",
+        "object:NfcA.getMaxTransceiveLength",
+        "object:NfcA.getSak",
+        "object:NfcA.isConnected",
+        "object:NfcA.setTimeout",
+        "object:NfcA.transceive",
+        "object:NfcB.close",
+        "object:NfcB.connect",
+        "object:NfcB.getMaxTransceiveLength",
+        "object:NfcB.isConnected",
+        "object:NfcB.setTimeout",
+        "object:NfcB.transceive",
+        "object:NfcF.close",
+        "object:NfcF.connect",
+        "object:NfcF.getMaxTransceiveLength",
+        "object:NfcF.isConnected",
+        "object:NfcF.setTimeout",
+        "object:NfcF.transceive",
+        "object:NfcV.close",
+        "object:NfcV.connect",
+        "object:NfcV.getMaxTransceiveLength",
+        "object:NfcV.isConnected",
+        "object:NfcV.setTimeout",
+        "object:NfcV.transceive"
+      ],
+      "evidence": [
+        "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+      ],
+      "officialSources": [
+        "https://w3c-cg.github.io/web-nfc/"
+      ]
+    },
+    {
+      "host": "web",
+      "scope": "Web NFC native NDEF connection state",
+      "reason": "Web NFC exposes neither an actual tag connection nor a corresponding state/disconnect terminal; aborting a reader scan is not proof of tag connect/isConnected/close.",
+      "apis": [
+        "object:Ndef.close",
+        "object:Ndef.connect",
+        "object:Ndef.isConnected"
+      ],
+      "evidence": [
+        "docs/host-services/evidence/2026-11-02-web-nfc-contract/report.json"
+      ],
+      "officialSources": [
+        "https://w3c-cg.github.io/web-nfc/"
+      ]
+    }
+  ],
+  "parameterLimits": [
+    {
+      "host": "ios",
+      "api": "wx.getConnectedWifi",
+      "reason": "Only partialInfo:true can be supplied by public fetchCurrent data. Full frequency/signalStrength are unavailable through this public API.",
+      "evidence": [
+        "sdk/ios/examples/host-services/WIFI-APIS.md"
+      ]
+    }
+  ]
+}

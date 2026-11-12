@@ -1,0 +1,69 @@
+[package]
+name = "container-host-desktop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Desktop host adapter boundary for macOS, Windows and Linux"
+
+[features]
+default = ["stub"]
+stub = []
+window = ["dep:softbuffer", "dep:winit"]
+metal = []
+metal-window = [
+    "window",
+    "metal",
+    "skia-gpu-metal",
+    "dep:objc2",
+    "dep:objc2-app-kit",
+    "dep:objc2-foundation",
+    "dep:objc2-metal",
+    "dep:objc2-quartz-core",
+]
+vulkan = []
+direct2d = []
+skia-backend = ["container-render-skia/skia-backend", "container-runtime/skia-backend"]
+skia-gpu-metal = [
+    "container-render-skia/skia-gpu-metal",
+    "container-runtime/skia-gpu-metal",
+    "container-host-common/skia-gpu-metal",
+]
+v8-native = ["container-runtime/v8-native"]
+quickjs-native = ["container-runtime/quickjs-native"]
+
+[dependencies]
+container-render-skia = { path = "../container-render-skia" }
+container-ir = { path = "../container-ir" }
+container-core = { path = "../container-core" }
+container-bridge = { path = "../container-bridge" }
+container-host-common = { path = "../container-host-common" }
+container-runtime = { path = "../container-runtime" }
+serde_json.workspace = true
+thiserror.workspace = true
+softbuffer = { version = "0.4", optional = true }
+winit = { version = "0.30", optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = { version = "0.5.3", optional = true, default-features = false }
+objc2-app-kit = {
+    version = "0.2.2",
+    optional = true,
+    default-features = false,
+    features = ["objc2-quartz-core", "NSView"],
+}
+objc2-foundation = { version = "0.2.2", optional = true, default-features = false, features = ["NSGeometry"] }
+objc2-metal = {
+    version = "0.2.2",
+    optional = true,
+    default-features = false,
+    features = ["MTLDevice", "MTLCommandBuffer", "MTLCommandQueue", "MTLDrawable", "MTLPixelFormat"],
+}
+objc2-quartz-core = {
+    version = "0.2.2",
+    optional = true,
+    default-features = false,
+    features = ["objc2-metal", "CAMetalLayer"],
+}
+

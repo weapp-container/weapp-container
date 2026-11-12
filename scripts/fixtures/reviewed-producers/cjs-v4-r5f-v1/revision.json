@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "kind": "reviewed-producer-revision",
+  "id": "cjs-v4-r5f-reviewed-v1",
+  "profile": "pinned-json-macro-esm-cjs-v4-runtime-input",
+  "caseScopes": [
+    {
+      "caseId": "ide-issue-1034-auto-routes-runtime",
+      "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+      "caseSourcePath": "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+      "snapshotProfile": "issue1034-static-snapshot-v1"
+    }
+  ],
+  "sources": {
+    "compilerUseProducer": {
+      "path": "sources/compilerUseProducer.txt",
+      "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+      "bytes": 45701
+    },
+    "compilerUsePreload": {
+      "path": "sources/compilerUsePreload.txt",
+      "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+      "bytes": 19764
+    },
+    "fixtureBuildProducer": {
+      "path": "sources/fixtureBuildProducer.txt",
+      "sha256": "44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+      "bytes": 84223
+    },
+    "fixturePackerPreload": {
+      "path": "sources/fixturePackerPreload.txt",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    "macroProducer": {
+      "path": "sources/macroProducer.txt",
+      "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+      "bytes": 11113
+    },
+    "macroManifest": {
+      "path": "sources/macroManifest.txt",
+      "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+      "bytes": 19533
+    },
+    "macroObserver": {
+      "path": "sources/macroObserver.txt",
+      "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+      "bytes": 3868
+    },
+    "macroValidator": {
+      "path": "sources/macroValidator.txt",
+      "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+      "bytes": 36024
+    },
+    "githubProducer": {
+      "path": "sources/githubProducer.txt",
+      "sha256": "e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+      "bytes": 15918
+    },
+    "wxmlProducer": {
+      "path": "sources/wxmlProducer.txt",
+      "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+      "bytes": 1929
+    },
+    "snapshotTransport": {
+      "path": "sources/snapshotTransport.txt",
+      "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+      "bytes": 19321
+    },
+    "temporaryProjectProducer": {
+      "path": "sources/temporaryProjectProducer.txt",
+      "sha256": "304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+      "bytes": 7410
+    },
+    "issue1034Producer": {
+      "path": "sources/issue1034Producer.txt",
+      "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+      "bytes": 2396
+    }
+  },
+  "snapshotModules": [
+    {
+      "key": "githubProducer",
+      "path": "scripts/conformance-github-producer.mjs"
+    },
+    {
+      "key": "wxmlProducer",
+      "path": "scripts/conformance-wxml-producer.mjs"
+    },
+    {
+      "key": "snapshotTransport",
+      "path": "scripts/conformance-snapshot-transport.mjs"
+    },
+    {
+      "key": "temporaryProjectProducer",
+      "path": "scripts/conformance-temporary-project-producer.mjs"
+    },
+    {
+      "key": "issue1034Producer",
+      "path": "scripts/conformance-issue1034-producer.mjs"
+    }
+  ],
+  "provenance": [
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/source-freeze.json",
+        "sha256": "5201915fbe6974710efcbfe7883441e4f1d1487b902acce5c71b4f1c2f09babb",
+        "bytes": 163627
+      },
+      "copy": "provenance/00-source-freeze.json",
+      "sha256": "5201915fbe6974710efcbfe7883441e4f1d1487b902acce5c71b4f1c2f09babb",
+      "bytes": 163627
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/run.json",
+        "sha256": "cb48783e43f7be6202edacfb042e892c58abf474002335b722699f969bf820ae",
+        "bytes": 9909
+      },
+      "copy": "provenance/01-run.json",
+      "sha256": "cb48783e43f7be6202edacfb042e892c58abf474002335b722699f969bf820ae",
+      "bytes": 9887
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/oracle-full-reader-audit.json",
+        "sha256": "7610e6f2f5e166793e34201ad6a0683534d339e6a0bfb0308677a1dcc19da185",
+        "bytes": 3691
+      },
+      "copy": "provenance/02-oracle-full-reader-audit.json",
+      "sha256": "7610e6f2f5e166793e34201ad6a0683534d339e6a0bfb0308677a1dcc19da185",
+      "bytes": 3691
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/r5f-root-official-review-v1/review.json",
+        "sha256": "c0611ed7406b22d4ea575bbb8e55542f187ca4d9c114dc8656eb0dd97f9fc100",
+        "bytes": 3281
+      },
+      "copy": "provenance/03-review.json",
+      "sha256": "c0611ed7406b22d4ea575bbb8e55542f187ca4d9c114dc8656eb0dd97f9fc100",
+      "bytes": 3281
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/independent-official-review.json",
+        "sha256": "c488e4285d912323cc31ea137164e2a8a8d0a6d6e1cbacec5f5809d34c66e5d2",
+        "bytes": 4471
+      },
+      "copy": "provenance/04-independent-official-review.json",
+      "sha256": "c488e4285d912323cc31ea137164e2a8a8d0a6d6e1cbacec5f5809d34c66e5d2",
+      "bytes": 4469
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-execution.json",
+        "sha256": "321a26eccf368dd60caa97735f8fdc9aac66703c2a5a55d5941326270496c240",
+        "bytes": 3191
+      },
+      "copy": "provenance/05-official-execution.json",
+      "sha256": "321a26eccf368dd60caa97735f8fdc9aac66703c2a5a55d5941326270496c240",
+      "bytes": 3191
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-trace.json",
+        "sha256": "9ebaf87cdef5bb7bc511e78c9400872a798084a9726794a03d1fda3eaaef2051",
+        "bytes": 4577
+      },
+      "copy": "provenance/06-official-trace.json",
+      "sha256": "9ebaf87cdef5bb7bc511e78c9400872a798084a9726794a03d1fda3eaaef2051",
+      "bytes": 4577
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/candidate-entry.json",
+        "sha256": "f162f8b43c7bf4f401769e6949eb12d46d808838e59d762205c87e68c6c2435e",
+        "bytes": 21818
+      },
+      "copy": "provenance/07-candidate-entry.json",
+      "sha256": "f162f8b43c7bf4f401769e6949eb12d46d808838e59d762205c87e68c6c2435e",
+      "bytes": 21818
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/candidate-reviewed-item.json",
+        "sha256": "ce38a11493645619684c68d3e0f877256a3b1f6d8bdd6bedb277e2f813d37d65",
+        "bytes": 1800
+      },
+      "copy": "provenance/08-candidate-reviewed-item.json",
+      "sha256": "ce38a11493645619684c68d3e0f877256a3b1f6d8bdd6bedb277e2f813d37d65",
+      "bytes": 1800
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/completion-summary.json",
+        "sha256": "692feb67fd472c31ee3822215adbcbeecfa1f1ed6e105a57ae84f16a358f6b54",
+        "bytes": 8499
+      },
+      "copy": "provenance/09-completion-summary.json",
+      "sha256": "692feb67fd472c31ee3822215adbcbeecfa1f1ed6e105a57ae84f16a358f6b54",
+      "bytes": 8491
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/template-with-r5f-preservation-v1/source-tuple-verification.json",
+        "sha256": "0b0091945057a2fd4d083d6cc5eae745c75477fce57a30b384b53601c07aa56c",
+        "bytes": 125660
+      },
+      "copy": "provenance/10-source-tuple-verification.json",
+      "sha256": "0b0091945057a2fd4d083d6cc5eae745c75477fce57a30b384b53601c07aa56c",
+      "bytes": 125660
+    }
+  ],
+  "boundary": "Only the actual completed r5f issue1034 exact case/source/path and issue1034-static-snapshot-v1. Full 8+5 producer tuple comes from the actual receipt CAS and all thirteen source copies match the 211-source freeze. Complete official oracle and root full-reader review passed. No other case, snapshot profile, failed or unrun attempt is admitted. Archived JavaScript is inert text; current strict readers execute. No formal native pair is implied."
+}

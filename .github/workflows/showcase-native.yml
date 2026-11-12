@@ -1,0 +1,170 @@
+name: Restricted showcase desktop producers
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: Independent real native runner selection
+        type: string
+        default: all
+      native_input:
+        description: Explicit reviewed prebuilt producer input key
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Independent real native runner selection
+        type: choice
+        default: all
+        options: [all, windows, linux]
+      native_input:
+        description: Explicit reviewed prebuilt producer input key
+        type: string
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: showcase-native-${{ github.ref }}-${{ inputs.platform }}
+  cancel-in-progress: false
+jobs:
+  desktop:
+    # Required to read this repository's private draft source assets. No
+    # publication step or persistent credential is present in this producer.
+    permissions:
+      contents: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(inputs.platform == 'windows' && '[{"os":"windows-2022","platform":"windows","target":"x86_64-pc-windows-msvc","desktop":"windows-x64"}]' || inputs.platform == 'linux' && '[{"os":"ubuntu-22.04","platform":"linux","target":"x86_64-unknown-linux-gnu","desktop":"linux-x64"}]' || '[{"os":"windows-2022","platform":"windows","target":"x86_64-pc-windows-msvc","desktop":"windows-x64"},{"os":"ubuntu-22.04","platform":"linux","target":"x86_64-unknown-linux-gnu","desktop":"linux-x64"}]') }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Preserve complete source paths and exact source bytes on Windows
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          submodules: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+      - name: Initialize the matching Windows x64 compiler and runtime tools
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Restore exact private SDK source inputs and final business pack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/showcase-ci-inputs.mjs
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        if: inputs.native_input == ''
+        with:
+          workspaces: . -> target/sdk-native
+          shared-key: showcase-${{ matrix.target }}
+      - name: Restore exact successful native producer without rebuilding its bytes
+        id: native-input
+        if: inputs.native_input != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHOWCASE_NATIVE_INPUT: ${{ inputs.native_input }}
+          SHOWCASE_NATIVE_PLATFORM: ${{ matrix.platform }}
+          SHOWCASE_NATIVE_TARGET: ${{ matrix.target }}
+        run: node scripts/showcase-ci-native-inputs.mjs "$SHOWCASE_NATIVE_INPUT" "$SHOWCASE_NATIVE_PLATFORM" "$SHOWCASE_NATIVE_TARGET"
+      - name: Native Linux prerequisites and virtual display
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build clang libclang-dev pkg-config fontconfig libfontconfig1-dev libgl1-mesa-dev libgtk-3-dev xvfb
+      - name: Verify private SDK source and distribution contracts
+        run: |
+          node sdk/desktop/tools/source-inventory.mjs
+          node --test scripts/sdk-distribution.test.mjs scripts/lib/sdk-current-release.test.mjs scripts/showcase-ci-native-inputs.test.mjs scripts/sdk-licenses.test.mjs scripts/lib/sdk-notice.test.mjs scripts/lib/sdk-retained-notices.test.mjs sdk/desktop/test/*.test.mjs
+      - name: Compile actual restricted native runtime with stripping before artifact hashes
+        if: inputs.native_input == ''
+        run: node scripts/sdk-native-build.mjs --target ${{ matrix.target }} --profile release --distribution-profile restricted-showcase --showcase-policy artifacts/showcase/policy.json --showcase-font artifacts/showcase/fonts/NotoSansSC.ttf --showcase-font-license artifacts/showcase/fonts/OFL.txt
+      - name: Collect licenses for this exact source and restricted feature graph
+        if: inputs.native_input == ''
+        run: node scripts/sdk-licenses.mjs --source-root "${{ steps.native-input.outputs.sourceRoot || github.workspace }}" --target ${{ matrix.target }} --features quickjs-native,skia-gpu-gles,restricted-showcase --showcase-font artifacts/showcase/fonts/NotoSansSC.ttf --showcase-font-license artifacts/showcase/fonts/OFL.txt
+      - name: Install and execute the Windows business-pack C/C++ consumer
+        if: runner.os == 'Windows'
+        env:
+          WEAPP_SHOWCASE_FOREIGN_PACK: ${{ github.workspace }}/artifacts/showcase/foreign-pack
+        run: node scripts/sdk-desktop-package.mjs --target windows-x64 --verify --pack artifacts/showcase/verified-pack --distribution-profile restricted-showcase --showcase-policy artifacts/showcase/policy.json
+      - name: Install and execute the Linux business-pack C/C++ consumer
+        if: runner.os == 'Linux'
+        env:
+          WEAPP_SHOWCASE_FOREIGN_PACK: ${{ github.workspace }}/artifacts/showcase/foreign-pack
+          FONTCONFIG_FILE: ${{ github.workspace }}/artifacts/showcase/no-system-fonts.conf
+        run: xvfb-run -a env GDK_BACKEND=x11 node scripts/sdk-desktop-package.mjs --target linux-x64 --verify --pack artifacts/showcase/verified-pack --distribution-profile restricted-showcase --showcase-policy artifacts/showcase/policy.json
+      - name: Produce exact private native and SDK archives
+        run: |
+          policy_sha=$(node -p "JSON.parse(require('fs').readFileSync('artifacts/showcase/inputs-receipt.json','utf8')).policySha256")
+          node scripts/dev-player-runtime-archives.mjs --platform ${{ matrix.platform }} --runtime-root artifacts/sdk --out artifacts/showcase/runtime-archives --distribution-profile restricted-showcase --policy-sha256 "$policy_sha"
+      - name: Preserve compact Windows loader diagnostics independently of native archives
+        if: always() && runner.os == 'Windows'
+        run: |
+          node --input-type=module - <<'NODE'
+          import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+          import { spawnSync } from 'node:child_process';
+          const directory = 'artifacts/sdk/desktop/validation-windows-x64';
+          mkdirSync(directory, { recursive: true });
+          for (const [name, binary] of [
+            ['runtime', 'artifacts/sdk/desktop/windows-x64/bin/weapp_container_sdk.dll'],
+            ['consumer', 'artifacts/sdk/desktop/.consumer-windows-x64/Release/desktop_consumer.exe'],
+          ]) {
+            if (!existsSync(binary)) continue;
+            const result = spawnSync('dumpbin', ['/IMPORTS', binary], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+            const output = `${result.stdout || ''}${result.stderr || ''}`;
+            writeFileSync(`${directory}/${name}-imports.log`, output);
+            console.log(JSON.stringify({ binary, status: result.status, error: result.error?.message }));
+            console.log(output);
+            if (name === 'consumer') {
+              const manifest = `${directory}/consumer-activation.manifest`;
+              const extraction = spawnSync('mt.exe', ['-nologo', `-inputresource:${binary};#1`, `-out:${manifest}`], { encoding: 'utf8' });
+              console.log(JSON.stringify({ manifest, status: extraction.status, error: extraction.error?.message }));
+              if (existsSync(manifest)) console.log(readFileSync(manifest, 'utf8'));
+            }
+          }
+          const path = 'artifacts/sdk/desktop/validation-windows-x64/windows-runtime-diagnostics.json';
+          if (existsSync(path)) console.log(readFileSync(path, 'utf8'));
+          else console.log('No Windows consumer diagnostics were generated before the failed stage.');
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always() && runner.os == 'Windows'
+        with:
+          name: showcase-windows-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/sdk/desktop/validation-windows-x64/
+          if-no-files-found: warn
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: showcase-native-${{ matrix.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/showcase/inputs-receipt.json
+            artifacts/showcase/retained-native-inputs/*/restoration.json
+            artifacts/showcase/fonts/OFL.txt
+            artifacts/showcase/runtime-archives/
+            artifacts/sdk/native/${{ matrix.target }}/
+            artifacts/sdk/licenses/${{ matrix.target }}/
+            artifacts/sdk/desktop/${{ matrix.desktop }}/
+            artifacts/sdk/desktop/validation-${{ matrix.desktop }}/
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 1
+      - name: Release the exact original notice source checkout
+        if: always() && inputs.native_input != ''
+        env:
+          SHOWCASE_NATIVE_INPUT: ${{ inputs.native_input }}
+        run: node scripts/showcase-ci-native-inputs.mjs --cleanup "$SHOWCASE_NATIVE_INPUT"

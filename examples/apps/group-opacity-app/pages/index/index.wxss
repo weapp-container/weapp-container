@@ -1,0 +1,13 @@
+page { background-color:#fff; }
+.group, .outer, .inner, .green, .blue, .nested-blue, .ghost, .ghost-child { position:absolute; }
+.group { left:10px; top:20px; width:120px; height:100px; background-color:#f00; }
+.green { left:10px; top:10px; width:70px; height:60px; background-color:#0f0; }
+.blue { left:40px; top:30px; width:70px; height:60px; background-color:#00f; }
+.outer { left:160px; top:20px; width:120px; height:100px; background-color:#f00; opacity:0.5; }
+.inner { left:10px; top:10px; width:90px; height:70px; background-color:#0f0; opacity:0.5; }
+.nested-blue { left:30px; top:20px; width:40px; height:40px; background-color:#00f; }
+.ghost { left:10px; top:150px; width:80px; height:50px; background-color:#0f0; }
+.ghost-child { left:10px; top:10px; width:60px; height:30px; background-color:#00f; opacity:1; }
+.control { position:absolute; top:240px; width:70px; height:30px; }
+.reset { left:10px; background-color:#334155; }
+.inspect { left:100px; background-color:#64748b; }

@@ -1,0 +1,2 @@
+view { padding: 12rpx; }
+text { font-size: 28rpx; }

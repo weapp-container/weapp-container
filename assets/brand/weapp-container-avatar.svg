@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Weapp Container</title>
+  <desc id="desc">Weapp Container logo: an open container frame crossed by a bridge-shaped W path.</desc>
+  <rect width="1024" height="1024" rx="224" fill="#101E35"/>
+  <circle cx="210" cy="178" r="210" fill="#46D9FF" opacity="0.06"/>
+  <circle cx="840" cy="870" r="260" fill="#7CFFD6" opacity="0.045"/>
+  <!-- open rounded container frame -->
+  <rect x="248" y="248" width="528" height="52" rx="26" fill="#DDF4EF"/>
+  <rect x="248" y="724" width="184" height="52" rx="26" fill="#7CFFD6"/>
+  <rect x="592" y="724" width="184" height="52" rx="26" fill="#5B8CFF"/>
+  <rect x="248" y="248" width="52" height="528" rx="26" fill="#DDF4EF"/>
+  <rect x="724" y="248" width="52" height="528" rx="26" fill="#DDF4EF"/>
+  <!-- bridge / W -->
+  <path d="M300 452H414L512 574L610 452H724V524H636L512 674L388 524H300Z" fill="#46D9FF"/>
+</svg>

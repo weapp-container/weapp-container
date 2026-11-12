@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "kind": "fresh-r5f-official-full-production-oracle-review",
+  "startedAt": "2026-11-07T04:51:39.227Z",
+  "endedAt": "2026-11-07T04:52:58.664Z",
+  "caseId": "ide-issue-1034-auto-routes-runtime",
+  "indexedStatus": "blocked",
+  "run": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/run.json",
+    "sha256": "cb48783e43f7be6202edacfb042e892c58abf474002335b722699f969bf820ae",
+    "bytes": 9909
+  },
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/source-freeze.json",
+    "sha256": "5201915fbe6974710efcbfe7883441e4f1d1487b902acce5c71b4f1c2f09babb",
+    "bytes": 163627
+  },
+  "index": {
+    "path": "docs/conformance/case-index-v1.json",
+    "sha256": "47053f38473ba3d78fa82c29dc1c9480f4845a8656361c4ecb76065d18527cb1",
+    "bytes": 74989
+  },
+  "attemptInspection": {
+    "status": "passed",
+    "errors": [],
+    "diagnosticOnly": true
+  },
+  "result": {
+    "status": "passed"
+  },
+  "registry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/execution-recipes.json",
+    "sha256": "43b5ac5e74828653871b5a09e57940570cb98d6864c407fdb9123ab8a16f4ada",
+    "bytes": 9040
+  },
+  "candidateEntry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/candidate-entry.json",
+    "sha256": "f162f8b43c7bf4f401769e6949eb12d46d808838e59d762205c87e68c6c2435e",
+    "bytes": 21818
+  },
+  "candidateReviewedItem": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/candidate-reviewed-item.json",
+    "sha256": "ce38a11493645619684c68d3e0f877256a3b1f6d8bdd6bedb277e2f813d37d65",
+    "bytes": 1800
+  },
+  "summary": {
+    "trace": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-trace.json",
+      "sha256": "9ebaf87cdef5bb7bc511e78c9400872a798084a9726794a03d1fda3eaaef2051",
+      "bytes": 4577
+    },
+    "execution": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-execution.json",
+      "sha256": "321a26eccf368dd60caa97735f8fdc9aac66703c2a5a55d5941326270496c240",
+      "bytes": 3191
+    },
+    "compilerUse": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/compiler-use/objects/sha256/e74997f58d9428342cf6d35e632bc68a1dd10a7dca8c04522558482048aea6e7",
+      "sha256": "e74997f58d9428342cf6d35e632bc68a1dd10a7dca8c04522558482048aea6e7",
+      "bytes": 192335
+    },
+    "fixtureBuild": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/bc5342464f214683a8128b03586d4fba2e30b8d5a88d124661fed0945ac26f14",
+      "sha256": "bc5342464f214683a8128b03586d4fba2e30b8d5a88d124661fed0945ac26f14",
+      "bytes": 32393
+    },
+    "events": 12,
+    "assertions": [
+      {
+        "id": "issue #1034: selected sources across package boundaries navigates to each selected Vue page with its explicit sibling import and working events",
+        "passed": true
+      }
+    ],
+    "observedDevtoolsVersion": "2.02.2609250",
+    "observedBaseLibraryVersion": "3.17.3"
+  },
+  "sourceInputsReverified": 211,
+  "sourceUnchanged": true,
+  "rootIndexUnchanged": true,
+  "indexPromoted": false,
+  "formalPairs": 0,
+  "boundary": "Candidate item is an artifact-only review proposal. Root index, old receipts, original assertions and official source remain unchanged. Complete current production oracle reader verifies actual build/consumer/fixture/SDK/cleanup receipts. No differential pair is implied."
+}

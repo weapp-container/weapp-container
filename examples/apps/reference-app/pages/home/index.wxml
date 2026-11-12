@@ -1,0 +1,11 @@
+<view class="screen">
+  <view class="card">
+    <text class="title">Weapp Container 微信小程序容器</text>
+    <text id="message" class="message">{{message}}</text>
+    <text id="count" class="count">点击次数：{{count}}</text>
+    <view id="increment" class="button" bindtap="onTap">点击验证 setData</view>
+    <managed-counter config="{{componentConfig}}">
+      <text id="component-slot" class="component-slot" bindtap="onTap">页面 slot：{{count}}</text>
+    </managed-counter>
+  </view>
+</view>

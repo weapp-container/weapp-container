@@ -1,0 +1,20 @@
+{
+  "name": "@sonofmagic/container-manifest",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic weapp-vite portable manifest and content-addressed blob packer",
+  "bin": {
+    "container-pack": "bin/container-pack.mjs"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@babel/parser": "8.0.7",
+    "@babel/traverse": "8.0.7",
+    "acorn": "8.15.0",
+    "rolldown": "1.2.14"
+  },
+  "license": "Apache-2.0"
+}

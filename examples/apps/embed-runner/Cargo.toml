@@ -1,0 +1,19 @@
+[package]
+name = "weapp-embedded-app-example"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[profile.dev]
+debug = 1
+
+[profile.test]
+debug = 1
+
+[dependencies]
+container-bridge = { path = "../../../crates/container-bridge" }
+container-core = { path = "../../../crates/container-core" }
+container-simulator = { path = "../../../crates/container-simulator" }
+serde_json = "1"

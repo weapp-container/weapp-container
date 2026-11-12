@@ -1,0 +1,67 @@
+name: Public source checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-source-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  source:
+    name: Source and contract checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+      - run: pnpm submodule:verify
+      - run: pnpm opensource:check && pnpm docs:check
+      - run: pnpm naming:check && pnpm naming:test
+      - run: pnpm container:manifest:test
+      - run: pnpm sdk:contracts:test
+      - run: pnpm runtime:artifacts:test
+      - run: node --test scripts/check-open-source.test.mjs scripts/check-doc-links.test.mjs scripts/verify-submodule.test.mjs scripts/sdk-licenses.test.mjs scripts/sdk-native-build.test.mjs
+
+  rust:
+    name: Rust workspace
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - run: cargo fmt --all -- --check
+      - run: cargo check --workspace --all-targets --locked
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      # Deadline-sensitive engine contracts share the runner's CPU budget.
+      - run: cargo test --workspace --locked -- --test-threads=1

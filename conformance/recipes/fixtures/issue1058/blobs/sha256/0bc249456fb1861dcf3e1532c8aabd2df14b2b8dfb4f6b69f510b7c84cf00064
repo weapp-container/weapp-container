@@ -1,0 +1,5297 @@
+//#region packages-runtime/wevu/dist/runtime/platform/globals.mjs
+function e$27() {
+	return typeof globalThis > `u` ? void 0 : globalThis;
+}
+function t$23() {
+	return e$27()?.wx ?? (typeof wx > `u` ? void 0 : wx);
+}
+var DEFAULT_RUNTIME_CAPABILITIES = Object.freeze({
+	globalPageStack: true,
+	globalCreateSelectorQuery: true,
+	selectorQueryScopeByIn: true,
+	globalCreateIntersectionObserver: true,
+	intersectionObserverScopeByParameter: true,
+	pageShareMenu: true,
+	shareTimelineRequiresShareAppMessage: true,
+	pageScrollApi: true,
+	pullDownRefreshApi: true,
+	globalRouterApi: true,
+	appErrorListener: true,
+	appPageNotFoundListener: true,
+	appUnhandledRejectionListener: true,
+	appThemeChangeListener: true,
+	appMemoryWarningListener: true
+});
+({ ...DEFAULT_RUNTIME_CAPABILITIES });
+({ ...DEFAULT_RUNTIME_CAPABILITIES });
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/platform/current.mjs
+var f$14 = t$23;
+var m$13 = () => DEFAULT_RUNTIME_CAPABILITIES;
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/platform.mjs
+function o$25(e) {
+	return m$13()[e] === !0;
+}
+function s$21() {
+	if (!o$25(`globalPageStack`)) return [];
+	let n = e$27(), r = f$14(), i = r?.getCurrentPages ?? n?.getCurrentPages ?? (typeof getCurrentPages < `u` ? getCurrentPages : void 0);
+	if (typeof i != `function`) return [];
+	try {
+		let e = i.call(r);
+		return Array.isArray(e) ? e : [];
+	} catch {
+		return [];
+	}
+}
+function l$20() {
+	return f$14() ?? e$27();
+}
+function u$20() {
+	return l$20()?.console?.warn;
+}
+//#endregion
+//#region @weapp-core/constants/dist/index.js
+var WEAPP_VITE_STATEFUL_HMR_BRIDGE_KEY = "__WEAPP_VITE_STATEFUL_HMR_BRIDGE__";
+var WEVU_BINDING_MANIFEST_KEY = "__wevuBindingManifest";
+var WEVU_INLINE_MAP_KEY = "__weapp_vite_inline_map";
+var WEVU_SLOT_OWNER_ID_KEY = "__wvOwnerId";
+var WEVU_SLOT_OWNER_ID_PROP = "__wvSlotOwnerId";
+var WEVU_SLOT_SCOPE_KEY = "__wvSlotScope";
+var WEVU_SLOT_NAMES_PROP = "vueSlots";
+var WEVU_SCOPED_SLOT_OWNER_REQUIRED_KEY = "__wevuScopedSlotOwnerRequired";
+var WEVU_PROPS_KEY = "__wevuProps";
+var WEVU_SETUP_STATE_KEY = "__wevuSetupState";
+var WEVU_CSS_MODULES_KEY = "__wevuCssModules";
+var WEVU_PROPS_ALIASES_KEY = "__wevuPropsAliases";
+var WEVU_PROPS_DERIVED_KEYS_KEY = "__wevuPropsDerivedKeys";
+var WEVU_ATTRS_KEY = "__wevuAttrs";
+var WEVU_NATIVE_INSTANCE_KEY = "__wevuNativeInstance";
+var WEVU_RUNTIME_KEY = "__wevuRuntime";
+var WEVU_RESOLVE_PUBLIC_INSTANCE_METHOD = "__weapp_vite_resolvePublicInstance";
+var WEVU_HOST_COMMIT_PROMISE_KEY = "__wevuHostCommitPromise";
+var WEVU_FUNCTION_PROP_PATHS_KEY = "__wevuFunctionPropPaths";
+var WEVU_SETUP_CONTEXT_INSTANCE_KEY = "__wevuSetupContextInstance";
+var WEVU_PROP_KEYS_KEY = "__wevuPropKeys";
+var WEVU_READY_CALLED_KEY = "__wevuReadyCalled";
+var WEVU_PENDING_PROP_VALUES_KEY = "__wevuPendingPropValues";
+var WEVU_ON_LOAD_CALLED_KEY = "__wevuOnLoadCalled";
+var WEVU_PAGE_SCROLL_HOOK_DEPTH_KEY = "__wevuPageScrollHookDepth";
+var WEVU_ON_BEFORE_UNMOUNT_HOOK = "__wevuOnBeforeUnmount";
+var WEVU_HOOKS_KEY = "__wevuHooks";
+var WEVU_EXPOSED_KEY = "__wevuExposed";
+var WEVU_PUBLIC_RUNTIME_KEY = "$wevu";
+/** 宿主整体替换运行时方法快照，空快照清除旧方法，不写入同名输入属性。 */
+var WEVU_HOST_INSTALL_METHOD_KEY = "__wevuHostInstallMethod";
+var WEVU_RUNTIME_APP_KEY = "__wevuRuntimeApp";
+var WEVU_IS_APP_INSTANCE_KEY = "__wevuIsAppInstance";
+var WEVU_APP_PROVIDES_KEY = "__wevuAppProvides";
+var WEVU_PROVIDES_KEY = "__wevuProvides";
+var WEVU_PARENT_INSTANCE_KEY = "__wevuParentInstance";
+/** 微信原生插槽在 setup 前同步关联逻辑父级的编译标记与内部事件。 */
+var WEVU_NATIVE_SLOT_CONTEXT_KEY = "__wevuNativeSlotContext";
+var WEVU_NATIVE_SLOT_PARENT_EVENT = "__wevu_native_slot_parent";
+/** 未投影的原生子节点通过声明地址关联同一模板内的真实宿主实例。 */
+var WEVU_NATIVE_DECLARATION_ADDRESS_PROP = "__wv_nativeDeclaration";
+var WEVU_NATIVE_DECLARATION_EVENT = "__wevu_native_declaration";
+var WEVU_NATIVE_SLOT_PARENT_DATASET_KEY = "wevuNativeSlotParent";
+var WEVU_WATCH_STOPS_KEY = "__wevuWatchStops";
+var WEVU_EFFECT_SCOPE_KEY = "__wevuEffectScope";
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/hooks/base.mjs
+var o$24 = (() => {
+	let e = typeof globalThis < `u` ? globalThis : l$20();
+	return e ? e["__wevuCurrentSetupState__"] ?? (e["__wevuCurrentSetupState__"] = {}) : {};
+})();
+function s$20() {
+	return o$24.instance;
+}
+function c$22(e) {
+	o$24.instance = e;
+}
+function l$19() {
+	return o$24.context;
+}
+function u$19(e) {
+	o$24.context = e;
+}
+function v$5(e, t, n = []) {
+	let r = e[WEVU_HOOKS_KEY];
+	if (!r) return;
+	let i = r[t];
+	if (!i) return;
+	let o = e.__wevu?.proxy ?? e;
+	if (Array.isArray(i)) for (let e of i) try {
+		e.apply(o, n);
+	} catch {}
+	else if (typeof i == `function`) try {
+		i.apply(o, n);
+	} catch {}
+}
+function y$5(e, t, n = []) {
+	let r = e[WEVU_HOOKS_KEY];
+	if (!r) return;
+	let i = r[t];
+	if (!i) return;
+	let o = e.__wevu?.proxy ?? e;
+	if (typeof i == `function`) try {
+		return i.apply(o, n);
+	} catch {
+		return;
+	}
+	if (Array.isArray(i)) {
+		let e;
+		for (let t of i) try {
+			e = t.apply(o, n);
+		} catch {}
+		return e;
+	}
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/hooks/pageScroll.mjs
+function i$23(e, t) {
+	let r = e, i = Number(r["__wevuPageScrollHookDepth"] ?? 0);
+	r[WEVU_PAGE_SCROLL_HOOK_DEPTH_KEY] = i + 1;
+	try {
+		return t();
+	} finally {
+		i === 0 ? delete r[WEVU_PAGE_SCROLL_HOOK_DEPTH_KEY] : r[WEVU_PAGE_SCROLL_HOOK_DEPTH_KEY] = i;
+	}
+}
+function a$23(t, a, o) {
+	let s = Number(t["__wevuPageScrollHookDepth"] ?? 0) > 0;
+	return i$23(t, () => (s || (v$5(t, "__wevuPageScrollObservers", a), v$5(t, `onPageScroll`, a)), o?.apply(t, a)));
+}
+//#endregion
+//#region packages-runtime/wevu/dist/_virtual/_@oxc-project_runtime@0.154.0/helpers/esm/typeof.mjs
+function e$26(t) {
+	"@babel/helpers - typeof";
+	return e$26 = typeof Symbol == `function` && typeof Symbol.iterator == `symbol` ? function(e) {
+		return typeof e;
+	} : function(e) {
+		return e && typeof Symbol == `function` && e.constructor === Symbol && e !== Symbol.prototype ? `symbol` : typeof e;
+	}, e$26(t);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/_virtual/_@oxc-project_runtime@0.154.0/helpers/esm/toPrimitive.mjs
+function t$22(t, n) {
+	if (e$26(t) != `object` || !t) return t;
+	var r = t[Symbol.toPrimitive];
+	if (r !== void 0) {
+		var i = r.call(t, n || `default`);
+		if (e$26(i) != `object`) return i;
+		throw TypeError(`@@toPrimitive must return a primitive value.`);
+	}
+	return (n === `string` ? String : Number)(t);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/_virtual/_@oxc-project_runtime@0.154.0/helpers/esm/toPropertyKey.mjs
+function n$24(n) {
+	var r = t$22(n, `string`);
+	return e$26(r) == `symbol` ? r : r + ``;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/_virtual/_@oxc-project_runtime@0.154.0/helpers/esm/defineProperty.mjs
+function t$21(t, n, r) {
+	return (n = n$24(n)) in t ? Object.defineProperty(t, n, {
+		value: r,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : t[n] = r, t;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/scheduler.mjs
+var e$25 = Promise.resolve();
+var t$20 = /* @__PURE__ */ new Set();
+var n$23 = /* @__PURE__ */ new Set();
+var r$17 = !1;
+var i$22 = !1;
+var a$22;
+var o$23;
+function s$19() {
+	i$22 = !1, r$17 = !0, a$22 = /* @__PURE__ */ new Set();
+	let e = !1, o = !1, c, l = [];
+	try {
+		t$20.forEach((e) => {
+			a$22?.add(e);
+			try {
+				let t = e();
+				t && typeof t.then == `function` && l.push(t);
+			} catch (e) {
+				o || (o = !0, c = e);
+			}
+		});
+	} finally {
+		t$20.clear(), a$22 = void 0, r$17 = !1, n$23.size && (n$23.forEach((e) => t$20.add(e)), n$23.clear(), i$22 = !0, e = !0);
+	}
+	if (l.length || e) return Promise.all(l).then(() => e ? s$19() : void 0).then(() => {
+		if (o) throw c;
+	}, (e) => {
+		throw o ? c : e;
+	});
+	if (o) throw c;
+}
+function c$21() {
+	let t = e$25.then(s$19);
+	o$23 = t;
+	let n = () => {
+		o$23 === t && (o$23 = void 0);
+	};
+	t.then(n, n);
+}
+function l$18(e) {
+	r$17 && a$22?.has(e) ? n$23.add(e) : (t$20.add(e), !r$17 && !i$22 && (i$22 = !0, c$21()));
+}
+function u$18(t) {
+	let n = o$23 ?? e$25;
+	return t ? n.then(t) : n;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/core.mjs
+var n$22 = /* @__PURE__ */ new WeakMap();
+var r$16 = null;
+var i$21 = [];
+var a$21 = !0;
+var o$22;
+var s$18 = 0;
+var c$20 = !1;
+var l$17 = /* @__PURE__ */ new Set();
+var u$17 = /* @__PURE__ */ new Set();
+function d$14(e) {
+	if (e.active) {
+		if (e.scheduler) {
+			let t = o$22;
+			o$22 = e._scope;
+			try {
+				e.scheduler();
+			} finally {
+				o$22 = t;
+			}
+		} else e();
+	}
+}
+function p$14() {
+	s$18++;
+}
+function m$12(e) {
+	let t = e.values().next();
+	if (!t.done) return e.delete(t.value), t.value;
+}
+function h$8() {
+	let e, t = !1;
+	c$20 = !0;
+	try {
+		for (; l$17.size;) {
+			let n = m$12(l$17);
+			if (n) try {
+				d$14(n);
+			} catch (n) {
+				t || (e = n, t = !0);
+			}
+		}
+	} finally {
+		c$20 = !1;
+	}
+	for (; u$17.size;) {
+		let n = u$17.values().next().value;
+		u$17.delete(n);
+		try {
+			n();
+		} catch (n) {
+			t || (e = n, t = !0);
+		}
+	}
+	if (t) throw e;
+}
+function g$8() {
+	s$18 !== 0 && (s$18--, s$18 === 0 && !c$20 && h$8());
+}
+function _$6(e) {
+	p$14();
+	try {
+		return e();
+	} finally {
+		g$8();
+	}
+}
+function v$4(e) {
+	let { deps: t } = e;
+	for (let n = 0; n < t.length; n++) t[n].delete(e);
+	t.length = 0;
+}
+function y$4(e) {
+	e.active && (e.active = !1, v$4(e), e.onStop?.());
+}
+var b$3 = class {
+	constructor(e = !1) {
+		if (this.detached = e, t$21(this, `active`, !0), t$21(this, `effects`, []), t$21(this, `cleanups`, []), t$21(this, `parent`, void 0), t$21(this, `scopes`, void 0), !e && o$22) {
+			var n;
+			if (!o$22.active) {
+				this.active = !1;
+				return;
+			}
+			this.parent = o$22, ((n = o$22).scopes || (n.scopes = [])).push(this);
+		}
+	}
+	run(e) {
+		if (!this.active) return;
+		let t = o$22;
+		o$22 = this;
+		try {
+			return e();
+		} finally {
+			o$22 = t;
+		}
+	}
+	stop() {
+		if (!this.active) return;
+		this.active = !1;
+		let e = o$22;
+		o$22 = this;
+		let t, n = !1, r = (e) => {
+			n || (t = e, n = !0);
+		};
+		try {
+			let e = this.effects.splice(0);
+			for (let t of e) try {
+				y$4(t);
+			} catch (e) {
+				r(e);
+			}
+			let t = this.cleanups.splice(0);
+			for (let e of t) try {
+				e();
+			} catch (e) {
+				r(e);
+			}
+			let n = this.scopes;
+			if (this.scopes = void 0, n) {
+				for (let e of n) try {
+					e.stop();
+				} catch (e) {
+					r(e);
+				}
+				n.length = 0;
+			}
+		} finally {
+			if (this.parent?.scopes) {
+				let e = this.parent.scopes.indexOf(this);
+				e >= 0 && this.parent.scopes.splice(e, 1);
+			}
+			this.parent = void 0, o$22 = e;
+		}
+		if (n) throw t;
+	}
+};
+function x$3(e = !1) {
+	return new b$3(e);
+}
+function C$3(e) {
+	o$22?.active && o$22.cleanups.push(e);
+}
+function T$1(e) {
+	o$22 && (o$22.active ? o$22.effects.push(e) : y$4(e));
+}
+function E$1(e, t = {}) {
+	let n = function() {
+		if (!n.active || n._running) return e();
+		v$4(n);
+		let t = o$22;
+		o$22 = n._scope;
+		let s = a$21;
+		try {
+			return a$21 = !0, n._running = !0, i$21.push(n), r$16 = n, e();
+		} finally {
+			i$21.pop(), r$16 = i$21[i$21.length - 1] ?? null, n._running = !1, o$22 = t, a$21 = s;
+		}
+	};
+	return n.deps = [], n.scheduler = t.scheduler, n.onStop = t.onStop, n.active = !0, n._running = !1, n._fn = e, n._scope = o$22, n;
+}
+function D$2(e, t, n) {
+	let r = E$1(e, t);
+	return r._computed = n, T$1(r), t.lazy || r(), r;
+}
+function O$2(e, t = {}) {
+	return D$2(e, t, !1);
+}
+function k$2(e, t = {}) {
+	return D$2(e, t, !0);
+}
+function A$1(e, t) {
+	if (!a$21 || !r$16) return;
+	let i = n$22.get(e);
+	i || (i = /* @__PURE__ */ new Map(), n$22.set(e, i));
+	let o = i.get(t);
+	o || (o = /* @__PURE__ */ new Set(), i.set(t, o)), o.has(r$16) || (o.add(r$16), r$16.deps.push(o));
+}
+function j$2(e) {
+	e._running || (e._computed ? d$14(e) : s$18 > 0 || c$20 ? l$17.add(e) : d$14(e));
+}
+function M$2(e, t) {
+	let i = n$22.get(e);
+	if (!i) return;
+	let a = i.get(t);
+	if (!a) return;
+	let o = /* @__PURE__ */ new Set();
+	a.forEach((e) => {
+		e !== r$16 && o.add(e);
+	}), o.forEach(j$2);
+}
+function N$3(e) {
+	a$21 && r$16 && (e.has(r$16) || (e.add(r$16), r$16.deps.push(e)));
+}
+function P$2(e) {
+	new Set(e).forEach(j$2);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/reactive/mutation.mjs
+var e$24 = /* @__PURE__ */ new Set();
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/reactive/patchState.mjs
+var t$19 = /* @__PURE__ */ new WeakMap();
+var n$21 = /* @__PURE__ */ new WeakMap();
+var r$15 = /* @__PURE__ */ new WeakMap();
+var i$20 = /* @__PURE__ */ new WeakMap();
+var a$20 = /* @__PURE__ */ new WeakSet();
+var o$21 = /* @__PURE__ */ new WeakMap();
+var s$17 = /* @__PURE__ */ new WeakMap();
+function c$19(e) {
+	let t = s$17.get(e);
+	return t || (t = /* @__PURE__ */ new Set(), s$17.set(e, t)), t;
+}
+function l$16(e, t) {
+	c$19(e).add(t);
+}
+function u$16(e) {
+	n$21.set(e, (n$21.get(e) ?? 0) + 1);
+}
+function d$13(e) {
+	return n$21.get(e) ?? 0;
+}
+function f$13(e, n) {
+	let r = t$19.get(n) ?? n, i = t$19.get(e);
+	(!i || i === e || i === n) && t$19.set(e, r);
+}
+function p$13(e) {
+	let t = /* @__PURE__ */ new Set(), n = [e];
+	for (let e = 0; e < 2e3 && n.length; e++) {
+		let e = n.pop(), r = i$20.get(e);
+		if (r) for (let e of r.keys()) t.has(e) || (t.add(e), u$16(e), n.push(e));
+	}
+}
+function m$11(e) {
+	let t = i$20.get(e);
+	if (!t) {
+		a$20.delete(e), r$15.delete(e);
+		return;
+	}
+	let n, o, s = 0;
+	for (let [e, r] of t) {
+		for (let t of r) {
+			if (s += 1, s > 1) break;
+			n = e, o = t;
+		}
+		if (s > 1) break;
+	}
+	s === 1 && n && o ? (a$20.delete(e), r$15.set(e, {
+		parent: n,
+		key: o
+	})) : (a$20.add(e), r$15.delete(e));
+}
+function h$7(n, o, s) {
+	if (typeof s != `string`) {
+		a$20.add(n), r$15.delete(n);
+		return;
+	}
+	if (e$24.size) {
+		let e = t$19.get(o) ?? o;
+		l$16(e, o), l$16(e, n);
+	}
+	let c = i$20.get(n);
+	c || (c = /* @__PURE__ */ new Map(), i$20.set(n, c));
+	let u = c.get(o);
+	u || (u = /* @__PURE__ */ new Set(), c.set(o, u)), u.add(s), m$11(n);
+}
+function g$7(e, t, n) {
+	let r = i$20.get(e);
+	if (!r) return;
+	let a = r.get(t);
+	a && (a.delete(n), a.size || r.delete(t), r.size || i$20.delete(e), m$11(e));
+}
+function _$5(e, t) {
+	if (t === e) return [];
+	if (a$20.has(t)) return;
+	let n = [], i = t;
+	for (let t = 0; t < 2e3; t++) {
+		if (i === e) return n.reverse();
+		if (a$20.has(i)) return;
+		let t = r$15.get(i);
+		if (!t || typeof t.key != `string`) return;
+		n.push(t.key), i = t.parent;
+	}
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/reactive/shared.mjs
+function e$23(e) {
+	return typeof e == `object` && !!e;
+}
+function t$18(e, t) {
+	return Object.prototype.hasOwnProperty.call(e, t);
+}
+function n$20(e) {
+	return Object.prototype.toString.call(e).slice(8, -1);
+}
+function r$14(e) {
+	switch (e) {
+		case `Object`:
+		case `Array`: return 1;
+		case `Map`:
+		case `Set`:
+		case `WeakMap`:
+		case `WeakSet`: return 0;
+		default: return 0;
+	}
+}
+function i$19(e) {
+	return e.__r_skip ? 0 : r$14(n$20(e));
+}
+var a$19 = Symbol(`wevu.version`);
+function o$20(e) {
+	if (!e) return !1;
+	let t = e.charCodeAt(0);
+	if (t < 48 || t > 57) return !1;
+	let n = Number(e);
+	return Number.isInteger(n) && n >= 0 && String(n) === e;
+}
+function s$16(e) {
+	return e?.__r_raw ?? e;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/reactive/state.mjs
+var e$22 = /* @__PURE__ */ new WeakMap();
+var t$17 = /* @__PURE__ */ new WeakMap();
+var n$19 = /* @__PURE__ */ new WeakMap();
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/reactive/patch.mjs
+function g$6(t) {
+	A$1(s$16(t), a$19);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/reactive/shallow.mjs
+var d$12 = {
+	get(t, n, r) {
+		if (n === `__r_isReactive`) return !0;
+		if (n === `__r_raw`) return t;
+		let i = Reflect.get(t, n, r);
+		return A$1(t, n), i;
+	},
+	set(e, r, a, o) {
+		let s = Reflect.get(e, r, o), c = Reflect.set(e, r, a, o);
+		return Object.is(s, a) || (M$2(e, r), M$2(e, a$19), u$16(e)), c;
+	},
+	deleteProperty(e, r) {
+		let a = t$18(e, r), s = Reflect.deleteProperty(e, r);
+		return a && s && (M$2(e, r), M$2(e, a$19), u$16(e)), s;
+	},
+	ownKeys(t) {
+		return A$1(t, Symbol.iterator), A$1(t, a$19), Reflect.ownKeys(t);
+	}
+};
+function f$12(e) {
+	if (!e$23(e) || e.__r_isReactive) return e;
+	let t = n$19.get(e);
+	if (t) return t;
+	if (i$19(e) === 0) return e;
+	let n = new Proxy(e, d$12);
+	return n$19.set(e, n), t$17.set(n, e), n$21.has(e) || n$21.set(e, 0), n;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/reactive.mjs
+function j$1(e) {
+	return d$13(s$16(e));
+}
+function M$1(e, t, n) {
+	if (!e$24.size || typeof t != `string` || t.startsWith(`__r_`)) return;
+	let r = t$19.get(e) ?? e, a = Array.isArray(e) && (t === `length` || o$20(t)) ? `array` : `property`, o = _$5(r, e);
+	if (!o) {
+		let o = /* @__PURE__ */ new Set(), s = i$20.get(e);
+		if (s) for (let [e, t] of s) {
+			let n = o$21.get(e), i = n ? n.split(`.`, 1)[0] : void 0, a = i ? void 0 : _$5(r, e)?.[0];
+			for (let e of t) typeof e == `string` && o.add(i ?? a ?? e);
+		}
+		else o.add(t);
+		for (let e of e$24) e({
+			root: r,
+			kind: a,
+			op: n,
+			path: void 0,
+			fallbackTopKeys: o.size ? [...o] : void 0
+		});
+		return;
+	}
+	let s = o.findIndex((e) => o$20(e));
+	if (s !== -1) {
+		let e = o.slice(0, s).join(`.`) || void 0;
+		for (let t of e$24) t({
+			root: r,
+			kind: `array`,
+			op: n,
+			path: e
+		});
+		return;
+	}
+	let c = o.length ? o.join(`.`) : ``, l = a === `array` ? c || void 0 : c ? `${c}.${t}` : t;
+	for (let e of e$24) e({
+		root: r,
+		kind: a,
+		op: n,
+		path: l
+	});
+}
+var N$2 = {
+	get(e, n, r) {
+		if (n === `__r_isReactive`) return !0;
+		if (n === `__r_raw`) return e;
+		let a = Reflect.get(e, n, r);
+		if (A$1(e, n), e$23(a)) {
+			if (a.__r_skip) return a;
+			let t = a?.__r_raw ?? a;
+			f$13(t, e), h$7(t, e, n);
+			let r = o$21.get(e);
+			if (e$24.size && typeof n == `string` && r != null && !a$20.has(t)) {
+				let e = r ? `${r}.${n}` : n;
+				o$21.set(t, e);
+			}
+			return P$1(a);
+		}
+		return a;
+	},
+	set(t, r, a, l) {
+		let d = t$18(t, r), m = Array.isArray(t), _ = m ? t.length : 0, y = Reflect.get(t, r, l), w = e$23(y) ? s$16(y) : y, T = e$23(a) ? s$16(a) : a;
+		if (Object.is(w, T)) return !0;
+		let E = Reflect.set(t, r, a, l);
+		if (E) {
+			let a = e$23(w) ? w : void 0;
+			if (a && g$7(a, t, r), e$23(T) && !T.__r_skip) {
+				let e = T;
+				f$13(e, t), h$7(e, t, r);
+				let n = o$21.get(t);
+				if (e$24.size && typeof r == `string` && n != null && !a$20.has(e)) {
+					let t = n ? `${n}.${r}` : r;
+					o$21.set(e, t);
+				}
+			}
+			_$6(() => {
+				M$2(t, r), m && typeof r == `string` && o$20(r) && Number(r) >= _ && M$2(t, `length`), M$2(t, a$19), u$16(t), p$13(t);
+				let e = t$19.get(t);
+				e && e !== t && (M$2(e, a$19), u$16(e)), d || M$2(t, Symbol.iterator);
+			}), M$1(t, r, `set`);
+		}
+		return E;
+	},
+	deleteProperty(t, r) {
+		let i = t$18(t, r), a = i ? t[r] : void 0, o = Reflect.deleteProperty(t, r);
+		if (i && o) {
+			let i = e$23(a) ? a?.__r_raw ?? a : void 0;
+			i && g$7(i, t, r), _$6(() => {
+				M$2(t, r), M$2(t, a$19), u$16(t), p$13(t);
+				let e = t$19.get(t);
+				e && e !== t && (M$2(e, a$19), u$16(e)), M$2(t, Symbol.iterator);
+			}), M$1(t, r, `delete`);
+		}
+		return o;
+	},
+	ownKeys(e) {
+		return A$1(e, Symbol.iterator), A$1(e, a$19), Reflect.ownKeys(e);
+	}
+};
+function P$1(e) {
+	if (!e$23(e) || e.__r_isReactive) return e;
+	let t = e$22.get(e);
+	if (t) return t;
+	if (i$19(e) === 0) return e;
+	let n = new Proxy(e, N$2);
+	return e$22.set(e, n), t$17.set(n, e), n$21.has(e) || n$21.set(e, 0), t$19.has(e) || t$19.set(e, e), n;
+}
+function F$1(e) {
+	return !!(e && e.__r_isReactive);
+}
+function I$1(e) {
+	return e$23(e) ? P$1(e) : e;
+}
+function L$1(e) {
+	return e$23(e) && Object.defineProperty(e, "__r_skip", {
+		value: !0,
+		configurable: !0,
+		enumerable: !1,
+		writable: !0
+	}), e;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/ref.mjs
+var a$18 = `__v_isRef`;
+function o$19(e) {
+	try {
+		Object.defineProperty(e, a$18, {
+			value: !0,
+			configurable: !0
+		});
+	} catch {
+		e[a$18] = !0;
+	}
+	return e;
+}
+function s$15(e) {
+	return !!(e && typeof e == `object` && e.__v_isRef === !0);
+}
+var c$18 = class {
+	constructor(t) {
+		t$21(this, `_value`, void 0), t$21(this, `_rawValue`, void 0), t$21(this, `dep`, void 0), o$19(this), this._rawValue = t, this._value = I$1(t);
+	}
+	get value() {
+		return this.dep || (this.dep = /* @__PURE__ */ new Set()), N$3(this.dep), this._value;
+	}
+	set value(e) {
+		Object.is(e, this._rawValue) || (this._rawValue = e, this._value = I$1(e), this.dep && P$2(this.dep));
+	}
+};
+function l$15(e) {
+	return s$15(e) ? e : L$1(new c$18(e));
+}
+function u$15(e) {
+	return s$15(e) ? e.value : e;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/defaults.mjs
+var e$21 = `__wevuDefaultsScope`;
+var t$16 = {};
+function n$18(e) {
+	if (e && typeof e == `object` && !Array.isArray(e)) return e;
+}
+function r$13(e, t) {
+	if (!e) return t;
+	if (!t) return e;
+	let r = {
+		...e,
+		...t
+	}, i = n$18(e.setData), a = n$18(t.setData);
+	(i || a) && (r.setData = {
+		...i ?? {},
+		...a ?? {}
+	});
+	let o = n$18(e.options), s = n$18(t.options);
+	return (o || s) && (r.options = {
+		...o ?? {},
+		...s ?? {}
+	}), r;
+}
+function i$18(e, t) {
+	return r$13(e, t);
+}
+function a$17(e, t) {
+	return {
+		app: r$13(e.app, t.app),
+		component: r$13(e.component, t.component)
+	};
+}
+function o$18(e) {
+	t$16 = a$17(t$16, e);
+}
+function c$17(e) {
+	return i$18(t$16.app, e);
+}
+function l$14(e) {
+	return i$18(t$16.component, e);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/watch/types.mjs
+var e$20 = `version`;
+function n$17() {
+	return e$20;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/shallowRef.mjs
+var r$12 = `__v_isShallow`;
+function o$17(e) {
+	return s$15(e) && e[r$12] === !0;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/traverse.mjs
+function i$17(a, o = 1 / 0, s = /* @__PURE__ */ new Map()) {
+	if (o <= 0 || !e$23(a)) return a;
+	if (s$15(a)) return i$17(a.value, o - 1, s), a;
+	if (a.__r_skip) return a;
+	let c = s.get(a);
+	if (c !== void 0 && c >= o) return a;
+	s.set(a, o);
+	let l = o - 1;
+	if (Array.isArray(a) || a instanceof Map || a instanceof Set) return a.forEach((e) => i$17(e, l, s)), a;
+	let u = F$1(a) && o !== 1 / 0 ? s$16(a) : a;
+	for (let e in u) i$17(a[e], l, s);
+	return a;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/watch/helpers.mjs
+function c$16(e) {
+	if (typeof e == `function`) return e();
+	if (s$15(e)) return e.value;
+	if (F$1(e)) return e;
+	throw Error(`无效的 watch 源`);
+}
+function l$13(e) {
+	let t = Array.isArray(e), n = !t && F$1(e), o = t ? e.some((e) => F$1(e)) : n, s = t ? e.some((e) => o$17(e)) : o$17(e), l;
+	if (t) {
+		let t = e;
+		l = () => t.map((e) => c$16(e));
+	} else if (typeof e == `function`) l = e;
+	else if (s$15(e)) l = () => e.value;
+	else if (n) l = () => e;
+	else throw Error(`无效的 watch 源`);
+	return {
+		getter: l,
+		hasReactiveSource: o,
+		hasShallowSource: s,
+		isMultiSource: t,
+		isReactiveSource: n
+	};
+}
+function u$14(e, t, i, a, c) {
+	let l = i ? t.some((e) => F$1(e)) : a, u = c ?? l;
+	if (u !== !0 && typeof u != `number`) return e;
+	let d = typeof u == `number` ? u : u ? 1 / 0 : 0;
+	return () => {
+		let t = e(), a = n$17();
+		return i && Array.isArray(t) ? t.map((e) => a === `version` && F$1(e) ? (g$6(e), e) : i$17(e, d)) : a === `version` && F$1(t) ? (g$6(t), t) : i$17(t, d);
+	};
+}
+function d$11(n, r, i, a) {
+	a ? a(n, i) : r === `sync` ? n() : r === `post` ? u$18(() => l$18(n)) : i ? n() : l$18(n);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/reactivity/watch.mjs
+function u$13(a, o, u = {}) {
+	let d = s$20(), f = l$13(a), p = u$14(f.getter, a, f.isMultiSource, f.isReactiveSource, u.deep), m = u.deep === !0 || typeof u.deep == `number` || u.deep === void 0 && f.hasReactiveSource || f.hasShallowSource, h, g = (e) => {
+		h = e;
+	}, _ = f.isMultiSource ? [] : void 0, v, y = !1, b = 0, x = b, S, C = u.once ? (e, t, n) => {
+		o(e, t, n), S();
+	} : o, w = u.flush ?? `pre`, T = (e, t) => !f.isMultiSource || !Array.isArray(e) || !Array.isArray(t) ? !Object.is(e, t) : e.length !== t.length || e.some((e, n) => !Object.is(e, t[n])), E = (e, t = !1) => {
+		if (!v.active || y || e !== b) return;
+		let n = v();
+		if (!t && !m && !T(n, _)) return;
+		h?.();
+		let a = s$20();
+		c$22(d);
+		try {
+			C(n, _, g);
+		} finally {
+			c$22(a);
+		}
+		_ = n;
+	}, D = () => E(x), O = (e) => {
+		x = b, d$11(D, w, e, u.scheduler);
+	};
+	v = O$2(() => p(), {
+		scheduler: () => {
+			y || O(!1);
+		},
+		lazy: !0
+	});
+	let k = () => {
+		h?.(), h = void 0, y$4(v);
+	};
+	return S = k, S.stop = k, S.pause = () => {
+		y || (y = !0, b += 1);
+	}, S.resume = () => {
+		y && v.active && (y = !1, _ = v());
+	}, u.immediate ? E(b, !0) : _ = v(), C$3(S), S;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/noSetData.mjs
+var e$19 = Symbol(`wevu.noSetData`);
+function t$15(t) {
+	return Object.defineProperty(t, e$19, {
+		value: !0,
+		configurable: !0,
+		enumerable: !1,
+		writable: !1
+	}), t;
+}
+function n$16(t) {
+	return typeof t == `object` && !!t && t[e$19] === !0;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/capabilities.mjs
+var e$18 = `__wevuScopedSlotMountState`;
+function t$14(t) {
+	return t[e$18];
+}
+var n$15 = {};
+var r$11 = n$15;
+function i$16(e, t) {
+	n$15[e] !== t && (n$15[e] = t);
+}
+function a$16(e, t) {
+	let r = n$15[e];
+	if (!r) throw Error(`[wevu] runtime capability "${e}" is required by ${t}; install it before registration`);
+	return r;
+}
+function o$16(e) {
+	return e === !0 ? !0 : !e || typeof e != `object` || Array.isArray(e) ? !1 : e.enabled !== !1;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/teardown.mjs
+function e$17(e) {
+	let t, n = !1;
+	for (let r of e) try {
+		r();
+	} catch (e) {
+		n || (t = e, n = !0);
+	}
+	if (n) throw t;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/lifecycle/platform.mjs
+var s$14 = !1;
+var c$15;
+function u$12(e) {
+	c$15 = e;
+}
+function d$10(e) {
+	c$15 === e && (c$15 = void 0);
+}
+function f$11(e) {
+	let t = e.options;
+	if (t && typeof t == `object`) return t;
+	let r = s$21(), i = r[r.length - 1], a = i && typeof i == `object` ? i.options : void 0;
+	return a && typeof a == `object` ? a : {};
+}
+function p$12() {
+	if (s$14) return;
+	s$14 = !0;
+	let t = f$14();
+	if (t && typeof t == `object`) {
+		if (o$25(`pullDownRefreshApi`)) {
+			let e = t.startPullDownRefresh;
+			typeof e == `function` && (t.startPullDownRefresh = function(...t) {
+				let n = e.apply(this, t);
+				return c$15 && v$5(c$15, `onPullDownRefresh`, []), n;
+			});
+		}
+		if (o$25(`pageScrollApi`) && t["__wevuPageScrollEventContract"] !== 1) {
+			let e = t.pageScrollTo;
+			typeof e == `function` && (t.pageScrollTo = function(t, ...n) {
+				let r = c$15, o = e.apply(this, [t, ...n]);
+				return r && i$23(r, () => {
+					v$5(r, `onPageScroll`, [t ?? {}]);
+				}), o;
+			});
+		}
+	}
+}
+function m$10(n) {
+	let { enableOnShareAppMessage: i, enableOnShareTimeline: a } = n;
+	if (!i && !a || !o$25(`pageShareMenu`)) return;
+	let o = f$14();
+	if (!o || typeof o.showShareMenu != `function`) return;
+	let s = m$13().shareTimelineRequiresShareAppMessage ? i || a : i;
+	if (!s && !a) return;
+	let c = [];
+	s && c.push(`shareAppMessage`), a && c.push(`shareTimeline`);
+	let l = [
+		{
+			withShareTicket: !0,
+			menus: c
+		},
+		{ menus: c },
+		a ? { withShareTicket: !0 } : void 0,
+		a ? {} : void 0,
+		void 0
+	];
+	for (let e of l) try {
+		e === void 0 ? o.showShareMenu() : o.showShareMenu(e);
+		break;
+	} catch {}
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/provideStore.mjs
+var e$16 = /* @__PURE__ */ new Map();
+function t$13(t, n) {
+	e$16.set(t, n);
+}
+function n$14(t) {
+	return e$16.has(t);
+}
+function r$10(t) {
+	return e$16.get(t);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/provideContext.mjs
+function o$15(e) {
+	return !!(e && typeof e == `object` && e["__wevuIsAppInstance"] === !0);
+}
+function s$13(e) {
+	return Object.create(e ?? null);
+}
+function c$14(e) {
+	if (!e) return s$13();
+	let n = e[WEVU_APP_PROVIDES_KEY];
+	if (n && typeof n == `object`) return n;
+	let r = s$13();
+	try {
+		Object.defineProperty(e, WEVU_APP_PROVIDES_KEY, {
+			value: r,
+			configurable: !0,
+			enumerable: !1,
+			writable: !1
+		});
+	} catch {
+		e[WEVU_APP_PROVIDES_KEY] = r;
+	}
+	return r;
+}
+function l$12(e, t) {
+	try {
+		Object.defineProperty(e, WEVU_PROVIDES_KEY, {
+			value: t,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		e[WEVU_PROVIDES_KEY] = t;
+	}
+}
+function u$11(e) {
+	let t = e[WEVU_PROVIDES_KEY];
+	if (t && typeof t == `object`) return t;
+	let n = e[WEVU_RUNTIME_APP_KEY], u = e["__wevuParentInstance"]?.["__wevuProvides"] ?? c$14(n), d = o$15(e) ? c$14(n) : s$13(u);
+	return l$12(e, d), d;
+}
+function d$9(e) {
+	return c$14(e);
+}
+function f$10(t, n, r, i = {}) {
+	c$14(t)[n] = r, i.syncGlobal !== !1 && t$13(n, r);
+}
+function p$11(e, t, n) {
+	let a = c$14(t), u = n?.["__wevuProvides"] ?? a, d = o$15(e) ? a : s$13(u);
+	if (n) try {
+		Object.defineProperty(e, WEVU_PARENT_INSTANCE_KEY, {
+			value: n,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		e[WEVU_PARENT_INSTANCE_KEY] = n;
+	}
+	l$12(e, d);
+}
+function m$9(e, t) {
+	let n = Object.getPrototypeOf(e);
+	for (; n;) {
+		if (n === t) return !0;
+		n = Object.getPrototypeOf(n);
+	}
+	return !1;
+}
+function h$6(e, t) {
+	let n = u$11(e), i = u$11(t);
+	if (!(n === i || m$9(n, i) || m$9(i, n))) {
+		Object.setPrototypeOf(i, n);
+		try {
+			Object.defineProperty(t, WEVU_PARENT_INSTANCE_KEY, {
+				value: e,
+				configurable: !0,
+				enumerable: !1,
+				writable: !0
+			});
+		} catch {
+			t[WEVU_PARENT_INSTANCE_KEY] = e;
+		}
+	}
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/provide.mjs
+function c$13(e, n) {
+	let r = s$20();
+	r ? (u$11(r)[e] = n, o$15(r) && t$13(e, n)) : t$13(e, n);
+}
+function l$11(i, o) {
+	let s = s$20();
+	if (s) {
+		let e = u$11(s);
+		if (i in e) return e[i];
+	}
+	if (n$14(i)) return r$10(i);
+	if (arguments.length >= 2) return o;
+	let c = u$20();
+	typeof c == `function` && c(`wevu.inject：未找到对应 key 的值：${String(i)}`);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/version.mjs
+var t$12 = `7.5.0`;
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/setup.mjs
+function e$13(e, t, n) {
+	if (typeof e != `function`) return;
+	let r = n?.runtime ?? {
+		methods: Object.create(null),
+		state: {},
+		setupState: {},
+		proxy: {},
+		watch: () => () => {},
+		bindModel: () => {}
+	};
+	return n && (n.runtime = r), e(t, {
+		...n ?? {},
+		runtime: r
+	});
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/setData/observation.mjs
+var e$12 = 0;
+var t$10 = 0;
+function n$13(e, t) {
+	return e !== null && t >= e ? t - e : null;
+}
+function r$9(e) {
+	try {
+		let t = JSON.stringify(e), n = 0;
+		for (let e = 0; e < t.length; e++) {
+			let r = t.charCodeAt(e);
+			r < 128 ? n += 1 : r < 2048 ? n += 2 : r >= 55296 && r <= 56319 && t.charCodeAt(e + 1) >= 56320 && t.charCodeAt(e + 1) <= 57343 ? (n += 4, e += 1) : n += 3;
+		}
+		return n;
+	} catch {
+		return null;
+	}
+}
+function i$15(e, n) {
+	let i = r$9(n);
+	e.dispatch({
+		id: ++t$10,
+		startedAt: Date.now(),
+		payloadBytes: i,
+		returnedAt: null,
+		durationMs: null
+	});
+}
+function a$15(t) {
+	let r = ++e$12, i = null;
+	return {
+		prepare() {
+			i = Date.now();
+		},
+		revision(e, a) {
+			let o = i;
+			if (i = null, t.debugWhen === `fallback` && (e.reason === `patch` || e.reason === `diff`) || t.debugSampleRate <= 0 || t.debugSampleRate < 1 && Math.random() >= t.debugSampleRate) return;
+			let s = Date.now(), c = null, l = `unknown`, u = {
+				mode: e.mode,
+				reason: e.reason,
+				pendingPatchKeys: e.pendingPatchKeys,
+				payloadKeys: Object.keys(e.payload).length,
+				revision: a,
+				targetLabel: t.targetLabel
+			}, d = (e, i, a = null) => {
+				try {
+					t.debug({
+						...u,
+						committedRevision: t.committedRevision(),
+						phase: {
+							version: 1,
+							observerId: r,
+							name: e,
+							result: i,
+							completion: l,
+							prepareStartedAt: o,
+							preparedAt: s,
+							prepareDurationMs: n$13(o, s),
+							settledAt: a,
+							commitDurationMs: a === null ? null : n$13(c?.startedAt ?? null, a),
+							visibleAt: null,
+							dispatch: c ? { ...c } : null
+						}
+					});
+				} catch {}
+			};
+			return d(`prepare`, `prepared`), {
+				physical: {
+					dispatch(e) {
+						c = e;
+					},
+					returned(e) {
+						c && (c = {
+							...c,
+							returnedAt: e,
+							durationMs: n$13(c.startedAt, e)
+						}, d(`dispatch`, `pending`));
+					},
+					complete(e) {
+						(c || e === `throw`) && (l = e);
+					}
+				},
+				finish(e) {
+					d(`commit`, e, Date.now());
+				}
+			};
+		}
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/utils.mjs
+function e$11(e) {
+	return e ? e.charAt(0).toUpperCase() + e.slice(1) : ``;
+}
+var t$9 = /\B([A-Z])/g;
+function n$12(e) {
+	return e && e.replace(t$9, `-$1`).toLowerCase();
+}
+function r$8(e) {
+	return e ? e.split(`.`).map((e) => e.trim()).filter(Boolean) : [];
+}
+function i$14(e, t) {
+	return Object.prototype.hasOwnProperty.call(e, t);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/setupTracking.mjs
+function i$13(e) {
+	if (Object.prototype.toString.call(e) !== `[object Object]`) return !1;
+	let t = Object.getPrototypeOf(e);
+	return t === null || t === Object.prototype;
+}
+function a$14(e) {
+	return Array.isArray(e) || i$13(e);
+}
+function o$14(e) {
+	if (Array.isArray(e)) return e;
+	let t = [];
+	for (let n of Object.keys(e)) {
+		let r = Object.getOwnPropertyDescriptor(e, n);
+		r && typeof r.get != `function` && t.push(r.value);
+	}
+	return t;
+}
+function s$12(e, t = /* @__PURE__ */ new WeakSet()) {
+	return s$15(e) || F$1(e) ? !0 : !e || typeof e != `object` || t.has(e) || (t.add(e), !a$14(e)) ? !1 : o$14(e).some((e) => s$12(e, t));
+}
+function c$12(i, s = /* @__PURE__ */ new WeakSet()) {
+	if (s$15(i)) {
+		let e = i.value;
+		F$1(e) && g$6(e), c$12(e, s);
+	} else F$1(i) ? (g$6(i), c$12(s$16(i), s)) : i && typeof i == `object` && !s.has(i) && a$14(i) && (s.add(i), o$14(i).forEach((e) => c$12(e, s)));
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/diff.mjs
+function s$11(e) {
+	if (Object.prototype.toString.call(e) !== `[object Object]`) return !1;
+	let t = Object.getPrototypeOf(e);
+	return t === null || t === Object.prototype;
+}
+function c$11(e, t) {
+	if (!e || !t) return !1;
+	let n = t;
+	for (; n;) {
+		if (e.has(n)) return !0;
+		let t = n.lastIndexOf(`.`);
+		if (t < 0) return !1;
+		n = n.slice(0, t);
+	}
+	return !1;
+}
+function l$10(a, s, u, d, f, p, m, h, g, _) {
+	let v = u$15(a);
+	if (typeof v == `bigint`) {
+		let e = Number(v);
+		return Number.isSafeInteger(e) ? e : v.toString();
+	}
+	if (typeof v == `symbol`) return v.toString();
+	if (typeof v == `function`) return h || c$11(g, _) ? v : void 0;
+	if (typeof v != `object` || !v) return v;
+	if (n$16(v)) return;
+	let y = F$1(v), b = y ? s$16(v) : v, x = !!d && y;
+	d && !x && (x = f?.get(b) ?? !s$12(b), f?.set(b, x));
+	let S = x ? d : void 0;
+	if (p <= 0 || m.keys <= 0) return b;
+	if (S) {
+		let e = j$1(b), n = S.get(b);
+		if (n && n.version === e) return n.value;
+	}
+	if (u.has(b)) return;
+	if (s.has(b)) return s.get(b);
+	if (b instanceof Date) return b.getTime();
+	if (b instanceof RegExp) return b.toString();
+	if (b instanceof Map) {
+		let e = [];
+		return s.set(b, e), u.add(b), b.forEach((t, n) => {
+			e.push([l$10(n, s, u, void 0, void 0, 1 / 0, { keys: 1 / 0 }, h, void 0, ``), l$10(t, s, u, void 0, void 0, 1 / 0, { keys: 1 / 0 }, h, void 0, ``)]);
+		}), u.delete(b), e;
+	}
+	if (b instanceof Set) {
+		let e = [];
+		return s.set(b, e), u.add(b), b.forEach((t) => {
+			e.push(l$10(t, s, u, void 0, void 0, 1 / 0, { keys: 1 / 0 }, h, void 0, ``));
+		}), u.delete(b), e;
+	}
+	if (typeof ArrayBuffer < `u`) {
+		if (b instanceof ArrayBuffer) return b.byteLength;
+		if (ArrayBuffer.isView(b)) {
+			let e = b;
+			if (typeof e[Symbol.iterator] == `function`) {
+				let t = [...e];
+				return s.set(b, t), t.map((e) => l$10(e, s, u, void 0, void 0, 1 / 0, { keys: 1 / 0 }, h, void 0, ``));
+			}
+			let t = [...new Uint8Array(e.buffer, e.byteOffset, e.byteLength)];
+			return s.set(b, t), t;
+		}
+	}
+	if (b instanceof Error) return {
+		name: b.name,
+		message: b.message
+	};
+	if (Array.isArray(b)) {
+		let e = [];
+		s.set(b, e), u.add(b);
+		let n = p - 1;
+		for (let t = 0; t < b.length; t += 1) {
+			let r = _ ? `${_}.${t}` : String(t), i = l$10(b[t], s, u, d, f, n, m, h, g, r);
+			e[t] = i === void 0 ? null : i;
+		}
+		return u.delete(b), S && S.set(b, {
+			version: j$1(b),
+			value: e
+		}), e;
+	}
+	let C = {};
+	s.set(b, C), u.add(b);
+	let w = p - 1;
+	for (let e of Object.keys(b)) {
+		if (--m.keys, m.keys <= 0) break;
+		let t = _ ? `${_}.${e}` : e, n = l$10(b[e], s, u, d, f, w, m, h, g, t);
+		n !== void 0 && (C[e] = n);
+	}
+	return u.delete(b), S && S.set(b, {
+		version: j$1(b),
+		value: C
+	}), C;
+}
+function u$10(e, t = /* @__PURE__ */ new WeakMap(), n) {
+	let r = n?._depth ?? (typeof n?.maxDepth == `number` ? Math.max(0, Math.floor(n.maxDepth)) : 1 / 0), i = n?._budget ?? (typeof n?.maxKeys == `number` ? { keys: Math.max(0, Math.floor(n.maxKeys)) } : { keys: 1 / 0 }), a = Array.isArray(n?.functionPaths) && n.functionPaths.length ? new Set(n.functionPaths) : void 0;
+	return l$10(e, t, /* @__PURE__ */ new WeakSet(), n?.cache, n?.cacheEligibility, r, i, !!n?.includeFunctions, a, n?._path ?? ``);
+}
+function d$8(e, t, n) {
+	if (e.length !== t.length) return !1;
+	for (let r = 0; r < e.length; r++) if (!n(e[r], t[r])) return !1;
+	return !0;
+}
+function f$9(e, t, n) {
+	let r = Object.keys(e), i = Object.keys(t);
+	if (r.length !== i.length) return !1;
+	for (let i of r) if (!i$14(t, i) || !n(e[i], t[i])) return !1;
+	return !0;
+}
+function p$10(e, t) {
+	return Object.is(e, t) ? !0 : Array.isArray(e) && Array.isArray(t) ? d$8(e, t, p$10) : s$11(e) && s$11(t) ? f$9(e, t, p$10) : !1;
+}
+function m$8(e) {
+	return e === void 0 ? null : e;
+}
+function h$5(e, t, n, r) {
+	if (!p$10(e, t)) {
+		if (s$11(e) && s$11(t)) {
+			for (let i of Object.keys(t)) i$14(e, i) ? h$5(e[i], t[i], `${n}.${i}`, r) : r[`${n}.${i}`] = m$8(t[i]);
+			for (let i of Object.keys(e)) i$14(t, i) || (r[`${n}.${i}`] = null);
+		} else Array.isArray(e) && Array.isArray(t) && d$8(e, t, p$10) || (r[n] = m$8(t));
+	}
+}
+function g$5(e, t, n) {
+	let r = {}, i = n?.skipKeys;
+	for (let n of Object.keys(t)) i?.has(n) || h$5(e[n], t[n], n, r);
+	for (let n of Object.keys(e)) i?.has(n) || i$14(t, n) || (r[n] = null);
+	return r;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/setData/snapshot.mjs
+function i$12(e) {
+	if (typeof e != `object` || !e) return !1;
+	let t = Object.getPrototypeOf(e);
+	return t === Object.prototype || t === null;
+}
+function o$13(e) {
+	if (Array.isArray(e)) return e.map((e) => o$13(e));
+	if (!i$12(e)) return e;
+	let t = {};
+	for (let n of Object.keys(e)) t[n] = o$13(e[n]);
+	return t;
+}
+function c$10(e, t, r, a) {
+	if (Object.is(e, t)) return !0;
+	if (r <= 0) return !1;
+	if (Array.isArray(e) && Array.isArray(t)) {
+		if (e.length !== t.length) return !1;
+		for (let n = 0; n < e.length; n++) if (!c$10(e[n], t[n], r - 1, a)) return !1;
+		return !0;
+	}
+	if (!i$12(e) || !i$12(t)) return !1;
+	let o = Object.keys(e), s = Object.keys(t);
+	if (o.length !== s.length) return !1;
+	for (let i of o) if (--a.keys, a.keys <= 0 || !i$14(t, i) || !c$10(e[i], t[i], r - 1, a)) return !1;
+	return !0;
+}
+function l$9(e, t, n, r, i) {
+	let a = i?.cloneValue ?? !0, s = i?.clonedParents, c = t.split(`.`).filter(Boolean);
+	if (!c.length) return;
+	s?.add(e);
+	let l = e;
+	for (let e = 0; e < c.length - 1; e++) {
+		let t = c[e], n = l[t];
+		if (typeof n != `object` || !n) l[t] = {}, s?.add(l[t]);
+		else if (s && !s.has(n)) {
+			let e = Array.isArray(n) ? n.slice() : { ...n };
+			l[t] = e, s.add(e);
+		}
+		l = l[t];
+	}
+	let u = c[c.length - 1];
+	if (r === `delete`) try {
+		delete l[u];
+	} catch {
+		l[u] = null;
+	}
+	else l[u] = a ? o$13(n) : n;
+}
+function u$9(n) {
+	let { state: i, setupState: a, computedRefs: o, includeComputed: s, shouldIncludeKey: c, plainCache: l, plainCacheEligibility: u, toPlainMaxDepth: d, toPlainMaxKeys: f, includeFunctions: p = !1, functionPaths: m = [] } = n, h = /* @__PURE__ */ new WeakMap(), g = {}, _ = Number.isFinite(f) ? { keys: f } : void 0, v = F$1(i) ? s$16(i) : i, y = a && typeof a == `object` ? F$1(a) ? s$16(a) : a : void 0, b = Object.keys(v), x = y ? Object.keys(y) : [], S = s ? Object.keys(o) : [];
+	for (let e of b) c(e) && (g[e] = u$10(v[e], h, {
+		cache: l,
+		cacheEligibility: u,
+		maxDepth: d,
+		includeFunctions: p,
+		functionPaths: m,
+		_budget: _,
+		_path: e
+	}));
+	for (let e of x) c(e) && (g[e] = u$10(y[e], h, {
+		cache: l,
+		cacheEligibility: u,
+		maxDepth: d,
+		includeFunctions: p,
+		functionPaths: m,
+		_budget: _,
+		_path: e
+	}));
+	for (let e of S) c(e) && (g[e] = u$10(o[e].value, h, {
+		cache: l,
+		cacheEligibility: u,
+		maxDepth: d,
+		includeFunctions: p,
+		functionPaths: m,
+		_budget: _,
+		_path: e
+	}));
+	return g;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/setData/commitTracker.mjs
+var n$11 = Promise.resolve();
+function r$7(e) {
+	return !(!e || typeof e != `object` && typeof e != `function` || typeof e.then != `function`);
+}
+function i$11(e) {
+	try {
+		return e instanceof Error ? e.message : String(e);
+	} catch {
+		return `<unprintable cause>`;
+	}
+}
+function a$13(e, t, n) {
+	let r = i$11(n), a = /* @__PURE__ */ Error(`[wevu] setData commit failed (${e === `adapter` ? `adapter failure` : `out-of-order completion`}, revision=${t.revision}, mode=${t.mode}, kind=${t.kind}): ${r}`);
+	return a.cause = n, a;
+}
+function o$12(t) {
+	let n = !1, i = !0, a = !1, o = !1, s = !1, c = t.completion, l = (e, r) => {
+		n || (n = !0, t.observer?.complete(c), t.settle(e, r));
+	}, u = () => {
+		i ? a = !0 : s || t.completion === `callback` && l(`committed`);
+	};
+	try {
+		t.observer && t.payload && i$15(t.observer, t.payload);
+		let n = t.invoke(u), d = r$7(n);
+		if (s = d, i = !1, t.observer && !o && (o = !0, t.observer.returned(Date.now())), d) {
+			c = `promise`, n.then(() => l(`committed`), (e) => l(`failed`, e));
+			return;
+		}
+		(t.completion === `return` || a) && l(`committed`);
+	} catch (e) {
+		c = `throw`, i = !1, t.observer && !o && (o = !0, t.observer.returned(Date.now())), l(`failed`, e);
+	}
+}
+function s$10(e) {
+	let r = e.initialSnapshot ? o$13(e.initialSnapshot) : {}, i = new Set(Object.keys(r)), s = 0, c = 0, l, u;
+	function d(e) {
+		return e.inLedger ? (e.commitPromise || (e.commitPromise = new Promise((t) => {
+			e.resolveCommit = t;
+		})), e.commitPromise) : n$11;
+	}
+	let f = {
+		preparedSnapshot: r,
+		dispatchedSnapshot: r,
+		committedSnapshot: r,
+		revision: 0,
+		committedRevision: 0,
+		failedRevision: void 0,
+		needsFullSnapshot: !1,
+		get commitPromise() {
+			return u ? d(u) : n$11;
+		},
+		disposed: !1
+	}, p = (t, n, r) => {
+		let i = a$13(t, n, r);
+		try {
+			e.onFailure({
+				kind: t,
+				revision: n.revision,
+				committedRevision: f.committedRevision,
+				mode: n.mode,
+				cause: r,
+				error: i,
+				payloadKeys: n.payloadKeys,
+				pendingPatchKeys: n.pendingPatchKeys
+			});
+		} catch {}
+	}, m = (e) => {
+		e.resolveCommit?.(), e.resolveCommit = void 0;
+	}, h = (e) => {
+		let t = l;
+		for (; t;) {
+			let n = t.next;
+			if (t.inLedger = !1, t.next = void 0, m(t), t === e) {
+				l = n, l || (u = void 0);
+				return;
+			}
+			t = n;
+		}
+	}, g = () => {
+		let e, t = f.disposed ? `disposed` : `abandoned`, n = l;
+		for (; n;) {
+			let t = n.next;
+			n.inLedger = !1, n.next = void 0, n.physicalSettled || (n.status = `abandoned`, n.observation && (e ?? (e = [])).push(n.observation)), m(n), n = t;
+		}
+		l = void 0, u = void 0, s += 1, c = f.committedRevision, e?.forEach((e) => e.finish(t));
+	}, _ = () => {
+		f.needsFullSnapshot = !0;
+	}, v = (e, t, n) => {
+		t.status = `failed`, f.failedRevision = t.revision, _(), g(), p(e, t, n);
+	}, y = () => {
+		for (; l?.status === `succeeded`;) {
+			let e = l;
+			f.committedSnapshot = e.snapshot, f.committedRevision = e.revision, l = e.next, e.inLedger = !1, e.next = void 0, m(e);
+		}
+		l || (u = void 0);
+	}, b = (e) => {
+		f.committedSnapshot = e.snapshot, f.committedRevision = e.revision, f.failedRevision = void 0, f.needsFullSnapshot = !1, h(e), y();
+	}, x = (e, t, n) => {
+		t === `failed` ? p(`adapter`, e, n) : t === `committed` && f.committedRevision > e.revision && (l && g(), _(), p(`out-of-order`, e, `revision ${e.revision} completed after committed revision ${f.committedRevision}`));
+	}, S = (e, t, n) => {
+		f.disposed || e.physicalSettled || (e.physicalSettled = !0, !e.inLedger || e.epoch !== s ? x(e, t, n) : t === `abandoned` ? (e.status = `abandoned`, _(), g()) : t === `failed` ? v(`adapter`, e, n) : (e.status = `succeeded`, c > e.revision ? v(`out-of-order`, e, `revision ${e.revision} completed after revision ${c}`) : (c = e.revision, e.kind === `full` ? b(e) : y())));
+	}, C = (e, t, n) => {
+		if (f.disposed || e.physicalSettled) return;
+		if (!e.observation) {
+			S(e, t, n);
+			return;
+		}
+		let r = !e.inLedger || e.epoch !== s, i = t === `committed` && (r ? f.committedRevision > e.revision : c > e.revision);
+		S(e, t, n), e.observation?.finish(i ? `out-of-order` : r ? t === `failed` ? `late-failed` : t === `committed` ? `late-committed` : `abandoned` : t);
+	};
+	return {
+		state: f,
+		dispatch: (n) => {
+			if (f.disposed) return f.revision;
+			let r = f.revision + 1;
+			f.revision = r, f.preparedSnapshot = n.snapshot;
+			let a = {
+				revision: r,
+				epoch: s,
+				mode: n.mode,
+				kind: n.kind,
+				snapshot: n.snapshot,
+				payloadKeys: Object.keys(n.payload).length,
+				pendingPatchKeys: n.pendingPatchKeys,
+				status: `dispatched`,
+				physicalSettled: !1,
+				inLedger: !0,
+				next: void 0
+			};
+			u ? u.next = a : l = a, u = a, f.dispatchedSnapshot = n.snapshot;
+			for (let e of Object.keys(n.payload)) i.add(e.split(`.`, 1)[0]);
+			a.observation = e.observe?.(n, r);
+			let c = (e, t) => {
+				C(a, e, t);
+			}, d = o$13(n.payload);
+			if (typeof e.adapter.__wevu_dispatchSetData == `function`) try {
+				e.adapter.__wevu_dispatchSetData(d, c, a.observation?.physical);
+			} catch (e) {
+				c(`failed`, e);
+			}
+			else o$12({
+				invoke: () => e.adapter.setData?.(d),
+				completion: `return`,
+				settle: c,
+				payload: d,
+				observer: e.adapter.setData ? a.observation?.physical : void 0
+			});
+			return r;
+		},
+		createFullPayload: (e) => {
+			let t = {}, n = new Set(Object.keys(e));
+			for (let [n, r] of Object.entries(e)) t[n] = r === void 0 ? null : r;
+			for (let e of i) n.has(e) || (t[e] = null);
+			return t;
+		},
+		dispose: () => {
+			f.disposed || (f.disposed = !0, g());
+		}
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/layoutComponentMatcher.mjs
+var e$10 = (e) => e.startsWith(`layouts/`);
+function t$8(t) {
+	let n = t.is;
+	return typeof n == `string` && e$10(n, t);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/emit.mjs
+function n$10(t) {
+	return !t || typeof t != `object` || Array.isArray(t) ? !1 : i$14(t, `bubbles`) || i$14(t, `composed`) || i$14(t, `capturePhase`);
+}
+function r$6(e) {
+	return e.includes(`:`) ? e.replace(/:/g, `-`).toLowerCase() : n$12(e);
+}
+function i$10(e) {
+	if (e.length === 0) return {
+		detail: void 0,
+		options: void 0
+	};
+	if (e.length === 1) return {
+		detail: e[0],
+		options: void 0
+	};
+	let t = e[e.length - 1];
+	if (n$10(t)) {
+		let n = e.slice(0, -1);
+		return {
+			detail: n.length <= 1 ? n[0] : n,
+			options: t
+		};
+	}
+	return {
+		detail: e,
+		options: void 0
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/nativeBridge.mjs
+var e$9 = `__wevu_native_bridge__`;
+function t$7(t) {
+	try {
+		Object.defineProperty(t, e$9, {
+			value: !0,
+			configurable: !1,
+			enumerable: !1,
+			writable: !1
+		});
+	} catch {
+		t[e$9] = !0;
+	}
+}
+function n$9(t) {
+	return typeof t == `function` && !!t[e$9];
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance/setupContext.mjs
+var p$9 = [
+	`triggerEvent`,
+	`createSelectorQuery`,
+	`createIntersectionObserver`,
+	`setData`,
+	`setUpdatePerformanceListener`
+];
+function m$7() {
+	return Object.freeze(Object.create(null));
+}
+var h$4 = () => [];
+function g$4(e) {
+	return Array.isArray(e) ? [...new Set(e.filter((e) => typeof e == `string` && e.length > 0))] : !e || typeof e != `object` ? [] : Object.entries(e).filter(([, e]) => !!e).map(([e]) => e);
+}
+function _$4(e) {
+	if (!i$14(e, "vueSlots")) return m$7();
+	let t = () => g$4(e[WEVU_SLOT_NAMES_PROP]), n = (e) => typeof e == `string` && t().includes(e);
+	return new Proxy(Object.create(null), {
+		get(e, t) {
+			if (n(t)) return h$4;
+		},
+		has(e, t) {
+			return n(t);
+		},
+		ownKeys() {
+			return t();
+		},
+		getOwnPropertyDescriptor(e, t) {
+			if (n(t)) return {
+				configurable: !0,
+				enumerable: !0,
+				value: h$4
+			};
+		},
+		set() {
+			return !1;
+		},
+		deleteProperty() {
+			return !1;
+		}
+	});
+}
+function v$3(e, t) {
+	let n = _$4(t);
+	try {
+		Object.defineProperty(e, "$slots", {
+			value: n,
+			configurable: !0,
+			enumerable: !1,
+			writable: !1
+		});
+	} catch {
+		e.$slots = n;
+	}
+	return n;
+}
+function y$3() {
+	let e = (() => {});
+	return e.stop = () => {}, e.pause = () => {}, e.resume = () => {}, e;
+}
+function b$2(e) {
+	try {
+		return t$15(e);
+	} catch {
+		return e;
+	}
+}
+function x$2(t, n, r) {
+	let i = t?.state, a = i && typeof i == `object` ? s$16(i) : void 0, o = t?.proxy, c = (e) => {
+		let t = e[r];
+		if (typeof t != `function`) return !1;
+		if (n$9(t)) return !0;
+		let i = n[r];
+		return typeof i == `function` && t === i;
+	}, u = (e) => !e || typeof e != `object` || e === n || e === o || c(e) ? !1 : typeof e[r] == `function`, d = a ? a[WEVU_NATIVE_INSTANCE_KEY] : void 0;
+	if (u(d)) return d;
+	let f = t?.instance;
+	if (u(f)) return f;
+}
+function S$2(e, t, n) {
+	t$7(n);
+	try {
+		Object.defineProperty(e, t, {
+			value: n,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		e[t] = n;
+	}
+}
+function C$2(i, o) {
+	let c = i[WEVU_SETUP_CONTEXT_INSTANCE_KEY];
+	if (c && typeof c == `object`) return c;
+	let f = Object.create(null);
+	try {
+		Object.defineProperty(f, WEVU_NATIVE_INSTANCE_KEY, {
+			configurable: !0,
+			enumerable: !1,
+			get() {
+				let t = o?.state, n = (t && typeof t == `object` ? s$16(t) : void 0)?.[WEVU_NATIVE_INSTANCE_KEY];
+				return n && typeof n == `object` ? n : i;
+			}
+		});
+	} catch {
+		f[WEVU_NATIVE_INSTANCE_KEY] = i;
+	}
+	let p = (e) => {
+		let t = o?.proxy;
+		if (t && Reflect.has(t, e)) return {
+			found: !0,
+			value: Reflect.get(t, e)
+		};
+		let n = o?.state?.["__wevuProps"] ?? i["__wevuProps"];
+		return n && typeof n == `object` && i$14(n, e) ? {
+			found: !0,
+			value: Reflect.get(n, e)
+		} : {
+			found: !1,
+			value: void 0
+		};
+	}, m = (e) => {
+		let t = x$2(o, i, e);
+		if (t) return t;
+		let n = i[e];
+		if (typeof n == `function` && !n$9(n)) return i;
+	};
+	S$2(f, `triggerEvent`, (...e) => {
+		let [t, n, r] = e, i = m(`triggerEvent`);
+		i && typeof i.triggerEvent == `function` && (e.length >= 3 ? i.triggerEvent(t, n, r) : i.triggerEvent(t, n));
+	}), S$2(f, `createSelectorQuery`, () => {
+		let e = m(`createSelectorQuery`);
+		if (e && typeof e.createSelectorQuery == `function`) return e.createSelectorQuery();
+		let a = f$14();
+		if (!o$25(`globalCreateSelectorQuery`) || !a || typeof a.createSelectorQuery != `function`) return;
+		let s = a.createSelectorQuery();
+		if (!s || !m$13().selectorQueryScopeByIn || typeof s.in != `function`) return s;
+		let c = x$2(o, i, `setData`) ?? i;
+		return s.in(c);
+	}), S$2(f, `createIntersectionObserver`, (e) => {
+		let a = m(`createIntersectionObserver`);
+		if (a && typeof a.createIntersectionObserver == `function`) return a.createIntersectionObserver(e ?? {});
+		let s = f$14();
+		if (!o$25(`globalCreateIntersectionObserver`) || !s || typeof s.createIntersectionObserver != `function`) return;
+		let c = x$2(o, i, `setData`) ?? i;
+		return m$13().intersectionObserverScopeByParameter ? s.createIntersectionObserver(c, e ?? {}) : s.createIntersectionObserver(e ?? {});
+	}), S$2(f, `setData`, (e, t) => {
+		let n = m(`setData`);
+		if (n && typeof n.setData == `function`) return n.setData(e, t);
+		let r = o?.adapter, i = typeof r?.setData == `function` ? r.setData(e) : void 0;
+		return typeof t == `function` && t(), i;
+	}), S$2(f, `setUpdatePerformanceListener`, (e) => {
+		let t = m(`setUpdatePerformanceListener`);
+		if (t && typeof t.setUpdatePerformanceListener == `function`) return t.setUpdatePerformanceListener(e);
+	});
+	let h = b$2(new Proxy(f, {
+		get(e, t, n) {
+			if (Reflect.has(e, t)) return Reflect.get(e, t, n);
+			if (t === `$el`) return x$2(o, i, `setData`) ?? i;
+			if (t === `renderRoot` || t === `shadowRoot`) return (x$2(o, i, `setData`) ?? i)[t];
+			let r = p(t);
+			if (r.found) return r.value;
+			let a = i[t];
+			return typeof a == `function` ? a.bind(i) : a;
+		},
+		has(e, t) {
+			return Reflect.has(e, t) || p(t).found || t in i;
+		},
+		set(e, t, n) {
+			return Reflect.has(e, t) ? (e[t] = n, !0) : (i[t] = n, !0);
+		}
+	}));
+	try {
+		Object.defineProperty(i, WEVU_SETUP_CONTEXT_INSTANCE_KEY, {
+			value: h,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		i[WEVU_SETUP_CONTEXT_INSTANCE_KEY] = h;
+	}
+	return h;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance/methodBridge.mjs
+function a$12(e) {
+	return !e || typeof e != `object` ? !1 : typeof e.triggerEvent == `function` || typeof e.createSelectorQuery == `function` || typeof e.createIntersectionObserver == `function` || typeof e.setData == `function`;
+}
+function o$11(t, n, r) {
+	let i = n?.[r];
+	if (typeof i != `function`) return !1;
+	if (n$9(i)) return !0;
+	let a = t?.proxy;
+	return typeof a?.[r] == `function` && i === a[r];
+}
+function s$9(e, t) {
+	if (!e || !a$12(t) || t === e.proxy) return;
+	let n = t;
+	if (o$11(e, n, `triggerEvent`) || o$11(e, n, `createSelectorQuery`) || o$11(e, n, `createIntersectionObserver`) || o$11(e, n, `setData`)) return;
+	let i = e.state;
+	if (i && typeof i == `object`) try {
+		Object.defineProperty(i, WEVU_NATIVE_INSTANCE_KEY, {
+			value: n,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		i[WEVU_NATIVE_INSTANCE_KEY] = n;
+	}
+}
+function c$9(e, r) {
+	try {
+		let a = r.methods, o = Reflect.get(e, WEVU_HOST_INSTALL_METHOD_KEY), c = typeof o == `function` ? {} : void 0;
+		for (let n of Object.keys(a)) if (!p$9.includes(n) && (c || typeof e[n] != `function`)) {
+			let t = function(...t) {
+				let r = this["$wevu"] ?? e["$wevu"];
+				s$9(r, this);
+				let a = r?.methods?.[n];
+				if (typeof a == `function`) return a.apply(r.proxy, t);
+			};
+			c ? c[n] = t : e[n] = t;
+		}
+		typeof o == `function` && o.call(e, c);
+	} catch {}
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance/nativeDeclaration.mjs
+var n$8 = /* @__PURE__ */ Symbol(`address`);
+var r$5 = /* @__PURE__ */ Symbol(`registration`);
+var i$9 = /* @__PURE__ */ Symbol(`index`);
+function a$11(e) {
+	return Array.isArray(e) && e.length === 2 && typeof e[0] == `string` && e[0] !== `` && typeof e[1] == `string` ? e : void 0;
+}
+function o$10(t) {
+	return t[n$8] === void 0 ? a$11(t.properties?.[WEVU_NATIVE_DECLARATION_ADDRESS_PROP]) : t[n$8] ?? void 0;
+}
+function s$8(e) {
+	let { owner: t, target: n, selfKey: a } = e;
+	t[i$9]?.get(a) === e && t[i$9]?.delete(a), n[r$5] === e && delete n[r$5];
+}
+function c$8(e) {
+	let { owner: t, target: n, selfKey: a } = e, o = t[i$9] ?? (t[i$9] = /* @__PURE__ */ new Map()), c = o.get(a);
+	c && c !== e && s$8(c), o.set(a, e), n[r$5] = e;
+}
+function l$8(e, t) {
+	let i = a$11(t);
+	e[n$8] = i ?? null;
+	let o = e[r$5];
+	o && o.selfKey !== i?.[0] && (s$8(o), i && (o.selfKey = i[0], c$8(o)));
+}
+function u$8(e, t) {
+	return t ? e[i$9]?.get(t)?.target : e;
+}
+function d$7(e) {
+	typeof e.detail?.register == `function` && e.detail.register(this);
+}
+function f$8(e) {
+	let n = o$10(e);
+	if (!n || typeof e.triggerEvent != `function`) return;
+	let i;
+	return e.triggerEvent(WEVU_NATIVE_DECLARATION_EVENT, { register(t) {
+		if (t === e) return;
+		let a = e[r$5];
+		a && s$8(a), c$8({
+			owner: t,
+			target: e,
+			selfKey: n[0]
+		}), i = u$8(t, n[1]);
+	} }, {
+		bubbles: !1,
+		composed: !1
+	}), i;
+}
+function p$8(e, t = !1) {
+	let a = e[r$5];
+	if (a && s$8(a), t) return;
+	let o = e[i$9];
+	if (o) {
+		for (let e of o.values()) s$8(e);
+		delete e[i$9];
+	}
+	delete e[n$8];
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance/provideContext.mjs
+function f$7(e) {
+	return !!(e && typeof e == `object` && e.__wevu && e["__wevuProvides"]);
+}
+function p$7(e) {
+	let t = e.currentTarget?.dataset?.[WEVU_NATIVE_SLOT_PARENT_DATASET_KEY], n = typeof t == `string` ? u$8(this, t) : this;
+	f$7(n) && typeof e.detail?.resolve == `function` && e.detail.resolve(n);
+}
+function m$6(e) {
+	let t = e.selectOwnerComponent;
+	if (typeof t == `function`) try {
+		let n = t.call(e);
+		if (n && n !== e && typeof n == `object` && n.__wevu) return n;
+	} catch {}
+}
+function h$3(e) {
+	if (e["__wevuNativeSlotContext"] !== !0 || typeof e.triggerEvent != `function`) return;
+	let t, n = { resolve(n) {
+		if (n !== e && f$7(n) && n !== t) {
+			if (!t) t = n;
+			else for (let e = n[WEVU_PARENT_INSTANCE_KEY]; e; e = e[WEVU_PARENT_INSTANCE_KEY]) if (e === t) {
+				t = n;
+				return;
+			}
+		}
+	} }, r = f$8(e);
+	return r && n.resolve(r), e.triggerEvent(WEVU_NATIVE_SLOT_PARENT_EVENT, n, {
+		bubbles: !0,
+		composed: !0
+	}), t;
+}
+function g$3(t, n, i) {
+	if (t$8(t)) return;
+	if (n) {
+		let e = h$3(t);
+		if (e) return e;
+	}
+	let a = t[WEVU_PARENT_INSTANCE_KEY];
+	if (a && typeof a == `object`) return a;
+	if (i !== t && f$7(i)) return i;
+	let o = m$6(t);
+	if (o) return o;
+	let s = s$21(), c = s[s.length - 1];
+	if (c && c !== t && typeof c == `object` && c.__wevu) return c;
+}
+function _$3(n) {
+	if (!t$8(n)) return;
+	let i = s$21(), a = i[i.length - 1];
+	a && a !== n && typeof a == `object` && a.__wevu && h$6(n, a);
+}
+function v$2(e, t, r = !1, i) {
+	let a = g$3(e, r, i);
+	e[WEVU_RUNTIME_APP_KEY] = t, p$11(e, t, a), _$3(e);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance/utils.mjs
+function l$7(e, t) {
+	try {
+		Object.defineProperty(e, WEVU_PROPS_KEY, {
+			value: t,
+			configurable: !0,
+			enumerable: !1,
+			writable: !1
+		});
+	} catch {
+		e[WEVU_PROPS_KEY] = t;
+	}
+}
+function u$7(e, t) {
+	try {
+		Object.defineProperty(e, WEVU_SETUP_STATE_KEY, {
+			value: t,
+			configurable: !0,
+			enumerable: !1,
+			writable: !1
+		});
+	} catch {
+		e[WEVU_SETUP_STATE_KEY] = t;
+	}
+}
+function d$6(e, t) {
+	try {
+		Object.defineProperty(e, WEVU_NATIVE_INSTANCE_KEY, {
+			value: t,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		e[WEVU_NATIVE_INSTANCE_KEY] = t;
+	}
+}
+function f$6(e, t) {
+	try {
+		Object.defineProperty(e, WEVU_RUNTIME_KEY, {
+			value: t,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		e[WEVU_RUNTIME_KEY] = t;
+	}
+}
+function p$6(e, t) {
+	try {
+		Object.defineProperty(e, "instance", {
+			value: t,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		try {
+			e.instance = t;
+		} catch {}
+	}
+}
+function m$5(e) {
+	let t = e[WEVU_SETUP_CONTEXT_INSTANCE_KEY], r = t && typeof t.setData == `function` ? t.setData : void 0;
+	if (typeof r == `function` && !n$9(r)) return r;
+	let i = e.setData;
+	if (typeof i == `function` && !n$9(i)) return i;
+}
+function h$2(e) {
+	let t = e.route;
+	if (typeof t == `string` && t) return t;
+	let n = e.is;
+	return typeof n == `string` && n ? n : `unknown`;
+}
+function g$2(e, t, n, r) {
+	try {
+		return r ? t.call(e, n, r) : t.call(e, n);
+	} catch (t) {
+		let n = h$2(e);
+		throw Error(`[wevu] setData failed (${n}): ${t instanceof Error ? t.message : String(t)}`);
+	}
+}
+function _$2(e, n, r) {
+	let i = r ? new Set(r) : void 0, a = Object.keys(e);
+	for (let r of a) if (!i$14(n, r) || i && !i.has(r)) try {
+		delete e[r];
+	} catch {}
+	let o = r ?? Object.keys(n);
+	for (let r of o) i$14(n, r) && (e[r] = n[r]);
+}
+function v$1(t, n, r = t.properties || {}) {
+	let o = n && typeof n == `object` ? n[WEVU_PROPS_KEY] : void 0, s = o && typeof o == `object` ? o : f$12({});
+	_$2(s, r, Array.isArray(t["__wevuPropKeys"]) ? t[WEVU_PROP_KEYS_KEY] : void 0), n && typeof n == `object` && l$7(n, s);
+	try {
+		Object.defineProperty(t, WEVU_PROPS_KEY, {
+			value: s,
+			configurable: !0,
+			enumerable: !1,
+			writable: !0
+		});
+	} catch {
+		t[WEVU_PROPS_KEY] = s;
+	}
+	return s;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/define/setupResult.mjs
+function i$8(e) {
+	if (Object.prototype.toString.call(e) !== `[object Object]`) return !1;
+	let t = Object.getPrototypeOf(e);
+	return t === null || t === Object.prototype;
+}
+function a$10(e) {
+	return typeof e != `object` || !e || s$15(e) || F$1(e) || Array.isArray(e) ? !0 : i$8(e);
+}
+function o$9(e, t) {
+	if (!t) return e;
+	for (let n of Object.keys(t)) {
+		let r = Object.getOwnPropertyDescriptor(t, n);
+		typeof r?.get == `function` && typeof r.set == `function` ? Object.defineProperty(e, n, r) : Object.defineProperty(e, n, {
+			configurable: !0,
+			enumerable: !0,
+			value: t[n],
+			writable: !0
+		});
+	}
+	return e;
+}
+function s$7(e, t, n) {
+	let r = Object.getOwnPropertyDescriptor(t, n);
+	return typeof r?.get != `function` || typeof r.set != `function` ? !1 : (Object.defineProperty(e, n, r), !0);
+}
+function c$7(n, i, o) {
+	let c = n?.methods ?? Object.create(null), l = n?.state ?? Object.create(null), u = n?.setupState ?? Object.create(null), d = F$1(l) ? s$16(l) : l, f = F$1(u) ? s$16(u) : u, p = !1;
+	if (n && !n.methods) try {
+		n.methods = c;
+	} catch {}
+	if (n && !n.state) try {
+		n.state = l;
+	} catch {}
+	if (n && !n.setupState) try {
+		n.setupState = u;
+	} catch {}
+	Object.keys(o).forEach((e) => {
+		let t = o[e], u = s$7(f, o, e);
+		if (typeof t == `function` && !u) {
+			let r = (...e) => t.apply(n?.proxy ?? n, e);
+			c[e] = r, l[e] = r, f[e] = r, p = !0;
+		} else {
+			if (s$12(t) && n?.__wevu_trackSetupReactiveKey?.(e), l[e] = t, t === i || !a$10(t)) try {
+				Object.defineProperty(d, e, {
+					value: t,
+					configurable: !0,
+					enumerable: !1,
+					writable: !0
+				});
+			} catch {}
+			u || (f[e] = t);
+		}
+	}), n && (n.methods = n.methods ?? c, n.state = n.state ?? l, p && n.__wevu_touchSetupMethodsVersion?.());
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance/setupPhase.mjs
+var b$1 = 0;
+function x$1(e, t) {
+	let n, r = e, i = {
+		proxy: {
+			configurable: !0,
+			enumerable: !1,
+			value: t,
+			writable: !1
+		},
+		$: {
+			configurable: !0,
+			enumerable: !1,
+			value: e,
+			writable: !1
+		},
+		uid: {
+			configurable: !0,
+			enumerable: !1,
+			value: ++b$1,
+			writable: !1
+		},
+		exposed: {
+			configurable: !0,
+			enumerable: !1,
+			get: () => n
+		}
+	};
+	for (let [e, t] of Object.entries(i)) try {
+		Object.defineProperty(r, e, t);
+	} catch {
+		`value` in t && (r[e] = t.value);
+	}
+	let a = {
+		$: {
+			configurable: !0,
+			enumerable: !1,
+			value: e,
+			writable: !1
+		},
+		$el: {
+			configurable: !0,
+			enumerable: !1,
+			value: e,
+			writable: !1
+		}
+	};
+	for (let [e, n] of Object.entries(a)) try {
+		Object.defineProperty(t, e, n);
+	} catch {
+		t[e] = n.value;
+	}
+	return (e) => {
+		n = e;
+	};
+}
+function S$1(e) {
+	return e.startsWith(`__wv_`);
+}
+function C$1(b) {
+	let { target: C, runtime: w, runtimeWithDefaults: T, runtimeState: E, runtimeProxy: D, setup: O } = b, A = v$1(C, E, C.properties || {}), j = f$12(Object.create(null)), M = new Set(Array.isArray(C["__wevuPropKeys"]) ? C[WEVU_PROP_KEYS_KEY] : []), N = (e) => typeof E == `object` && !!E && i$14(E, e);
+	(() => {
+		let e = C.properties && typeof C.properties == `object` ? C.properties : void 0;
+		for (let t of Object.keys(j)) (!e || !i$14(e, t) || S$1(t) || M.has(t) || N(t)) && delete j[t];
+		if (e) for (let [t, n] of Object.entries(e)) S$1(t) || M.has(t) || N(t) || (j[t] = n);
+	})();
+	try {
+		Object.defineProperty(C, WEVU_ATTRS_KEY, {
+			value: j,
+			configurable: !0,
+			enumerable: !1,
+			writable: !1
+		});
+	} catch {
+		C[WEVU_ATTRS_KEY] = j;
+	}
+	let P = C$2(C, T), F = x$1(C, P), I = v$3(E, A);
+	u$7(E, T.setupState ?? Object.create(null));
+	let R = b$2({
+		props: A,
+		runtime: T,
+		state: E,
+		proxy: D,
+		bindModel: w.bindModel.bind(T),
+		watch: w.watch.bind(T),
+		instance: P,
+		emit: (e, ...t) => {
+			let { detail: n, options: r } = i$10(t), i = r$6(e);
+			P.triggerEvent(i, n, r);
+		},
+		expose: (e) => {
+			C[WEVU_EXPOSED_KEY] = e, F(e);
+		},
+		attrs: j,
+		slots: I
+	}), z = x$3(!0), B = s$20(), V = l$19(), H = () => {
+		s$20() === C && l$19() === R && (u$19(V), c$22(B));
+	};
+	C[WEVU_EFFECT_SCOPE_KEY] = z, c$22(C), u$19(R);
+	try {
+		let e = z.run(() => e$13(O, A, R));
+		e && typeof e == `object` && c$7(T, C, e);
+	} finally {
+		H();
+	}
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance/setupSnapshot.mjs
+function t$6(e) {
+	return !!e && typeof e == `object` && !Array.isArray(e);
+}
+function n$7(r, i, a) {
+	if (Array.isArray(r) && Array.isArray(i)) {
+		r.splice(0, r.length, ...i);
+		return;
+	}
+	if (!t$6(r) || !t$6(i)) return;
+	let o = t$6(a) ? a : void 0;
+	for (let e of Object.keys(o ?? {})) typeof o?.[e] != `function` && typeof r[e] != `function` && !Object.prototype.hasOwnProperty.call(i, e) && delete r[e];
+	for (let [a, s] of Object.entries(i)) typeof r[a] != `function` && (s$15(r[a]) ? r[a].value = s : t$6(r[a]) && t$6(s) || Array.isArray(r[a]) && Array.isArray(s) ? n$7(r[a], s, o?.[a]) : r[a] = s);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/watch.mjs
+function e$8(t, n, r) {
+	if (typeof t == `function`) return {
+		handler: t.bind(n.proxy),
+		options: {}
+	};
+	if (typeof t == `string`) {
+		let e = n.methods?.[t] ?? r[t];
+		return typeof e == `function` ? {
+			handler: e.bind(n.proxy),
+			options: {}
+		} : void 0;
+	}
+	if (!t || typeof t != `object`) return;
+	let i = e$8(t.handler, n, r);
+	if (!i) return;
+	let a = { ...i.options };
+	return t.immediate !== void 0 && (a.immediate = t.immediate), t.deep !== void 0 && (a.deep = t.deep), {
+		handler: i.handler,
+		options: a
+	};
+}
+function t$5(e, t) {
+	let n = t.split(`.`).map((e) => e.trim()).filter(Boolean);
+	return n.length ? () => {
+		let t = e;
+		for (let e of n) {
+			if (t == null) return t;
+			t = t[e];
+		}
+		return t;
+	} : () => e;
+}
+function n$6(n, r, i) {
+	let a = [], o = n.proxy;
+	for (let [s, c] of Object.entries(r)) {
+		let r = e$8(c, n, i);
+		if (!r) continue;
+		let l = t$5(o, s), u = n.watch(l, r.handler, r.options);
+		a.push(u);
+	}
+	return a;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/runtimeInstance.mjs
+var D$1 = /* @__PURE__ */ new WeakMap();
+function O$1(e, t = /* @__PURE__ */ new WeakMap()) {
+	if (!e || typeof e != `object`) return e;
+	if (t.has(e)) return t.get(e);
+	if (Array.isArray(e)) {
+		let n = [];
+		t.set(e, n);
+		for (let r of e) n.push(O$1(r, t));
+		return n;
+	}
+	let n = {};
+	t.set(e, n);
+	for (let [r, i] of Object.entries(e)) n[r] = O$1(i, t);
+	return n;
+}
+function ve(e, t) {
+	let n = e ?? {};
+	for (let [e, r] of Object.entries(t)) {
+		let t;
+		for (let r of Object.keys(n)) if (e.startsWith(`${r}.`)) {
+			t = r;
+			break;
+		}
+		if (t) {
+			let i = { value: n[t] };
+			l$9(i, `value.${e.slice(t.length + 1)}`, r, `set`, {
+				cloneValue: !1,
+				clonedParents: /* @__PURE__ */ new WeakSet()
+			}), n[t] = i.value;
+			continue;
+		}
+		let i = `${e}.`;
+		for (let e of Object.keys(n)) e.startsWith(i) && delete n[e];
+		n[e] = r;
+	}
+	return n;
+}
+function ye(e, t, n) {
+	let r = e.data;
+	if ((!r || typeof r != `object`) && (!n || !Object.keys(n).length)) return;
+	let i = Array.isArray(t) && t.length ? new Set(t) : void 0, a = {};
+	if (r && typeof r == `object`) for (let [e, t] of Object.entries(r)) i?.has(e) || (a[e] = O$1(t));
+	if (n) for (let [e, t] of Object.entries(n)) i?.has(e) || (a[e] = O$1(t));
+	return a;
+}
+function be(e) {
+	return !!e?.__wevuHasTemplateRuntimeBindings;
+}
+function k$1(e, t, n, r, i) {
+	if (e.__wevu) return e.__wevu;
+	try {
+		return A(e, t, n, r, i);
+	} catch (t) {
+		try {
+			I(e, { skipHooks: !0 });
+		} catch {}
+		throw t;
+	}
+}
+function A(e, n, c, u, d) {
+	let f = n.__wevuSetDataOptions, p = be(n) ? a$16(`scopedSlots`, `mountRuntimeInstance(scoped-slot bindings)`) : void 0, h = p?.prepareMount(e), g = e.__wevuTemplateRefs;
+	Array.isArray(g) && g.length && a$16(`templateRefs`, `mountRuntimeInstance(template refs)`);
+	let me = o$16(f?.highFrequencyWarning) ? a$16(`setDataHighFrequencyWarning`, `mountRuntimeInstance(setData.highFrequencyWarning)`) : void 0;
+	v$2(e, n, d?.attached, d?.layoutParent), b$2(e);
+	let _ = !!f?.suspendWhenHidden, y = typeof e.route == `string` && e.route ? `page:${e.route}` : typeof e.is == `string` && e.is ? `component:${e.is}` : `unknown-target`, b = me?.createMonitor({
+		option: f?.highFrequencyWarning,
+		targetLabel: y,
+		isInPageScrollHook: () => Number(e["__wevuPageScrollHookDepth"] ?? 0) > 0
+	}), x = !0, S = !d?.deferSetData, w = !1, T = 0, k, A, j, M, N = [], P = !(WEVU_HOST_COMMIT_PROMISE_KEY in e), F = 0, I = !1, L, R, z, B, V = () => {
+		!F && !k && !R && (I = !1, L = void 0);
+	}, H = () => {
+		F || k || (I ? B?.(L) : z?.(), R = void 0, z = void 0, B = void 0);
+	}, xe = () => {
+		P && (F += 1);
+	}, U = (e = `committed`, t) => {
+		P && !w && (e === `failed` && !I && (I = !0, L = t), --F, H());
+	}, Se = (e) => U(`failed`, e);
+	P && Object.defineProperty(e, "__wevuHostCommitPromise", {
+		configurable: !0,
+		enumerable: !1,
+		get: () => !F && !k ? I ? Promise.reject(L) : void 0 : (R ?? (R = new Promise((e, t) => {
+			z = e, B = t;
+		})), R)
+	});
+	let W = () => {
+		h && r$11.scopedSlots?.refresh(e, h);
+	}, G = () => {
+		if (w) return;
+		let t = e.__wevuTemplateRefs;
+		!r$11.templateRefs && (!Array.isArray(t) || !t.length) ? P && U() : a$16(`templateRefs`, `mountRuntimeInstance(template ref completion)`).schedule(e, P ? U : void 0, e, P ? Se : void 0);
+	}, Ce = () => {
+		h && p?.syncNativeOwnerId(e, h);
+	}, we = (e, t) => {
+		let n = {
+			settle: e,
+			next: void 0
+		};
+		j ? j.next = n : A = n, j = n, t && (M ?? (M = [])).push(t);
+	}, K = (e, t, n) => {
+		let r = e, i = !0;
+		for (; r;) {
+			let e = r.next;
+			r.next = void 0, t === `failed` && !i ? r.settle(`abandoned`) : r.settle(t, n), r = e, i = !1;
+		}
+	}, Te = (t, n, r) => {
+		let i = T;
+		xe(), W(), o$12({
+			observer: r,
+			invoke: (n) => {
+				let i = m$5(e);
+				if (!i) n();
+				else return r && i$15(r, t), g$2(e, i, t, n);
+			},
+			completion: `callback`,
+			settle: (e, t) => {
+				if (!(w || i !== T)) {
+					if (e !== `committed`) U(e, t), n(e, t);
+					else {
+						try {
+							n(e, t);
+						} catch (e) {
+							throw U(`failed`, e), e;
+						}
+						G();
+					}
+				}
+			}
+		});
+	}, Ee = () => {
+		if (!k) return;
+		let e = k, t = A, n = N;
+		k = void 0, A = void 0, j = void 0, N = [];
+		let r = M;
+		M = void 0, Te(e, (e, r) => {
+			if (e === `committed`) try {
+				for (let e of n) e();
+			} finally {
+				K(t, e, r);
+			}
+			else K(t, e, r);
+		}, r && {
+			dispatch: (e) => r.forEach((t) => t.dispatch(e)),
+			returned: (e) => r.forEach((t) => t.returned(e)),
+			complete: (e) => r.forEach((t) => t.complete(e))
+		});
+	}, De = () => {
+		M = void 0;
+		let e = A;
+		k = void 0, A = void 0, j = void 0, N = [], K(e, `abandoned`), H();
+	}, Oe = (e) => {
+		V(), k = ve(k, e);
+	}, q = {
+		setData(t, n) {
+			if (b?.(), !S || _ && !x) {
+				Oe(t), n && N.push(n), W();
+				return;
+			}
+			W(), V(), xe();
+			let r = m$5(e);
+			if (!r) {
+				try {
+					n?.();
+				} catch (e) {
+					throw U(`failed`, e), e;
+				}
+				G();
+				return;
+			}
+			let i = !0, a = !1, o = !1, s = !1, c = (e) => {
+				s || (s = !0, U(`failed`, e));
+			}, l = () => {
+				s || (s = !0, G());
+			}, u = () => {
+				try {
+					n?.();
+				} catch (e) {
+					throw c(e), e;
+				}
+				i ? a = !0 : o || l();
+			}, d;
+			try {
+				d = g$2(e, r, t, u);
+			} catch (e) {
+				throw c(e), e;
+			}
+			return i = !1, o = !!(d && typeof d.then == `function`), d && typeof d.then == `function` ? d.then(() => {
+				l();
+			}, (e) => {
+				throw c(e), e;
+			}) : (a && l(), d);
+		},
+		__wevu_dispatchSetData(e, t, n) {
+			b?.(), w ? t(`abandoned`) : !S || _ && !x ? (Oe(e), we(t, n), W()) : (V(), Te(e, t, n));
+		},
+		__wevu_enableSetData(e = !1) {
+			S = !0, e ? De() : Ee();
+		},
+		__wevu_setVisibility(e) {
+			x = e, x && S && Ee();
+		},
+		__wevu_disposeSetData() {
+			w || (w = !0, T += 1, k = void 0, A = void 0, j = void 0, N = [], F = 0, I = !1, L = void 0, H(), P && Reflect.deleteProperty(e, "__wevuHostCommitPromise"));
+		}
+	};
+	Object.defineProperty(q, "__wevu_reportSetDataError", {
+		configurable: !0,
+		enumerable: !1,
+		value: (t) => {
+			v$5(e, `onError`, [t]);
+		},
+		writable: !1
+	}), Object.defineProperty(q, "__wevu_targetLabel", {
+		configurable: !0,
+		enumerable: !1,
+		value: y,
+		writable: !1
+	});
+	let J = e.properties;
+	J && typeof J == `object` && Object.defineProperty(q, "__wevu_initialProps", {
+		configurable: !0,
+		enumerable: !1,
+		value: J,
+		writable: !1
+	}), Array.isArray(d?.snapshotOmitKeys) && d.snapshotOmitKeys.length && Object.defineProperty(q, "__wevu_snapshotOmitKeys", {
+		configurable: !0,
+		enumerable: !1,
+		value: d.snapshotOmitKeys,
+		writable: !1
+	});
+	let Y = ye(e, d?.snapshotOmitKeys);
+	Y && Object.keys(Y).length && Object.defineProperty(q, "__wevu_initialSnapshot", {
+		configurable: !0,
+		enumerable: !1,
+		value: Y,
+		writable: !1
+	}), h && Object.defineProperty(q, "__wevu_initialState", {
+		configurable: !0,
+		enumerable: !1,
+		value: { ["__wvOwnerId"]: h.ownerId },
+		writable: !1
+	}), (d?.deferSetData || u || J && typeof J == `object` && Object.keys(J).length > 0) && Object.defineProperty(q, "__wevu_deferInitialSnapshot", {
+		configurable: !0,
+		enumerable: !1,
+		value: !0,
+		writable: !1
+	});
+	let X = n.mount(q);
+	p$6(X, e);
+	let ke = X?.proxy ?? {}, Z = X?.state ?? {}, Ae = X?.setupState ?? Object.create(null);
+	Z && typeof Z == `object` && (f$6(Z, X), d$6(Z, e));
+	let je = X?.computed ?? Object.create(null);
+	if (!X?.methods) try {
+		X.methods = Object.create(null);
+	} catch {}
+	let Me = X?.methods ?? Object.create(null), Ne = X?.watch ?? (() => y$3()), Pe = X?.bindModel ?? (() => {}), Q = {
+		...X ?? {},
+		state: Z,
+		setupState: Ae,
+		proxy: ke,
+		methods: Me,
+		computed: je,
+		watch: Ne,
+		bindModel: Pe,
+		snapshot: X?.snapshot ?? (() => Object.create(null)),
+		unmount: X?.unmount ?? (() => {})
+	};
+	Object.defineProperty(Q, "__wevu_initialRuntimeSnapshot", {
+		configurable: !0,
+		enumerable: !1,
+		value: O$1(Z),
+		writable: !1
+	});
+	let Fe = Q, Ie = {
+		__wevu_flushSetupSnapshotSync: X.__wevu_flushSetupSnapshotSync,
+		__wevu_touchSetupMethodsVersion: X.__wevu_touchSetupMethodsVersion,
+		__wevu_trackSetupReactiveKey: X.__wevu_trackSetupReactiveKey,
+		__wevu_cloneDispatchedSnapshot: X.__wevu_cloneDispatchedSnapshot,
+		[WEVU_PROPS_DERIVED_KEYS_KEY]: X[WEVU_PROPS_DERIVED_KEYS_KEY]
+	};
+	for (let [e, t] of Object.entries(Ie)) t && Object.defineProperty(Q, e, {
+		configurable: !0,
+		enumerable: !1,
+		value: t,
+		writable: !0
+	});
+	Object.defineProperty(e, WEVU_PUBLIC_RUNTIME_KEY, {
+		value: Q,
+		configurable: !0,
+		enumerable: !1,
+		writable: !1
+	}), e.__wevu = Q;
+	v$3(Z, v$1(e, Z)), h && p?.attachMount(e, Q, h, !!d?.deferSetData), Ce(), u && C$1({
+		target: e,
+		runtime: X,
+		runtimeWithDefaults: Q,
+		runtimeState: Z,
+		runtimeProxy: ke,
+		setup: u
+	});
+	let $ = c ? n$6(Q, c, e) : [];
+	if ($.length && (e["__wevuWatchStops"] = $), u) d?.deferSetData || Fe.__wevu_flushSetupSnapshotSync?.(), d?.deferSetData || W();
+	else !d?.deferSetData && e.properties && typeof e.properties == `object` && Object.keys(e.properties).length > 0 && (Fe.__wevu_flushSetupSnapshotSync?.(), W());
+	return c$9(e, X), X;
+}
+function j(e, t, n) {
+	for (let e of Reflect.ownKeys(t)) Reflect.has(n, e) || Reflect.getOwnPropertyDescriptor(t, e)?.configurable && Reflect.deleteProperty(t, e);
+	for (let e of Reflect.ownKeys(n)) {
+		let r = Reflect.getOwnPropertyDescriptor(n, e);
+		if (r) try {
+			Reflect.defineProperty(t, e, r);
+		} catch {
+			try {
+				t[e] = n[e];
+			} catch {}
+		}
+	}
+	f$6(t.state, t);
+	let r = D$1.get(n);
+	return r && D$1.set(t, r), e.__wevu = t, Object.defineProperty(e, WEVU_PUBLIC_RUNTIME_KEY, {
+		value: t,
+		configurable: !0,
+		enumerable: !1,
+		writable: !1
+	}), t;
+}
+function M(e, r, i) {
+	let a = e.state, o = e.setupState, s = {};
+	for (let e of Object.keys(r ?? {})) {
+		if (!Object.prototype.hasOwnProperty.call(a, e)) continue;
+		let r = o?.[e];
+		(!o || !Object.prototype.hasOwnProperty.call(o, e) || s$15(r) || F$1(r)) && (s[e] = i && Object.prototype.hasOwnProperty.call(i, e) ? O$1(i[e]) : O$1(s$15(r) ? r.value : a[e]));
+	}
+	return s;
+}
+function N$1(e, r) {
+	let i = e.__wevu, a = i?.state, o = i?.setupState, s = r?.nativeData ?? e.data;
+	if (!a || typeof a != `object` || !s || typeof s != `object`) return;
+	let c = i?.__wevu_initialRuntimeSnapshot;
+	for (let [e, i] of Object.entries(s)) if (e && e !== `undefined` && Object.prototype.hasOwnProperty.call(a, e)) try {
+		let s = o?.[e], l = O$1(i);
+		if (o && Object.prototype.hasOwnProperty.call(o, e) && (!r?.includeSetupState || !s$15(s) && !F$1(s)) || !r?.includeSetupState && c && Object.prototype.hasOwnProperty.call(c, e) && !c$10(a[e], c[e], 20, { keys: 1e4 }) || !r?.includeSetupState && c && !Object.prototype.hasOwnProperty.call(c, e)) continue;
+		if (s$15(s)) {
+			s.value = l;
+			continue;
+		}
+		if (F$1(s) && l && typeof l == `object`) {
+			n$7(s, l, r?.initialSetupState?.[e]);
+			continue;
+		}
+		a[e] = l;
+	} catch {}
+}
+function P(e, t) {
+	let n = e.__wevu?.adapter;
+	N$1(e, { includeSetupState: t?.rehydrateSetupState }), n?.__wevu_enableSetData?.(!0), e.__wevu?.__wevu_flushSetupSnapshotSync?.();
+}
+function F(e, t) {
+	(e.__wevu?.adapter)?.__wevu_setVisibility?.(t);
+}
+function I(t, n) {
+	let r = t.__wevu, a = t[WEVU_WATCH_STOPS_KEY], l = t[WEVU_EFFECT_SCOPE_KEY];
+	e$17([
+		() => {
+			if (!n?.skipHooks && r && t["__wevuHooks"]?.["__wevuOnBeforeUnmount"]) {
+				if (l?.active) l.run(() => v$5(t, WEVU_ON_BEFORE_UNMOUNT_HOOK));
+				else {
+					let n = x$3(!0);
+					e$17([() => n.run(() => v$5(t, WEVU_ON_BEFORE_UNMOUNT_HOOK)), () => n.stop()]);
+				}
+			}
+		},
+		...t["__wevuNativeSlotContext"] === !0 ? [() => p$8(t, n?.preserveNativeDeclarationChildren)] : [],
+		() => r$11.scopedSlots?.teardown(t),
+		() => {
+			Array.isArray(t.__wevuTemplateRefs) && t.__wevuTemplateRefs.length > 0 && a$16(`templateRefs`, `teardownRuntimeInstance(template refs)`).clear(t);
+		},
+		() => {
+			!n?.skipHooks && r && t["__wevuHooks"] && v$5(t, `onUnload`, []);
+		},
+		() => {
+			t["__wevuHooks"] && (t["__wevuHooks"] = void 0);
+		},
+		() => {
+			if (Array.isArray(a)) for (let e of a) try {
+				e();
+			} catch {}
+		},
+		() => {
+			t[WEVU_WATCH_STOPS_KEY] = void 0;
+		},
+		() => {
+			l?.stop();
+		},
+		() => {
+			t[WEVU_EFFECT_SCOPE_KEY] = void 0;
+		},
+		() => r?.unmount(),
+		() => {
+			(r?.adapter)?.__wevu_disposeSetData?.();
+		},
+		() => {
+			delete t[WEVU_SETUP_CONTEXT_INSTANCE_KEY], delete t[WEVU_EXPOSED_KEY];
+		},
+		() => {
+			delete t.__wevu;
+		},
+		() => {
+			"$wevu" in t && delete t["$wevu"];
+		},
+		() => {
+			delete t[WEVU_PARENT_INSTANCE_KEY];
+		},
+		() => {
+			delete t[WEVU_PROVIDES_KEY];
+		},
+		() => {
+			delete t[WEVU_RUNTIME_APP_KEY];
+		}
+	]);
+}
+function L(e, t, n, r, i) {
+	let a = e.__wevu, o = a ? D$1.get(a) : void 0, s = a ? M(a, e.data, i?.stateSnapshot) : void 0, c = e[WEVU_PARENT_INSTANCE_KEY], l = c && t$8(c) ? c : void 0;
+	I(e, {
+		skipHooks: !0,
+		preserveNativeDeclarationChildren: !0
+	});
+	let u = k$1(e, t, n, r, {
+		deferSetData: !0,
+		snapshotOmitKeys: i?.snapshotOmitKeys,
+		attached: i?.attached,
+		layoutParent: l
+	}), d = s ?? (i?.stateSnapshot ? M(u, i.stateSnapshot, i.stateSnapshot) : void 0);
+	if (d) {
+		let t = e.data;
+		t && typeof t == `object` && Object.assign(t, O$1(d)), N$1(e, {
+			includeSetupState: !0,
+			nativeData: d,
+			initialSetupState: o
+		});
+	}
+	return !a || a === u ? u : j(e, a, u);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/app.mjs
+var l$6 = `__wevuAppGlobalListeners`;
+var u$6 = `__wevuOnMemoryWarningListener`;
+function d$5(r) {
+	let i = !!r[WEVU_HOOKS_KEY]?.onMemoryWarning;
+	if (!o$25(`appMemoryWarningListener`)) {
+		delete r[u$6];
+		return;
+	}
+	let o = f$14(), s = o?.onMemoryWarning, c = o?.offMemoryWarning;
+	if (typeof s != `function`) return;
+	let l = r[u$6];
+	if (typeof l == `function` && typeof c == `function`) try {
+		c(l);
+	} catch {}
+	if (!i) {
+		delete r[u$6];
+		return;
+	}
+	let d = (e) => {
+		v$5(r, `onMemoryWarning`, [e]);
+	};
+	r[u$6] = d, s(d);
+}
+function f$5(r, i) {
+	var o;
+	let { hookName: s, onApiName: c, offApiName: u, capabilityName: d, userHandler: f } = i, p = !!r[WEVU_HOOKS_KEY]?.[s], m = (o = r)[l$6] ?? (o[l$6] = Object.create(null)), h = m[s];
+	if (!o$25(d)) {
+		delete m[s], delete r[s];
+		return;
+	}
+	let g = f$14(), _ = g?.[c], v = g?.[u];
+	if (typeof h == `function` && typeof v == `function`) try {
+		v(h);
+	} catch {}
+	if (!p && typeof f != `function`) {
+		delete m[s];
+		return;
+	}
+	let y = (...e) => {
+		v$5(r, s, e), typeof f == `function` && f.apply(r, e);
+	};
+	r[s] = y, m[s] = y, typeof _ == `function` && _(y);
+}
+function p$5(e, t) {
+	f$5(e, {
+		hookName: `onError`,
+		onApiName: `onError`,
+		offApiName: `offError`,
+		capabilityName: `appErrorListener`,
+		userHandler: t.onError
+	}), f$5(e, {
+		hookName: `onPageNotFound`,
+		onApiName: `onPageNotFound`,
+		offApiName: `offPageNotFound`,
+		capabilityName: `appPageNotFoundListener`,
+		userHandler: t.onPageNotFound
+	}), f$5(e, {
+		hookName: `onUnhandledRejection`,
+		onApiName: `onUnhandledRejection`,
+		offApiName: `offUnhandledRejection`,
+		capabilityName: `appUnhandledRejectionListener`,
+		userHandler: t.onUnhandledRejection
+	}), f$5(e, {
+		hookName: `onThemeChange`,
+		onApiName: `onThemeChange`,
+		offApiName: `offThemeChange`,
+		capabilityName: `appThemeChangeListener`,
+		userHandler: t.onThemeChange
+	});
+}
+function m$4(e, t, a, l, u) {
+	if (typeof App != `function`) throw TypeError(`createApp 需要全局 App 构造器可用`);
+	let f = Object.keys(t ?? {}), m = { ...u };
+	m.globalData = m.globalData ?? {};
+	let h = t ?? {}, g = h[WEVU_INLINE_MAP_KEY], _ = Object.prototype.hasOwnProperty.call(h, "__weapp_vite_inline_map") && g && typeof g == `object` && Object.keys(g).length > 0;
+	!m["__weapp_vite_inline"] && _ && (m["__weapp_vite_inline"] = a$16(`inlineEvents`, `registerApp(inline event metadata)`).handler);
+	let v = m.onLaunch, y = m.onError, b = m.onPageNotFound, x = m.onUnhandledRejection, S = m.onThemeChange;
+	m.onLaunch = function(...t) {
+		this[WEVU_IS_APP_INSTANCE_KEY] = !0, k$1(this, e, a, l), d$5(this), p$5(this, {
+			onError: y,
+			onPageNotFound: b,
+			onUnhandledRejection: x,
+			onThemeChange: S
+		}), v$5(this, `onLaunch`, t), typeof v == `function` && v.apply(this, t);
+	};
+	let C = m.onShow;
+	m.onShow = function(...e) {
+		v$5(this, `onShow`, e), typeof C == `function` && C.apply(this, e);
+	};
+	let w = m.onHide;
+	m.onHide = function(...e) {
+		v$5(this, `onHide`, e), typeof w == `function` && w.apply(this, e);
+	}, delete m.onError, delete m.onPageNotFound, delete m.onUnhandledRejection, delete m.onThemeChange;
+	for (let e of f) {
+		let t = m[e];
+		m[e] = function(...n) {
+			let r = this.__wevu, i, a = r?.methods?.[e];
+			return a && (i = a.apply(r.proxy, n)), typeof t == `function` ? t.apply(this, n) : i;
+		};
+	}
+	App(m);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/features.mjs
+function e$7(e) {
+	let { features: t, userOnSaveExitState: n, userOnPullDownRefresh: r, userOnReachBottom: i, userOnPageScroll: a, userOnRouteDone: o, userOnTabItemTap: s, userOnResize: c, userOnShareAppMessage: l, userOnShareTimeline: u, userOnAddToFavorites: d } = e, f = typeof r == `function` || !!t.enableOnPullDownRefresh, p = typeof i == `function` || !!t.enableOnReachBottom, m = typeof a == `function` || !!t.enableOnPageScroll, h = typeof o == `function` || !!t.enableOnRouteDone, g = !!t.enableOnRouteDoneFallback, _ = typeof s == `function` || !!t.enableOnTabItemTap, v = typeof c == `function` || !!t.enableOnResize, y = typeof u == `function` || !!t.enableOnShareTimeline, b = typeof l == `function` || !!t.enableOnShareAppMessage, x = typeof d == `function` || !!t.enableOnAddToFavorites, S = typeof n == `function` || !!t.enableOnSaveExitState, C = () => {};
+	return {
+		enableOnPullDownRefresh: f,
+		enableOnReachBottom: p,
+		enableOnPageScroll: m,
+		enableOnRouteDone: h,
+		enableOnRouteDoneFallback: g,
+		enableOnTabItemTap: _,
+		enableOnResize: v,
+		enableOnShareAppMessage: b,
+		enableOnShareTimeline: y,
+		enableOnAddToFavorites: x,
+		enableOnSaveExitState: S,
+		effectiveOnSaveExitState: typeof n == `function` ? n : (() => ({ data: void 0 })),
+		effectiveOnPullDownRefresh: typeof r == `function` ? r : C,
+		effectiveOnReachBottom: typeof i == `function` ? i : C,
+		effectiveOnPageScroll: typeof a == `function` ? a : C,
+		effectiveOnRouteDone: typeof o == `function` ? o : C,
+		effectiveOnTabItemTap: typeof s == `function` ? s : C,
+		effectiveOnResize: typeof c == `function` ? c : C,
+		effectiveOnShareAppMessage: typeof l == `function` ? l : C,
+		effectiveOnShareTimeline: typeof u == `function` ? u : C,
+		effectiveOnAddToFavorites: typeof d == `function` ? d : (() => ({}))
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/router/routeSync.mjs
+var n$5 = /* @__PURE__ */ new Set();
+function a$9(e) {
+	for (let t of n$5) try {
+		t(e);
+	} catch {}
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/navigationLifecycle.mjs
+var e$6;
+function n$4(...t) {
+	return e$6?.ensure(...t);
+}
+function r$4(t) {
+	e$6?.cancel(t);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/lifecycle/optionalHooks.mjs
+function a$8(a, o) {
+	let { enableOnSaveExitState: s, enableOnPullDownRefresh: c, enableOnReachBottom: l, enableOnPageScroll: u, enableOnRouteDone: d, enableOnTabItemTap: f, enableOnResize: p, enableOnShareAppMessage: m, enableOnShareTimeline: h, enableOnAddToFavorites: g, effectiveOnSaveExitState: _, effectiveOnPullDownRefresh: v, effectiveOnReachBottom: y, effectiveOnPageScroll: b, effectiveOnRouteDone: x, effectiveOnTabItemTap: S, effectiveOnResize: C, effectiveOnShareAppMessage: w, effectiveOnShareTimeline: T, effectiveOnAddToFavorites: E, hasHook: D } = o;
+	s && (a.onSaveExitState = function(...e) {
+		let n = y$5(this, `onSaveExitState`, e);
+		return n === void 0 ? _.apply(this, e) : n;
+	}), c && (a.onPullDownRefresh = function(...t) {
+		if (v$5(this, `onPullDownRefresh`, t), !D(this, `onPullDownRefresh`)) return v.apply(this, t);
+	}), l && (a.onReachBottom = function(...t) {
+		if (v$5(this, `onReachBottom`, t), !D(this, `onReachBottom`)) return y.apply(this, t);
+	}), u && (a.onPageScroll = function(...e) {
+		return a$23(this, e, D(this, `onPageScroll`) ? void 0 : b);
+	}), d && (a.onRouteDone = function(...t) {
+		if (!this["__wevuRouteDoneInTick"] && (this["__wevuRouteDoneInTick"] = !0, Promise.resolve().then(() => {
+			this["__wevuRouteDoneInTick"] = !1;
+		}), this["__wevuRouteDoneCalled"] = !0, v$5(this, `onRouteDone`, t), !D(this, `onRouteDone`))) return x.apply(this, t);
+	}), f && (a.onTabItemTap = function(...t) {
+		if (v$5(this, `onTabItemTap`, t), !D(this, `onTabItemTap`)) return S.apply(this, t);
+	}), p && (a.onResize = function(...t) {
+		if (v$5(this, `onResize`, t), !D(this, `onResize`)) return C.apply(this, t);
+	}), m && (a.onShareAppMessage = function(...e) {
+		let n = y$5(this, `onShareAppMessage`, e);
+		return n === void 0 ? w.apply(this, e) : n;
+	}), h && (a.onShareTimeline = function(...e) {
+		let n = y$5(this, `onShareTimeline`, e);
+		return n === void 0 ? T.apply(this, e) : n;
+	}), g && (a.onAddToFavorites = function(...e) {
+		let n = y$5(this, `onAddToFavorites`, e);
+		return n === void 0 ? E.apply(this, e) : n;
+	});
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/lifecycle.mjs
+function y$2(y) {
+	let { runtimeApp: b, watch: x, setup: S, userOnLoad: C, userOnUnload: w, userOnShow: T, userOnHide: E, userOnReady: D, isPage: O, enableOnSaveExitState: k, enableOnPullDownRefresh: A, enableOnReachBottom: j, enableOnPageScroll: M, enableOnRouteDone: N, enableOnRouteDoneFallback: P$4, enableOnTabItemTap: F$3, enableOnResize: I$3, enableOnShareAppMessage: L, enableOnShareTimeline: R, enableOnAddToFavorites: z, syncWevuPropsFromValues: B, effectiveOnSaveExitState: V, effectiveOnPullDownRefresh: H, effectiveOnReachBottom: U, effectiveOnPageScroll: W, effectiveOnRouteDone: G, effectiveOnTabItemTap: K, effectiveOnResize: q, effectiveOnShareAppMessage: J, effectiveOnShareTimeline: Y, effectiveOnAddToFavorites: X, hasHook: Z } = y, Q = (e) => {
+		e.__wevu?.__wevu_flushSetupSnapshotSync?.();
+	}, $ = {
+		onLoad(...t) {
+			if (this["__wevuOnLoadCalled"]) return;
+			this[WEVU_ON_LOAD_CALLED_KEY] = !0;
+			let n = () => {
+				k$1(this, b, x, S);
+				let n = t[0] && typeof t[0] == `object` ? t[0] : f$11(this);
+				if (B?.(this, n), Q(this), P(this), O && m$10({
+					enableOnShareAppMessage: L,
+					enableOnShareTimeline: R
+				}), v$5(this, `onLoad`, t), typeof C == `function`) return C.apply(this, t.length ? t : [n]);
+			};
+			return (O ? n$4(this, t[0], { onComplete: (e) => {
+				e && n();
+			} }) : void 0) || n();
+		},
+		onUnload(...e) {
+			let t;
+			return e$17([
+				() => r$4(this),
+				() => {
+					O && d$10(this);
+				},
+				() => I(this),
+				() => {
+					typeof w == `function` && (t = w.apply(this, e));
+				}
+			]), t;
+		},
+		onShow(...t) {
+			if (O && (p$12(), u$12(this), this["__wevuOnLoadCalled"] || $.onLoad.call(this, f$11(this)), B?.(this, f$11(this)), Q(this), m$10({
+				enableOnShareAppMessage: L,
+				enableOnShareTimeline: R
+			}), this["__wevuRouteDoneCalled"] = !1), F(this, !0), O && a$9({
+				page: this,
+				source: `page`
+			}), v$5(this, `onShow`, t), typeof T == `function`) return T.apply(this, t);
+		},
+		onHide(...t) {
+			if (O && d$10(this), F(this, !1), v$5(this, `onHide`, t), typeof E == `function`) return E.apply(this, t);
+		},
+		onReady(...n) {
+			if (O && (this["__wevuOnLoadCalled"] || $.onLoad.call(this, f$11(this)), B?.(this, f$11(this)), Q(this), m$10({
+				enableOnShareAppMessage: L,
+				enableOnShareTimeline: R
+			})), !this["__wevuReadyCalled"]) {
+				if (this["__wevuReadyCalled"] = !0, O && N && P$4) {
+					let e = this;
+					setTimeout(() => {
+						e["__wevuRouteDoneCalled"] || $.onRouteDone?.call(e);
+					}, 0);
+				}
+				let r = () => {
+					v$5(this, `onReady`, n), typeof D == `function` && D.apply(this, n);
+				}, i = () => {
+					Array.isArray(this.__wevuTemplateRefs) && this.__wevuTemplateRefs.length > 0 ? r$11.templateRefs?.schedule(this, r) : r();
+				};
+				O && n$4(this, void 0, {
+					start: !1,
+					onComplete: (e) => {
+						e && i();
+					}
+				}) || i();
+			} else if (typeof D == `function`) return D.apply(this, n);
+		}
+	};
+	return a$8($, {
+		enableOnSaveExitState: k,
+		enableOnPullDownRefresh: A,
+		enableOnReachBottom: j,
+		enableOnPageScroll: M,
+		enableOnRouteDone: N,
+		enableOnTabItemTap: F$3,
+		enableOnResize: I$3,
+		enableOnShareAppMessage: L,
+		enableOnShareTimeline: R,
+		enableOnAddToFavorites: z,
+		effectiveOnSaveExitState: V,
+		effectiveOnPullDownRefresh: H,
+		effectiveOnReachBottom: U,
+		effectiveOnPageScroll: W,
+		effectiveOnRouteDone: G,
+		effectiveOnTabItemTap: K,
+		effectiveOnResize: q,
+		effectiveOnShareAppMessage: J,
+		effectiveOnShareTimeline: Y,
+		effectiveOnAddToFavorites: X,
+		hasHook: Z
+	}), $;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/internal.mjs
+function e$5(e, t, n) {
+	let r = e[t];
+	if (!r) throw Error(`计算属性 "${t}" 是只读的`);
+	r(n);
+}
+function t$4(e) {
+	if (e == null) return e;
+	if (typeof e == `object`) {
+		if (`detail` in e && e.detail && `value` in e.detail) return e.detail.value;
+		if (`target` in e && e.target && `value` in e.target) return e.target.value;
+	}
+	return e;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/methods.mjs
+function u$5(u) {
+	let { userMethods: d, runtimeMethods: f } = u, p = { ...d }, m = f ?? {}, h = m[WEVU_INLINE_MAP_KEY], g = Object.prototype.hasOwnProperty.call(m, "__weapp_vite_inline_map") && h && typeof h == `object` && Object.keys(h).length > 0 ? a$16(`inlineEvents`, `createComponentMethods(inline event metadata)`) : r$11.inlineEvents;
+	!p["__weapp_vite_inline"] && g && (p["__weapp_vite_inline"] = g.handler), p["__weapp_vite_model"] || (p["__weapp_vite_model"] = function(e) {
+		let t = e?.currentTarget?.dataset?.wvModel ?? e?.target?.dataset?.wvModel;
+		if (typeof t != `string` || !t) return;
+		let r = this.__wevu;
+		if (!r || typeof r.bindModel != `function`) return;
+		let i = t$4(e);
+		try {
+			r.bindModel(t).update(i);
+		} catch {}
+	}), r$11.jsxIslands?.attachMethods(p), !p["__weapp_vite_owner"] && typeof f?.["__weapp_vite_owner"] == `function` && (p["__weapp_vite_owner"] = f["__weapp_vite_owner"]);
+	let _ = Object.keys(f ?? {});
+	function v(e) {
+		let t = e.__wevu;
+		if (t) return t;
+		let n = e.$state;
+		if (n && typeof n == `object`) return n[WEVU_RUNTIME_KEY];
+	}
+	function y(e, t) {
+		if (e?.proxy === t) return;
+		let n = e?.proxy, r = (e) => {
+			let r = t[e];
+			if (typeof r != `function`) return !1;
+			let i = n?.[e];
+			return typeof i == `function` && r === i;
+		};
+		if (r(`triggerEvent`) || r(`createSelectorQuery`) || r(`createIntersectionObserver`) || r(`setData`) || typeof t.triggerEvent != `function` && typeof t.createSelectorQuery != `function` && typeof t.createIntersectionObserver != `function` && typeof t.setData != `function`) return;
+		let i = e?.state;
+		if (i && typeof i == `object` && t.$state !== i) try {
+			Object.defineProperty(i, WEVU_NATIVE_INSTANCE_KEY, {
+				value: t,
+				configurable: !0,
+				enumerable: !1,
+				writable: !0
+			});
+		} catch {
+			i[WEVU_NATIVE_INSTANCE_KEY] = t;
+		}
+	}
+	for (let e of _) {
+		if (e === "__weapp_vite_inline_map" || e.startsWith("__weapp_vite_")) continue;
+		let t = p[e];
+		p[e] = function(...n) {
+			let r = v(this);
+			y(r, this);
+			let i, a = r?.methods?.[e];
+			if (a && (i = a.apply(r.proxy, n)), typeof t == `function`) {
+				let e = t.apply(this, n);
+				return e === void 0 ? i : e;
+			}
+			return i;
+		};
+	}
+	return { finalMethods: p };
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/options.mjs
+function i$7(e, t = /* @__PURE__ */ new WeakMap()) {
+	if (!e || typeof e != `object`) return e;
+	if (t.has(e)) return t.get(e);
+	if (Array.isArray(e)) {
+		let n = [];
+		t.set(e, n);
+		for (let r of e) n.push(i$7(r, t));
+		return n;
+	}
+	let n = {};
+	t.set(e, n);
+	for (let [r, a] of Object.entries(e)) n[r] = i$7(a, t);
+	return n;
+}
+function a$7(e) {
+	let t = e.route;
+	if (typeof t == `string` && t) return t;
+	let n = e.is;
+	return typeof n == `string` && n ? n : `unknown`;
+}
+function o$8(a) {
+	let { methods: o = {}, lifetimes: s = {}, pageLifetimes: c = {}, options: l = {}, ...u } = a, d = u.onLoad, f = u.onUnload, p = u.onShow, m = u.onHide, h = u.onReady, g = u.onSaveExitState, _ = u.onPullDownRefresh, v = u.onReachBottom, y = u.onPageScroll, b = u.onRouteDone, x = u.onTabItemTap, S = u.onResize, C = u.onShareAppMessage, w = u.onShareTimeline, T = u.onAddToFavorites, E = u.features ?? {}, D = [
+		d,
+		f,
+		p,
+		m,
+		h,
+		g,
+		_,
+		v,
+		y,
+		b,
+		x,
+		S,
+		C,
+		w,
+		T
+	].some((e) => typeof e == `function`), O = i$14(u, `__wevu_isPage`) ? u.__wevu_isPage === !0 : Object.keys(E ?? {}).length > 0 || D, k = { ...u }, A = /* @__PURE__ */ new Set([
+		`data`,
+		`behaviors`,
+		`relations`,
+		`externalClasses`,
+		`options`,
+		`properties`,
+		`observers`,
+		`pureDataPattern`,
+		`virtualHost`,
+		`definitionFilter`,
+		`export`,
+		`__wevuTemplateRefs`,
+		`__wevuLayoutHosts`,
+		WEVU_PROPS_ALIASES_KEY,
+		WEVU_PROPS_DERIVED_KEYS_KEY,
+		`setupLifecycle`,
+		`features`,
+		`__wevu_isPage`
+	]), j = [];
+	for (let [e, t] of Object.entries(k)) A.has(e) || typeof t != `function` && (j.push([e, t]), delete k[e]);
+	let M = (n) => {
+		let r = a.name;
+		typeof r == `string` && r && Object.defineProperty(n, "__wevuComponentName", {
+			configurable: !0,
+			enumerable: !1,
+			value: r
+		});
+		for (let [t, r] of j) if (!i$14(n, t)) try {
+			n[t] = i$7(r);
+		} catch {}
+	}, N = /* @__PURE__ */ new Set(/* @__PURE__ */ `data.export.definitionFilter.onLoad.onUnload.onShow.onHide.onReady.onSaveExitState.onPullDownRefresh.onReachBottom.onPageScroll.onRouteDone.onTabItemTap.onResize.onShareAppMessage.onShareTimeline.onAddToFavorites.beforeCreate.created.beforeMount.mounted.beforeUnmount.beforeDestroy.unmounted.destroyed`.split(`.`)), P = {};
+	for (let [e, t] of Object.entries(k)) typeof t != `function` || N.has(e) || (P[e] = t, delete k[e]);
+	let F = k.__wevuTemplateRefs;
+	delete k.__wevuTemplateRefs;
+	let I = k.__wevuLayoutHosts;
+	delete k.__wevuLayoutHosts;
+	let L = k[WEVU_PROPS_ALIASES_KEY];
+	delete k[WEVU_PROPS_ALIASES_KEY];
+	let R = k[WEVU_PROPS_DERIVED_KEYS_KEY];
+	delete k[WEVU_PROPS_DERIVED_KEYS_KEY];
+	let z = k.observers, B = k.setupLifecycle === `created` ? `created` : `attached`;
+	delete k.setupLifecycle;
+	let V = {};
+	for (let e of [
+		`beforeCreate`,
+		`created`,
+		`beforeMount`,
+		`mounted`,
+		`beforeUnmount`,
+		`beforeDestroy`,
+		`unmounted`,
+		`destroyed`
+	]) V[e] = k[e];
+	delete k.features;
+	for (let e of Object.keys(V)) delete k[e];
+	return delete k.onLoad, delete k.onUnload, delete k.onShow, delete k.onHide, delete k.onReady, {
+		userMethods: o,
+		userLifetimes: s,
+		userPageLifetimes: c,
+		userOptions: l,
+		restOptions: k,
+		topLevelMethods: P,
+		templateRefs: F,
+		layoutHosts: I,
+		propsAliases: L,
+		propsDerivedKeys: R,
+		userObservers: z,
+		setupLifecycle: B,
+		vueLifecycles: V,
+		isPage: O,
+		features: E,
+		userOnLoad: d,
+		userOnUnload: f,
+		userOnShow: p,
+		userOnHide: m,
+		userOnReady: h,
+		userOnSaveExitState: g,
+		userOnPullDownRefresh: _,
+		userOnReachBottom: v,
+		userOnPageScroll: y,
+		userOnRouteDone: b,
+		userOnTabItemTap: x,
+		userOnResize: S,
+		userOnShareAppMessage: C,
+		userOnShareTimeline: w,
+		userOnAddToFavorites: T,
+		applyExtraInstanceFields: M
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/snapshot.mjs
+function n$3(n) {
+	let r = t$14(n);
+	r && r$11.scopedSlots?.refresh(n, r);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/props.mjs
+function p$4(p) {
+	let { restOptions: m, nativeSlotContext: h, propsAliases: g, propsDerivedKeys: _, userObservers: v } = p, y = m.properties && typeof m.properties == `object` ? Object.keys(m.properties) : [], b = new Set(y), x = new Set(_ ?? []), S = Object.entries(g ?? {}).filter(([e, t]) => e && t), C = /* @__PURE__ */ new Set([
+		WEVU_SLOT_NAMES_PROP,
+		WEVU_SLOT_OWNER_ID_PROP,
+		WEVU_SLOT_SCOPE_KEY
+	]), w = y.filter((e) => !C.has(e)), T = /* @__PURE__ */ new WeakMap(), E = (e) => e.startsWith(`__wv_`), D = (e) => {
+		let t = e.__wevu?.[WEVU_PROPS_DERIVED_KEYS_KEY];
+		if (t instanceof Set) for (let e of w) t.add(e);
+	}, O = (t, n, r) => i$14(t, n) && Object.is(t[n], r) ? !1 : (t[n] = r, !0), k = (n, r, i) => C.has(r) && i$14(n, r) && c$10(n[r], i, 20, { keys: 1e4 }) ? !1 : O(n, r, i), A = (e, t, n) => {
+		if (!C.has(t)) return;
+		let r = !1, i = e.__wevu?.state;
+		try {
+			i && typeof i == `object` && k(i, t, n);
+			let a = e.data;
+			a && typeof a == `object` && (r = k(a, t, n));
+		} catch {}
+		if (r && typeof e.setData == `function`) try {
+			e.setData({ [t]: n });
+		} catch {}
+	}, j = (t, n) => {
+		if (!S.length) return;
+		let r = t.__wevu, i = r?.setupState, a = r?.state;
+		if (!i || typeof i != `object`) return;
+		D(t);
+		let o = T.get(t) ?? /* @__PURE__ */ new Set();
+		T.set(t, o);
+		for (let [t, r] of S) {
+			if (i$14(i, t) && !o.has(t)) continue;
+			let s = n[r];
+			try {
+				O(i, t, s), o.add(t);
+			} catch {}
+			if (a && typeof a == `object` && (!i$14(a, t) || o.has(t))) try {
+				O(a, t, s);
+			} catch {}
+		}
+	}, M = (t, n) => {
+		if (!x.size) return;
+		let r = t.__wevu?.setupState;
+		if (!r || typeof r != `object`) return;
+		D(t);
+		let i = new Map(S);
+		for (let t of x) {
+			let a = i.get(t) ?? t;
+			if (i$14(n, a)) try {
+				O(r, t, n[a]);
+			} catch {}
+		}
+	}, N = (e) => {
+		try {
+			Object.defineProperty(e, WEVU_PROP_KEYS_KEY, {
+				value: y,
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {
+			e[WEVU_PROP_KEYS_KEY] = y;
+		}
+	}, P = (t) => {
+		let n = t[WEVU_ATTRS_KEY];
+		if (!n || typeof n != `object`) return;
+		let a = (n) => {
+			let r = t.__wevu?.state;
+			return typeof r == `object` && !!r && i$14(r, n);
+		}, o = t.properties, s = o && typeof o == `object` ? o : void 0, c = Object.keys(n);
+		for (let t of c) if (!s || !i$14(s, t) || E(t) || b.has(t) || a(t)) try {
+			delete n[t];
+		} catch {}
+		if (!s) n$3(t);
+		else {
+			for (let [e, t] of Object.entries(s)) if (!(E(e) || b.has(e) || a(e))) try {
+				n[e] = t;
+			} catch {}
+			n$3(t);
+		}
+	}, F = (t) => {
+		let n = t[WEVU_PROPS_KEY], i = t.properties, a = t[WEVU_PENDING_PROP_VALUES_KEY];
+		if (n && typeof n == `object` && i && typeof i == `object`) {
+			let o = i, s = Object.keys(n);
+			for (let t of s) if (!b.has(t) || !i$14(o, t)) try {
+				delete n[t];
+			} catch {}
+			for (let r of y) {
+				let i = a && i$14(a, r);
+				if (!i && !i$14(o, r)) continue;
+				let s = i ? a[r] : o[r];
+				try {
+					k(n, r, s);
+				} catch {}
+				A(t, r, s);
+			}
+			M(t, n), j(t, n), n$3(t);
+		}
+		a && delete t["__wevuPendingPropValues"], P(t);
+	}, I = (t, n) => {
+		if (!n || typeof n != `object`) return;
+		let i = t[WEVU_PROPS_KEY];
+		if (!i || typeof i != `object`) return;
+		let a = !1;
+		for (let r of y) if (i$14(n, r)) {
+			try {
+				a = k(i, r, n[r]) || a;
+			} catch {}
+			A(t, r, n[r]);
+		}
+		a && (M(t, i), j(t, i), n$3(t), P(t));
+	}, L = (e, t, n) => {
+		var i;
+		let a = e[WEVU_PROPS_KEY];
+		if (!a || typeof a != `object`) return;
+		try {
+			if (!k(a, t, n)) {
+				A(e, t, n);
+				return;
+			}
+		} catch {}
+		A(e, t, n);
+		let s = (i = e)["__wevuPendingPropValues"] ?? (i["__wevuPendingPropValues"] = Object.create(null));
+		s[t] = n, M(e, a), j(e, a), n$3(e), P(e);
+	}, R = {};
+	if (y.length) for (let e of y) R[e] = function(t) {
+		h && e === "__wv_nativeDeclaration" && l$8(this, t), L(this, e, t);
+	};
+	let z = {
+		...h && b.has("__wv_nativeDeclaration") ? { [WEVU_NATIVE_DECLARATION_ADDRESS_PROP]: void 0 } : {},
+		...v ?? {}
+	};
+	for (let [e, t] of Object.entries(R)) {
+		let n = z[e];
+		z[e] = typeof n == `function` ? function(...r) {
+			h && e === "__wv_nativeDeclaration" ? (t.apply(this, r), n.apply(this, r)) : (n.apply(this, r), t.apply(this, r));
+		} : t;
+	}
+	let B = z[`**`];
+	return z[`**`] = function(...e) {
+		typeof B == `function` && B.apply(this, e), F(this);
+	}, {
+		attachWevuPropKeys: N,
+		directPropsDerivedKeys: w,
+		syncWevuPropsFromInstance: F,
+		syncWevuPropsFromValues: I,
+		finalObservers: z
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/registerNativeDefinition.mjs
+function i$6(e) {
+	let n = l$20()?.[WEAPP_VITE_STATEFUL_HMR_BRIDGE_KEY];
+	typeof n?.Component == `function` ? n.Component(e) : Component(e);
+}
+var o$7 = i$6;
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component/registerDefinition.mjs
+function y$1(y) {
+	let { runtimeApp: b, watch: x, setup: S, restOptions: C, pageLifecycleHooks: w, finalObservers: ne, userLifetimes: T, userPageLifetimes: E, finalMethods: D, finalOptions: re, applyExtraInstanceFields: O, templateRefs: k, layoutHosts: A, attachWevuPropKeys: j, setupLifecycle: M, syncWevuPropsFromInstance: N, directPropsDerivedKeys: P$3, isPage: F$2, nativeSlotContext: ie, vueLifecycles: I$2, getRuntimeOwnerLabel: L$2, registerNative: ae = !0 } = y, R = Array.isArray(k) && k.length > 0 ? k : void 0, z = /* @__PURE__ */ new WeakSet();
+	R && a$16(`templateRefs`, `registerComponentDefinition(template refs)`);
+	let B = Array.isArray(A) && A.length > 0 ? A : void 0, V = B ? a$16(`layout`, `registerComponentDefinition(layout hosts)`) : void 0, H = (e, t) => {
+		R ? r$11.templateRefs?.schedule(e, t) : t?.();
+	}, U = (e) => {
+		let t = e.__wevu ?? e["$wevu"];
+		if (t) return t;
+		let n = e.$state;
+		if (n && typeof n == `object`) return n[WEVU_RUNTIME_KEY];
+	}, W = (e) => U(e)?.proxy || (r$11.scopedSlots?.resolveLifecycleProxy(e) ?? e), G = (e) => {
+		let t = U(e);
+		return t ? {
+			runtime: t,
+			mounted: !1
+		} : (O(e), j(e), k$1(e, b, x, S, {
+			deferSetData: !0,
+			snapshotOmitKeys: P$3,
+			attached: !z.has(e)
+		}), N(e), P(e), {
+			runtime: U(e),
+			mounted: !0
+		});
+	}, K = (e, t, n) => {
+		let r = I$2[t];
+		if (typeof r == `function`) return r.apply(W(e), n);
+	}, q = (e, t) => {
+		F$2 && n$4(e, void 0, {
+			start: !1,
+			onComplete: (e) => {
+				e && t();
+			}
+		}) || t();
+	}, oe = (e) => {
+		U(e) || typeof I$2.mounted != `function` || G(e).mounted && (K(e, `created`, []), K(e, `beforeMount`, []));
+	}, J = {}, Y = (e) => {
+		B && V?.attachHosts(B, e);
+	}, X = (e) => {
+		F$2 && V && V?.attachPageSetter(e);
+	};
+	if (F$2) for (let e of [
+		`onPageScroll`,
+		`onPullDownRefresh`,
+		`onReachBottom`,
+		`onShareAppMessage`,
+		`onShareTimeline`,
+		`onAddToFavorites`
+	]) {
+		let t = w[e];
+		typeof t == `function` && typeof D[e] != `function` && (J[e] = function(...e) {
+			return t.apply(this, e);
+		});
+	}
+	let Z = {
+		...J,
+		...D,
+		[WEVU_RESOLVE_PUBLIC_INSTANCE_METHOD]: function() {
+			let e = G(this);
+			return e.mounted && (K(this, `created`, []), K(this, `beforeMount`, [])), e.runtime?.proxy;
+		}
+	};
+	ie && (Z["__weapp_vite_nativeSlotParent"] = p$7, Z["__weapp_vite_nativeDeclaration"] = d$7);
+	let Q = {
+		...C,
+		...F$2 ? w : {},
+		observers: ne,
+		lifetimes: {
+			...T,
+			created: function(...e) {
+				z.add(this), O(this), j(this), R && r$11.templateRefs?.attachBindings(this, R), q(this, () => {
+					if (K(this, `beforeCreate`, e), M === `created`) {
+						try {
+							k$1(this, b, x, S, {
+								deferSetData: !0,
+								snapshotOmitKeys: P$3
+							});
+						} catch (e) {
+							let t = L$2(this);
+							throw Error(`[wevu] mount runtime failed in created (${t}): ${e instanceof Error ? e.message : String(e)}`);
+						}
+						N(this), X(this);
+					}
+					typeof T.created == `function` && T.created.apply(this, e);
+				});
+			},
+			moved: function(...e) {
+				v$5(this, `onMoved`, e), typeof T.moved == `function` && T.moved.apply(this, e);
+			},
+			attached: function(...e) {
+				z.delete(this), O(this), j(this), R && !r$11.templateRefs?.hasBindings(this) && r$11.templateRefs?.attachBindings(this, R), q(this, () => {
+					if (M !== `created` || !this.__wevu) try {
+						k$1(this, b, x, S, {
+							deferSetData: !0,
+							snapshotOmitKeys: P$3,
+							attached: !0
+						});
+					} catch (e) {
+						let t = L$2(this);
+						throw Error(`[wevu] mount runtime failed in attached (${t}): ${e instanceof Error ? e.message : String(e)}`);
+					}
+					N(this), K(this, `created`, e), K(this, `beforeMount`, e), X(this), Y(this), P(this), v$5(this, `onAttached`, e), typeof T.attached == `function` && T.attached.apply(this, e);
+				});
+			},
+			ready: function(...e) {
+				if (z.has(this)) return T.ready?.apply(this, e);
+				if (!F$2 || this["__wevuReadyCalled"] || !n$4(this, void 0, {
+					start: !0,
+					onComplete: (t) => {
+						t && !this.__wevuInitialNavigationReady && (this.__wevuInitialNavigationReady = !0, Q.lifetimes.ready.call(this, ...e));
+					}
+				}) || this.__wevuInitialNavigationReady) {
+					if (oe(this), F$2 && typeof w.onReady == `function`) {
+						let t = !!this[WEVU_READY_CALLED_KEY];
+						if (w.onReady.call(this, ...e), !t) {
+							let t = () => K(this, `mounted`, e);
+							n$4(this, void 0, {
+								start: !1,
+								onComplete: (e) => {
+									e && t();
+								}
+							}) || t();
+						}
+						typeof T.ready == `function` && T.ready.apply(this, e);
+					} else this["__wevuReadyCalled"] ? typeof T.ready == `function` && T.ready.apply(this, e) : (this[WEVU_READY_CALLED_KEY] = !0, N(this), r$11.templateRefs?.scheduleOwner(this), H(this, () => {
+						v$5(this, `onReady`, e), K(this, `mounted`, e), typeof T.ready == `function` && T.ready.apply(this, e);
+					}));
+				}
+			},
+			detached: function(...e) {
+				F$2 && typeof w.onUnload == `function` ? e$17([
+					() => K(this, `beforeUnmount`, e),
+					() => K(this, `beforeDestroy`, e),
+					() => r$11.templateRefs?.scheduleOwner(this),
+					() => v$5(this, `onDetached`, e),
+					() => w.onUnload.call(this, ...e),
+					() => {
+						typeof T.detached == `function` && T.detached.apply(this, e);
+					},
+					() => K(this, `unmounted`, e),
+					() => K(this, `destroyed`, e)
+				]) : e$17([
+					() => K(this, `beforeUnmount`, e),
+					() => K(this, `beforeDestroy`, e),
+					() => r$11.templateRefs?.scheduleOwner(this),
+					() => v$5(this, `onDetached`, e),
+					() => {
+						B && V?.detachHosts(B, this);
+					},
+					() => I(this),
+					() => K(this, `unmounted`, e),
+					() => K(this, `destroyed`, e),
+					() => {
+						typeof T.detached == `function` && T.detached.apply(this, e);
+					}
+				]);
+			},
+			error: function(...e) {
+				v$5(this, `onError`, e), typeof T.error == `function` && T.error.apply(this, e);
+			}
+		},
+		pageLifetimes: {
+			...E,
+			show: function(...e) {
+				F$2 && typeof w.onShow == `function` ? (w.onShow.call(this, ...e), typeof E.show == `function` && E.show.apply(this, e)) : (F(this, !0), v$5(this, `onShow`, e), typeof E.show == `function` && E.show.apply(this, e));
+			},
+			hide: function(...e) {
+				F$2 && typeof w.onHide == `function` ? (w.onHide.call(this, ...e), typeof E.hide == `function` && E.hide.apply(this, e)) : (F(this, !1), v$5(this, `onHide`, e), typeof E.hide == `function` && E.hide.apply(this, e));
+			},
+			resize: function(...e) {
+				F$2 && typeof w.onResize == `function` ? (w.onResize.call(this, ...e), typeof E.resize == `function` && E.resize.apply(this, e)) : (v$5(this, `onResize`, e), typeof E.resize == `function` && E.resize.apply(this, e));
+			},
+			routeDone: function(...e) {
+				F$2 && typeof w.onRouteDone == `function` ? (w.onRouteDone.call(this, ...e), typeof E.routeDone == `function` && E.routeDone.apply(this, e)) : (v$5(this, `onRouteDone`, e), typeof E.routeDone == `function` && E.routeDone.apply(this, e));
+			}
+		},
+		methods: Z,
+		options: re
+	};
+	if (!ae) return Q;
+	let $ = l$20()?.[WEAPP_VITE_STATEFUL_HMR_BRIDGE_KEY];
+	if (typeof $?.trackWevuComponent == `function`) {
+		let e = $.trackWevuComponent(Q, (e, t) => {
+			L(e, b, x, S, {
+				snapshotOmitKeys: P$3,
+				stateSnapshot: t,
+				attached: !z.has(e)
+			}), N(e), X(e), Y(e), P(e, { rehydrateSetupState: !0 });
+		}, (e) => {
+			e$17([() => B && V?.detachHosts(B, e), () => I(e, { skipHooks: !0 })]);
+		});
+		return $.isApplying() || o$7(e, F$2), e;
+	}
+	return o$7(Q, F$2), Q;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/register/component.mjs
+function c$6(c, l, u, d, f, p = {}) {
+	let { userMethods: m, userLifetimes: h, userPageLifetimes: g, userOptions: _, restOptions: v, topLevelMethods: y, templateRefs: b, layoutHosts: x, propsAliases: S, propsDerivedKeys: C, userObservers: w, setupLifecycle: T, vueLifecycles: E, isPage: D, features: O, userOnLoad: k, userOnUnload: A, userOnShow: j, userOnHide: M, userOnReady: N, userOnSaveExitState: P, userOnPullDownRefresh: F, userOnReachBottom: I, userOnPageScroll: L, userOnRouteDone: R, userOnTabItemTap: z, userOnResize: B, userOnShareAppMessage: V, userOnShareTimeline: H, userOnAddToFavorites: U, applyExtraInstanceFields: W } = o$8(f), { enableOnPullDownRefresh: G, enableOnReachBottom: K, enableOnPageScroll: q, enableOnRouteDone: ne, enableOnRouteDoneFallback: J, enableOnTabItemTap: Y, enableOnResize: X, enableOnShareAppMessage: Z, enableOnShareTimeline: re, enableOnAddToFavorites: ie, enableOnSaveExitState: ae, effectiveOnSaveExitState: oe, effectiveOnPullDownRefresh: se, effectiveOnReachBottom: ce, effectiveOnPageScroll: le, effectiveOnRouteDone: ue, effectiveOnTabItemTap: de, effectiveOnResize: fe, effectiveOnShareAppMessage: pe, effectiveOnShareTimeline: me, effectiveOnAddToFavorites: he } = e$7({
+		features: O,
+		userOnSaveExitState: P,
+		userOnPullDownRefresh: F,
+		userOnReachBottom: I,
+		userOnPageScroll: L,
+		userOnRouteDone: R,
+		userOnTabItemTap: z,
+		userOnResize: B,
+		userOnShareAppMessage: V,
+		userOnShareTimeline: H,
+		userOnAddToFavorites: U
+	}), ge = (e, t) => {
+		let n = e[WEVU_HOOKS_KEY];
+		if (!n) return !1;
+		let r = n[t];
+		return r ? Array.isArray(r) ? r.length > 0 : typeof r == `function` : !1;
+	};
+	{
+		let e = v.export;
+		v.export = function() {
+			let t = this["__wevuExposed"] ?? {}, n = typeof e == `function` ? e.call(this) : {};
+			return n && typeof n == `object` && !Array.isArray(n) ? {
+				...t,
+				...n
+			} : n ?? t;
+		};
+	}
+	let _e = {
+		multipleSlots: _.multipleSlots ?? !0,
+		..._
+	}, Q = f[WEVU_NATIVE_SLOT_CONTEXT_KEY] === !0, { attachWevuPropKeys: ve, directPropsDerivedKeys: ye, syncWevuPropsFromInstance: be, syncWevuPropsFromValues: $, finalObservers: xe } = p$4({
+		restOptions: v,
+		nativeSlotContext: Q,
+		propsAliases: S,
+		propsDerivedKeys: C,
+		userObservers: w
+	}), { finalMethods: Se } = u$5({
+		userMethods: {
+			...y,
+			...m
+		},
+		runtimeMethods: l
+	});
+	return y$1({
+		runtimeApp: c,
+		watch: u,
+		setup: d,
+		restOptions: v,
+		pageLifecycleHooks: y$2({
+			runtimeApp: c,
+			watch: u,
+			setup: d,
+			userOnLoad: k,
+			userOnUnload: A,
+			userOnShow: j,
+			userOnHide: M,
+			userOnReady: N,
+			isPage: D,
+			enableOnSaveExitState: ae,
+			enableOnPullDownRefresh: G,
+			enableOnReachBottom: K,
+			enableOnPageScroll: q,
+			enableOnRouteDone: ne,
+			enableOnRouteDoneFallback: J,
+			enableOnTabItemTap: Y,
+			enableOnResize: X,
+			enableOnShareAppMessage: Z,
+			enableOnShareTimeline: re,
+			enableOnAddToFavorites: ie,
+			syncWevuPropsFromValues: $,
+			effectiveOnSaveExitState: oe,
+			effectiveOnPullDownRefresh: se,
+			effectiveOnReachBottom: ce,
+			effectiveOnPageScroll: le,
+			effectiveOnRouteDone: ue,
+			effectiveOnTabItemTap: de,
+			effectiveOnResize: fe,
+			effectiveOnShareAppMessage: pe,
+			effectiveOnShareTimeline: me,
+			effectiveOnAddToFavorites: he,
+			hasHook: ge
+		}),
+		finalObservers: xe,
+		userLifetimes: h,
+		userPageLifetimes: g,
+		finalMethods: Se,
+		finalOptions: _e,
+		applyExtraInstanceFields: W,
+		templateRefs: b,
+		layoutHosts: x,
+		attachWevuPropKeys: ve,
+		setupLifecycle: T,
+		syncWevuPropsFromInstance: be,
+		syncWevuPropsFromValues: $,
+		directPropsDerivedKeys: ye,
+		nativeSlotContext: Q,
+		isPage: D,
+		vueLifecycles: E,
+		getRuntimeOwnerLabel: a$7,
+		registerNative: p.registerNative
+	});
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/bindingManifest.mjs
+var e$4 = {
+	"exact-path": !0,
+	"snapshot-fallback": !0,
+	"top-level": !0
+};
+function t$3(e) {
+	return Array.isArray(e) && e.every((e) => typeof e == `string`);
+}
+function n$2(e) {
+	return typeof e == `number` && Number.isFinite(e) && Number.isInteger(e);
+}
+function r$3(e) {
+	if (!e || typeof e != `object`) return !1;
+	let t = e;
+	return n$2(t.offset) && t.offset >= 0 && n$2(t.line) && t.line >= 1 && n$2(t.column) && t.column >= 1;
+}
+function i$5(e) {
+	if (!e || typeof e != `object`) return !1;
+	let t = e, n = t.start, i = t.end;
+	return r$3(n) && r$3(i) && i.offset >= n.offset;
+}
+function a$6(e) {
+	return Object.values(e).every((e) => e === !0);
+}
+function o$6(n) {
+	if (!n || typeof n != `object`) return !1;
+	let r = n;
+	return typeof r.id == `string` && r.id.length > 0 && typeof r.outputPath == `string` && r.outputPath.length > 0 && (r.sourceFile === void 0 || typeof r.sourceFile == `string` && r.sourceFile.length > 0) && (r.updateMode === void 0 || typeof r.updateMode == `string` && e$4[r.updateMode] === !0) && (r.sourceRoots === void 0 || t$3(r.sourceRoots)) && (r.sourceLocation === void 0 || i$5(r.sourceLocation));
+}
+function s$6(e) {
+	if (!e || typeof e != `object`) return;
+	let t = e;
+	if (t.version === 1 && typeof t.sourceFile == `string` && Array.isArray(t.bindings) && t.bindings.every(o$6) && (t.features === void 0 || t.features && typeof t.features == `object` && !Array.isArray(t.features) && a$6(t.features))) return t;
+}
+function c$5(e, t) {
+	return e?.bindings.some((e) => e.outputPath === t) ?? !1;
+}
+function l$5(e) {
+	return e.replace(/\[(?:'([^']+)'|"([^"]+)"|([^\]]+))\]/g, (e, t, n, r) => `.${t ?? n ?? r}`).replace(/^\./, ``);
+}
+function u$4(e) {
+	return l$5(e).split(`.`, 1)[0] ?? ``;
+}
+function d$4(e, t) {
+	let n = l$5(e), r = l$5(t);
+	return n === r || n.startsWith(`${r}.`) || r.startsWith(`${n}.`);
+}
+function f$4(e) {
+	return e.updateMode ?? `exact-path`;
+}
+function p$3(e, t) {
+	if (!t) return !1;
+	let n = f$4(e);
+	if (n === `snapshot-fallback` && e.outputPath === `*`) return !0;
+	if (n === `exact-path`) return d$4(e.outputPath, t);
+	let r = u$4(t);
+	return u$4(e.outputPath) === r || n === `snapshot-fallback` && (e.sourceRoots ?? []).some((e) => u$4(e) === r);
+}
+function m$3(e, t, n = !1) {
+	let r = [...t], i = /* @__PURE__ */ new Set(), a = [];
+	for (let t of e.bindings) {
+		if (i.has(t.id)) continue;
+		let o = f$4(t);
+		if (!(r.length > 0 ? r.some((e) => p$3(t, e)) : n && o === `snapshot-fallback`)) continue;
+		i.add(t.id);
+		let s = {
+			id: t.id,
+			outputPath: t.outputPath,
+			updateMode: o,
+			sourceFile: t.sourceFile ?? e.sourceFile
+		};
+		t.sourceLocation && (s.sourceLocation = t.sourceLocation), a.push(s);
+	}
+	return a;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/bindModel.mjs
+function a$5(e, t, n) {
+	let r = e;
+	for (let e = 0; e < t.length - 1; e++) {
+		let n = t[e];
+		(r[n] == null || typeof r[n] != `object`) && (r[n] = {}), r = r[n];
+	}
+	r[t[t.length - 1]] = n;
+}
+function o$5(t, n, r, o, s, c) {
+	if (!s.length) return;
+	let [l, ...u] = s;
+	if (!u.length) {
+		if (r[l]) e$5(o, l, c);
+		else {
+			let r = n && Object.prototype.hasOwnProperty.call(n, l) ? n : t, i = r[l];
+			s$15(i) ? i.value = c : r[l] = c;
+		}
+		return;
+	}
+	if (r[l]) {
+		e$5(o, l, c);
+		return;
+	}
+	let d = n && Object.prototype.hasOwnProperty.call(n, l) ? n : t;
+	(d[l] == null || typeof d[l] != `object`) && (d[l] = {}), a$5(d[l], u, c);
+}
+function s$5(e, t) {
+	return t.reduce((e, t) => e == null ? e : e[t], e);
+}
+function c$4(e) {
+	return t$4(e);
+}
+function l$4(e, r, i, a, l) {
+	return (u, d) => {
+		let f = r$8(u);
+		if (!f.length) throw Error(`bindModel 需要非空路径`);
+		let p = () => s$5(e, f), m = (e) => {
+			o$5(r, l, i, a, f, e);
+		}, h = {
+			event: `input`,
+			valueProp: `value`,
+			parser: c$4,
+			formatter: (e) => e,
+			...d
+		};
+		return {
+			get value() {
+				return p();
+			},
+			set value(e) {
+				m(e);
+			},
+			update(e) {
+				m(e);
+			},
+			model(e) {
+				let n = {
+					...h,
+					...e
+				}, r = `on${e$11(n.event)}`, i = (e) => {
+					let t = n.parser(e);
+					m(t);
+				};
+				return {
+					[n.valueProp]: n.formatter(p()),
+					[r]: i
+				};
+			}
+		};
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/computed.mjs
+function i$4(i) {
+	let a = Object.create(null), o = Object.create(null), s = /* @__PURE__ */ new Set();
+	return {
+		computedRefs: a,
+		computedSetters: o,
+		dirtyComputedKeys: s,
+		createTrackedComputed: (a, o, c) => {
+			let l, u = !0, d, f = {
+				get value() {
+					return u && (l = d(), u = !1), A$1(f, `value`), l;
+				},
+				set value(e) {
+					if (!c) throw Error(`计算属性是只读的`);
+					c(e);
+				}
+			};
+			return o$19(f), d = k$2(o, {
+				lazy: !0,
+				scheduler: () => {
+					u || (u = !0, i.setDataStrategy === `patch` && i.includeComputed && s.add(a), M$2(f, `value`));
+				}
+			}), f;
+		},
+		computedProxy: new Proxy({}, {
+			get(e, t) {
+				if (typeof t == `string` && a[t]) return a[t].value;
+			},
+			has(e, t) {
+				return typeof t == `string` && !!a[t];
+			},
+			ownKeys() {
+				return Object.keys(a);
+			},
+			getOwnPropertyDescriptor(e, t) {
+				if (typeof t == `string` && a[t]) return {
+					configurable: !0,
+					enumerable: !0,
+					value: a[t].value
+				};
+			}
+		})
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/context.mjs
+function b(b) {
+	let { state: x, setupState: S, computedDefs: C, methodDefs: w, appConfig: T, includeComputed: E, setDataStrategy: D } = b, O = {}, { computedRefs: k, computedSetters: A, dirtyComputedKeys: j, createTrackedComputed: M, computedProxy: N } = i$4({
+		includeComputed: E,
+		setDataStrategy: D
+	}), P = l$15(0), F = Object.create(null), I = (e, n) => {
+		let r = s$16(e), i = r[WEVU_RUNTIME_KEY], a = i?.proxy, o = (e, t) => {
+			let n = e[t];
+			return n$9(n);
+		}, s = (t) => !(!t || typeof t != `object` || t === e || t === n || t === a || o(t, `triggerEvent`) || o(t, `createSelectorQuery`) || o(t, `createIntersectionObserver`) || o(t, `setData`)), l = r[WEVU_NATIVE_INSTANCE_KEY];
+		if (s(l)) return l;
+		let u = i?.instance;
+		if (s(u)) return u;
+	}, L = (e) => {
+		if (i$14(O, e)) return;
+		let t = (...t) => {
+			let n = I(x, x);
+			if (!n) return;
+			let r = Reflect.get(n, e);
+			if (typeof r == `function`) return r.apply(n, t);
+		};
+		t$7(t), O[e] = t;
+	}, R = (e, t) => {
+		let n = /* @__PURE__ */ new Set(), r = e;
+		for (; r && !n.has(r);) {
+			n.add(r);
+			let e = r[WEVU_RUNTIME_APP_KEY]?.config?.globalProperties;
+			if (e && i$14(e, t)) return {
+				found: !0,
+				value: e[t]
+			};
+			r = r[WEVU_PARENT_INSTANCE_KEY];
+		}
+		let a = typeof globalThis < `u` ? globalThis.getApp : void 0;
+		if (typeof a == `function`) try {
+			let e = a()?.[WEVU_RUNTIME_APP_KEY]?.config?.globalProperties;
+			if (e && i$14(e, t)) return {
+				found: !0,
+				value: e[t]
+			};
+		} catch {}
+		return {
+			found: !1,
+			value: void 0
+		};
+	}, z = (e) => {
+		let t = e && Reflect.get(e, `selectOwnerComponent`);
+		if (typeof t == `function`) try {
+			let n = t.call(e);
+			if (!n || typeof n != `object`) return;
+			let r = Reflect.get(n, WEVU_RESOLVE_PUBLIC_INSTANCE_METHOD);
+			if (typeof r == `function`) {
+				let e = r.call(n);
+				if (e) return e;
+			}
+			return n["__wevuRuntime"]?.proxy ?? n.__wevu?.proxy ?? n;
+		} catch {
+			return;
+		}
+	}, B = new Proxy(x, {
+		get(n, r, a) {
+			if (typeof r == `string`) {
+				if (P.value, i$14(S, r)) return Reflect.get(S, r, a);
+				if (r === `props`) {
+					let e = n[WEVU_PROPS_KEY];
+					if (e && typeof e == `object`) return e;
+				}
+				if (r === `$props`) {
+					let e = n[WEVU_PROPS_KEY];
+					if (e && typeof e == `object`) return e;
+				}
+				let c = n[WEVU_PROPS_KEY];
+				if (c && typeof c == `object` && i$14(c, r)) return Reflect.get(c, r);
+				if (r === `data` || r === `$state`) return x;
+				if (r === `$computed`) return N;
+				if (r === `$emit`) return (e, ...t) => {
+					let r = I(n, a), i = r && Reflect.get(r, `triggerEvent`);
+					if (typeof i != `function`) return;
+					let { detail: c, options: l } = i$10(t);
+					return i.call(r, r$6(e), c, l);
+				};
+				if (r === `$nextTick`) return async (t) => {
+					await u$18();
+					let r = I(n, a), i = r && Reflect.get(r, "__wevuHostCommitPromise");
+					if (i && (typeof i == `object` || typeof i == `function`) && `then` in i && typeof i.then == `function` && await i, t) return t.call(B);
+				};
+				if (r === `$set`) return (e, t, n) => (Reflect.set(e, t, n), n);
+				if (r === `$delete`) return (e, t) => Reflect.deleteProperty(e, t);
+				if (r === `$slots`) return s$16(n).$slots ?? Object.freeze(Object.create(null));
+				if (r === `$refs`) return s$16(n).$refs ?? Object.create(null);
+				if (r === `$parent`) return z(I(n, a));
+				if (r === `$options`) {
+					let e = I(n, a);
+					return { name: e?.["__wevuComponentName"] ?? e?.name ?? e?.is };
+				}
+				if (i$14(F, r)) return Reflect.get(F, r);
+				if (i$14(O, r)) return O[r];
+				if (k[r]) return k[r].value;
+				if (i$14(T.globalProperties, r)) return T.globalProperties[r];
+				let l = R(I(n, a), r);
+				if (l.found) return l.value;
+			}
+			if (!Reflect.has(n, r)) {
+				let e = I(n, a);
+				if (e && Reflect.has(e, r)) {
+					let t = Reflect.get(e, r);
+					return typeof t == `function` ? t.bind(e) : t;
+				}
+			}
+			let c = Reflect.get(n, r, a);
+			return typeof r == `string` && i$14(S, r) ? Reflect.get(S, r, a) : c;
+		},
+		set(e, t, r, o) {
+			if (typeof t == `string` && k[t]) return e$5(A, t, r), !0;
+			if (i$14(S, t)) {
+				let e = Reflect.get(S, t, o);
+				return s$15(e) && !s$15(r) ? (e.value = r, !0) : Reflect.set(S, t, r, o);
+			}
+			if (i$14(F, t)) return Reflect.set(F, t, r);
+			if (Reflect.has(e, t)) {
+				let a = Reflect.get(e, t, o);
+				return s$15(a) && !s$15(r) ? (a.value = r, !0) : i$14(e["__wevuProps"] ?? {}, t) ? Reflect.set(S, t, r, o) : Reflect.set(e, t, r, o);
+			}
+			return Reflect.set(F, t, r);
+		},
+		has(e, t) {
+			if (t === `data` || t === `$emit` || t === `$nextTick` || t === `$set` || t === `$delete` || t === `$slots` || t === `$refs` || t === `$parent` || t === `$options` || typeof t == `string` && (i$14(S, t) || k[t] || i$14(O, t)) || i$14(F, t)) return !0;
+			let n = I(e, e);
+			return typeof t == `string` && R(n, t).found || n && Reflect.has(n, t) ? !0 : Reflect.has(e, t);
+		},
+		ownKeys(e) {
+			let t = /* @__PURE__ */ new Set();
+			return Reflect.ownKeys(e).forEach((e) => {
+				t.add(e);
+			}), Reflect.ownKeys(S).forEach((e) => {
+				t.add(e);
+			}), Reflect.ownKeys(F).forEach((e) => t.add(e)), Object.keys(O).forEach((e) => t.add(e)), Object.keys(k).forEach((e) => t.add(e)), [...t];
+		},
+		getOwnPropertyDescriptor(e, t) {
+			if (typeof t == `string` && i$14(S, t)) return Object.getOwnPropertyDescriptor(S, t);
+			if (i$14(F, t)) return Object.getOwnPropertyDescriptor(F, t);
+			if (Reflect.has(e, t)) return Object.getOwnPropertyDescriptor(e, t);
+			if (typeof t == `string`) {
+				if (t === `data`) return {
+					configurable: !0,
+					enumerable: !1,
+					get() {
+						return x;
+					}
+				};
+				if (k[t]) return {
+					configurable: !0,
+					enumerable: !0,
+					get() {
+						return k[t].value;
+					},
+					set(e) {
+						e$5(A, t, e);
+					}
+				};
+				if (i$14(O, t)) return {
+					configurable: !0,
+					enumerable: !1,
+					value: O[t]
+				};
+			}
+		}
+	});
+	return Object.keys(w).forEach((e) => {
+		let t = w[e];
+		typeof t == `function` ? O[e] = (...e) => t.apply(B, e) : e === "__weapp_vite_inline_map" && t && typeof t == `object` && (O[e] = t);
+	}), L(`triggerEvent`), L(`createSelectorQuery`), L(`createIntersectionObserver`), L(`setData`), Object.keys(C).forEach((e) => {
+		let t = C[e];
+		if (typeof t == `function`) k[e] = M(e, () => t.call(B));
+		else {
+			let n = t.get?.bind(B);
+			if (!n) throw Error(`计算属性 "${e}" 需要提供 getter`);
+			let r = t.set?.bind(B);
+			r ? (A[e] = r, k[e] = M(e, n, r)) : k[e] = M(e, n);
+		}
+	}), {
+		boundMethods: O,
+		computedRefs: k,
+		computedSetters: A,
+		dirtyComputedKeys: j,
+		computedProxy: N,
+		publicInstance: B,
+		touchSetupMethodsVersion() {
+			P.value += 1;
+		}
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/diagnostics.mjs
+function e$3(e) {
+	return e !== `patch` && e !== `diff`;
+}
+function t$2(t) {
+	if (t !== `off`) return (n) => {
+		if (t === `fallback` && !e$3(n.reason)) return;
+		let r = n.phase ? n.phase.dispatch?.payloadBytes : typeof n.bytes == `number` ? n.bytes : n.estimatedBytes, i = typeof r == `number` ? `${r}B` : `unknown`, a = [
+			`mode=${n.mode}`,
+			`reason=${n.reason}`,
+			`pending=${n.pendingPatchKeys}`,
+			`keys=${n.payloadKeys}`,
+			`bytes=${i}`
+		];
+		if (typeof n.revision == `number` && a.push(`revision=${n.revision}`), typeof n.committedRevision == `number` && a.push(`committedRevision=${n.committedRevision}`), n.phase) {
+			let e = n.phase;
+			a.push(`phase=${e.name}`, `observer=${e.observerId}`, `result=${e.result}`, `completion=${e.completion}`, `dispatch=${e.dispatch?.id ?? `unknown`}`, `prepareMs=${e.prepareDurationMs ?? `unknown`}`, `dispatchMs=${e.dispatch?.durationMs ?? `unknown`}`, `commitMs=${e.commitDurationMs ?? `unknown`}`, `visibleAt=unknown`);
+		}
+		if (typeof n.mergedSiblingParents == `number` && a.push(`mergedParents=${n.mergedSiblingParents}`), typeof n.computedDirtyKeys == `number` && a.push(`computedDirty=${n.computedDirtyKeys}`), typeof n.flushCount == `number` && a.push(`flushes=${n.flushCount}`), typeof n.windowMs == `number` && a.push(`window=${n.windowMs}ms`), n.targetLabel && a.push(`target=${n.targetLabel}`), n.bindings?.length) {
+			let e = n.bindings.map((e) => {
+				let t = e.sourceLocation?.start;
+				return t ? `${e.id}@${e.sourceFile}:${t.line}:${t.column}` : `${e.id}@${e.sourceFile}`;
+			});
+			a.push(`bindings=${e.join(`,`)}`);
+		}
+		n.message && a.push(`message=${n.message}`);
+		let o = `[wevu:setData] ${a.join(` `)}`;
+		e$3(n.reason) ? console.warn(o) : console.info(o);
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/setData/scheduler.mjs
+function f$3(f) {
+	let { state: p, setupState: m, snapshotOmitKeys: h, computedRefs: g, dirtyComputedKeys: _, includeComputed: v, setDataStrategy: y, currentAdapter: b, shouldIncludeKey: x, toPlainMaxDepth: S, toPlainMaxKeys: C, includeFunctions: w = !1, functionPaths: T, debug: E, debugWhen: D, debugSampleRate: O, bindingManifest: k, loopWarning: A, targetLabel: j, runTracker: M, isMounted: ee, initialSnapshot: N, initialState: P } = f, F = /* @__PURE__ */ new WeakMap(), I = /* @__PURE__ */ new WeakMap(), L = {}, R = Object.create(null), z = Object.create(null), B = [], V = -1 / 0, H = new Set(P && typeof P == `object` ? Object.keys(P) : []), U = (e) => {
+		if (Object.prototype.toString.call(e) !== `[object Object]`) return !1;
+		let t = Object.getPrototypeOf(e);
+		return t === null || t === Object.prototype;
+	}, W = (e, t) => {
+		if (Object.is(e, t)) return !0;
+		if (Array.isArray(e) && Array.isArray(t)) return e.length === t.length && e.every((e, n) => W(e, t[n]));
+		if (U(e) && U(t)) {
+			let n = Object.keys(e), r = Object.keys(t);
+			return n.length === r.length && n.every((n) => i$14(t, n) && W(e[n], t[n]));
+		}
+		return !1;
+	}, G = (i) => {
+		let o = s$15(i) ? i.value : i;
+		if (typeof o != `object` || !o) return o;
+		if (!F$1(o) && s$12(o)) return { snapshot: u$10(o, /* @__PURE__ */ new WeakMap(), {
+			cacheEligibility: I,
+			maxDepth: S,
+			maxKeys: C,
+			includeFunctions: w,
+			functionPaths: T
+		}) };
+		let s = F$1(o) ? s$16(o) : o;
+		return {
+			raw: s,
+			version: j$1(s)
+		};
+	}, K = (e, t) => Object.is(e, t) ? !0 : !e || !t || typeof e != `object` || typeof t != `object` || !i$14(e, `raw`) || !i$14(t, `raw`) ? e && t && typeof e == `object` && typeof t == `object` && i$14(e, `snapshot`) && i$14(t, `snapshot`) ? W(e.snapshot, t.snapshot) : !1 : e.raw === t.raw && e.version === t.version, q = (e) => x(e) && !h?.has(e);
+	if (N) for (let [e, t] of Object.entries(N)) q(e) && (L[e] = t);
+	let te = () => {
+		if (!N) return;
+		let t = F$1(p) ? s$16(p) : p, r = m && typeof m == `object` ? F$1(m) ? s$16(m) : m : void 0;
+		for (let e of Object.keys(N)) if (q(e)) {
+			if (r && i$14(r, e)) R[e] = G(r[e]);
+			else if (i$14(t, e)) {
+				if (H.has(e)) continue;
+				t[e] = N[e], R[e] = G(t[e]);
+			}
+		}
+	}, ne = (t) => {
+		let a = [], o = m && typeof m == `object` ? F$1(m) ? s$16(m) : m : void 0;
+		for (let n of /* @__PURE__ */ new Set([...Object.keys(p), ...o ? Object.keys(o) : []])) {
+			if (!q(n)) continue;
+			let s = o && i$14(o, n) ? o[n] : p[n], c = s$15(s) ? s.value : s;
+			c && typeof c == `object` && s$16(c) === t && a.push(n);
+		}
+		return a;
+	}, J = (e, t) => {
+		if (!E) return;
+		let n = e.reason !== `patch` && e.reason !== `diff`;
+		if (D === `fallback` && !n || e.reason !== `commitFailure` && O < 1 && Math.random() > O) return;
+		let r = e;
+		if (k) {
+			let n = typeof t == `function` ? t() : t ?? [], i = e.reason === `needsFullSnapshot` || e.reason === `maxPatchKeys` || e.reason === `maxPayloadBytes`;
+			r = {
+				...e,
+				bindings: m$3(k, n, i)
+			};
+		}
+		try {
+			E(r);
+		} catch {}
+	}, Y, X = f.debugPhases && E ? a$15({
+		debug: E,
+		debugWhen: D,
+		debugSampleRate: O,
+		targetLabel: j,
+		committedRevision: () => Y.state.committedRevision
+	}) : void 0;
+	Y = s$10({
+		observe: X?.revision,
+		initialSnapshot: L,
+		adapter: b,
+		onFailure: (e) => {
+			J({
+				mode: e.mode,
+				reason: `commitFailure`,
+				pendingPatchKeys: e.pendingPatchKeys,
+				payloadKeys: e.payloadKeys,
+				revision: e.revision,
+				committedRevision: e.committedRevision,
+				targetLabel: j,
+				message: e.error.message
+			});
+			try {
+				b.__wevu_reportSetDataError?.(e.error);
+			} catch {}
+		}
+	});
+	let re = (e = 0, t) => {
+		if (!A) return;
+		let n = Date.now();
+		B.push(n);
+		let r = n - A.sampleWindowMs;
+		for (; B.length && B[0] < r;) B.shift();
+		B.length <= A.maxFlushes || A.coolDownMs > 0 && n - V < A.coolDownMs || (V = n, J({
+			mode: y,
+			reason: `loopWarning`,
+			pendingPatchKeys: e,
+			payloadKeys: 0,
+			computedDirtyKeys: v ? _.size : 0,
+			flushCount: B.length,
+			windowMs: A.sampleWindowMs,
+			targetLabel: j,
+			message: `${j ? `${j} ` : ``}疑似运行时更新循环：${B.length} 次 setData flush/${A.sampleWindowMs}ms`
+		}, t));
+	}, Z = () => u$9({
+		state: p,
+		setupState: m,
+		computedRefs: g,
+		includeComputed: v,
+		shouldIncludeKey: q,
+		plainCache: F,
+		plainCacheEligibility: I,
+		toPlainMaxDepth: S,
+		toPlainMaxKeys: C,
+		includeFunctions: w,
+		functionPaths: T
+	});
+	te();
+	let ie = () => {
+		let t = F$1(p) ? s$16(p) : p, r = m && typeof m == `object` ? F$1(m) ? s$16(m) : m : void 0, a = Y.state.dispatchedSnapshot, o = { ...a }, s = /* @__PURE__ */ new WeakMap(), l = /* @__PURE__ */ new Set(), u = /* @__PURE__ */ new Set(), d = /* @__PURE__ */ new Set();
+		for (let e of /* @__PURE__ */ new Set([...Object.keys(t), ...r ? Object.keys(r) : []])) {
+			if (!q(e)) continue;
+			l.add(e);
+			let n = r && i$14(r, e) ? r : t, u = G(n[e]), f = R[e];
+			f && u && typeof f == `object` && typeof u == `object` && i$14(f, `raw`) && i$14(u, `raw`) && Array.isArray(f.raw) && Array.isArray(u.raw) && f.raw !== u.raw && d.add(e), (!K(f, u) || !i$14(a, e)) && (o[e] = u$10(n[e], s, {
+				cache: F,
+				cacheEligibility: I,
+				maxDepth: S,
+				maxKeys: C,
+				includeFunctions: w,
+				functionPaths: T,
+				_path: e
+			})), R[e] = u;
+		}
+		for (let e of Object.keys(R)) l.has(e) || (delete R[e], (!v || !i$14(g, e)) && delete o[e]);
+		if (!v) {
+			for (let e of Object.keys(z)) delete z[e];
+			return {
+				snapshot: o,
+				replacedTopLevelKeys: d
+			};
+		}
+		for (let e of Object.keys(g)) {
+			if (!q(e)) continue;
+			u.add(e);
+			let t = g[e].value, n = G(t);
+			(!K(z[e], n) || !i$14(a, e)) && (o[e] = u$10(t, s, {
+				cache: F,
+				cacheEligibility: I,
+				maxDepth: S,
+				maxKeys: C,
+				includeFunctions: w,
+				functionPaths: T,
+				_path: e
+			})), z[e] = n;
+		}
+		for (let e of Object.keys(z)) u.has(e) || (delete z[e], (!i$14(t, e) || !q(e)) && delete o[e]);
+		return {
+			snapshot: o,
+			replacedTopLevelKeys: d
+		};
+	}, Q = (e = `diff`, t = 0, n) => {
+		let r = y === `diff` ? ie() : void 0, i = r?.snapshot ?? Z(), a = Y.state.dispatchedSnapshot, o = Y.state.needsFullSnapshot, c = o ? Y.createFullPayload(i) : r ? (() => {
+			let e = {};
+			for (let t of r.replacedTopLevelKeys) e[t] = i[t];
+			return {
+				...g$5(a, i, { skipKeys: r.replacedTopLevelKeys }),
+				...e
+			};
+		})() : g$5(a, i);
+		n?.(i);
+		let l = Object.keys(c).length;
+		if (!l && !o) return;
+		let u = o ? `needsFullSnapshot` : e;
+		J({
+			mode: `diff`,
+			reason: u,
+			pendingPatchKeys: t,
+			payloadKeys: l
+		}, Object.keys(c)), Y.dispatch({
+			mode: `diff`,
+			kind: o ? `full` : `delta`,
+			reason: u,
+			snapshot: i,
+			payload: c,
+			pendingPatchKeys: t
+		});
+	}, $ = (e = 0, t) => ee() ? (X?.prepare(), re(e, t), M(), !0) : !1;
+	return {
+		collect: Z,
+		emitDebug: J,
+		getLatestSnapshot: () => Y.state.dispatchedSnapshot,
+		dispatchUpdate: Y.dispatch,
+		needsFullSnapshot: () => Y.state.needsFullSnapshot,
+		job: (e) => {
+			if ($()) return Q(`diff`);
+		},
+		plainCache: F,
+		plainCacheEligibility: I,
+		prepareJob: $,
+		resolveTopKeysByRoot: ne,
+		runDiffUpdate: Q,
+		shouldIncludeSnapshotKey: q,
+		snapshot: () => y === `patch` ? Z() : { ...Y.state.dispatchedSnapshot },
+		cloneLatestSnapshot: () => ({ ...Y.state.dispatchedSnapshot }),
+		dispose: Y.dispose
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/setDataOptions.mjs
+function e$2(e) {
+	let t = e?.includeComputed ?? !0, n = e?.suspendWhenHidden ?? !1, r = e?.strategy ?? `diff`, i = typeof e?.maxPatchKeys == `number` ? Math.max(0, e.maxPatchKeys) : 1 / 0, a = typeof e?.maxPayloadBytes == `number` ? Math.max(0, e.maxPayloadBytes) : 1 / 0, o = typeof e?.mergeSiblingThreshold == `number` ? Math.max(2, Math.floor(e.mergeSiblingThreshold)) : 0, s = typeof e?.mergeSiblingMaxInflationRatio == `number` ? Math.max(0, e.mergeSiblingMaxInflationRatio) : 1.25, c = typeof e?.mergeSiblingMaxParentBytes == `number` ? Math.max(0, e.mergeSiblingMaxParentBytes) : 1 / 0, l = e?.mergeSiblingSkipArray ?? !0, u = e?.computedCompare ?? (r === `patch` ? `deep` : `reference`), d = typeof e?.computedCompareMaxDepth == `number` ? Math.max(0, Math.floor(e.computedCompareMaxDepth)) : 4, f = typeof e?.computedCompareMaxKeys == `number` ? Math.max(0, Math.floor(e.computedCompareMaxKeys)) : 200, p = e?.prelinkMaxDepth, m = e?.prelinkMaxKeys, h = e?.debug, g = e?.diagnostics ?? `off`, _ = e?.loopWarning, v = _ === !1 || _ && typeof _ == `object` && _.enabled === !1 ? !1 : {
+		sampleWindowMs: typeof _ == `object` && typeof _.sampleWindowMs == `number` ? Math.max(100, Math.floor(_.sampleWindowMs)) : 1e3,
+		maxFlushes: typeof _ == `object` && typeof _.maxFlushes == `number` ? Math.max(1, Math.floor(_.maxFlushes)) : 50,
+		coolDownMs: typeof _ == `object` && typeof _.coolDownMs == `number` ? Math.max(0, Math.floor(_.coolDownMs)) : 5e3
+	}, y = e?.debugWhen ?? `fallback`, b = typeof e?.debugSampleRate == `number` ? Math.min(1, Math.max(0, e.debugSampleRate)) : 1, x = typeof e?.elevateTopKeyThreshold == `number` ? Math.max(0, Math.floor(e.elevateTopKeyThreshold)) : 1 / 0, S = typeof e?.toPlainMaxDepth == `number` ? Math.max(0, Math.floor(e.toPlainMaxDepth)) : 1 / 0, C = typeof e?.toPlainMaxKeys == `number` ? Math.max(0, Math.floor(e.toPlainMaxKeys)) : 1 / 0, w = !!e?.includeFunctions, T = Array.isArray(e?.functionPaths) ? [...new Set(e.functionPaths.filter((e) => typeof e == `string` && e.length > 0))] : [], E = Array.isArray(e?.pick) && e.pick.length > 0 ? new Set(e.pick) : void 0, D = Array.isArray(e?.omit) && e.omit.length > 0 ? new Set(e.omit) : void 0;
+	return {
+		includeComputed: t,
+		suspendWhenHidden: n,
+		setDataStrategy: r,
+		maxPatchKeys: i,
+		maxPayloadBytes: a,
+		mergeSiblingThreshold: o,
+		mergeSiblingMaxInflationRatio: s,
+		mergeSiblingMaxParentBytes: c,
+		mergeSiblingSkipArray: l,
+		computedCompare: u,
+		computedCompareMaxDepth: d,
+		computedCompareMaxKeys: f,
+		prelinkMaxDepth: p,
+		prelinkMaxKeys: m,
+		debug: h,
+		debugPhases: e?.debugPhases === !0,
+		diagnostics: g,
+		loopWarning: v,
+		debugWhen: y,
+		debugSampleRate: b,
+		elevateTopKeyThreshold: x,
+		toPlainMaxDepth: S,
+		toPlainMaxKeys: C,
+		includeFunctions: w,
+		functionPaths: T,
+		pickSet: E,
+		omitSet: D,
+		shouldIncludeKey: (e) => !(E && !E.has(e) || D && D.has(e))
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app/mount.mjs
+function p$2(e, t) {
+	let n = (() => {
+		e();
+	});
+	return n.stop = () => n(), n.pause = () => {
+		t?.pause?.();
+	}, n.resume = () => {
+		t?.resume?.();
+	}, n;
+}
+function ce(e) {
+	return typeof e == `function` ? e() : e ?? {};
+}
+function m$2(m) {
+	let { data: le, resolvedComputed: ue, resolvedMethods: de, appConfig: fe, setDataOptions: h, bindingManifest: g } = m;
+	return (m) => {
+		h?.strategy === `patch` && a$16(`patchStrategy`, `createRuntimeMount(setData.strategy="patch")`);
+		let _ = ce(le), v = m?.__wevu_initialProps;
+		if (_ && typeof _ == `object` && !i$14(_, "__wevuProps")) try {
+			Object.defineProperty(_, WEVU_PROPS_KEY, {
+				value: f$12(Object.create(null)),
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {}
+		let y = _ && typeof _ == `object` ? _[WEVU_PROPS_KEY] : void 0;
+		y && typeof y == `object` && v && typeof v == `object` && Object.assign(y, v);
+		let b$4 = P$1(_), x = P$1(Object.create(null)), S = m?.__wevu_snapshotOmitKeys, pe = !!m?.__wevu_deferInitialSnapshot, C = m?.__wevu_initialSnapshot, w = m?.__wevu_initialState, T = new Set(S instanceof Set || Array.isArray(S) ? S : []);
+		if (_ && typeof _ == `object` && !i$14(_, "__wevuSetupState")) try {
+			Object.defineProperty(_, WEVU_SETUP_STATE_KEY, {
+				value: x,
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {}
+		if (_ && typeof _ == `object` && w && typeof w == `object`) for (let [e, t] of Object.entries(w)) T.has(e) || (_[e] = t);
+		let me = ue, he = de, E = !0, D = [], O = /* @__PURE__ */ new Set();
+		Object.keys(b$4).forEach((e) => {
+			let t = b$4[e];
+			s$12(t) && O.add(e);
+		});
+		let { includeComputed: k, setDataStrategy: A, maxPatchKeys: j, maxPayloadBytes: M, mergeSiblingThreshold: N, mergeSiblingMaxInflationRatio: P, mergeSiblingMaxParentBytes: F, mergeSiblingSkipArray: I, computedCompare: L, computedCompareMaxDepth: R, computedCompareMaxKeys: ge, prelinkMaxDepth: _e, prelinkMaxKeys: ve, debug: z, diagnostics: B, loopWarning: V, debugWhen: ye, debugSampleRate: be, debugPhases: xe, elevateTopKeyThreshold: Se, toPlainMaxDepth: Ce, toPlainMaxKeys: we, includeFunctions: Te, functionPaths: Ee, shouldIncludeKey: De } = e$2(h), H = t$2(B), U = B === `off` && V ? t$2(`fallback`) : void 0, Oe = z || H || U ? (e) => {
+			if (typeof z == `function`) try {
+				z(e);
+			} catch {}
+			H?.(e), e.reason === `loopWarning` && U?.(e);
+		} : void 0, ke = B === `always` ? `always` : ye, { boundMethods: Ae, computedRefs: W, computedSetters: je, dirtyComputedKeys: Me, computedProxy: Ne, publicInstance: G, touchSetupMethodsVersion: K } = b({
+			state: b$4,
+			setupState: x,
+			computedDefs: me,
+			methodDefs: he,
+			appConfig: fe,
+			includeComputed: k,
+			setDataStrategy: A
+		}), q = m ?? { setData: () => {} }, Pe = q.__wevu_targetLabel, J, Y = {
+			state: b$4,
+			setupState: x,
+			snapshotOmitKeys: T,
+			computedRefs: W,
+			dirtyComputedKeys: Me,
+			includeComputed: k,
+			setDataStrategy: A,
+			computedCompare: L,
+			computedCompareMaxDepth: R,
+			computedCompareMaxKeys: ge,
+			currentAdapter: q,
+			shouldIncludeKey: De,
+			maxPatchKeys: j,
+			maxPayloadBytes: M,
+			mergeSiblingThreshold: N,
+			mergeSiblingMaxInflationRatio: P,
+			mergeSiblingMaxParentBytes: F,
+			mergeSiblingSkipArray: I,
+			elevateTopKeyThreshold: Se,
+			prelinkMaxDepth: _e,
+			prelinkMaxKeys: ve,
+			toPlainMaxDepth: Ce,
+			toPlainMaxKeys: we,
+			includeFunctions: Te,
+			functionPaths: Ee,
+			debug: Oe,
+			debugWhen: ke,
+			debugSampleRate: be,
+			debugPhases: xe,
+			bindingManifest: g,
+			loopWarning: V,
+			targetLabel: Pe,
+			runTracker: () => J?.(),
+			isMounted: () => E,
+			initialSnapshot: C && typeof C == `object` ? C : void 0,
+			initialState: w && typeof w == `object` ? w : void 0
+		}, X = A === `patch` ? a$16(`patchStrategy`, `createRuntimeMount(setData.strategy="patch")`).createScheduler(Y) : f$3(Y), Z = () => X.job(), Q = () => {
+			J?.(), X.job();
+		};
+		J = O$2(() => {
+			g$6(b$4);
+			let e = b$4[WEVU_PROPS_KEY];
+			F$1(e) && g$6(e);
+			let t = b$4[WEVU_ATTRS_KEY];
+			F$1(t) && g$6(t), O.forEach((e) => {
+				c$12(x[e] ?? b$4[e]);
+			});
+		}, {
+			lazy: !0,
+			scheduler: () => l$18(Z)
+		}), pe || Z(), D.push(p$2(() => y$4(J))), X.start?.(), X.dispose && D.push(p$2(X.dispose));
+		function Fe(e, t, n) {
+			let r = u$13(e, (e, n) => t(e, n), n);
+			return D.push(r), p$2(() => {
+				r();
+				let e = D.indexOf(r);
+				e >= 0 && D.splice(e, 1);
+			}, r);
+		}
+		let $ = {
+			get state() {
+				return b$4;
+			},
+			get setupState() {
+				return x;
+			},
+			get proxy() {
+				return G;
+			},
+			get methods() {
+				return Ae;
+			},
+			get computed() {
+				return Ne;
+			},
+			get adapter() {
+				return q;
+			},
+			bindModel: l$4(G, b$4, W, je, x),
+			watch: Fe,
+			snapshot: () => X.snapshot(),
+			unmount: () => {
+				if (E) {
+					E = !1, X.dispose?.();
+					try {
+						q.__wevu_disposeSetData?.();
+					} catch {}
+					D.forEach((e) => {
+						try {
+							e();
+						} catch {}
+					}), D.length = 0;
+				}
+			}
+		};
+		try {
+			Object.defineProperty($, "__wevu_touchSetupMethodsVersion", {
+				value: K,
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {
+			$.__wevu_touchSetupMethodsVersion = K;
+		}
+		try {
+			Object.defineProperty($, "__wevu_flushSetupSnapshotSync", {
+				value: Q,
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {
+			$.__wevu_flushSetupSnapshotSync = Q;
+		}
+		try {
+			Object.defineProperty($, "__wevu_cloneDispatchedSnapshot", {
+				value: X.cloneLatestSnapshot,
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {
+			$.__wevu_cloneDispatchedSnapshot = X.cloneLatestSnapshot;
+		}
+		try {
+			Object.defineProperty($, "__wevu_trackSetupReactiveKey", {
+				value: (e) => {
+					O.add(e);
+				},
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {
+			$.__wevu_trackSetupReactiveKey = (e) => {
+				O.add(e);
+			};
+		}
+		try {
+			Object.defineProperty($, WEVU_PROPS_DERIVED_KEYS_KEY, {
+				value: T,
+				configurable: !0,
+				enumerable: !1,
+				writable: !1
+			});
+		} catch {
+			$[WEVU_PROPS_DERIVED_KEYS_KEY] = T;
+		}
+		return $;
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/app.mjs
+function _$1(_) {
+	let v = _[e$21], { [e$21]: y, [WEVU_BINDING_MANIFEST_KEY]: b, [WEVU_SCOPED_SLOT_OWNER_REQUIRED_KEY]: x, data: S, computed: C, methods: w, setData: T, watch: E, setup: D, ...O } = v === `component` ? _ : c$17(_), k = s$6(b), A = w ?? {}, j = C ?? {}, M = x === !0 || Array.isArray(T?.pick) && T.pick.includes("__wvOwnerId"), N = A, P = N[WEVU_INLINE_MAP_KEY];
+	Object.prototype.hasOwnProperty.call(N, "__weapp_vite_inline_map") && P && typeof P == `object` && Object.keys(P).length > 0 && typeof N["__weapp_vite_inline"] != `function` && typeof O["__weapp_vite_inline"] != `function` && a$16(`inlineEvents`, `createApp(inline event metadata)`), T?.strategy === `patch` && a$16(`patchStrategy`, `createApp(setData.strategy="patch")`), o$16(T?.highFrequencyWarning) && a$16(`setDataHighFrequencyWarning`, `createApp(setData.highFrequencyWarning)`), M && a$16(`scopedSlots`, `createApp(scoped-slot bindings)`);
+	let F = /* @__PURE__ */ new Set(), I = /* @__PURE__ */ new Set(), L = !1, R = { globalProperties: {} }, z = {
+		mount: m$2({
+			data: S,
+			resolvedComputed: j,
+			resolvedMethods: A,
+			appConfig: R,
+			setDataOptions: T,
+			bindingManifest: k
+		}),
+		use(e, ...t) {
+			if (!e || F.has(e)) return z;
+			if (F.add(e), typeof e == `function`) e(z, ...t);
+			else if (typeof e.install == `function`) e.install(z, ...t);
+			else throw TypeError(`插件必须是函数，或包含 install 方法的对象`);
+			return z;
+		},
+		provide(e, t) {
+			return f$10(z, e, t, { syncGlobal: v !== `component` }), z;
+		},
+		onUnmount(e) {
+			if (typeof e != `function`) throw TypeError(`onUnmount 只接受函数`);
+			return L ? (e(), z) : (I.add(e), z);
+		},
+		unmount() {
+			if (!L) {
+				L = !0;
+				for (let e of I) e();
+				I.clear();
+			}
+		},
+		config: R,
+		version: t$12
+	};
+	try {
+		d$9(z), Object.defineProperty(z, "__wevuSetDataOptions", {
+			value: T,
+			configurable: !0,
+			enumerable: !1,
+			writable: !1
+		}), Object.defineProperty(z, "__wevuHasTemplateRuntimeBindings", {
+			value: M,
+			configurable: !0,
+			enumerable: !1,
+			writable: !1
+		});
+	} catch {
+		z.__wevuSetDataOptions = T, z.__wevuHasTemplateRuntimeBindings = M;
+	}
+	let B = () => {
+		let t = f$14(), n = `__wevuAppRegistered`;
+		t && t[n] || (t && (t[n] = !0), m$4(z, w ?? {}, E, D, O));
+	};
+	return v !== `component` && typeof App == `function` && B(), z;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/define/componentDefinition.mjs
+function a$4(a, o = !1) {
+	let s = _$1({
+		data: a.data,
+		computed: a.computed,
+		methods: a.methods,
+		setData: a.setData,
+		[WEVU_BINDING_MANIFEST_KEY]: a.bindingManifest,
+		[WEVU_SCOPED_SLOT_OWNER_REQUIRED_KEY]: a.scopedSlotOwnerRequired,
+		[e$21]: `component`
+	});
+	return {
+		lifecycleDefinition: c$6(s, a.methods, a.watch, a.setup, a.mpOptions, { registerNative: o }),
+		runtimeApp: s
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/define/initialComputed.mjs
+var i$3 = class extends Error {};
+function a$3(e) {
+	if (typeof e == `function`) return e;
+	let t = e?.get;
+	return typeof t == `function` ? t : void 0;
+}
+function o$4(e) {
+	return e.startsWith(`__wv_bind_`) || e.startsWith(`__wv_cls_`) || e.startsWith(`__wv_style_`);
+}
+function s$4(e, t) {
+	if (!e.startsWith(`__wv_bind_`)) return !1;
+	try {
+		return !/\bthis\b/.test(Function.prototype.toString.call(t));
+	} catch {
+		return !1;
+	}
+}
+function c$3(e) {
+	if (e === "__wvOwnerId") return ``;
+	if (e.startsWith(`__wv_bind_`)) return null;
+	if (e.startsWith(`__wv_cls_`) || e.startsWith(`__wv_style_`)) return ``;
+}
+function l$3(t, r, i) {
+	let a = /* @__PURE__ */ new Set([...Array.isArray(r?.pick) ? r.pick : [], ...i?.bindings.map((e) => e.outputPath) ?? []]);
+	if (!a.size) return;
+	let { shouldIncludeKey: o } = e$2(r), s = {};
+	for (let n of a) {
+		if (!o(n) || i$14(t, n) || n.includes(`.`) || n.includes(`[`)) continue;
+		let r = c$3(n);
+		r !== void 0 && (s[n] = r);
+	}
+	return Object.keys(s).length ? s : void 0;
+}
+function u$3(r) {
+	let { data: c, computed: l, methods: u, setData: d } = r, f = l ? Object.keys(l) : [];
+	if (!f.length) return;
+	let { includeComputed: p, shouldIncludeKey: m, toPlainMaxDepth: h, toPlainMaxKeys: g, includeFunctions: _, functionPaths: v } = e$2(d);
+	if (!p) return;
+	let y = {}, b = /* @__PURE__ */ new Set(), x, S = (n) => {
+		if (i$14(c, n) || !m(n)) return { ok: !1 };
+		if (i$14(y, n)) return {
+			ok: !0,
+			value: y[n]
+		};
+		if (b.has(n)) return { ok: !1 };
+		let r = a$3(l[n]);
+		if (!r) return { ok: !1 };
+		b.add(n);
+		try {
+			let e = r.call(x);
+			if (e === void 0) return { ok: !1 };
+			let i = u$10(e, /* @__PURE__ */ new WeakMap(), {
+				maxDepth: h,
+				maxKeys: g,
+				includeFunctions: _,
+				functionPaths: v,
+				_path: n
+			});
+			return i === void 0 ? { ok: !1 } : (y[n] = i, {
+				ok: !0,
+				value: i
+			});
+		} catch {
+			return { ok: !1 };
+		} finally {
+			b.delete(n);
+		}
+	};
+	x = new Proxy(c, {
+		get(t, n, r) {
+			if (typeof n == `string`) {
+				if (n === `data` || n === `$state`) return c;
+				if (n === `props` || n === `$props` || n === `$attrs`) throw new i$3();
+				if (i$14(c, n)) return Reflect.get(t, n, r);
+				if (u && i$14(u, n)) {
+					let e = u[n];
+					return typeof e == `function` ? e.bind(x) : e;
+				}
+				if (l && i$14(l, n)) {
+					let e = S(n);
+					if (e.ok) return e.value;
+					throw new i$3();
+				}
+				throw new i$3();
+			}
+			return Reflect.get(t, n, r);
+		},
+		has(t, n) {
+			return Reflect.has(t, n) || typeof n == `string` && !!(l && i$14(l, n));
+		}
+	});
+	for (let e of f) {
+		let t = a$3(l[e]);
+		(!o$4(e) || t && s$4(e, t)) && S(e);
+	}
+	return Object.keys(y).length ? y : void 0;
+}
+function d$3(e, t, n, r, i) {
+	if (e !== void 0 && (!e || typeof e != `object`)) return e;
+	let a = e ?? {}, o = e === void 0 ? void 0 : u$3({
+		data: a,
+		computed: t,
+		methods: r,
+		setData: n
+	}), s = l$3(a, n, i);
+	return o || s ? {
+		...a,
+		...s,
+		...o
+	} : e;
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/define/options.mjs
+var e$1 = [
+	`components`,
+	`computed`,
+	`directives`,
+	`inject`,
+	`methods`,
+	`props`,
+	`provide`
+];
+var t$1 = /* @__PURE__ */ new Set(/* @__PURE__ */ `activated.attached.beforeCreate.beforeDestroy.beforeMount.beforeUnmount.beforeUpdate.created.deactivated.destroyed.detached.errorCaptured.hide.mounted.moved.onAddToFavorites.onHide.onLoad.onPageScroll.onPullDownRefresh.onReachBottom.onReady.onResize.onRouteDone.onSaveExitState.onShareAppMessage.onShareTimeline.onShow.onTabItemTap.onUnload.ready.renderTracked.renderTriggered.serverPrefetch.show.unmounted.updated`.split(`.`));
+function n$1(e) {
+	return e && typeof e == `object` && !Array.isArray(e) ? e : void 0;
+}
+function r$2(e, t) {
+	return typeof e == `function` ? typeof t == `function` ? function(...n) {
+		return e.apply(this, n), t.apply(this, n);
+	} : e : t;
+}
+function i$2(e, t) {
+	let i = n$1(e), a = n$1(t);
+	if (!i) return a;
+	if (!a) return i;
+	let o = {
+		...i,
+		...a
+	};
+	for (let e of /* @__PURE__ */ new Set([...Object.keys(i), ...Object.keys(a)])) o[e] = r$2(i[e], a[e]);
+	return o;
+}
+function a$2(e, t) {
+	return e === void 0 ? t : t === void 0 ? e : function() {
+		let r = typeof e == `function` ? e.call(this) : e, i = typeof t == `function` ? t.call(this) : t;
+		return {
+			...n$1(r) ?? {},
+			...n$1(i) ?? {}
+		};
+	};
+}
+function o$3(e, t) {
+	if (typeof e == `function`) return e;
+	if (typeof e == `string`) {
+		let n = t[e];
+		return typeof n == `function` ? n : void 0;
+	}
+	let r = n$1(e);
+	return r ? o$3(r.handler, t) : void 0;
+}
+function s$3(e, t) {
+	if (e === void 0) return t;
+	if (t === void 0) return e;
+	let r = n$1(e), i = n$1(t);
+	return {
+		...r ?? {},
+		...i ?? {},
+		handler(...n) {
+			return o$3(e, this)?.apply(this, n), o$3(t, this)?.apply(this, n);
+		},
+		immediate: !!(r?.immediate || i?.immediate),
+		deep: !!(r?.deep || i?.deep)
+	};
+}
+function c$2(e, t) {
+	let r = n$1(e), i = n$1(t);
+	if (!r) return i;
+	if (!i) return r;
+	let a = {
+		...r,
+		...i
+	};
+	for (let e of /* @__PURE__ */ new Set([...Object.keys(r), ...Object.keys(i)])) a[e] = s$3(r[e], i[e]);
+	return a;
+}
+function l$2(e, t) {
+	let n = [...Array.isArray(e) ? e : [], ...Array.isArray(t) ? t : []];
+	return [...new Set(n)];
+}
+function u$2(o, s) {
+	let u = {
+		...o,
+		...s
+	};
+	for (let t of e$1) {
+		let e = n$1(o[t]), r = n$1(s[t]);
+		(e || r) && (u[t] = {
+			...e ?? {},
+			...r ?? {}
+		});
+	}
+	u.data = a$2(o.data, s.data), u.watch = c$2(o.watch, s.watch), u.lifetimes = i$2(o.lifetimes, s.lifetimes), u.pageLifetimes = i$2(o.pageLifetimes, s.pageLifetimes);
+	for (let e of /* @__PURE__ */ new Set([...Object.keys(o), ...Object.keys(s)])) t$1.has(e) && (u[e] = r$2(o[e], s[e]));
+	return (Array.isArray(o.emits) || Array.isArray(s.emits)) && (u.emits = l$2(o.emits, s.emits)), (Array.isArray(o.expose) || Array.isArray(s.expose)) && (u.expose = l$2(o.expose, s.expose)), u;
+}
+function d$2(e, t, r) {
+	let i = n$1(t);
+	if (!i || r.has(i)) return e;
+	r.add(i);
+	let a = e;
+	if (a = d$2(a, i.extends, r), Array.isArray(i.mixins)) for (let e of i.mixins) a = d$2(a, e, r);
+	let { extends: o, mixins: s, ...c } = i;
+	return u$2(a, c);
+}
+function f$2(e) {
+	return d$2({}, e, /* @__PURE__ */ new WeakSet());
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/define/optionsApi.mjs
+var r$1 = Symbol(`wevu-missing-options-api-injection`);
+function i$1(e) {
+	if (typeof e == `string` || typeof e == `symbol`) return { from: e };
+	if (!e || typeof e != `object`) return;
+	let t = e;
+	return {
+		from: t.from,
+		hasDefault: i$14(t, `default`),
+		defaultValue: t.default
+	};
+}
+function a$1(e, t) {
+	return typeof e == `function` ? e.call(t) : e;
+}
+function o$2(t, n) {
+	let o = {};
+	if (Array.isArray(t)) {
+		for (let n of t) (typeof n == `string` || typeof n == `symbol`) && (o[n] = l$11(n));
+		return o;
+	}
+	if (!t || typeof t != `object`) return o;
+	for (let [s, c] of Object.entries(t)) {
+		let t = i$1(c);
+		if (!t || t.from == null) continue;
+		let l = l$11(t.from, r$1);
+		o[s] = l === r$1 && t.hasDefault ? a$1(t.defaultValue, n) : l === r$1 ? void 0 : l;
+	}
+	return o;
+}
+function s$2(e, n) {
+	let r = typeof e == `function` ? e.call(n) : e;
+	if (r && typeof r == `object`) for (let e of Reflect.ownKeys(r)) c$13(e, Reflect.get(r, e));
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/define/props.mjs
+var o$1 = `__wevu_allowNullPropInput`;
+var s$1 = `allowNullPropInput`;
+var c$1 = /* @__PURE__ */ new Map([
+	[String, String],
+	[Number, Number],
+	[Boolean, Boolean],
+	[Object, Object],
+	[Array, Array],
+	[Function, Function],
+	[`String`, String],
+	[`Number`, Number],
+	[`Boolean`, Boolean],
+	[`Object`, Object],
+	[`Array`, Array],
+	[`Function`, Function],
+	[null, null],
+	[`null`, null],
+	[`Null`, null]
+]);
+function l$1(e) {
+	return c$1.get(e);
+}
+function u$1(e, t = []) {
+	if (Array.isArray(e)) {
+		for (let n of e) u$1(n, t);
+		return t;
+	}
+	let n = l$1(e);
+	return n !== void 0 && !t.includes(n) && t.push(n), t;
+}
+function d$1(e) {
+	if (e === void 0) return [];
+	let t = u$1(e).filter((e) => e !== null);
+	return t.length > 0 ? t : [null];
+}
+function f$1(e, t) {
+	let n = d$1(t);
+	if (n.length !== 0 && (e.type = n[0], n.length > 1)) {
+		let t = [];
+		for (let e of n.slice(1)) t.includes(e) || t.push(e);
+		t.length > 0 && (e.optionalTypes = t);
+	}
+}
+function p$1(t) {
+	i$14(t, `value`) || (t.type === String ? t.value = `` : t.type === Number ? t.value = 0 : t.type === Boolean ? t.value = !1 : t.type === Array && (t.value = []));
+}
+function m$1(e, t, n) {
+	if (!n || e.type === null) return;
+	let r = t && typeof t == `object` && !Array.isArray(t) ? t : void 0, i = u$1(r ? [r.type, r.optionalTypes] : t), a = i.includes(null), o = i.filter((e) => e !== null).length > 1, s = r?.required !== !0;
+	(a || o || s) && (a || p$1(e), e.type = null, delete e.optionalTypes);
+}
+function h$1(t, n) {
+	let r = {};
+	return t && Object.entries(t).forEach(([t, i]) => {
+		if (i !== void 0) {
+			if (i === null) r[t] = { type: null };
+			else if (Array.isArray(i) || typeof i == `function`) {
+				let a = {};
+				f$1(a, i), i$14(a, `type`) || (a.type = null), m$1(a, i, n), r[t] = a;
+			} else if (typeof i == `object`) {
+				if (t.endsWith(`Modifiers`) && Object.keys(i).length === 0) {
+					r[t] = {
+						type: Object,
+						value: {}
+					};
+					return;
+				}
+				let a = {};
+				if (`type` in i && i.type !== void 0 && f$1(a, i.type), Array.isArray(i.optionalTypes)) {
+					let e = i.optionalTypes.map((e) => l$1(e)).filter((e) => e != null);
+					if (e.length > 0) {
+						let t = Array.isArray(a.optionalTypes) ? a.optionalTypes : [];
+						for (let n of e) n !== a.type && (t.includes(n) || t.push(n));
+						t.length > 0 && (a.optionalTypes = t);
+					}
+				}
+				`observer` in i && (typeof i.observer == `function` || typeof i.observer == `string`) && (a.observer = i.observer);
+				let o = `default` in i ? i.default : i.value;
+				o !== void 0 && (a.value = typeof o == `function` ? o() : o), i$14(a, `type`) || (a.type = null), m$1(a, i, n), r[t] = a;
+			}
+		}
+	}), r;
+}
+function g$1(c, l, u) {
+	let d = !!(c[o$1] ?? c[s$1]), { [o$1]: f, [s$1]: p, ...m } = c, g = c.properties, _ = g && typeof g == `object` && Object.keys(g).length > 0 ? g : void 0, v = u ?? _, y = !!(l || v), b = (o) => {
+		let s = { ...o ?? {} };
+		return c["__wevuNativeSlotContext"] === !0 && (s["__wv_nativeDeclaration"] = {
+			type: Array,
+			value: []
+		}), y && (i$14(s, "__wvSlotOwnerId") || (s["__wvSlotOwnerId"] = {
+			type: String,
+			value: ``
+		}), i$14(s, "__wvSlotScope") || (s["__wvSlotScope"] = {
+			type: null,
+			value: null
+		}), i$14(s, "vueSlots") || (s["vueSlots"] = {
+			type: null,
+			value: null
+		})), s;
+	};
+	if (v) {
+		let { properties: e, ...t } = m, n = v, r = h$1(l, d);
+		return {
+			...t,
+			properties: b({
+				...r,
+				...n
+			})
+		};
+	}
+	return {
+		...m,
+		properties: b(h$1(l, d))
+	};
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/define.mjs
+var x = /* @__PURE__ */ new WeakMap();
+function S(e, t) {
+	let r = { ...t ?? {} };
+	if (!e || typeof e != `object`) return r;
+	for (let [t, i] of Object.entries(e)) i && typeof i == `object` && i$14(i, `value`) && (r[t] = i.value);
+	return r;
+}
+function C(e, t) {
+	return Array.isArray(e?.pick) && e.pick.includes("__wvOwnerId") || t?.features?.scopedSlots === !0 && c$5(t, "__wvOwnerId");
+}
+function w(e) {
+	return !!e.__wevu_isPage;
+}
+function T(e) {
+	let t = e.properties;
+	return !!(t && typeof t == `object` && ("__wvSlotOwnerId" in t || "__wvSlotScope" in t));
+}
+function E(e, t) {
+	return t?.strategy !== `patch` || !T(e) ? t : {
+		...t,
+		strategy: `diff`
+	};
+}
+function D(e, t = !1) {
+	let { lifecycleDefinition: n, runtimeApp: r } = a$4(e, t), i = {
+		__wevu_runtime: r,
+		__wevu_options: e
+	};
+	return x.set(i, n), i;
+}
+function O(e) {
+	return k(e, !0);
+}
+function k(n, r) {
+	let { __typeProps: c, [WEVU_SCOPED_SLOT_OWNER_REQUIRED_KEY]: y, data: b, computed: x, methods: T, setData: O, watch: k, setup: A, props: j, inject: M, provide: N, allowFunctionProps: P, [WEVU_BINDING_MANIFEST_KEY]: F, [WEVU_CSS_MODULES_KEY]: I, ...L } = f$2(l$14(n)), R = s$6(F), z = L[WEVU_FUNCTION_PROP_PATHS_KEY], B = Array.isArray(z) ? [...new Set(z.filter((e) => typeof e == `string` && e.length > 0))] : [];
+	delete L[WEVU_FUNCTION_PROP_PATHS_KEY];
+	let V = E(L, P === !0 ? {
+		...O ?? {},
+		includeFunctions: !0,
+		functionPaths: B
+	} : P === !1 ? O : B.length ? {
+		...O ?? {},
+		functionPaths: B
+	} : O), H = g$1(L, j, L.properties), U = S(H.properties, T), W = typeof b == `function` ? () => b.call(U) : b, G = typeof A == `function` || M != null || N != null || I ? ((e, t) => {
+		I && typeof I == `object` && (t.instance["__wevuCssModules"] = I);
+		let n = t?.proxy ?? t?.instance ?? Object.create(null), r = o$2(M, n), i = typeof A == `function` ? e$13(A, e, t) : void 0, c = o$9({
+			...r,
+			...I ?? {}
+		}, i);
+		t && Object.keys(c).length && c$7(t.runtime, t.instance, c), N != null && s$2(N, n);
+	}) : void 0, K = typeof W == `function` ? W() : W, q = K && typeof K == `object` ? Reflect.get(K, WEVU_SLOT_OWNER_ID_KEY) : void 0, J = C(V, R), Y = J ? a$16(`scopedSlots`, `defineComponent(scoped-slot owner metadata)`) : void 0, Z = d$3(J ? {
+		...K && typeof K == `object` ? K : {},
+		[WEVU_SLOT_OWNER_ID_KEY]: w(L) ? q || Y?.allocateOwnerId() : q || ``
+	} : K, x, V, T, R), Q = Z === void 0 ? H : {
+		...H,
+		data: Z
+	};
+	return D({
+		scopedSlotOwnerRequired: y === !0,
+		data: W,
+		computed: x,
+		methods: T,
+		setData: V,
+		bindingManifest: R,
+		watch: k,
+		setup: G,
+		mpOptions: Q
+	}, r);
+}
+function N(e) {
+	let t = e.allowNullPropInput ?? !0;
+	O({
+		...e,
+		allowNullPropInput: t,
+		__wevu_allowNullPropInput: t
+	});
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/inlineDataset.mjs
+var e = /&amp;/g;
+var t = /&quot;/g;
+var n = /&#34;/g;
+var r = /&apos;/g;
+var i = /&#39;/g;
+var a = /&lt;/g;
+var o = /&gt;/g;
+var s = /^(?:0|[1-9]\d*)$/;
+var c = /[^a-z0-9]+/gi;
+var l = /^-+|-+$/g;
+var u = /-([a-z0-9])/g;
+var d = /[-_]/g;
+function f(e) {
+	if (typeof e == `number` && Number.isFinite(e)) return e;
+	if (typeof e == `string` && e.trim()) {
+		let t = e.trim();
+		return s.test(t) ? Number(t) : t;
+	}
+}
+function p(e) {
+	return e.trim().replace(c, `-`).replace(l, ``).toLowerCase();
+}
+function m(e, t) {
+	let n = t.replace(d, ``).toLowerCase();
+	for (let [t, r] of Object.entries(e)) if (t.replace(d, ``).toLowerCase() === n) return r;
+}
+function h(e, t) {
+	let n = p(t && typeof t == `object` && `type` in t && typeof t.type == `string` ? t.type : ``);
+	if (!n) return;
+	let r = n.replace(u, (e, t) => t.toUpperCase());
+	if (r) return `${e}${r[0].toUpperCase()}${r.slice(1)}`;
+}
+var g = {
+	wvEventDetail: [`wd`, `wvEventDetail`],
+	wvHandler: [`wh`, `wvHandler`],
+	wvInlineId: [`wi`, `wvInlineId`]
+};
+function _(s) {
+	return s.replace(e, `&`).replace(t, `"`).replace(n, `"`).replace(r, `'`).replace(i, `'`).replace(a, `<`).replace(o, `>`);
+}
+function v(e, t, n) {
+	let r = g[t] ?? [t];
+	for (let t of r) {
+		let r = h(t, n);
+		if (r && e[r] !== void 0) return e[r];
+		if (r) {
+			let t = m(e, r);
+			if (t !== void 0) return t;
+		}
+	}
+	for (let t of r) {
+		if (e[t] !== void 0) return e[t];
+		let n = m(e, t);
+		if (n !== void 0) return n;
+	}
+}
+function y(e) {
+	return f(e);
+}
+//#endregion
+Object.defineProperty(exports, "N", {
+	enumerable: true,
+	get: function() {
+		return N;
+	}
+});
+Object.defineProperty(exports, "WEVU_INLINE_MAP_KEY", {
+	enumerable: true,
+	get: function() {
+		return WEVU_INLINE_MAP_KEY;
+	}
+});
+Object.defineProperty(exports, "_", {
+	enumerable: true,
+	get: function() {
+		return _;
+	}
+});
+Object.defineProperty(exports, "_$1", {
+	enumerable: true,
+	get: function() {
+		return _$1;
+	}
+});
+Object.defineProperty(exports, "i", {
+	enumerable: true,
+	get: function() {
+		return i$16;
+	}
+});
+Object.defineProperty(exports, "l", {
+	enumerable: true,
+	get: function() {
+		return l$15;
+	}
+});
+Object.defineProperty(exports, "o", {
+	enumerable: true,
+	get: function() {
+		return o$18;
+	}
+});
+Object.defineProperty(exports, "s", {
+	enumerable: true,
+	get: function() {
+		return s$15;
+	}
+});
+Object.defineProperty(exports, "v", {
+	enumerable: true,
+	get: function() {
+		return v;
+	}
+});
+Object.defineProperty(exports, "y", {
+	enumerable: true,
+	get: function() {
+		return y;
+	}
+});

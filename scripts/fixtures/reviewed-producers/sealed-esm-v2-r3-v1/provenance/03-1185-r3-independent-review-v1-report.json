@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-fresh-official-receipt-review",
+  "recordedAt": "2026-11-06T22:48:58.008734+00:00",
+  "status": "passed",
+  "caseId": "ide-issue-1185-sibling-entry-runtime",
+  "summary": {
+    "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/control/02-1185/completion-summary.json",
+    "sha256": "0df0f1196c053970355ebaf5676678ef4e7b9a37e24ad82d800df0a87fe95717",
+    "bytes": 7222
+  },
+  "run": {
+    "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/run.json",
+    "sha256": "4641229a60a51443debb78d5d4e6257100ff5b506997a3af40c8fccebe4fe478",
+    "bytes": 9921
+  },
+  "reader": {
+    "kind": "independent-full-official-oracle-reader",
+    "startedAt": "2026-11-06T22:44:49.159Z",
+    "endedAt": "2026-11-06T22:46:09.192Z",
+    "elapsedMs": 80032.450791,
+    "result": {
+      "status": "passed"
+    },
+    "recipeLoaderPassed": true,
+    "originalItemStatus": "unknown",
+    "reviewedCopyStatus": "passed",
+    "rootIndexUnchanged": true,
+    "indexSha256": "575d3dde49d0a2a09e2b52ea7c36f4243136856848a8626cbda6112b1822baff",
+    "compilerOrSdkOrUiExecuted": false
+  },
+  "reviewedCandidateItem": {
+    "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/candidate-reviewed-item.json",
+    "rootIndexWritten": false,
+    "qualification": "Artifact/in-memory copy sets status passed with this exact official-execution evidence solely to check readiness for later reviewed promotion."
+  },
+  "originalExecution": {
+    "vitest": {
+      "numTotalTests": 3,
+      "numPassedTests": 3,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "numRuntimeErrorTestSuites": null,
+      "success": true
+    },
+    "assertions": [
+      {
+        "id": "issue #1185: Vue entries with sibling scripts renders and updates a component explicitly imported with its Vue extension",
+        "passed": true
+      },
+      {
+        "id": "issue #1185: Vue entries with sibling scripts renders and updates the selected Vue page with its same-named TS import",
+        "passed": true
+      },
+      {
+        "id": "issue #1185: Vue entries with sibling scripts ignores a same-named TS file that the Vue page does not import",
+        "passed": true
+      }
+    ],
+    "events": 10,
+    "sourceSha256": "dbb715c07236a1226d8523624715608f951670d1a1ce9775497a108f86e8373f",
+    "sourceBeforeAfterMatch": true,
+    "toolVersion": "2.02.2609250",
+    "toolAndSystemSdk": "3.17.3"
+  },
+  "compilerAndFixture": {
+    "compilerUse": {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/compiler-use/objects/sha256/73e2c5e0afc2b8697a56547f63155a9b6e2b970e08df81d95f5502c8ee461419",
+      "sha256": "73e2c5e0afc2b8697a56547f63155a9b6e2b970e08df81d95f5502c8ee461419",
+      "bytes": 153161
+    },
+    "fixtureBuild": {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/fixture-build/objects/sha256/00ce8f902ee944116053ce48866b2146e03998f076737ce5a39bfb8ca39fccfd",
+      "sha256": "00ce8f902ee944116053ce48866b2146e03998f076737ce5a39bfb8ca39fccfd",
+      "bytes": 31454
+    },
+    "profile": "pinned-json-macro-esm-v2-rolldown-runtime",
+    "macroHelpers": {
+      "producer": {
+        "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/compiler-inputs/objects/sha256/b1b2e0db856af9b47a932f9398cd556fc40389ddd8131a19a86875562a5db090",
+        "sha256": "b1b2e0db856af9b47a932f9398cd556fc40389ddd8131a19a86875562a5db090",
+        "bytes": 11011
+      },
+      "manifest": {
+        "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/compiler-inputs/objects/sha256/07f7a6a48ba9539ec42f3e8eccec2845741386b5d8745c1cc669aa3f697d81c2",
+        "sha256": "07f7a6a48ba9539ec42f3e8eccec2845741386b5d8745c1cc669aa3f697d81c2",
+        "bytes": 16131
+      },
+      "observer": {
+        "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/compiler-inputs/objects/sha256/d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "validator": {
+        "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/compiler-inputs/objects/sha256/c1295c96796480a102099f5407509acc9cbc8728852bec13d433100b2c890480",
+        "sha256": "c1295c96796480a102099f5407509acc9cbc8728852bec13d433100b2c890480",
+        "bytes": 25372
+      }
+    },
+    "policy": "sealed-esm-v1",
+    "streams": 6,
+    "events": 12958,
+    "sealedRawLoads": 460,
+    "allSealedRawChecksPassed": true,
+    "automatorIndexRawLoads": [
+      {
+        "kind": "load",
+        "file": "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/checkout/packages/miniprogram-automator/dist/index.mjs",
+        "path": "packages/miniprogram-automator/dist/index.mjs",
+        "sha256": "a120c2ddbbcc721f9a4545d2214ee44d024a343e19f3444778f62e78fada65ba",
+        "bytes": 146662,
+        "loadedSourceSha256": "a120c2ddbbcc721f9a4545d2214ee44d024a343e19f3444778f62e78fada65ba",
+        "format": "module",
+        "outputLoadPolicy": "sealed-esm-v1",
+        "url": "file:///home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/checkout/packages/miniprogram-automator/dist/index.mjs",
+        "contextFormat": "module",
+        "importAttributes": {},
+        "witnessToken": 2,
+        "terminalResult": true,
+        "classification": "bound",
+        "eventSeq": 810,
+        "runId": "ec04b50b-7b0e-451c-b308-6a3ebc3dbbff",
+        "pid": 43626,
+        "caseId": "ide-issue-1185-sibling-entry-runtime",
+        "sourceSha256": "dbb715c07236a1226d8523624715608f951670d1a1ce9775497a108f86e8373f",
+        "caseSourcePath": "e2e/ide/issue-1185-sibling-entry.runtime.test.ts",
+        "ppid": 41426,
+        "threadId": 0,
+        "isMainThread": true,
+        "at": "2026-11-06T22:41:32.921Z"
+      }
+    ],
+    "macroEvents": 237,
+    "unboundGeneratedEsmLoads": 5,
+    "macroStream": {
+      "reference": {
+        "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/compiler-use/objects/sha256/6f2f70deb864ae745772d0b2dd5b5eb609ef01a9521be3a1fbb3e553b870a911",
+        "sha256": "6f2f70deb864ae745772d0b2dd5b5eb609ef01a9521be3a1fbb3e553b870a911",
+        "bytes": 3167515
+      },
+      "pid": 43566,
+      "threadId": 0,
+      "argv": [
+        "/home/developer/.nvm/versions/node/v24.22.1/bin/node",
+        "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/checkout/packages/weapp-vite/bin/weapp-vite.js",
+        "build",
+        "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/checkout/.tmp/e2e-projects/issue-1185-wqKd1X"
+      ],
+      "events": 3827,
+      "macroCount": 237,
+      "end": {
+        "kind": "end",
+        "observerFailed": false,
+        "exitCode": 0,
+        "witnessToken": 2,
+        "eventSeq": 3827,
+        "runId": "ec04b50b-7b0e-451c-b308-6a3ebc3dbbff",
+        "pid": 43566,
+        "caseId": "ide-issue-1185-sibling-entry-runtime",
+        "sourceSha256": "dbb715c07236a1226d8523624715608f951670d1a1ce9775497a108f86e8373f",
+        "caseSourcePath": "e2e/ide/issue-1185-sibling-entry.runtime.test.ts",
+        "ppid": 41426,
+        "threadId": 0,
+        "isMainThread": true,
+        "at": "2026-11-06T22:41:32.351Z"
+      }
+    },
+    "qualification": "Complete oracle reader validates the fresh compiler/build/use/fixture/packer chain, fixed macro profile and exact helper/transform identities. Five actual generated ESM loads are checked by the unchanged strict macro source/input/result/import/cleanup validator; no generalized output or generated-module allowance was introduced."
+  },
+  "runtimeCleanupIndependent": {
+    "report": {
+      "path": "artifacts/conformance-triage-2026-11-07/1185r3-runtime-cleanup-independent-v1/report.json",
+      "sha256": "bfb9a4b1ddc4072d808ae4c642ca71018e15a30c1927b1625778cd1656c32f55"
+    },
+    "freeze": {
+      "path": "artifacts/conformance-triage-2026-11-07/1185r3-runtime-cleanup-independent-v1/freeze.json",
+      "sha256": "272733395848d300a944cec6a811aeded33730c48be8b2e53bc6ef701dea4db9"
+    },
+    "frozenMembersVerified": 5,
+    "sourceFreezeMembers": 103,
+    "directReferencesVerified": 35,
+    "schemaErrors": [],
+    "ownedPidChecks": "7 recorded owner PIDs absent",
+    "borrowedHostPreserved": true,
+    "ownedProjectReleasedAndRemoved": true
+  },
+  "directSummaryReferences": [
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/run.json",
+      "sha256": "4641229a60a51443debb78d5d4e6257100ff5b506997a3af40c8fccebe4fe478",
+      "bytes": 9921
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/control/02-1185/command.json",
+      "sha256": "69cf3c92d167fe315aa147ae00d93b07c475381c5f866fc07e5608c658102fa6",
+      "bytes": 1590
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/control/02-1185/source-freeze.json",
+      "sha256": "ad6e8cc94aabedb484dc75461ae895cfa90ea90049cdfd7494602fe3e93e22bf",
+      "bytes": 22702
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/oracle-set.json",
+      "sha256": "0e6acd0775473b48efc34278a4e59dbb0a322c338050985d23aebd64c3eefd25",
+      "bytes": 861
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/execution-recipes.json",
+      "sha256": "b23cc7e950dd69afdf289a6c9d0ef862be3c0445664637aaf17f6c1c56fc70e1",
+      "bytes": 9245
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/official-trace.json",
+      "sha256": "53492756315071d164fb7d8500540e226675929cb30145be65d74344b70f2c91",
+      "bytes": 5259
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/official-execution.json",
+      "sha256": "6bc8da5accdf37dc96466ba8ab25b549a4e123736f65aaed25d7d526de4da3b0",
+      "bytes": 3221
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/fixture-build/objects/sha256/b64b78344817c0c695222c1da618231b2e9e3dabfe985d3066e973cb82cb0170",
+      "sha256": "b64b78344817c0c695222c1da618231b2e9e3dabfe985d3066e973cb82cb0170",
+      "bytes": 12537
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/compiler-use/objects/sha256/73e2c5e0afc2b8697a56547f63155a9b6e2b970e08df81d95f5502c8ee461419",
+      "sha256": "73e2c5e0afc2b8697a56547f63155a9b6e2b970e08df81d95f5502c8ee461419",
+      "bytes": 153161
+    },
+    {
+      "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/02-1185/ide-issue-1185-sibling-entry-runtime/fixture-build/objects/sha256/00ce8f902ee944116053ce48866b2146e03998f076737ce5a39bfb8ca39fccfd",
+      "sha256": "00ce8f902ee944116053ce48866b2146e03998f076737ce5a39bfb8ca39fccfd",
+      "bytes": 31454
+    }
+  ],
+  "promotionRecommendation": "After the active batch stops or completes, review may promote this official case observation to passed and link this exact official-execution receipt. Preserve source/trace/artifact identities and update index/golden under normal workflow.",
+  "limits": [
+    "No root case index or common freeze was modified by this review.",
+    "No compiler/SDK/UI/original tests were rerun by reviewers; only offline artifact readers and filesystem/hash/PID checks executed.",
+    "No native differential pair or full matrix admission is implied.",
+    "No-macro bridge/worker complete macro terminal chain is not claimed; strict direct target macro profile and sealed per-load raw terminal rules remain."
+  ]
+}

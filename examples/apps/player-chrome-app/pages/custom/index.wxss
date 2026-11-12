@@ -1,0 +1,2 @@
+page { background: #16382f; color: #ffffff; }
+.custom { padding: 160rpx 32rpx 32rpx; }

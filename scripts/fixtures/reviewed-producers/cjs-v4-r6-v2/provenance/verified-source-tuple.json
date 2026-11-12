@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "kind": "r6-fixed-fifteen-source-tuple-verification",
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/source-freeze.json",
+    "sha256": "be4f2cae8d1d0f1eb5856cd9ea00f24348f1cbe9522d41af768849903dc7894d",
+    "bytes": 30611527
+  },
+  "sourcePairs": [
+    {
+      "key": "compilerUseProducer",
+      "source": {
+        "path": "scripts/conformance-compiler-use.mjs",
+        "sha256": "a8bae116e8e02eece200171ab1452c987d5b0c612ee4a8786dec389208edab38",
+        "bytes": 46298
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-compiler-use.mjs",
+        "sha256": "a8bae116e8e02eece200171ab1452c987d5b0c612ee4a8786dec389208edab38",
+        "bytes": 46298
+      }
+    },
+    {
+      "key": "compilerUsePreload",
+      "source": {
+        "path": "scripts/conformance-compiler-use-preload.cjs",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-compiler-use-preload.cjs",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      }
+    },
+    {
+      "key": "fixtureBuildProducer",
+      "source": {
+        "path": "scripts/conformance-fixture-build.mjs",
+        "sha256": "8d6d446b83189568b9b7764223d8842e469a4c3e8d4448984c620234f77fac5b",
+        "bytes": 92236
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-fixture-build.mjs",
+        "sha256": "8d6d446b83189568b9b7764223d8842e469a4c3e8d4448984c620234f77fac5b",
+        "bytes": 92236
+      }
+    },
+    {
+      "key": "fixturePackerPreload",
+      "source": {
+        "path": "scripts/conformance-fixture-packer-preload.mjs",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-fixture-packer-preload.mjs",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      }
+    },
+    {
+      "key": "macroProducer",
+      "source": {
+        "path": "scripts/conformance-compiler-observation.mjs",
+        "sha256": "b04cabcf91d63c83c66448049d7ad8808e504701c7fc8648162234af02885284",
+        "bytes": 11991
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-compiler-observation.mjs",
+        "sha256": "b04cabcf91d63c83c66448049d7ad8808e504701c7fc8648162234af02885284",
+        "bytes": 11991
+      }
+    },
+    {
+      "key": "macroManifest",
+      "source": {
+        "path": "scripts/conformance-compiler-observation-v1.json",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-compiler-observation-v1.json",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      }
+    },
+    {
+      "key": "macroObserver",
+      "source": {
+        "path": "scripts/conformance-compiler-macro-observer.mjs",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-compiler-macro-observer.mjs",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      }
+    },
+    {
+      "key": "macroValidator",
+      "source": {
+        "path": "scripts/conformance-compiler-macro-validator.mjs",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-compiler-macro-validator.mjs",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      }
+    },
+    {
+      "key": "githubProducer",
+      "source": {
+        "path": "scripts/conformance-github-producer.mjs",
+        "sha256": "3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+        "bytes": 15988
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-github-producer.mjs",
+        "sha256": "3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+        "bytes": 15988
+      }
+    },
+    {
+      "key": "wxmlProducer",
+      "source": {
+        "path": "scripts/conformance-wxml-producer.mjs",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-wxml-producer.mjs",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      }
+    },
+    {
+      "key": "snapshotTransport",
+      "source": {
+        "path": "scripts/conformance-snapshot-transport.mjs",
+        "sha256": "3443dbddb5213e1b6c7acd05f767765449998f02cf658f4aef9fa9f2a263603e",
+        "bytes": 19889
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-snapshot-transport.mjs",
+        "sha256": "3443dbddb5213e1b6c7acd05f767765449998f02cf658f4aef9fa9f2a263603e",
+        "bytes": 19889
+      }
+    },
+    {
+      "key": "temporaryProjectProducer",
+      "source": {
+        "path": "scripts/conformance-temporary-project-producer.mjs",
+        "sha256": "f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+        "bytes": 7468
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-temporary-project-producer.mjs",
+        "sha256": "f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+        "bytes": 7468
+      }
+    },
+    {
+      "key": "issue1034Producer",
+      "source": {
+        "path": "scripts/conformance-issue1034-producer.mjs",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-issue1034-producer.mjs",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      }
+    },
+    {
+      "key": "staticCliProfile",
+      "source": {
+        "path": "scripts/conformance-static-cli-profile.mjs",
+        "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+        "bytes": 2401
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-static-cli-profile.mjs",
+        "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+        "bytes": 2401
+      }
+    },
+    {
+      "key": "fixtureProject",
+      "source": {
+        "path": "scripts/conformance-fixture-project.mjs",
+        "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+        "bytes": 15533
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/runner-source/scripts/conformance-fixture-project.mjs",
+        "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+        "bytes": 15533
+      }
+    }
+  ],
+  "cases": [
+    {
+      "name": "01-1014",
+      "identity": {
+        "caseId": "ide-github-issues-runtime-issue1014",
+        "sourceSha256": "332a6673e36403659dc83eb634177e239400e748e2d346b50c7569f17e552bc8",
+        "caseSourcePath": "e2e/ide/github-issues.runtime.issue1014.test.ts"
+      },
+      "run": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/run.json",
+        "sha256": "e101db1bc5b630dd5329120b5271d7f17d674ea8fe7daefe086318d219a2143a",
+        "bytes": 9910
+      },
+      "fullReader": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/control/01-1014/oracle-full-reader-audit.json",
+        "sha256": "0de5d4402df2aaa70b32045c5a0e7c67ec7210e2bc63c497c664dd78276a53fa",
+        "bytes": 3669
+      },
+      "independentReview": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/control/01-1014/independent-official-review.json",
+        "sha256": "feacb2da81412cfc053106e23920f99f004599e297eecdc2c0a71277580758d2",
+        "bytes": 4465
+      },
+      "execution": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/official-execution.json",
+        "sha256": "b1490c058a29c57e5c2a466504bdc925454e721fd8d4997e35c12c846f83710d",
+        "bytes": 3191
+      },
+      "compilerUse": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/compiler-use/objects/sha256/7779015dfa05b9f3653e7af483c9f25f2b24048ce5d6caf807f4e149ac8e31f4",
+        "sha256": "7779015dfa05b9f3653e7af483c9f25f2b24048ce5d6caf807f4e149ac8e31f4",
+        "bytes": 478970
+      },
+      "fixtureBuild": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/d17c8b1544379749efffe2b40d07f15b53a5509322f6c51026a2e8d272fb1b52",
+        "sha256": "d17c8b1544379749efffe2b40d07f15b53a5509322f6c51026a2e8d272fb1b52",
+        "bytes": 51572
+      },
+      "consumedSourceReferences": {
+        "compilerUseProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/compiler-use/objects/sha256/a8bae116e8e02eece200171ab1452c987d5b0c612ee4a8786dec389208edab38",
+          "sha256": "a8bae116e8e02eece200171ab1452c987d5b0c612ee4a8786dec389208edab38",
+          "bytes": 46298
+        },
+        "compilerUsePreload": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/compiler-use/objects/sha256/291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+          "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+          "bytes": 19764
+        },
+        "fixtureBuildProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/8d6d446b83189568b9b7764223d8842e469a4c3e8d4448984c620234f77fac5b",
+          "sha256": "8d6d446b83189568b9b7764223d8842e469a4c3e8d4448984c620234f77fac5b",
+          "bytes": 92236
+        },
+        "fixturePackerPreload": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+          "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+          "bytes": 1466
+        },
+        "macroProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/compiler-inputs/objects/sha256/b04cabcf91d63c83c66448049d7ad8808e504701c7fc8648162234af02885284",
+          "sha256": "b04cabcf91d63c83c66448049d7ad8808e504701c7fc8648162234af02885284",
+          "bytes": 11991
+        },
+        "macroManifest": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/compiler-inputs/objects/sha256/15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+          "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+          "bytes": 19533
+        },
+        "macroObserver": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/compiler-inputs/objects/sha256/d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+          "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+          "bytes": 3868
+        },
+        "macroValidator": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/compiler-inputs/objects/sha256/7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+          "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+          "bytes": 36024
+        },
+        "staticCliProfile": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/compiler-use/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+          "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+          "bytes": 2401
+        },
+        "fixtureProject": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/compiler-use/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+          "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+          "bytes": 15533
+        },
+        "githubProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+          "sha256": "3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+          "bytes": 15988
+        },
+        "wxmlProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+          "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+          "bytes": 1929
+        },
+        "snapshotTransport": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/3443dbddb5213e1b6c7acd05f767765449998f02cf658f4aef9fa9f2a263603e",
+          "sha256": "3443dbddb5213e1b6c7acd05f767765449998f02cf658f4aef9fa9f2a263603e",
+          "bytes": 19889
+        },
+        "temporaryProjectProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+          "sha256": "f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+          "bytes": 7468
+        },
+        "issue1034Producer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-build/objects/sha256/3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+          "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+          "bytes": 2396
+        }
+      },
+      "staticClosures": {
+        "consumer": [
+          {
+            "path": "scripts/conformance-static-cli-profile.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/compiler-use/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "bytes": 2401
+            }
+          },
+          {
+            "path": "scripts/conformance-fixture-project.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/compiler-use/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "bytes": 15533
+            }
+          }
+        ],
+        "macro": [
+          {
+            "path": "scripts/conformance-static-cli-profile.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/compiler-inputs/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "bytes": 2401
+            }
+          },
+          {
+            "path": "scripts/conformance-fixture-project.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/compiler-inputs/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "bytes": 15533
+            }
+          }
+        ],
+        "fixture": [
+          {
+            "path": "scripts/conformance-static-cli-profile.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-capture/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "bytes": 2401
+            }
+          },
+          {
+            "path": "scripts/conformance-fixture-project.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/01-1014/ide-github-issues-runtime-issue1014/fixture-capture/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "bytes": 15533
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "02-1013",
+      "identity": {
+        "caseId": "ide-github-issues-runtime-issue1013",
+        "sourceSha256": "dd214fe8af937331788f4b491b51c9fd0816fe45614c28e3f9a192c29781cb35",
+        "caseSourcePath": "e2e/ide/github-issues.runtime.issue1013.test.ts"
+      },
+      "run": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/run.json",
+        "sha256": "15d168c2ab2d366a09fa1b084acb330cdcedf7e067f27419dc9d8f84346e1574",
+        "bytes": 9908
+      },
+      "fullReader": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/control/02-1013/oracle-full-reader-audit.json",
+        "sha256": "34347eb610e010e4ac85db2f6350d645c92d202a25cbfaebf9e9a25a6a8d9d8d",
+        "bytes": 3666
+      },
+      "independentReview": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/control/02-1013/independent-official-review.json",
+        "sha256": "b6bf40c2c8b86e75d574fe5e782798a808e2d7b5ceb80f832156a266ca94d5ff",
+        "bytes": 4462
+      },
+      "execution": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/official-execution.json",
+        "sha256": "dab2643546218b9334d991fa54f8de96de7246952d80b5f41bb53988f811157f",
+        "bytes": 3190
+      },
+      "compilerUse": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/compiler-use/objects/sha256/2b517ab91c574722b952d1a5344d25664e3ff2a8f5276af27b9a768dfe424506",
+        "sha256": "2b517ab91c574722b952d1a5344d25664e3ff2a8f5276af27b9a768dfe424506",
+        "bytes": 478976
+      },
+      "fixtureBuild": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/3b0a5249b58ffbc7db5ea044680e435b0d704c154a5c0ef04f1e3b0d804891a7",
+        "sha256": "3b0a5249b58ffbc7db5ea044680e435b0d704c154a5c0ef04f1e3b0d804891a7",
+        "bytes": 55052
+      },
+      "consumedSourceReferences": {
+        "compilerUseProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/compiler-use/objects/sha256/a8bae116e8e02eece200171ab1452c987d5b0c612ee4a8786dec389208edab38",
+          "sha256": "a8bae116e8e02eece200171ab1452c987d5b0c612ee4a8786dec389208edab38",
+          "bytes": 46298
+        },
+        "compilerUsePreload": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/compiler-use/objects/sha256/291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+          "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+          "bytes": 19764
+        },
+        "fixtureBuildProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/8d6d446b83189568b9b7764223d8842e469a4c3e8d4448984c620234f77fac5b",
+          "sha256": "8d6d446b83189568b9b7764223d8842e469a4c3e8d4448984c620234f77fac5b",
+          "bytes": 92236
+        },
+        "fixturePackerPreload": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+          "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+          "bytes": 1466
+        },
+        "macroProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/compiler-inputs/objects/sha256/b04cabcf91d63c83c66448049d7ad8808e504701c7fc8648162234af02885284",
+          "sha256": "b04cabcf91d63c83c66448049d7ad8808e504701c7fc8648162234af02885284",
+          "bytes": 11991
+        },
+        "macroManifest": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/compiler-inputs/objects/sha256/15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+          "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+          "bytes": 19533
+        },
+        "macroObserver": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/compiler-inputs/objects/sha256/d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+          "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+          "bytes": 3868
+        },
+        "macroValidator": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/compiler-inputs/objects/sha256/7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+          "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+          "bytes": 36024
+        },
+        "staticCliProfile": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/compiler-use/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+          "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+          "bytes": 2401
+        },
+        "fixtureProject": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/compiler-use/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+          "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+          "bytes": 15533
+        },
+        "githubProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+          "sha256": "3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+          "bytes": 15988
+        },
+        "wxmlProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+          "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+          "bytes": 1929
+        },
+        "snapshotTransport": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/3443dbddb5213e1b6c7acd05f767765449998f02cf658f4aef9fa9f2a263603e",
+          "sha256": "3443dbddb5213e1b6c7acd05f767765449998f02cf658f4aef9fa9f2a263603e",
+          "bytes": 19889
+        },
+        "temporaryProjectProducer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+          "sha256": "f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+          "bytes": 7468
+        },
+        "issue1034Producer": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-build/objects/sha256/3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+          "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+          "bytes": 2396
+        }
+      },
+      "staticClosures": {
+        "consumer": [
+          {
+            "path": "scripts/conformance-static-cli-profile.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/compiler-use/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "bytes": 2401
+            }
+          },
+          {
+            "path": "scripts/conformance-fixture-project.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/compiler-use/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "bytes": 15533
+            }
+          }
+        ],
+        "macro": [
+          {
+            "path": "scripts/conformance-static-cli-profile.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/compiler-inputs/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "bytes": 2401
+            }
+          },
+          {
+            "path": "scripts/conformance-fixture-project.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/compiler-inputs/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "bytes": 15533
+            }
+          }
+        ],
+        "fixture": [
+          {
+            "path": "scripts/conformance-static-cli-profile.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-capture/objects/sha256/b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+              "bytes": 2401
+            }
+          },
+          {
+            "path": "scripts/conformance-fixture-project.mjs",
+            "artifact": {
+              "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r6-v2/02-1013/ide-github-issues-runtime-issue1013/fixture-capture/objects/sha256/c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+              "bytes": 15533
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "sourceTuple": [
+    "compilerUseProducer",
+    "compilerUsePreload",
+    "fixtureBuildProducer",
+    "fixturePackerPreload",
+    "macroProducer",
+    "macroManifest",
+    "macroObserver",
+    "macroValidator",
+    "githubProducer",
+    "wxmlProducer",
+    "snapshotTransport",
+    "temporaryProjectProducer",
+    "issue1034Producer",
+    "staticCliProfile",
+    "fixtureProject"
+  ],
+  "archivedJavaScriptExecuted": false,
+  "largeInventoriesCopied": 0,
+  "rootWrites": 0
+}

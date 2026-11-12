@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Weapp Container mark</title>
+  <desc id="desc">An open container frame crossed by a bridge-shaped W path.</desc>
+  <defs>
+    <linearGradient id="bridge" x1="290" y1="380" x2="740" y2="660" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7CFFD6"/>
+      <stop offset="0.52" stop-color="#46D9FF"/>
+      <stop offset="1" stop-color="#5B8CFF"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M320 248H704C747 248 776 277 776 320V704C776 747 747 776 704 776H320C277 776 248 747 248 704V320C248 277 277 248 320 248Z"
+      stroke="#DDF4EF" stroke-width="52"/>
+    <path d="M248 640V704C248 747 277 776 320 776H432"
+      stroke="#7CFFD6" stroke-width="52"/>
+    <path d="M592 776H704C747 776 776 747 776 704V640"
+      stroke="#5B8CFF" stroke-width="52"/>
+    <path d="M300 488H414L512 604L610 488H724"
+      stroke="url(#bridge)" stroke-width="72"/>
+  </g>
+</svg>

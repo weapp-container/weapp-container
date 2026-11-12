@@ -1,0 +1,1 @@
+<wxs module="tools" src="../view/include.wxs"/><text>{{tools.label(title)}}|</text><include src="./leaf.wxml"/>

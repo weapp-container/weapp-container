@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-issue-1185-sibling-entry-runtime",
+      "sourceSha256": "dbb715c07236a1226d8523624715608f951670d1a1ce9775497a108f86e8373f",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue1185-collector.mjs",
+        "sha256": "4dc9d2d9510b01ae70e53d31053c9fb74d78fba94dc3b33d45ef91776a744970",
+        "bytes": 8153
+      },
+      "collectorInputs": []
+    }
+  ]
+}

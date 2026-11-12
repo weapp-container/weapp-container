@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-issue-1034-auto-routes-runtime",
+      "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue1034-collector.mjs",
+        "sha256": "002af68126d3f3cc6c93de7c0a6378dc58933f57dc961d32536072608cacb3b8",
+        "bytes": 12990
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue1034-descriptor.mjs",
+          "sha256": "b9db94ac2ea365255c343251480d57ff5b3ab4144ba36132f968157db2e0121e",
+          "bytes": 643
+        }
+      ]
+    }
+  ]
+}

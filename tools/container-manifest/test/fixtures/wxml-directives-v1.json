@@ -1,0 +1,51 @@
+{
+  "source": "<view><relation-child wx:if=\"{{showChild}}\" id=\"child\" bindtap=\"bump\"/><text wx:elif=\"{{fallback}}\">fallback</text><text wx:else>empty</text><view wx:for=\"{{rows}}\" wx:for-item=\"row\" wx:for-index=\"i\" wx:key=\"id\" capture-bind:tap=\"capture\" catchtap=\"stop\" data-value=\"{{row.label}}\">{{i}}:{{row.label}}</view></view><button id=\"increment\" bindtap=\"increment\">Increment</button><button id=\"nested\" bindtap=\"onTap\"><text>{{rows.length}}</text></button><button id=\"empty\"/>",
+  "ast": {
+    "version": 1,
+    "nodes": [{
+      "kind": "element", "tag": "view", "attrs": {}, "bindings": [],
+      "children": [
+        {
+          "kind": "element", "tag": "relation-child",
+          "attrs": {"wx:if": "{{showChild}}", "id": "child", "bindtap": "bump"},
+          "bindings": ["showChild"],
+          "directives": {"ifExpr": "showChild", "events": {"bindtap": "bump"}},
+          "children": []
+        },
+        {
+          "kind": "element", "tag": "text", "attrs": {"wx:elif": "{{fallback}}"},
+          "bindings": ["fallback"], "directives": {"elifExpr": "fallback"},
+          "children": [{"kind": "text", "value": "fallback", "bindings": []}]
+        },
+        {
+          "kind": "element", "tag": "text", "attrs": {"wx:else": ""},
+          "bindings": [], "directives": {"elseBranch": true},
+          "children": [{"kind": "text", "value": "empty", "bindings": []}]
+        },
+        {
+          "kind": "element", "tag": "view",
+          "attrs": {"wx:for": "{{rows}}", "wx:for-item": "row", "wx:for-index": "i", "wx:key": "id", "capture-bind:tap": "capture", "catchtap": "stop", "data-value": "{{row.label}}"},
+          "bindings": ["row.label", "rows"],
+          "directives": {"forExpr": "rows", "forItem": "row", "forIndex": "i", "forKey": "id", "events": {"capture-bind:tap": "capture", "catchtap": "stop"}},
+          "children": [{"kind": "text", "value": "{{i}}:{{row.label}}", "bindings": ["i", "row.label"]}]
+        }
+      ]
+    }, {
+      "kind": "element", "tag": "button",
+      "attrs": {"id": "increment", "bindtap": "increment"}, "bindings": [],
+      "directives": {"events": {"bindtap": "increment"}},
+      "children": [{"kind": "text", "value": "Increment", "bindings": []}]
+    }, {
+      "kind": "element", "tag": "button",
+      "attrs": {"id": "nested", "bindtap": "onTap"}, "bindings": [],
+      "directives": {"events": {"bindtap": "onTap"}},
+      "children": [{
+        "kind": "element", "tag": "text", "attrs": {}, "bindings": [],
+        "children": [{"kind": "text", "value": "{{rows.length}}", "bindings": ["rows.length"]}]
+      }]
+    }, {
+      "kind": "element", "tag": "button",
+      "attrs": {"id": "empty"}, "bindings": [], "children": []
+    }]
+  }
+}

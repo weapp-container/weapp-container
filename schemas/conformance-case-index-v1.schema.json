@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-case-index-v1.schema.json",
+  "title": "Weapp Container conformance case index v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "suite", "compiler", "oracle", "generatedFrom", "cases"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "suite": { "const": "weapp-vite-e2e-ide" },
+    "compiler": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "commit", "platform"],
+      "properties": {
+        "name": { "const": "weapp-vite" },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "platform": { "const": "weapp" }
+      }
+    },
+    "oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["devtoolsVersion", "baseLibraryVersion", "primary", "auxiliary"],
+      "properties": {
+        "devtoolsVersion": { "type": "string", "minLength": 1 },
+        "baseLibraryVersion": { "type": "string", "minLength": 1 },
+        "primary": { "const": "wechat-devtools" },
+        "auxiliary": {
+          "type": "array",
+          "items": { "enum": ["mpcore", "weapp-vite-web"] },
+          "uniqueItems": true
+        }
+      }
+    },
+    "generatedFrom": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "glob", "fileCount"],
+      "properties": {
+        "root": { "const": "vendor/weapp-vite/e2e/ide" },
+        "glob": { "const": "**/*.test.{ts,tsx,js,jsx,mts,mjs}" },
+        "fileCount": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "source", "sourceSha256", "kind", "platforms", "oracles", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^ide-[a-z0-9][a-z0-9-]*$" },
+          "source": { "type": "string", "pattern": "^[^/].*\\.(ts|tsx|js|jsx|mts|mjs)$" },
+          "sourceSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "kind": { "enum": ["runtime", "hmr", "optional", "static", "worker", "integration"] },
+          "platforms": {
+            "type": "array",
+            "items": { "enum": ["weapp", "swan", "multi-platform", "host-independent"] },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "oracles": {
+            "type": "array",
+            "items": { "enum": ["wechat-devtools", "mpcore", "weapp-vite-web"] },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "status": { "enum": ["passed", "failed", "blocked", "unknown"] },
+          "evidence": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+[submodule "vendor/weapp-vite"]
+	url = https://github.com/weapp-vite/weapp-vite.git
+	path = vendor/weapp-vite
+[submodule "sdk/contract"]
+	path = sdk/contract
+	url = https://github.com/weapp-container/sdk-contract.git
+[submodule "sdk/android"]
+	path = sdk/android
+	url = https://github.com/weapp-container/sdk-android.git
+[submodule "sdk/ios"]
+	path = sdk/ios
+	url = https://github.com/weapp-container/sdk-ios.git
+[submodule "sdk/desktop"]
+	path = sdk/desktop
+	url = https://github.com/weapp-container/sdk-desktop.git
+[submodule "sdk/flutter"]
+	path = sdk/flutter
+	url = https://github.com/weapp-container/sdk-flutter.git
+[submodule "sdk/react-native"]
+	path = sdk/react-native
+	url = https://github.com/weapp-container/sdk-react-native.git
+[submodule "showcase"]
+	path = showcase
+	url = https://github.com/weapp-container/website.git

@@ -1,0 +1,47 @@
+[package]
+name = "container-render-skia"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Skia-compatible render protocol and deterministic software fallback"
+
+[features]
+default = ["software"]
+software = []
+skia-backend = ["dep:skia-safe"]
+# A host-owned Ganesh OpenGL ES context. The renderer only reports a GPU
+# surface after a current GL context and framebuffer have received a frame.
+skia-gpu-gles = ["skia-backend", "skia-safe/gl"]
+# A host-owned Ganesh Metal context. This is deliberately separate from the
+# CPU `skia-backend`: enabling it never claims a GPU surface until the host
+# attaches a Metal device/queue and submits a real drawable texture.
+skia-gpu-metal = ["skia-backend", "skia-safe/metal", "dep:objc2", "dep:objc2-metal"]
+
+[dependencies]
+container-core = { path = "../container-core" }
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+unicode-linebreak = "=0.1.5"
+unicode-segmentation = "=1.13.3"
+ttf-parser = "=0.25.1"
+taffy = { version = "0.15.0", default-features = false, features = ["std", "taffy_tree", "flexbox", "block_layout", "content_size"] }
+# Keep the feature set aligned with the renderer's actual API usage. PDF is
+# deliberately omitted: the portable renderer never creates PDF documents,
+# and OpenHarmony's libc++ currently lacks the C++20 ranges support required
+# by Skia's PDF sources. Omitting it keeps the GLES cross-build portable while
+# retaining the published binary cache for hosts that provide one.
+skia-safe = { version = "0.153.3", optional = true, default-features = false, features = ["binary-cache", "ganesh"] }
+
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+web-time = "1.1.0"
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
+objc2 = { version = "0.5.3", optional = true, default-features = false, features = ["std"] }
+objc2-metal = { version = "0.2.2", optional = true, default-features = false, features = ["std", "MTLDevice", "MTLCommandQueue", "MTLCommandBuffer", "MTLResource", "MTLTexture", "MTLPixelFormat", "MTLTypes"] }
+

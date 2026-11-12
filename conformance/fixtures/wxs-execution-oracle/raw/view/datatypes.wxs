@@ -1,0 +1,96 @@
+// Observation only: each invocation starts with fresh local values. Do not
+// catch errors here: the runner records the actual renderer error boundary.
+exports.probe = function(id) {
+  if (id === 'constructors') {
+    var values = [1, 's', true, {}, function() {}, [], getDate(0), getRegExp('a', 'i')];
+    var result = [];
+    for (var i = 0; i < values.length; i++) result.push(values[i].constructor);
+    return result.join('|');
+  }
+  if (id === 'constructor-computed') {
+    var key = 'con' + 'structor';
+    return [[][key], {}[key], getDate(0)[key], getRegExp('x')[key]].join('|');
+  }
+  if (id === 'constructor-own') {
+    var object = { constructor: 'ObjectOwn' };
+    var list = [];
+    list.constructor = 'ArrayOwn';
+    var fn = function() {};
+    fn.constructor = 'FunctionOwn';
+    return [object.constructor, list.constructor, fn.constructor].join('|');
+  }
+  if (id === 'constructor-inherited') {
+    if (typeof Object === 'undefined' || typeof Object.create !== 'function') return 'unavailable:Object.create';
+    var parent = { constructor: 'Inherited' };
+    var child = Object.create(parent);
+    var before = child.constructor;
+    child.constructor = 'Own';
+    var after = child.constructor;
+    delete child.constructor;
+    return [before, after, child.constructor].join('|');
+  }
+  if (id === 'array-methods') {
+    var input = [1, 2, 3];
+    var constructor = input.constructor;
+    var removed = input.splice(1, 1, 8);
+    return [constructor, input.map(function(x) { return x * 2; }).join(','),
+      input.filter(function(x) { return x > 1; }).join(','), input.slice(1).join(','),
+      input.concat([4]).join(','), removed.join(','), input.join(',')].join('|');
+  }
+  if (id === 'date-utc-epoch') {
+    var date = getDate(0);
+    return [date.constructor, date.getTime(), date.getUTCFullYear(), date.getUTCMonth(),
+      date.getUTCDate(), date.getUTCDay(), date.getUTCHours(), date.getUTCMinutes(),
+      date.getUTCSeconds(), date.getUTCMilliseconds(), date.toISOString(), date.toJSON()].join('|');
+  }
+  if (id === 'date-utc-setters') {
+    var date = getDate(0);
+    var year = date.setUTCFullYear(2020, 1, 29);
+    var time = date.setUTCHours(23, 59, 59, 999);
+    var overflow = date.setUTCSeconds(60);
+    return [year, time, overflow, date.toISOString()].join('|');
+  }
+  if (id === 'date-invalid') {
+    var date = getDate('not-a-date');
+    return [date.constructor, date.getTime() !== date.getTime(), date.toString(),
+      date.toJSON() === null].join('|');
+  }
+  if (id === 'regexp-properties') {
+    var expression = getRegExp('a+', 'img');
+    return [expression.constructor, expression.source, expression.global,
+      expression.ignoreCase, expression.multiline, expression.lastIndex, expression.toString()].join('|');
+  }
+  if (id === 'regexp-global-state') {
+    var expression = getRegExp('a', 'g');
+    var result = [expression.lastIndex];
+    result.push(expression.test('aba'), expression.lastIndex);
+    result.push(expression.test('aba'), expression.lastIndex);
+    result.push(expression.test('aba'), expression.lastIndex);
+    expression.lastIndex = 1;
+    result.push(expression.test('aba'), expression.lastIndex);
+    return result.join('|');
+  }
+  if (id === 'regexp-nonglobal-state') {
+    var expression = getRegExp('a', 'i');
+    expression.lastIndex = 7;
+    return [expression.test('A'), expression.lastIndex, expression.test('x'), expression.lastIndex].join('|');
+  }
+  if (id === 'regexp-exec') {
+    var expression = getRegExp('(a)(b?)', 'g');
+    var match = expression.exec('xab');
+    var result = [match[0], match[1], match[2], match.index, match.input, expression.lastIndex];
+    result.push(expression.exec('xab') === null, expression.lastIndex);
+    return result.join('|');
+  }
+  if (id === 'regexp-empty') {
+    var expression = getRegExp();
+    var match = expression.exec('x');
+    return [expression.source, expression.global, match[0], match.index, expression.lastIndex].join('|');
+  }
+  if (id === 'regexp-invalid-flags') return getRegExp('a', 'z').toString();
+  if (id === 'regexp-duplicate-flags') return getRegExp('a', 'gg').toString();
+  if (id === 'regexp-invalid-pattern') return getRegExp('[').toString();
+  if (id === 'regexp-nonstring-flags') return getRegExp('a', 1).toString();
+  if (id === 'regexp-modern-flags') return getRegExp('a', 'u').toString();
+  return 'unknown-case:' + id;
+};

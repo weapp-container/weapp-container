@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/performance-matrix-v1.schema.json",
+  "title": "Weapp Container performance matrix evidence",
+  "description": "Index of the fixed seven-host by two-engine performance reports. Unavailable rows are evidence gaps, never passes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "benchmark", "generatedAt", "commit", "environment", "hosts", "engines", "iterations", "reports", "summary", "status", "disclaimer"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "benchmark": { "const": "container-performance-matrix" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "commit": { "type": "string", "minLength": 1 },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node", "platform", "arch", "pid", "cwd", "ci"],
+      "properties": {
+        "node": { "type": "string", "minLength": 1 },
+        "platform": { "type": "string", "minLength": 1 },
+        "arch": { "type": "string", "minLength": 1 },
+        "pid": { "type": "integer", "minimum": 0 },
+        "cwd": { "type": "string", "minLength": 1 },
+        "ci": { "type": "boolean" }
+      }
+    },
+    "hosts": {
+      "const": ["web", "macos", "windows", "linux", "android", "ios", "harmony"]
+    },
+    "engines": { "const": ["quickjs", "v8"] },
+    "iterations": { "type": "integer", "minimum": 20 },
+    "reports": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["host", "engine", "path", "status", "availability", "commit", "protocol"],
+        "properties": {
+          "host": { "enum": ["web", "macos", "windows", "linux", "android", "ios", "harmony"] },
+          "engine": { "enum": ["quickjs", "v8"] },
+          "path": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["passed", "failed", "incomplete"] },
+          "availability": { "enum": ["available", "protocol_only", "unavailable", "blocked", "legacy-unspecified"] },
+          "commit": { "type": "string", "minLength": 1 },
+          "protocol": { "enum": ["passed", "failed", "not_measured", "unknown"] }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "incomplete", "failed", "unavailable", "blocked"],
+      "properties": {
+        "passed": { "type": "integer", "minimum": 0 },
+        "incomplete": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "unavailable": { "type": "integer", "minimum": 0 },
+        "blocked": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "status": { "enum": ["passed", "failed", "incomplete"] },
+    "disclaimer": { "type": "string", "minLength": 1 }
+  }
+}

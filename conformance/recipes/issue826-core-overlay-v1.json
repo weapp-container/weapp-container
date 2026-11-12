@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-github-issues-runtime-issue1013",
+      "sourceSha256": "dd214fe8af937331788f4b491b51c9fd0816fe45614c28e3f9a192c29781cb35",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue1013-collector.mjs",
+        "sha256": "af05ea061c749307bf1f6e6fefcfa50d0e84a20b8bb1fcf36ee9b7d36513566e",
+        "bytes": 313
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue1013-descriptor.mjs",
+          "sha256": "ee9cfaeaef3466ff12b20c96d1866366adc82fb640c687017de6310ee132b3ee",
+          "bytes": 2015
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    },
+    {
+      "caseId": "ide-github-issues-runtime-issue547",
+      "sourceSha256": "46bd53dda261261a5a9cd5e1e3fc89e07a8fd7660e0fcbbe3e8bdd73499f3f11",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue547-collector.mjs",
+        "sha256": "ce6494dd44d8a12c0e5afdaf9d7ea457ce7d92f2705779ba0462f91ff016515f",
+        "bytes": 234
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue547-descriptor.mjs",
+          "sha256": "e6aadead9e1191b33566e6e1dcd71768dfff87b2ac13e739bc41237d8f181f24",
+          "bytes": 1740
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    },
+    {
+      "caseId": "ide-github-issues-runtime-issue289",
+      "sourceSha256": "eebdc8af20fa9f95c145520fd26914788bebfc46208adb2362797ac711c34c53",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue289-collector.mjs",
+        "sha256": "ef0b38f6071f8381796e5d2731bf72653a2d3477047e0efe72d697055d0c228d",
+        "bytes": 234
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue289-descriptor.mjs",
+          "sha256": "4071fe199c5d0564eaa83c93669f57d67ea942ceb5d4758b0fa42416ded821fc",
+          "bytes": 21054
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    },
+    {
+      "caseId": "ide-github-issues-runtime-issue297-302",
+      "sourceSha256": "aee42467cd56a31d550bc4e345c6691b3651d47b12efcdf860945854227fc2a6",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue297-302-collector.mjs",
+        "sha256": "aab73c28fdb4570f843a618b3103bd04f2bd5dd4b7588994484f48a6c42d4102",
+        "bytes": 317
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue297-302-descriptor.mjs",
+          "sha256": "426d415d26832b769b0509ec3643df407d4e9300b781339a9246383bbe834f0b",
+          "bytes": 18993
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    },
+    {
+      "caseId": "ide-github-issues-runtime-import-meta",
+      "sourceSha256": "87bf4d6ff17686b0b10dcdfd19d21292aa2a5de1f049ad209cbfee98c0cb2c09",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/import-meta-collector.mjs",
+        "sha256": "3b26958f413d7f1aaa2907de6cc673e56c746b9f44b9c3dc1ebfee78640fa56a",
+        "bytes": 334
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/import-meta-descriptor.mjs",
+          "sha256": "6416f5aac164ef7b597b5623f1fa52a840becd8a76fd90ebf07003a3c8c65881",
+          "bytes": 3579
+        },
+        {
+          "path": "conformance/recipes/import-meta-source-policy.mjs",
+          "sha256": "a8ccb52fb0cf38ffb994e5508ef4716f4c5b09e4929eb0eca45d60a37f1014bc",
+          "bytes": 492
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    },
+    {
+      "caseId": "ide-issue-1182-production-mount-runtime",
+      "sourceSha256": "618a54f29892015fa49dd32b960179d90ee19c02a452883b4ca6f892e58e65d7",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue1182-collector.mjs",
+        "sha256": "59b2f2714cd670448d72d6d0405ccb9dc285dcc1db85b3727cb5b71305091aaf",
+        "bytes": 317
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue1182-descriptor.mjs",
+          "sha256": "e140e1325be509ac4d5365772ffeade2a47757385c9e2ec25f035147dd4e08c4",
+          "bytes": 11007
+        },
+        {
+          "path": "conformance/recipes/source-exception-capture.mjs",
+          "sha256": "98e2647dad8c608a55d9c5ceb9c36bbab9f44b0b9a633286314fc648a11adb87",
+          "bytes": 12567
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    },
+    {
+      "caseId": "ide-github-issues-runtime-issue1008",
+      "sourceSha256": "28b80e5be581f5b825ef1be7c998b1db14a8566581d8528d11697cf03a786e47",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue1008-collector.mjs",
+        "sha256": "76413c25eae90b82c1f244770f1db1dd725b545b40c59544ef370490a58318c1",
+        "bytes": 330
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue1008-descriptor.mjs",
+          "sha256": "364bab2441277b0b5cdb32f46bed99679fd8630e2a24c0c8b5f57bcef906dcfc",
+          "bytes": 2634
+        },
+        {
+          "path": "conformance/recipes/issue1008-source-policy.mjs",
+          "sha256": "0123e1653df0b088c0df8dfe8a3c8a1fd7a7a1f07aa9804ac441cf86f61ff611",
+          "bytes": 502
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    }
+  ]
+}

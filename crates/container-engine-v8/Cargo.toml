@@ -1,0 +1,27 @@
+[package]
+name = "container-engine-v8"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Optional V8 adapter boundary for the container runtime"
+
+[features]
+default = ["stub"]
+stub = []
+conformance-observation = ["container-core/conformance-observation"]
+# The native provider is opt-in because rusty_v8 downloads a pinned V8
+# archive during a feature-enabled build.  The feature never falls back to
+# the stub implementation: a native build either exposes V8 or fails at
+# build/initialization time.
+v8-native = ["dep:v8"]
+
+view-batch-diagnostics = ["container-core/view-batch-diagnostics"]
+android-view-atrace = ["view-batch-diagnostics", "container-core/android-view-atrace"]
+
+[dependencies]
+container-core = { path = "../container-core" }
+serde_json = { workspace = true, features = ["unbounded_depth"] }
+v8 = { version = "=152.2.0", optional = true }
+

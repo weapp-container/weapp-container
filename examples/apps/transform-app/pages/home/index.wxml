@@ -1,0 +1,19 @@
+<view id="stage">
+  <view id="toggle-size" class="control" bindtap="onToggle">Size</view>
+  <view id="cycle-transform" class="control" bindtap="onTransform">Transform</view>
+  <view id="reset" class="control" bindtap="onReset">Reset</view>
+  <view id="anchor-x" />
+  <view id="anchor-y" />
+  <view id="box" class="{{large ? 'large' : 'small'}}" bindtap="onToggle"
+    style="width:{{width}}px;height:{{height}}px;transform:{{transform}};transform-origin:{{origin}};">
+    <view id="corner" />
+  </view>
+  <view id="ordered-a" />
+  <view id="ordered-b" />
+</view>
+<view id="status">
+  <text class="line">Weapp Container · 2D transforms</text>
+  <text id="dimensions" class="line">{{width}} × {{height}} · taps {{taps}} · mode {{mode}}</text>
+  <text id="geometry" class="line">{{geometryLabel}}</text>
+  <text id="last-target" class="line">target: {{lastTarget}}</text>
+</view>

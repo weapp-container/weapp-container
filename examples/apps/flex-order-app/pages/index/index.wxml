@@ -1,0 +1,22 @@
+<view class="row">
+  <view id="row-a" class="measured row-item red" style="order:{{order}}"/>
+  <view id="row-b" class="measured row-item blue"/>
+  <view id="row-c" class="measured row-item green"/>
+</view>
+<view class="column">
+  <view id="column-a" class="measured column-item red" style="order:{{order}}"/>
+  <view id="column-b" class="measured column-item blue"/>
+  <view id="column-c" class="measured column-item green"/>
+</view>
+<view class="wrap">
+  <view id="wrap-a" class="measured wrap-item red" style="order:{{order}}"/>
+  <view id="wrap-b" class="measured wrap-item blue"/>
+  <view id="wrap-c" class="measured wrap-item green"/>
+  <view id="wrap-d" class="measured wrap-item orange"/>
+</view>
+<view class="stack">
+  <view id="stack-a" class="measured stack-item red" style="order:{{order}}" data-case="a" bindtap="onHit"/>
+  <view id="stack-b" class="measured stack-item blue" data-case="b" bindtap="onHit"/>
+</view>
+<view id="toggle" class="control toggle" bindtap="onToggle"/>
+<view id="inspect" class="control inspect" bindtap="onInspect"/>

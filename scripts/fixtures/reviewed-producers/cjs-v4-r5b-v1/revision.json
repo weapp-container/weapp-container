@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "kind": "reviewed-producer-revision",
+  "id": "cjs-v4-r5b-reviewed-v1",
+  "profile": "pinned-json-macro-esm-cjs-v4-runtime-input",
+  "caseScopes": [
+    {
+      "caseId": "ide-issue-1072-json-context-runtime",
+      "sourceSha256": "12ea7f6371de370e35eeabc069996a4206dcf1c047d8e5510b6dfe23f46521e0",
+      "caseSourcePath": "e2e/ide/issue-1072-json-context.runtime.test.ts",
+      "snapshotProfile": null
+    },
+    {
+      "caseId": "ide-github-issues-runtime-issue1012",
+      "sourceSha256": "c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff",
+      "caseSourcePath": "e2e/ide/github-issues.runtime.issue1012.test.ts",
+      "snapshotProfile": "github-static-snapshot-v1"
+    },
+    {
+      "caseId": "ide-issue-1034-auto-routes-runtime",
+      "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+      "caseSourcePath": "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+      "snapshotProfile": null
+    },
+    {
+      "caseId": "ide-github-issues-runtime-issue1014",
+      "sourceSha256": "332a6673e36403659dc83eb634177e239400e748e2d346b50c7569f17e552bc8",
+      "caseSourcePath": "e2e/ide/github-issues.runtime.issue1014.test.ts",
+      "snapshotProfile": "github-static-snapshot-v1"
+    },
+    {
+      "caseId": "ide-issue-1058-template-tags-runtime",
+      "sourceSha256": "00adf03eed85511cd47f33867ed6e1dc897ade9c043671ff6f05a361feb180ea",
+      "caseSourcePath": "e2e/ide/issue-1058-template-tags.runtime.test.ts",
+      "snapshotProfile": null
+    },
+    {
+      "caseId": "ide-issue-1185-sibling-entry-runtime",
+      "sourceSha256": "dbb715c07236a1226d8523624715608f951670d1a1ce9775497a108f86e8373f",
+      "caseSourcePath": "e2e/ide/issue-1185-sibling-entry.runtime.test.ts",
+      "snapshotProfile": null
+    },
+    {
+      "caseId": "ide-wxml-transform-runtime",
+      "sourceSha256": "697e7f72f545f1c8df358930c5ecca297d8888bb16f0cf01a4bc88084392d4a2",
+      "caseSourcePath": "e2e/ide/wxml-transform.runtime.test.ts",
+      "snapshotProfile": "wxml-static-snapshot-v1"
+    }
+  ],
+  "sources": {
+    "compilerUseProducer": {
+      "path": "sources/compilerUseProducer.txt",
+      "sha256": "44c57411d8a06b203a8141ae4a0fa8911695dbc8be8799a1f9855d134fe80375",
+      "bytes": 38036
+    },
+    "compilerUsePreload": {
+      "path": "sources/compilerUsePreload.txt",
+      "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+      "bytes": 19764
+    },
+    "fixtureBuildProducer": {
+      "path": "sources/fixtureBuildProducer.txt",
+      "sha256": "23c8b9943164f5057ecf7779d2ceaef5d9bda31f825c67df82ae2fd1ead27590",
+      "bytes": 81489
+    },
+    "fixturePackerPreload": {
+      "path": "sources/fixturePackerPreload.txt",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    "macroProducer": {
+      "path": "sources/macroProducer.txt",
+      "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+      "bytes": 11113
+    },
+    "macroManifest": {
+      "path": "sources/macroManifest.txt",
+      "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+      "bytes": 19533
+    },
+    "macroObserver": {
+      "path": "sources/macroObserver.txt",
+      "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+      "bytes": 3868
+    },
+    "macroValidator": {
+      "path": "sources/macroValidator.txt",
+      "sha256": "b9106b81e7d3442b2790cbed727f1b38b9ffe82839da25d8b6f1472c9a3704e2",
+      "bytes": 35757
+    },
+    "githubProducer": {
+      "path": "sources/githubProducer.txt",
+      "sha256": "efd84dfaecafca434a64777f8388af34c05389e875dcbb8a948e3bf111e05f68",
+      "bytes": 14299
+    },
+    "wxmlProducer": {
+      "path": "sources/wxmlProducer.txt",
+      "sha256": "8f11be2bc714e606f7a6ab76a30e213dccab4351a92e54ea3913239010e35990",
+      "bytes": 7774
+    },
+    "snapshotTransport": {
+      "path": "sources/snapshotTransport.txt",
+      "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+      "bytes": 19321
+    }
+  },
+  "snapshotModules": [
+    {
+      "key": "githubProducer",
+      "path": "scripts/conformance-github-producer.mjs"
+    },
+    {
+      "key": "wxmlProducer",
+      "path": "scripts/conformance-wxml-producer.mjs"
+    },
+    {
+      "key": "snapshotTransport",
+      "path": "scripts/conformance-snapshot-transport.mjs"
+    }
+  ],
+  "provenance": [
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/source-freeze.json",
+        "sha256": "4ec38f58fa85f04ef6bf9a8e266c2f64b9aa4c240195bec30eee7cdc7eb8d7f4",
+        "bytes": 114366
+      },
+      "copy": "provenance/00-source-freeze.json",
+      "sha256": "4ec38f58fa85f04ef6bf9a8e266c2f64b9aa4c240195bec30eee7cdc7eb8d7f4",
+      "bytes": 114366
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/suite-evidence/validation-reviewed.json",
+        "sha256": "91799a13c065a6d1c0f4daf85dc204f569516b38f571432bf8b90bc965a0ce04",
+        "bytes": 1802
+      },
+      "copy": "provenance/01-validation-reviewed.json",
+      "sha256": "91799a13c065a6d1c0f4daf85dc204f569516b38f571432bf8b90bc965a0ce04",
+      "bytes": 1802
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/suite-evidence/validation.json",
+        "sha256": "545c5c8929579db35327fcb42c988bd3cc02aa207e9b55573314365366614554",
+        "bytes": 218685
+      },
+      "copy": "provenance/02-validation.json",
+      "sha256": "545c5c8929579db35327fcb42c988bd3cc02aa207e9b55573314365366614554",
+      "bytes": 218685
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/suite-evidence/source-archive.json",
+        "sha256": "c687463792f49446107f66db7fb3fc40c85eea10056f49b753ff683e7d80935e",
+        "bytes": 109264
+      },
+      "copy": "provenance/03-source-archive.json",
+      "sha256": "c687463792f49446107f66db7fb3fc40c85eea10056f49b753ff683e7d80935e",
+      "bytes": 109264
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/suite-evidence/evidence-test.log",
+        "sha256": "6bb304ca5d05d932cf60ee84ea72c47debac666ef722699d725b0b3541a3a7ca",
+        "bytes": 50476
+      },
+      "copy": "provenance/04-evidence-test.log",
+      "sha256": "6bb304ca5d05d932cf60ee84ea72c47debac666ef722699d725b0b3541a3a7ca",
+      "bytes": 50474
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/control/01-1072/oracle-full-reader-audit.json",
+        "sha256": "be36802f8244a2869f7682d055bda57652b03aa88eefd311d91272bed1acf963",
+        "bytes": 3659
+      },
+      "copy": "provenance/05-oracle-full-reader-audit.json",
+      "sha256": "be36802f8244a2869f7682d055bda57652b03aa88eefd311d91272bed1acf963",
+      "bytes": 3659
+    }
+  ],
+  "boundary": "Exact audited r5b source policy, not passed-case evidence. Only 1072 has a referenced actual full-reader PASS here; failed/unrun cases are not promoted. Archived JavaScript is inert text; current strict semantic validators execute."
+}

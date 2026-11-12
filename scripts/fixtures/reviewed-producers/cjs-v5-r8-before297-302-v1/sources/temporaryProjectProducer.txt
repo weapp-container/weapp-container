@@ -1,0 +1,82 @@
+/** Shared strict boundary for reviewed standalone temporary-project producers.
+ * Definitions pin one source tuple and helper; no arbitrary fixture admission. */
+import { createHash } from 'node:crypto'
+import { basename, dirname, isAbsolute, join, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { assertReviewedSnapshotProducer } from './conformance-producer-revisions.mjs'
+import { instrumentSnapshotAutomator, snapshotFileMap, verifySnapshotTransport, verifySnapshotCleanupFinal,
+  verifySnapshotSourceFinal } from './conformance-snapshot-transport.mjs'
+const hash = bytes => createHash('sha256').update(bytes).digest('hex')
+const ensure = (ok, message) => { if (!ok) throw new Error(message) }
+const same = (left, right) => JSON.stringify(left) === JSON.stringify(right)
+export const temporaryProjectProducerBytes = () => readFileSync(new URL('./conformance-temporary-project-producer.mjs', import.meta.url))
+export function createTemporaryProjectProducer({ profile: profileName, prefix, label, caseIdentity, guards: guardsExpected, tempPrefix, bytes }) {
+  ensure(/^[a-z][a-z0-9-]*-$/.test(tempPrefix), 'Temporary producer prefix is not a literal reviewed name')
+  function caseFor(identity) {
+    return identity && Object.entries(caseIdentity).every(([key, value]) => identity[key] === value) ? caseIdentity : null
+  }
+  function invocation({ args, cliPath, cwd, checkout, ...identity }) {
+    const item = caseFor(identity)
+    if (!item || !isAbsolute(checkout ?? '') || resolve(checkout) !== checkout || cwd !== checkout
+      || !Array.isArray(args) || args.length !== 3 || args[0] !== cliPath || args[1] !== 'build') return null
+    const target = args[2], parent = join(checkout, '.tmp/e2e-projects')
+    if (typeof target !== 'string' || !isAbsolute(target) || resolve(target) !== target || dirname(target) !== parent) return null
+    const name = basename(target)
+    if (!new RegExp(`^${tempPrefix}[a-zA-Z0-9]{6}$`).test(name) || target !== join(parent, name)) return null
+    return Object.freeze({ profile: profileName, ...item, sourceRoot: target, generatedRoot: join(target, 'dist') })
+  }
+  function verifyGuards({ guards, members, load }) {
+    ensure(Array.isArray(guards) && guards.length === guardsExpected.length && Array.isArray(members), `${label} producer source guards are missing`)
+    const map = new Map(members.map(item => [item.path, item]))
+    for (let at = 0; at < guardsExpected.length; at++) {
+      const expected = guardsExpected[at], guard = guards[at], member = map.get(expected.path)
+      ensure(guard.path === expected.path && hash(load(guard.original)) === expected.sha256, `${label} producer original source guard differs`)
+      const original = load(guard.original), observed = load(guard.observed)
+      const transformed = expected.path.endsWith('/automator.ts') ? Buffer.from(instrumentSnapshotAutomator(original.toString('utf8'))) : original
+      ensure(observed.equals(transformed) && member?.kind === 'file' && member.sha256 === hash(observed) && member.bytes === observed.length
+        && member.origin === (expected.path.endsWith('/automator.ts') ? 'patch' : 'source'), `${label} producer observed helper is not the exact reviewed transform`)
+    }
+  }
+  function verifyTransaction({ transaction: t, build, checkout, members, load, identity, producerRevision }) {
+    const profile = invocation({ ...build.producerProfile, args: build.command?.slice(1), cliPath: build.command?.[1], cwd: build.cwd, checkout })
+    ensure(profile && same(profile, build.producerProfile), `${label} producer invocation or case binding differs`)
+    ensure(caseFor(identity) && profile.caseId === identity.caseId && profile.caseSourcePath === identity.caseSourcePath
+      && profile.sourceSha256 === identity.sourceSha256, `${label} producer profile belongs to another consumer case`)
+    ensure(t.schemaVersion === 1 && t.kind === `weapp-container.${prefix}-producer-transaction` && t.profile === profileName,
+      `${label} producer transaction profile differs`)
+    if (producerRevision === undefined) ensure(hash(load(t.producer)) === hash(bytes()), `${label} producer verifier implementation differs`)
+    else assertReviewedSnapshotProducer({ reference: t.producer, profile: profileName, identity }, producerRevision, load)
+    verifyGuards({ guards: t.guards, members, load })
+    snapshotFileMap(build.sourceAfter, load, true); snapshotFileMap(build.generated, load)
+    ensure(build.sourceRootIdentity && Object.keys(build.sourceRootIdentity).sort().join(',') === 'birthtimeNs,device,inode'
+      && Object.values(build.sourceRootIdentity).every(value => typeof value === 'string' && /^\d+$/.test(value))
+      && BigInt(build.sourceRootIdentity.inode) > 0n && BigInt(build.sourceRootIdentity.birthtimeNs) > 0n
+      && same(t.sourceRootIdentity, build.sourceRootIdentity), `${label} actual source directory identity differs from the build`)
+    ensure(same(t.postHelperSource, build.sourceAfter) && same(t.postHelperGenerated, build.generated), `${label} post-CLI source/generated transition is not identity`)
+    const links = build.sourceAfter.filter(item => item.kind === 'consumer-link')
+    ensure(links.length === 2 && links.every(item => item.target === ({ 'node_modules/weapp-vite': 'packages/weapp-vite',
+      'node_modules/wevu': 'packages-runtime/wevu' })[item.path]), `${label} source dependency links differ from the pinned helper`)
+    const runtimeGenerated = verifySnapshotTransport({ transaction: t, build, profile, checkout, load, label, allowSourceLinks: true, producerRevision, producerProfile: profileName, identity })
+    return { profile, runtimeGenerated }
+  }
+  function verifyFinal(options) {
+    return verifySnapshotCleanupFinal({ ...options, profile: profileName, prefix, label,
+      verifyTransaction: transaction => verifyTransaction({ ...options, transaction }) })
+  }
+  function verifySourceCleanup({ final, transaction, transactionReference, ownerId, checkpointAt, recordingEndedAt, load }) {
+    ensure(final, `${label} actual source cleanup proof is missing`)
+    const cleanup = JSON.parse(load(final)), before = JSON.parse(load(cleanup.beforeCleanup))
+    ensure(cleanup.schemaVersion === 1 && cleanup.kind === `weapp-container.${prefix}-source-cleanup` && cleanup.profile === profileName
+      && cleanup.ownerId === ownerId && same(cleanup.transaction, transactionReference) && cleanup.sourceRoot === transaction.sourceRoot
+      && cleanup.generatedRoot === transaction.generatedRoot && same(cleanup.observer, transaction.observer) && cleanup.projectAbsent === true
+      && same(cleanup.sourceRootIdentity, transaction.sourceRootIdentity)
+      && before.schemaVersion === 1 && before.kind === `weapp-container.${prefix}-source-before-cleanup` && before.profile === profileName
+      && before.ownerId === ownerId && same(before.transaction, transactionReference) && same(before.observer, transaction.observer)
+      && same(before.sourceRootIdentity, transaction.sourceRootIdentity)
+      && Date.parse(before.capturedAt) <= Date.parse(cleanup.removedAt) && Date.parse(cleanup.removedAt) <= Date.parse(recordingEndedAt),
+    `${label} source cleanup belongs to another owner or interval`)
+    verifySnapshotSourceFinal({ final: before, transaction, checkpointAt, recordingEndedAt, load, label, allowSourceLinks: true })
+  }
+
+  return Object.freeze({ caseFor, invocation, verifyGuards, verifyTransaction, verifyFinal, verifySourceCleanup })
+}

@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "boundary": "Auxiliary Chrome CSS grammar and inheritance observations; not WeChat DevTools or container runtime evidence.",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+  "cases": [
+    {
+      "property": "font-size",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "0px",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "10px",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "20PX",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "2em",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "2rem",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "150%",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "10vw",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "10vh",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "10vmin",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "12pt",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "1pc",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "1in",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "2.54cm",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "medium",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "initial",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "inherit",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "unset",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "large",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "smaller",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "-1px",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "12",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "1 px",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "1.2.3px",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "NaNpx",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "infpx",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "1e2px",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": ".5em",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "+10px",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "10.",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "calc(10px + 1px)",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "calc(red)",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "calc(1px + 1)",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "calc(1px * 2)",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "calc(1px * 1px / 1px)",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "min(1px, 2px)",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "min(1px, 2)",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "clamp(1px, 2px, 3px)",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "clamp(1px, 2px)",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "var(--size)",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "var(12)",
+      "accepted": false
+    },
+    {
+      "property": "font-size",
+      "value": "var(--size, 12px)",
+      "accepted": true
+    },
+    {
+      "property": "font-size",
+      "value": "calc(var(--size) + 1px)",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "normal",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "0px",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "1.5",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "150%",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "1.5em",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "12px",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "2rem",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "-1",
+      "accepted": false
+    },
+    {
+      "property": "line-height",
+      "value": "-1px",
+      "accepted": false
+    },
+    {
+      "property": "line-height",
+      "value": "1 px",
+      "accepted": false
+    },
+    {
+      "property": "line-height",
+      "value": "NaN",
+      "accepted": false
+    },
+    {
+      "property": "line-height",
+      "value": "initial",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "inherit",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "unset",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "calc(1.5)",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "calc(1px + 2px)",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "calc(red)",
+      "accepted": false
+    },
+    {
+      "property": "line-height",
+      "value": "var(--line)",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "var(12)",
+      "accepted": false
+    },
+    {
+      "property": "line-height",
+      "value": "min(1, 2)",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "min(1px, 2px)",
+      "accepted": true
+    },
+    {
+      "property": "line-height",
+      "value": "clamp(1,2,3)",
+      "accepted": true
+    }
+  ],
+  "inherited": [
+    {
+      "id": "n",
+      "fontSize": "20px",
+      "lineHeight": "30px",
+      "height": 15
+    },
+    {
+      "id": "nc",
+      "fontSize": "10px",
+      "lineHeight": "15px",
+      "height": 15
+    },
+    {
+      "id": "p",
+      "fontSize": "20px",
+      "lineHeight": "30px",
+      "height": 30
+    },
+    {
+      "id": "pc",
+      "fontSize": "10px",
+      "lineHeight": "30px",
+      "height": 30
+    },
+    {
+      "id": "z",
+      "fontSize": "20px",
+      "lineHeight": "0px",
+      "height": 0
+    },
+    {
+      "id": "f",
+      "fontSize": "0px",
+      "lineHeight": "0px",
+      "height": 0
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "kind": "reviewed-producer-revision",
+  "id": "cjs-v5-r10-before-core-transform-reviewed-v1",
+  "profile": "pinned-json-macro-esm-cjs-v5-npm-support",
+  "caseScopes": [
+    {
+      "caseId": "ide-template-weapp-vite-multi-platform-sfc-template",
+      "caseSourcePath": "e2e/ide/template-weapp-vite-multi-platform-sfc-template.test.ts",
+      "sourceSha256": "41dbc3838ad1a3b7ab6d6d7cd03df7690586d2d0623ca84214cbac2fcec51a8b",
+      "snapshotProfile": "template-native-static-snapshot-v1"
+    }
+  ],
+  "sources": {
+    "compilerUseProducer": {
+      "path": "sources/compilerUseProducer.txt",
+      "sha256": "346e6a8a8d7d205a6565bd56edcf70f423b68fccf08656a13fff53e74dcfc3d3",
+      "bytes": 47968
+    },
+    "compilerUsePreload": {
+      "path": "sources/compilerUsePreload.txt",
+      "sha256": "287a7e0a3e9168eb2118d12016030561c37075993067581f853448b7e1176b88",
+      "bytes": 27849
+    },
+    "fixtureBuildProducer": {
+      "path": "sources/fixtureBuildProducer.txt",
+      "sha256": "3f8218bf2c03b2380b6aa25825eda80ad8b53b29919d5fee6c027c9a017b348c",
+      "bytes": 119088
+    },
+    "fixturePackerPreload": {
+      "path": "sources/fixturePackerPreload.txt",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    "macroProducer": {
+      "path": "sources/macroProducer.txt",
+      "sha256": "8faef6d146edad57262ce457ec2e08f2f3a9b0de732a472cf47389f1c0f05bbc",
+      "bytes": 12448
+    },
+    "macroManifest": {
+      "path": "sources/macroManifest.txt",
+      "sha256": "aaf590a0c37f36e7e29496444a6f4ceec0b6c37c6b8f30cc08020e91a3834aed",
+      "bytes": 22669
+    },
+    "macroObserver": {
+      "path": "sources/macroObserver.txt",
+      "sha256": "1d4b203a25e7f52b8bdf7348f9a17609302c3acea530adc721bf4c34c770e178",
+      "bytes": 5054
+    },
+    "macroValidator": {
+      "path": "sources/macroValidator.txt",
+      "sha256": "913828d1b9ad361ccde51082d15348e21e8787bb904fb79e02809a2107ea3231",
+      "bytes": 36244
+    },
+    "githubProducer": {
+      "path": "sources/githubProducer.txt",
+      "sha256": "ebea8e3d3f06bf82720fa47a1749e8940c0949cb25020e588c8691991bcdd9b4",
+      "bytes": 19167
+    },
+    "wxmlProducer": {
+      "path": "sources/wxmlProducer.txt",
+      "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+      "bytes": 1929
+    },
+    "snapshotTransport": {
+      "path": "sources/snapshotTransport.txt",
+      "sha256": "4adc990fe2c643bb85cd1ca21415e6c4b8e3826a5d721eb2d8cd66b788a38c37",
+      "bytes": 30468
+    },
+    "temporaryProjectProducer": {
+      "path": "sources/temporaryProjectProducer.txt",
+      "sha256": "f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+      "bytes": 7468
+    },
+    "issue1034Producer": {
+      "path": "sources/issue1034Producer.txt",
+      "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+      "bytes": 2396
+    },
+    "staticCliProfile": {
+      "path": "sources/staticCliProfile.txt",
+      "sha256": "7d3b64f1418f02b1354bcfbe28bb7c3e0f177179d637ba317f26a26cf77ee0e2",
+      "bytes": 2976
+    },
+    "fixtureProject": {
+      "path": "sources/fixtureProject.txt",
+      "sha256": "67e05cb67a45c79f2988eb762dc015f51ba9e98f560b27d0b7861c69634f1959",
+      "bytes": 16307
+    }
+  },
+  "snapshotModules": [
+    {
+      "key": "githubProducer",
+      "path": "scripts/conformance-github-producer.mjs"
+    },
+    {
+      "key": "wxmlProducer",
+      "path": "scripts/conformance-wxml-producer.mjs"
+    },
+    {
+      "key": "snapshotTransport",
+      "path": "scripts/conformance-snapshot-transport.mjs"
+    },
+    {
+      "key": "temporaryProjectProducer",
+      "path": "scripts/conformance-temporary-project-producer.mjs"
+    },
+    {
+      "key": "issue1034Producer",
+      "path": "scripts/conformance-issue1034-producer.mjs"
+    }
+  ],
+  "staticProfileModules": [
+    {
+      "key": "staticCliProfile",
+      "path": "scripts/conformance-static-cli-profile.mjs"
+    },
+    {
+      "key": "fixtureProject",
+      "path": "scripts/conformance-fixture-project.mjs"
+    }
+  ],
+  "provenance": [
+    {
+      "copy": "provenance/retained-exact-tuple.json",
+      "sha256": "ab2ea01f6db0eb19e0c912bc42638ef3d4e3f1d874fe9dfb4d8f0bf93b16f6e5",
+      "bytes": 6078
+    },
+    {
+      "copy": "provenance/sfc-full-review.json",
+      "sha256": "6e64aefc9876bee4c67e029dfbea4c0ab0073f1bb2ff92095c6fa34c6c9f4575",
+      "bytes": 4479
+    },
+    {
+      "copy": "provenance/stopped-summary.json",
+      "sha256": "67d1c384d4def45ac60540dcebb7b2642ba4d4a401d5c34cc6d780a09b020764",
+      "bytes": 9753
+    },
+    {
+      "copy": "provenance/root-stopped-review.json",
+      "sha256": "66b79f4c6127c60f369cbf21ca2aa769b7ad945f608e5af019b62ac8429a23ff",
+      "bytes": 1357
+    },
+    {
+      "copy": "provenance/actual-r10-tuple-observation.json",
+      "path": "artifacts/conformance-triage-2026-11-07/r11-core-transform-source-boundary-candidate-v1/candidate-final-v3/scripts/fixtures/reviewed-producers/cjs-v5-r10-before-core-transform-v1/provenance/actual-r10-tuple-observation.json",
+      "sha256": "8062b762c41420426ec58bff17e656c93811482ee2d345d1815ab14b58408e26",
+      "bytes": 11148
+    }
+  ]
+}

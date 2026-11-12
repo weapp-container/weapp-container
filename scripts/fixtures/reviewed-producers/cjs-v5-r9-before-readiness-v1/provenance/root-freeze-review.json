@@ -1,0 +1,44 @@
+{
+  "kind": "root-r9-official-freeze-independent-review-v1",
+  "passed": true,
+  "recordedAt": "2026-11-07T11:02:41.429655+00:00",
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/source-freeze.json",
+    "sha256": "2c3fd8cb5016b363bca65c893feadfd80fee4830ccabae29af8ba7bae79d9634",
+    "bytes": 32709080
+  },
+  "handoff": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/freeze-handoff.json",
+    "sha256": "a2e7cab6a50a46fc659eb80770405beb99a2ba2850f027ee009b1cc3da0a3608",
+    "bytes": 2612
+  },
+  "sourceFiles": 3465,
+  "sourceCopies": 3465,
+  "runnerInputs": 547,
+  "compilerClosureReferences": 106772,
+  "uniqueFileReferencesVerified": 113705,
+  "vendorClean": true,
+  "sourceLinks": 0,
+  "sourceAndCopiedModesVerified": true,
+  "officialOriginalSourcesMatchCommit": 6,
+  "order": [
+    "item",
+    "user",
+    "sfc",
+    "web-runtime",
+    "issue547",
+    "issue289"
+  ],
+  "suiteReview": {
+    "path": "docs/conformance/evidence/2026-11-07-r9-preflight/report.json",
+    "sha256": "dfda152ed410b45e4faa8a13de508f299ff279455b58d40ac843b512759abf3e",
+    "bytes": 10246
+  },
+  "node900AndManifestPassed": true,
+  "oldR8ResultsReused": false,
+  "officialExecutionStarted": false,
+  "nativeExecutionStarted": false,
+  "formalPairs": 0,
+  "uiLaneOwner": "/root/runner_evidence",
+  "policy": "Native auxiliary UI must be cleaned before official UI. Six original cases serially, shared runner/provenance failure stops later cases; all failures retained. Source lock remains active until completion review."
+}

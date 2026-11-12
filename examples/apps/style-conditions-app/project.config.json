@@ -1,0 +1,19 @@
+{
+  "description": "Weapp Container conditional WXSS fixture",
+  "appid": "touristappid",
+  "projectname": "weapp-container-style-conditions",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "libVersion": "3.17.3",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "postcss": false,
+    "enhance": true
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  }
+}

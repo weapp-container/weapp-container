@@ -1,0 +1,40 @@
+{
+  "id": "modern:68c9cd2a2380293024e5a048ac40a1d014b4a048764d6bb2b1c25cfa4db3cd31",
+  "executableSha256": "94ff15e764883009c663bf5cc736a208f0bf48c62c8fc5cf4a81871cac994692",
+  "sourceMapSha256": "d24e3e1ea771e0166873a2f49b093e4bfa8f108ae990341e79c4f31e4f9e4f05",
+  "sources": [
+    {
+      "path": "container.config.json",
+      "sha256": "4259989551fada9ec8f77eaa8cbd8605b5b842edab2134cdfe252cc1c9c347e6"
+    },
+    {
+      "path": "main.view.ts",
+      "sha256": "4d6ec4ce37b8db5c88ba88b1bd80aea75586d0cdbfd685a116054069beb80a8e"
+    },
+    {
+      "path": "safe-a.ts",
+      "sha256": "1cd3db7484f666f0bf543c4b66b95deaff37d81ce6ed3dc4fe404c824db1a820"
+    },
+    {
+      "path": "safe-b.ts",
+      "sha256": "dc49ed7bcc35cf079a7c4a6466bd3512d29ce4c108f9c1c4a49f2f7b6056fa76"
+    },
+    {
+      "path": "shared.view.js",
+      "sha256": "d243063bd5fdd1d6043085b55fb35fa62a8d1cc078f70fb1af97c84b4bd40866"
+    },
+    {
+      "path": "state.ts",
+      "sha256": "f79a43befea8ff61d88d9eaf219a179dbcdecc8e3268935990f0f179aa2dfb32"
+    }
+  ],
+  "documents": [
+    {
+      "documentId": "page.wxml",
+      "aliases": [
+        "shared",
+        "tools"
+      ]
+    }
+  ]
+}

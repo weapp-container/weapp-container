@@ -1,0 +1,27 @@
+[package]
+name = "container-core"
+version = "0.1.0"
+edition = "2021"
+description = "Host-independent lifecycle, page stack and data runtime for Weapp Container"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json.workspace = true
+ryu-js = "=1.0.3"
+
+[target.'cfg(not(all(target_arch = "wasm32", target_os = "unknown")))'.dependencies]
+getrandom = "=0.3.4"
+
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+getrandom = { version = "=0.3.4", features = ["wasm_js"] }
+
+[features]
+conformance-observation = []
+# Off by default: no clock reads, TLS sequence, trace calls or diagnostic allocation.
+view-batch-diagnostics = ["dep:libc"]
+# Android markers additionally require the platform tracing service to enable them.
+android-view-atrace = ["view-batch-diagnostics"]
+
+[target.'cfg(any(target_os = "android", target_os = "linux", target_os = "macos", target_os = "ios"))'.dependencies]
+libc = { version = "=0.2.191", optional = true }

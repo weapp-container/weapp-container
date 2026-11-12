@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weapp Container embedded Web host</title>
+  <style>
+    :root { color-scheme: dark; font: 14px system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0f141d; color: #e6edf7; }
+    main { width: min(100% - 32px, 720px); }
+    header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+    h1 { font-size: 18px; margin: 0; }
+    #status { color: #8fe3b0; }
+    .surface { display: grid; grid-template-columns: minmax(0, 375px) minmax(220px, 1fr); gap: 16px; }
+    .frame, .panel { border: 1px solid #2d394a; border-radius: 8px; background: #19202b; }
+    .frame { min-height: 260px; padding: 12px; display: grid; place-items: start center; }
+    canvas { max-width: 100%; height: auto; background: #fff; image-rendering: auto; }
+    .panel { padding: 12px; display: grid; gap: 10px; align-content: start; }
+    .label { color: #94a3b8; font-size: 12px; }
+    pre { margin: 0; max-height: 220px; overflow: auto; white-space: pre-wrap; color: #c7d2e2; }
+    #overlay { display: none; border: 1px solid #a54353; border-radius: 6px; padding: 8px; color: #ffd9de; background: #401d25; margin-bottom: 12px; }
+    button { cursor: pointer; border: 0; border-radius: 4px; padding: 7px 10px; color: #fff; background: #3867d6; }
+    @media (max-width: 680px) { .surface { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><h1>Weapp Container embedded Web host</h1><strong id="status">connecting</strong></header>
+    <div id="overlay"></div>
+    <section class="surface">
+      <div class="frame"><canvas id="screen" width="375" height="667"></canvas></div>
+      <div class="panel">
+        <div><div class="label">Route / lifecycle</div><div id="route">—</div></div>
+        <div><div class="label">Runtime</div><div id="runtime">—</div></div>
+        <button id="send">Send diagnostic batch</button>
+        <div><div class="label">Submission</div><pre id="submission"></pre></div>
+        <div><div class="label">Runtime response</div><pre id="bridgeResult"></pre></div>
+        <div><div class="label">Diagnostics</div><pre id="log"></pre></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const state = {};
+    const $ = id => document.getElementById(id);
+    let requestSequence = 0;
+    let surfaceStateVersion = 0;
+    let stateRefreshSequence = 0;
+    let terminalShutdown = false;
+    let events = null;
+    let eventStreamClosed = false;
+    let surfaceInput = null;
+    let frameStateVersion = 0;
+    let binaryFramesAvailable = false;
+    let awaitingFrame = false;
+    function presentation() {
+      const value = state.presentation;
+      return value && Number.isInteger(value.logicalWidth) && value.logicalWidth > 0 &&
+        Number.isInteger(value.logicalHeight) && value.logicalHeight > 0 &&
+        Number.isSafeInteger(value.generation) ? value : null;
+    }
+    function logicalSize() {
+      const value = presentation();
+      return value ? {width: value.logicalWidth, height: value.logicalHeight} :
+        {width: $('screen').width, height: $('screen').height};
+    }
+    function inputEpoch() {
+      const size = logicalSize();
+      return `${size.width}x${size.height}`;
+    }
+    function showError(message) {
+      $('overlay').style.display = 'block';
+      $('overlay').textContent = message;
+    }
+    function closeEventStream() {
+      surfaceInput?.dispose();
+      if (events && !eventStreamClosed) {
+        eventStreamClosed = true;
+        events.close();
+      }
+    }
+    function showRefreshError(error) {
+      if (!terminalShutdown && !(state.diagnostics || []).length) showError(error.message || error);
+    }
+    function renderState(next, requestChangedFrame = true) {
+      if (terminalShutdown) return;
+      surfaceStateVersion += 1;
+      const previousSession = state.sessionId;
+      const previousPresentation = presentation();
+      Object.assign(state, next || {});
+      const currentPresentation = presentation();
+      const sessionChanged = previousSession !== state.sessionId;
+      const generationChanged = previousPresentation?.generation !== currentPresentation?.generation;
+      if (sessionChanged || generationChanged) {
+        frameStateVersion += 1;
+        // A density-only repaint keeps the same logical coordinates. A new
+        // session or logical viewport must present its own frame before input.
+        if (currentPresentation && (sessionChanged || !previousPresentation ||
+            previousPresentation.logicalWidth !== currentPresentation.logicalWidth ||
+            previousPresentation.logicalHeight !== currentPresentation.logicalHeight)) {
+          awaitingFrame = true;
+          surfaceInput?.reset();
+        }
+      }
+      $('status').textContent = state.status || 'ready';
+      $('route').textContent = `${state.route || '—'} · ${state.lifecycleState || '—'} · trace ${state.traceCount ?? 0}`;
+      $('runtime').textContent = `${state.engine || '—'} · ${state.renderer || '—'} · revision ${state.revision ?? 0}`;
+      $('log').textContent = (state.diagnostics || []).map(d => `[${d.severity}] ${d.code}: ${d.message}`).join('\n');
+      const active = state.diagnostics || [];
+      if (active.length) showError(active[active.length - 1].message || active[active.length - 1].code);
+      if (state.status === 'stopped') {
+        terminalShutdown = true;
+        closeEventStream();
+        if (!active.length) showError('simulator stopped');
+      }
+      if (requestChangedFrame && !terminalShutdown && (sessionChanged || generationChanged)) requestSnapshot().catch(showRefreshError);
+    }
+    function renderSnapshot(snapshot) {
+      if (!snapshot || terminalShutdown) return;
+      const currentPresentation = presentation();
+      if (currentPresentation && (snapshot.sessionId !== state.sessionId ||
+          snapshot.configGeneration !== currentPresentation.generation ||
+          snapshot.logicalWidth !== currentPresentation.logicalWidth ||
+          snapshot.logicalHeight !== currentPresentation.logicalHeight)) return;
+      // A binary notification may precede authoritative state on reconnect.
+      // It cannot unlock input before its logical geometry is confirmed.
+      if (binaryFramesAvailable && !currentPresentation) return;
+      const stride = Number.isInteger(snapshot.stride) ? snapshot.stride : snapshot.width * 4;
+      if (!Number.isInteger(snapshot.width) || !Number.isInteger(snapshot.height) ||
+          snapshot.width < 1 || snapshot.height < 1 || snapshot.width > 4096 || snapshot.height > 4096 ||
+          snapshot.width * snapshot.height * 4 > 16 * 1024 * 1024 || !Number.isInteger(stride) ||
+          stride < snapshot.width * 4 || !(Array.isArray(snapshot.pixels) || snapshot.pixels instanceof Uint8ClampedArray) ||
+          snapshot.pixels.length < stride * snapshot.height) {
+        return showError('invalid RGBA snapshot');
+      }
+      const canvas = $('screen');
+      if (canvas.width !== snapshot.width) canvas.width = snapshot.width;
+      if (canvas.height !== snapshot.height) canvas.height = snapshot.height;
+      if (currentPresentation) canvas.style.width = `${currentPresentation.logicalWidth}px`;
+      const context = canvas.getContext('2d');
+      if (!context) return showError('canvas 2D context unavailable');
+      // Binary frames already hold tightly packed straight-alpha RGBA. Keep
+      // that immutable view; legacy/padded/premultiplied frames need one copy.
+      const packedLength = snapshot.width * snapshot.height * 4;
+      const direct = snapshot.pixels instanceof Uint8ClampedArray && snapshot.format === 'rgba8' &&
+        stride === snapshot.width * 4 && snapshot.pixels.length === packedLength;
+      const rgba = direct ? snapshot.pixels : new Uint8ClampedArray(packedLength);
+      if (!direct) {
+        for (let row = 0; row < snapshot.height; row += 1) {
+          const start = row * stride, end = start + snapshot.width * 4;
+          const pixels = ArrayBuffer.isView(snapshot.pixels) ? snapshot.pixels.subarray(start, end) : snapshot.pixels.slice(start, end);
+          rgba.set(pixels, row * snapshot.width * 4);
+        }
+      }
+      if (snapshot.format === 'rgba8-premultiplied') {
+        for (let index = 0; index < rgba.length; index += 4) {
+          const alpha = rgba[index + 3];
+          for (let channel = 0; channel < 3; channel += 1) {
+            rgba[index + channel] = alpha ? Math.min(255, Math.round(rgba[index + channel] * 255 / alpha)) : 0;
+          }
+        }
+      }
+      context.putImageData(new ImageData(rgba, snapshot.width, snapshot.height), 0, 0);
+      awaitingFrame = false;
+    }
+    function decodeFrame(buffer) {
+      if (buffer.byteLength < 4) throw new Error('invalid binary frame prefix');
+      const length = new DataView(buffer).getUint32(0, true);
+      if (length > 65536 || 4 + length > buffer.byteLength) throw new Error('invalid binary frame metadata');
+      const header = JSON.parse(new TextDecoder().decode(new Uint8Array(buffer, 4, length)));
+      if (header.schemaVersion !== 1 || header.format !== 'rgba8' ||
+          typeof header.sessionId !== 'string' || !Number.isSafeInteger(header.frameId) ||
+          !Number.isSafeInteger(header.configGeneration) ||
+          !Number.isInteger(header.logicalWidth) || !Number.isInteger(header.logicalHeight) ||
+          header.logicalWidth < 1 || header.logicalHeight < 1 ||
+          !Number.isInteger(header.width) || !Number.isInteger(header.height) ||
+          header.width < 1 || header.height < 1 || header.width > 4096 || header.height > 4096 ||
+          header.stride !== header.width * 4 || header.byteLength !== header.width * header.height * 4 ||
+          header.byteLength > 16 * 1024 * 1024 || buffer.byteLength !== 4 + length + header.byteLength) {
+        throw new Error('invalid binary RGBA frame');
+      }
+      return {...header, pixels: new Uint8ClampedArray(buffer, 4 + length, header.byteLength)};
+    }
+    let snapshotLoading = false;
+    let snapshotWanted = false;
+    async function requestSnapshot() {
+      if (terminalShutdown) return;
+      snapshotWanted = true;
+      if (snapshotLoading) return;
+      snapshotLoading = true;
+      try {
+        // Keep one fetch in flight. Further frame notices coalesce to one
+        // request for the latest frame instead of queuing full RGBA frames.
+        while (snapshotWanted && !terminalShutdown) {
+          snapshotWanted = false;
+          const version = frameStateVersion;
+          const binary = binaryFramesAvailable || Boolean(presentation());
+          const response = await fetch(binary ? '/api/frame' : '/api/snapshot', {cache: 'no-store'});
+          if (response.status === 404) continue;
+          if (!response.ok) throw new Error(`snapshot request failed: ${response.status}`);
+          const snapshot = binary ? decodeFrame(await response.arrayBuffer()) : await response.json();
+          if (version === frameStateVersion) renderSnapshot(snapshot);
+        }
+      } finally {
+        snapshotLoading = false;
+      }
+    }
+    async function refreshSurface() {
+      if (terminalShutdown) return;
+      const version = surfaceStateVersion;
+      const sequence = ++stateRefreshSequence;
+      let next;
+      try {
+        const response = await fetch('/api/state', {cache: 'no-store'});
+        if (!response.ok) throw new Error(`state request failed: ${response.status}`);
+        next = await response.json();
+      } catch (error) {
+        if (sequence === stateRefreshSequence && version === surfaceStateVersion) showRefreshError(error);
+        return;
+      }
+      // Idle reconnects have no event to replay. Refresh from the server, but
+      // never overwrite a newer SSE state or a terminal shutdown with this HTTP response.
+      if (terminalShutdown || sequence !== stateRefreshSequence || version !== surfaceStateVersion) return;
+      // This HTTP refresh already owns the frame fetch below. SSE updates
+      // still schedule their changed frame directly through renderState.
+      renderState(next, false);
+      if (!terminalShutdown && !(state.diagnostics || []).length) $('overlay').style.display = 'none';
+      if (!terminalShutdown) await requestSnapshot().catch(showRefreshError);
+    }
+    async function sendDiagnostic() {
+      if (terminalShutdown) return;
+      if (!state.sessionId) return showError('runtime session is not ready');
+      const envelope = {
+        protocolVersion: '1.0', sessionId: state.sessionId,
+        requestId: `embed-web-${++requestSequence}`, kind: 'request', op: 'diagnostic', payload: {}
+      };
+      $('submission').textContent = 'Submitting…';
+      $('bridgeResult').textContent = '';
+      const response = await fetch('/api/bridge', {
+        method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(envelope)
+      });
+      const text = await response.text();
+      // HTTP acknowledges queue submission. The runtime's asynchronous SSE
+      // batch owns its separate result area, even if it arrives before this.
+      $('submission').textContent = text;
+      if (!response.ok) throw new Error(text || `bridge request failed: ${response.status}`);
+    }
+    $('send').addEventListener('click', () => sendDiagnostic().catch(error => {
+      if (!terminalShutdown) showError(String(error));
+    }));
+    events = new EventSource('/api/events');
+    function onEvent(event) {
+      // A custom `event: error` carries a MessageEvent. Transport errors are
+      // ordinary Events, have no JSON payload and belong to onerror below.
+      if (terminalShutdown || (event.type === 'error' && !(event instanceof MessageEvent))) return;
+      try {
+        const payload = JSON.parse(event.data);
+        if (event.type === 'state' || event.type === 'ready' || event.type === 'reload') {
+          renderState(payload);
+          if ((event.type === 'ready' || event.type === 'reload') && !terminalShutdown &&
+              !(state.diagnostics || []).length) $('overlay').style.display = 'none';
+        } else if (event.type === 'snapshot') {
+          // Full payloads remain accepted for older embedding adapters.
+          if (Array.isArray(payload.pixels)) renderSnapshot(payload);
+          else {
+            if (payload.url === '/api/frame') binaryFramesAvailable = true;
+            requestSnapshot().catch(showRefreshError);
+          }
+        } else if (event.type === 'diagnostic' || event.type === 'error') {
+          showError(payload.message || payload.code || JSON.stringify(payload));
+          renderState({...state, status: 'error', diagnostics: [...(state.diagnostics || []), payload]});
+        } else if (event.type === 'shutdown') {
+          renderState({...state, status: 'stopped'});
+          showError(payload.reason || 'simulator stopped');
+        } else if (event.type === 'bridge') {
+          $('bridgeResult').textContent = JSON.stringify(payload, null, 2);
+        }
+      } catch (error) {
+        showError(`invalid simulator event: ${error.message || error}`);
+      }
+    }
+    ['state', 'ready', 'reload', 'snapshot', 'diagnostic', 'error', 'shutdown', 'bridge'].forEach(type => events.addEventListener(type, onEvent));
+    events.onopen = () => refreshSurface();
+    events.onerror = event => {
+      if (terminalShutdown || event instanceof MessageEvent) return;
+      renderState({...state, status: 'disconnected'});
+      if (!(state.diagnostics || []).length) showError('simulator event stream disconnected');
+    };
+    if (terminalShutdown) closeEventStream();
+    refreshSurface();
+  </script>
+  <script type="module">
+    import { attachSurfaceInput } from '/surface-input.mjs';
+    surfaceInput = attachSurfaceInput($('screen'), {
+      session: () => state.sessionId,
+      active: () => !terminalShutdown && !awaitingFrame && (!binaryFramesAvailable || Boolean(presentation())),
+      logicalSize, epoch: inputEpoch,
+      async send(events, sessionId, epoch) {
+        const [width, height] = epoch.split('x').map(Number);
+        const payload = {events};
+        if (presentation()) payload.logicalViewport = {width, height};
+        const response = await fetch('/api/bridge', {
+          method: 'POST', headers: {'content-type': 'application/json'},
+          body: JSON.stringify({protocolVersion: '1.0', sessionId, requestId: `embed-input-${++requestSequence}`,
+            kind: 'request', op: 'event.batch', payload})
+        });
+        if (!response.ok) throw new Error(`event bridge failed: ${response.status}`);
+      },
+      onError: error => showError(`EVENT_FAILED: ${error.message}`)
+    });
+    window.addEventListener('pagehide', () => surfaceInput.dispose(), {once: true});
+  </script>
+</body>
+</html>

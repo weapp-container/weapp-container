@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "kind": "exact-workspace-source-tuple-before-additive-github-case",
+  "capturedAt": "2026-11-07T09:45:03.635682+00:00",
+  "notAnExecutionReceipt": true,
+  "basis": "Original Root files independently copied before this candidate; full strict semantic readers remain mandatory. No past receipt is edited or promoted.",
+  "sources": [
+    {
+      "path": "scripts/conformance-compiler-use.mjs",
+      "sha256": "6e443abe2a8522d562da5d597abd7f0777035d46cf030aaa76f97c26535ddd56",
+      "bytes": 47864
+    },
+    {
+      "path": "scripts/conformance-compiler-use-preload.cjs",
+      "sha256": "a82430147d5c217fcdecfb762ba5173df7166df3c394192d6a628cc06d193cba",
+      "bytes": 23320
+    },
+    {
+      "path": "scripts/conformance-fixture-build.mjs",
+      "sha256": "a372b140f904ce7f36d31a97ad20f0d074a613b09c629220eb34fc5fa7d82f6a",
+      "bytes": 119051
+    },
+    {
+      "path": "scripts/conformance-fixture-packer-preload.mjs",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    {
+      "path": "scripts/conformance-compiler-observation.mjs",
+      "sha256": "88614c5c493ba27c604770af93774eaaef6dcc00630c511679d0b3460fc5607e",
+      "bytes": 11991
+    },
+    {
+      "path": "scripts/conformance-compiler-observation-v1.json",
+      "sha256": "aaf590a0c37f36e7e29496444a6f4ceec0b6c37c6b8f30cc08020e91a3834aed",
+      "bytes": 22669
+    },
+    {
+      "path": "scripts/conformance-compiler-macro-observer.mjs",
+      "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+      "bytes": 3868
+    },
+    {
+      "path": "scripts/conformance-compiler-macro-validator.mjs",
+      "sha256": "913828d1b9ad361ccde51082d15348e21e8787bb904fb79e02809a2107ea3231",
+      "bytes": 36244
+    },
+    {
+      "path": "scripts/conformance-github-producer.mjs",
+      "sha256": "3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+      "bytes": 15988
+    },
+    {
+      "path": "scripts/conformance-wxml-producer.mjs",
+      "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+      "bytes": 1929
+    },
+    {
+      "path": "scripts/conformance-snapshot-transport.mjs",
+      "sha256": "4adc990fe2c643bb85cd1ca21415e6c4b8e3826a5d721eb2d8cd66b788a38c37",
+      "bytes": 30468
+    },
+    {
+      "path": "scripts/conformance-temporary-project-producer.mjs",
+      "sha256": "f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+      "bytes": 7468
+    },
+    {
+      "path": "scripts/conformance-issue1034-producer.mjs",
+      "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+      "bytes": 2396
+    },
+    {
+      "path": "scripts/conformance-static-cli-profile.mjs",
+      "sha256": "7d3b64f1418f02b1354bcfbe28bb7c3e0f177179d637ba317f26a26cf77ee0e2",
+      "bytes": 2976
+    },
+    {
+      "path": "scripts/conformance-fixture-project.mjs",
+      "sha256": "67e05cb67a45c79f2988eb762dc015f51ba9e98f560b27d0b7861c69634f1959",
+      "bytes": 16307
+    }
+  ]
+}

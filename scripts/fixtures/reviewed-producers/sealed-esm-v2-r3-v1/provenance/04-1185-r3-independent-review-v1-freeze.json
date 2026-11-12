@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-official-receipt-review-freeze",
+  "members": [
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/README.md",
+      "sha256": "fc398fe670db72f465c326fea48ad73658fe22b2144622aa011e967fa6c24ed0",
+      "bytes": 1114
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/audit-loader.mjs",
+      "sha256": "79406ed4b01cd2460b57dc0c5fce9446b411dad7cc83b351785345b07161ac71",
+      "bytes": 3172
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/audit-readers.mjs",
+      "sha256": "2ed19321232b46c7e3aa16333090f0a906fc1cb57783c2726aaeaf91acafc3ca",
+      "bytes": 2563
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/candidate-entry.json",
+      "sha256": "ec208a9b9f48a7178717c2ed85ebe33e467ed2d5caa6ddcbf03883285eec8a56",
+      "bytes": 21190
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/candidate-reviewed-item.json",
+      "sha256": "5648bd425c52b1d1432b1dad32102dc22d137a1b7f42c2199a75c63e76400340",
+      "bytes": 489
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/reader-result.json",
+      "sha256": "a7b76a3bf120db3e9114c3166cb1a359743579c35d60458b68da0591c0a03f85",
+      "bytes": 463
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/report.json",
+      "sha256": "42cc650d6965a587e2e7099024c0cea8ab3e08a3ac64abca7de3e74d8ce995e3",
+      "bytes": 12154
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/strict-loader-audit.json",
+      "sha256": "9f1388ea019cb0b3115924fc0c75e871df89686a71cb32435c399463958d9d11",
+      "bytes": 118339
+    }
+  ]
+}

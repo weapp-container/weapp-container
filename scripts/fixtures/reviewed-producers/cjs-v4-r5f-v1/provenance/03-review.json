@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-root-complete-r5f-official-oracle-review",
+  "startedAt": "2026-11-07T04:54:07.043Z",
+  "endedAt": "2026-11-07T04:55:26.706Z",
+  "status": "passed",
+  "caseId": "ide-issue-1034-auto-routes-runtime",
+  "currentIndexStatus": "blocked-unmodified",
+  "fullProductionReader": {
+    "status": "passed"
+  },
+  "readerReexecutedByRoot": true,
+  "upstreamReview": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/independent-official-review.json",
+    "sha256": "c488e4285d912323cc31ea137164e2a8a8d0a6d6e1cbacec5f5809d34c66e5d2",
+    "bytes": 4471
+  },
+  "audit": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/oracle-full-reader-audit.json",
+    "sha256": "7610e6f2f5e166793e34201ad6a0683534d339e6a0bfb0308677a1dcc19da185",
+    "bytes": 3691
+  },
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/source-freeze.json",
+    "sha256": "5201915fbe6974710efcbfe7883441e4f1d1487b902acce5c71b4f1c2f09babb",
+    "bytes": 163627
+  },
+  "candidateEntry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/candidate-entry.json",
+    "sha256": "f162f8b43c7bf4f401769e6949eb12d46d808838e59d762205c87e68c6c2435e",
+    "bytes": 21818
+  },
+  "candidateReviewedItem": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/candidate-reviewed-item.json",
+    "sha256": "ce38a11493645619684c68d3e0f877256a3b1f6d8bdd6bedb277e2f813d37d65",
+    "bytes": 1800
+  },
+  "trace": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-trace.json",
+    "sha256": "9ebaf87cdef5bb7bc511e78c9400872a798084a9726794a03d1fda3eaaef2051",
+    "bytes": 4577
+  },
+  "execution": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-execution.json",
+    "sha256": "321a26eccf368dd60caa97735f8fdc9aac66703c2a5a55d5941326270496c240",
+    "bytes": 3191
+  },
+  "events": 12,
+  "assertions": [
+    {
+      "id": "issue #1034: selected sources across package boundaries navigates to each selected Vue page with its explicit sibling import and working events",
+      "passed": true
+    }
+  ],
+  "originalTests": {
+    "numTotalTests": 1,
+    "numPassedTests": 1,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numRuntimeErrorTestSuites": null,
+    "success": true
+  },
+  "actualDevtoolsVersion": "2.02.2609250",
+  "actualSDKVersion": "3.17.3",
+  "artifactReferencesIndependentlyRehashed": 1381,
+  "attemptInventoryArtifactsRehashed": 940,
+  "sourceInputsAndCopiesVerified": 211,
+  "cleanupFromSealedReview": {
+    "allOwnedPidsAbsent": true,
+    "borrowedHostUnchanged": true,
+    "allProjectsReleased": true
+  },
+  "productionSourceStillUnchanged": true,
+  "indexPromoted": false,
+  "formalPairs": 0,
+  "nativeExecutionAuthorizedByThisReceipt": false,
+  "boundary": "Root reexecuted the complete current production official oracle reader against actual immutable receipt/trace/compiler/fixture/SDK/cleanup evidence. Proposed passed item is artifact-only, root index remains blocked pending source freeze release. Native differential has not executed."
+}

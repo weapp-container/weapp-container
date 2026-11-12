@@ -1,0 +1,14 @@
+Weapp Container
+Copyright 2026 Weapp Container contributors
+
+Project-owned source in this distribution is licensed under Apache License 2.0,
+except where a file or component states another license. container-core,
+container-ir and container-bridge retain MIT OR Apache-2.0.
+
+Third-party software retains its original copyright and license notices.
+Reviewed dependency notices are in sdk/licenses and in separately licensed
+components. Native/SDK distributions must include their generated licenses/
+inventory and RUNTIME-LICENSE; this notice does not replace those notices.
+
+Previously distributed binaries retain the license supplied with that copy.
+The Weapp Container name and logo are not licensed as trademarks.

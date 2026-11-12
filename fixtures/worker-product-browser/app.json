@@ -1,0 +1,4 @@
+{
+  "pages": ["pages/home/index"],
+  "window": { "navigationStyle": "custom", "backgroundColor": "#ffffff" }
+}

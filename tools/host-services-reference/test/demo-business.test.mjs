@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { once } from 'node:events';
+import { createDemoBusinessServer } from '../scripts/demo-business-server.mjs';
+
+test('local demo keeps control and app credentials outside guest and confirms only an owned reference order',async t=>{
+ const controlToken='local-control-'.repeat(4),packRoot='b'.repeat(64),{server}=createDemoBusinessServer({controlToken,packRoot});
+ server.listen(0,'127.0.0.1');await once(server,'listening');t.after(()=>new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve())));
+ const origin=`http://127.0.0.1:${server.address().port}`;
+ const request=async(path,body,token,headers={})=>{const response=await fetch(origin+path,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{ }),...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:response.status,body:await response.json()};};
+ assert.equal((await request('/demo/host',{principalId:'demo-A',principalEpoch:'1'})).status,401);
+ assert.equal((await request('/demo/login',{code:'fake'},undefined,{Origin:'https://other.example'})).status,403);
+ const bootstrap=async(principalId,principalEpoch)=>(await request('/demo/host',{principalId,principalEpoch},controlToken)).body;
+ const a=await bootstrap('demo-A','1'),b=await bootstrap('demo-B','1');
+ const selection=(host)=>({miniAppId:host.application.appId,packRoot,expectedPrincipalId:host.account.principalId,expectedPrincipalEpoch:host.account.epoch});
+ const login=async(host)=>{const code=(await request('/v1/host/login-codes',selection(host),host.hostAccessToken)).body.code;const value=await request('/demo/login',{code});assert.equal(value.status,200);assert.ok(!('accessToken'in value.body));assert.ok(!JSON.stringify(value.body).includes(host.hostAccessToken));return value.body.businessSession;};
+ const businessA=await login(a),businessB=await login(b);
+ const create=await request('/demo/orders',{businessSession:businessA,productId:'reference-item',idempotencyKey:'demo-order-1'});assert.equal(create.status,201);assert.equal(create.body.amount,1);assert.ok(!('launch'in create.body));
+ const orderId=create.body.orderId;
+ assert.equal((await request(`/demo/orders/${orderId}`,undefined,businessB)).status,403);
+ assert.equal((await request('/demo/reference-confirm',{hostAccessToken:a.hostAccessToken,selection:selection(a),orderId})).status,401);
+ assert.equal((await request('/demo/reference-confirm',{hostAccessToken:b.hostAccessToken,selection:selection(b),orderId},controlToken)).status,403);
+ assert.equal((await request('/demo/reference-confirm',{hostAccessToken:a.hostAccessToken,selection:selection(a),orderId},controlToken)).body.status,'paid');
+ assert.equal((await request(`/demo/orders/${orderId}`,undefined,businessA)).body.status,'paid');
+ const policy=(await request('/v1/host/authorization-policy',{...selection(b),kind:'phone'},b.hostAccessToken)).body;
+ assert.ok(policy.purpose);assert.equal(policy.permissionVersion,'1');
+ await request('/v1/host/consents',{...selection(b),...policy,granted:true},b.hostAccessToken);
+ const phoneCode=(await request('/v1/host/phone-codes',selection(b),b.hostAccessToken)).body.code;
+ assert.equal((await request('/demo/phone',{businessSession:businessA,code:phoneCode})).status,403);
+ assert.equal((await request('/demo/phone',{businessSession:businessB,code:phoneCode})).body.phoneNumber,'+8613800000000');
+ assert.equal((await request('/demo/logout',{businessSession:businessA})).body.loggedOut,true);
+ assert.equal((await request(`/demo/orders/${orderId}`,undefined,businessA)).status,401);
+ assert.equal((await request('/v1/host/identity-state',selection(a),a.hostAccessToken)).body.hostLoggedIn,true);
+});

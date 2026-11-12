@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "baseline": { "ide": "2.02.2608080", "sdk": "3.17.3", "renderer": "webview" },
+  "status": "unknown",
+  "route": "pages/datatypes/index",
+  "cases": [
+    { "id": "constructors", "kind": "value", "observes": "Eight documented constructor reads" },
+    { "id": "constructor-computed", "kind": "value", "observes": "Computed property reads" },
+    { "id": "constructor-own", "kind": "value", "observes": "Own constructor overrides" },
+    { "id": "constructor-inherited", "kind": "value", "observes": "User prototype override, or actual Object.create availability" },
+    { "id": "array-methods", "kind": "value", "observes": "Native Array map/filter/slice/concat/splice after constructor reads" },
+    { "id": "date-utc-epoch", "kind": "value", "observes": "Fixed epoch, UTC accessors and ISO serialization" },
+    { "id": "date-utc-setters", "kind": "value", "observes": "UTC mutation and overflow" },
+    { "id": "date-invalid", "kind": "value", "observes": "Invalid Date value and serialization" },
+    { "id": "regexp-properties", "kind": "value", "observes": "ES5 flags, source and constructor" },
+    { "id": "regexp-global-state", "kind": "value", "observes": "test and lastIndex across success/failure/reset" },
+    { "id": "regexp-nonglobal-state", "kind": "value", "observes": "Non-global test preserves assigned lastIndex" },
+    { "id": "regexp-exec", "kind": "value", "observes": "Captures, index and input" },
+    { "id": "regexp-empty", "kind": "value", "observes": "Omitted pattern/flags and empty match" },
+    { "id": "regexp-invalid-flags", "kind": "error-boundary", "observes": "Unknown flag rejection or value" },
+    { "id": "regexp-duplicate-flags", "kind": "error-boundary", "observes": "Duplicate flag rejection or value" },
+    { "id": "regexp-invalid-pattern", "kind": "error-boundary", "observes": "Invalid pattern rejection or value" },
+    { "id": "regexp-nonstring-flags", "kind": "error-boundary", "observes": "Non-string flags rejection or coercion" },
+    { "id": "regexp-modern-flags", "kind": "error-boundary", "observes": "Modern flag rejection or value" }
+  ],
+  "expectations": "No official values or errors are predeclared. Each case is isolated; public documentation and local VMs are not official runtime evidence."
+}

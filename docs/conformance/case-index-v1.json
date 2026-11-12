@@ -1,0 +1,2433 @@
+{
+  "schemaVersion": 1,
+  "suite": "weapp-vite-e2e-ide",
+  "compiler": {
+    "name": "weapp-vite",
+    "commit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+    "platform": "weapp"
+  },
+  "oracle": {
+    "devtoolsVersion": "2.02.2609250",
+    "baseLibraryVersion": "3.17.3",
+    "primary": "wechat-devtools",
+    "auxiliary": [
+      "mpcore",
+      "weapp-vite-web"
+    ]
+  },
+  "generatedFrom": {
+    "root": "vendor/weapp-vite/e2e/ide",
+    "glob": "**/*.test.{ts,tsx,js,jsx,mts,mjs}",
+    "fileCount": 172
+  },
+  "cases": [
+    {
+      "id": "ide-agent-acceptance",
+      "source": "e2e/ide/agent-acceptance.test.ts",
+      "sourceSha256": "a6767bf735c2ab3cba9c291a99dd945ad8b6d210ef1bed15fbadeab9fa6935c9",
+      "kind": "integration",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-app-lifecycle",
+      "source": "e2e/ide/app-lifecycle.test.ts",
+      "sourceSha256": "9fafa7916eed71e63b9550d072d605a6bfed94f6c310b04a6b1fc46270cda1f3",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-app-prelude-native-runtime",
+      "source": "e2e/ide/app-prelude-native.runtime.test.ts",
+      "sourceSha256": "1fb40f454c44e99d2e3b5e87b745b7c15c509d3ee052175265d95213f5a27635",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-app-shell-presence-hmr-runtime",
+      "source": "e2e/ide/app-shell-presence.hmr.runtime.test.ts",
+      "sourceSha256": "92feaadc613a02a72e35a30eb9f9799090ce99b3192821a0e0f7901fbf5a7f47",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-app-vue-hmr-alias-runtime",
+      "source": "e2e/ide/app-vue-hmr-alias.runtime.test.ts",
+      "sourceSha256": "d9446e55461ca7a65adbf4c8cf6c127e55af893e0f9624b540e708c065d43107",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-auto-routes-define-app-json-runtime",
+      "source": "e2e/ide/auto-routes-define-app-json.runtime.test.ts",
+      "sourceSha256": "8e9c1f96a04be027f3630da98be68e19a5cdd94a13e1f55bbcf93f158daab983",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-automator-bridge-wrapper-hmr-runtime",
+      "source": "e2e/ide/automator-bridge-wrapper-hmr.runtime.test.ts",
+      "sourceSha256": "5414c22751638d0a6827d17466d2fa5e82e4fe8dbe58459f5a17a5b9b28330dc",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-automator-concurrent-sessions-runtime",
+      "source": "e2e/ide/automator-concurrent-sessions.runtime.test.ts",
+      "sourceSha256": "43823b76df6fc863e686f4067d33472726da22e155279330148484f23fd5f2b1",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-body-blob-runtime",
+      "source": "e2e/ide/body-blob.runtime.test.ts",
+      "sourceSha256": "01704b747ba8de3222db11cafe3a3f97964d0d454ec3fd454604e8a1e466e08d",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-chunk-modes-runtime-duplicate",
+      "source": "e2e/ide/chunk-modes.runtime.duplicate.test.ts",
+      "sourceSha256": "b76f38ee9dfe9d6c51fb7ad0d64333a7f4024cf9a164bfffa1cc9ca1e19c407a",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-chunk-modes-runtime-extras",
+      "source": "e2e/ide/chunk-modes.runtime.extras.test.ts",
+      "sourceSha256": "276e5f11afd64763af8e93855c2fbe9dbacd982253624089d9c7d26d1a55af34",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-chunk-modes-runtime-hoist",
+      "source": "e2e/ide/chunk-modes.runtime.hoist.test.ts",
+      "sourceSha256": "8f51473c97300dd63a3f20cd91405d9cea321915a37bc6840031b6dce6fa9132",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-devtools-cli-workflow-runtime",
+      "source": "e2e/ide/devtools-cli-workflow.runtime.test.ts",
+      "sourceSha256": "d68bc216c8dfb98036700ba64cf9545a1c5afabd49a63212a9717bde80f9230e",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-devtools-shared-host-runtime",
+      "source": "e2e/ide/devtools-shared-host.runtime.test.ts",
+      "sourceSha256": "064725d4efd799f725b3bd9915313e7efb3a2144142a524ef2ac52ad3105882e",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-forward-console-demo-runtime",
+      "source": "e2e/ide/forward-console-demo.runtime.test.ts",
+      "sourceSha256": "c724f2e53e65cca474e924c6a986673ef8458d115a77d5cf40e5f5090e251a79",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-aggregate",
+      "source": "e2e/ide/github-issues.runtime.aggregate.test.ts",
+      "sourceSha256": "13c697a2cd1a455fcf5d9da4ee7ef88d0610ffb91246cc8a688b69266cbcdd57",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-app-shell",
+      "source": "e2e/ide/github-issues.runtime.app-shell.test.ts",
+      "sourceSha256": "b5ef842d3287722c8068823d4044f293cf26dd1f96aa13e841044515ddfe52c2",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-component-instance-apis",
+      "source": "e2e/ide/github-issues.runtime.component-instance-apis.test.ts",
+      "sourceSha256": "24d2599d5d248e9ac6646cf0c4734a1fb4adf053d8fa550fc928e8056c13c2f1",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-feature1087",
+      "source": "e2e/ide/github-issues.runtime.feature1087.test.ts",
+      "sourceSha256": "2a4a51042db06d9e1463bf0a4088219be85c347630a1a154fb8df3a44863c619",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-import-meta",
+      "source": "e2e/ide/github-issues.runtime.import-meta.test.ts",
+      "sourceSha256": "87bf4d6ff17686b0b10dcdfd19d21292aa2a5de1f049ad209cbfee98c0cb2c09",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1008",
+      "source": "e2e/ide/github-issues.runtime.issue1008.test.ts",
+      "sourceSha256": "28b80e5be581f5b825ef1be7c998b1db14a8566581d8528d11697cf03a786e47",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1009",
+      "source": "e2e/ide/github-issues.runtime.issue1009.test.ts",
+      "sourceSha256": "7aab6c9ec6c09f610bd8c13ae834dd63d96f906d40b2a5f86448a1f114bf56e9",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1010",
+      "source": "e2e/ide/github-issues.runtime.issue1010.test.ts",
+      "sourceSha256": "6aba43f1cb2df94034638f474aab115e055e04b262c4367cd063e9979ee6bc8a",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1011",
+      "source": "e2e/ide/github-issues.runtime.issue1011.test.ts",
+      "sourceSha256": "d7dacedd9dc11c244ec49ef22491829d1b316d2f1ad8b72f574be6408c55fdfa",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1012",
+      "source": "e2e/ide/github-issues.runtime.issue1012.test.ts",
+      "sourceSha256": "c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1013",
+      "source": "e2e/ide/github-issues.runtime.issue1013.test.ts",
+      "sourceSha256": "dd214fe8af937331788f4b491b51c9fd0816fe45614c28e3f9a192c29781cb35",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1014",
+      "source": "e2e/ide/github-issues.runtime.issue1014.test.ts",
+      "sourceSha256": "332a6673e36403659dc83eb634177e239400e748e2d346b50c7569f17e552bc8",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1015",
+      "source": "e2e/ide/github-issues.runtime.issue1015.test.ts",
+      "sourceSha256": "ee8d8d9e040e4d583d5fb7cf8a320eb1e45e882b71335fee59bcd302d07c95c2",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1035",
+      "source": "e2e/ide/github-issues.runtime.issue1035.test.ts",
+      "sourceSha256": "75bc19f56dc6ba5406fae602dc5421736d552bf7fae5016c45df22f22b218dc9",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1049",
+      "source": "e2e/ide/github-issues.runtime.issue1049.test.ts",
+      "sourceSha256": "05a1f1adaec221d8dd9e50310461ec59045e98238b8210d9ccd42eaf3c7a34ef",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1138",
+      "source": "e2e/ide/github-issues.runtime.issue1138.test.ts",
+      "sourceSha256": "015b2e02c01edd733e558214be46b690f0d80a2814295c6a2a0aeeca4a606843",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue289",
+      "source": "e2e/ide/github-issues.runtime.issue289.test.ts",
+      "sourceSha256": "eebdc8af20fa9f95c145520fd26914788bebfc46208adb2362797ac711c34c53",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue297-302",
+      "source": "e2e/ide/github-issues.runtime.issue297-302.test.ts",
+      "sourceSha256": "aee42467cd56a31d550bc4e345c6691b3651d47b12efcdf860945854227fc2a6",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue448-formdata-upload",
+      "source": "e2e/ide/github-issues.runtime.issue448-formdata-upload.test.ts",
+      "sourceSha256": "4e130738539f4a0a5637aad4ac91de112cc64d7f018afd9aaf2a2e51f430cf97",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue466",
+      "source": "e2e/ide/github-issues.runtime.issue466.test.ts",
+      "sourceSha256": "435be178185f70e97390a805eec6548d7cd349ce78c551845a9575bf2ef79f71",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue547",
+      "source": "e2e/ide/github-issues.runtime.issue547.test.ts",
+      "sourceSha256": "46bd53dda261261a5a9cd5e1e3fc89e07a8fd7660e0fcbbe3e8bdd73499f3f11",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue553-555",
+      "source": "e2e/ide/github-issues.runtime.issue553-555.test.ts",
+      "sourceSha256": "e8a73de9bedd446ea9e33dca4818a6d27e2e60597d53709760e0c076319fbc9f",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue554",
+      "source": "e2e/ide/github-issues.runtime.issue554.test.ts",
+      "sourceSha256": "c5a5a2d7e17ecf9f38d300b1eff7ecb4ddb5f4ba438a0ba67e9eed50f5834f0c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue558",
+      "source": "e2e/ide/github-issues.runtime.issue558.test.ts",
+      "sourceSha256": "d562fd5fb79ad887af83bc35a09b0af57a9b93372df6ec2e05b3dea0df4a070e",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue564",
+      "source": "e2e/ide/github-issues.runtime.issue564.test.ts",
+      "sourceSha256": "28c6b910caa484df86bf2c06f62fa08b02d5d54225d5b18bd3090a5ac32b8477",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue581",
+      "source": "e2e/ide/github-issues.runtime.issue581.test.ts",
+      "sourceSha256": "f23b8836525935f0b38228e9a185b92349a37d4da9a6216813a0fbf1a8ad6775",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue615",
+      "source": "e2e/ide/github-issues.runtime.issue615.test.ts",
+      "sourceSha256": "9321cbe11cfbd62dbe2040af24ef7e05b43de0af14961c145f07ae993aee10f8",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue621",
+      "source": "e2e/ide/github-issues.runtime.issue621.test.ts",
+      "sourceSha256": "267981fa12170d969b320f9e21c7377c7b09131ddc927bdbf318dc4b709eb3c6",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue627",
+      "source": "e2e/ide/github-issues.runtime.issue627.test.ts",
+      "sourceSha256": "5c3c20707de01151ec1e8197073c9e421d26fe1533460043b9bc89a7c6750437",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642",
+      "source": "e2e/ide/github-issues.runtime.issue642.test.ts",
+      "sourceSha256": "beb05c7e5f794f179dd9636754800bbb0ad2c2514b84a508e915a6c818dc061b",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642-bug7-default",
+      "source": "e2e/ide/github-issues.runtime.issue642-bug7-default.test.ts",
+      "sourceSha256": "0c2664385588aa4cd19db8798ad07539672da0961a2068c6ac4f45f2f5485fe7",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642-bug7-performance",
+      "source": "e2e/ide/github-issues.runtime.issue642-bug7-performance.test.ts",
+      "sourceSha256": "942571b0c91ebb2df0c76e73d2ef1643dcbd28543cb00dfd2787f070fd4c4496",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642-bug8",
+      "source": "e2e/ide/github-issues.runtime.issue642-bug8.test.ts",
+      "sourceSha256": "7daebcdb47d09f0dcd437a2921c52bb9f7fff918843209be001d8eabbdeed92b",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue705",
+      "source": "e2e/ide/github-issues.runtime.issue705.test.ts",
+      "sourceSha256": "b0ae2acf26f34d243fabd798fcd82fc0726091b6f3291840b67b714d9149807c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue706",
+      "source": "e2e/ide/github-issues.runtime.issue706.test.ts",
+      "sourceSha256": "99915410e3c1f22495fe1e30de60dcc279bf1b19913fea5b01e3cc9a18d09bfe",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue779",
+      "source": "e2e/ide/github-issues.runtime.issue779.test.ts",
+      "sourceSha256": "24f95829ab5d501921d301d0bd2bc02fcf5bb72ef1198c7b9e79947aaafc0fa4",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue826",
+      "source": "e2e/ide/github-issues.runtime.issue826.test.ts",
+      "sourceSha256": "060480ba6f466ae292552a78de6dc45c15e3699aa881356659f1fe3bbe88d099",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue829",
+      "source": "e2e/ide/github-issues.runtime.issue829.test.ts",
+      "sourceSha256": "423d4e8bb45898635563c9345360e0b2926bd92ba341f6c6d37002418eabd835",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue852",
+      "source": "e2e/ide/github-issues.runtime.issue852.test.ts",
+      "sourceSha256": "b5f0e950c0f728876e804daac2cae1d0089b8c07a86e73cc0b5f77191f56d5db",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue868",
+      "source": "e2e/ide/github-issues.runtime.issue868.test.ts",
+      "sourceSha256": "b47df7bc0f17736d1c063b0524ef1e65156c87f0a8f7603b898358a871019370",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue911",
+      "source": "e2e/ide/github-issues.runtime.issue911.test.ts",
+      "sourceSha256": "715025cde76ca7d2b980fbc6d75db6f3b13890c299ea003bc038281e5e2268af",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue930",
+      "source": "e2e/ide/github-issues.runtime.issue930.test.ts",
+      "sourceSha256": "8a09a1610fdbff26dc07be441497bddd5b4697590ec237f18e91871b61fbfa97",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue941",
+      "source": "e2e/ide/github-issues.runtime.issue941.test.ts",
+      "sourceSha256": "8789b12749c7c6e96a6a8e96bb70b058dddeffca771c83b1952eb2159ffb3405",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-lifecycle",
+      "source": "e2e/ide/github-issues.runtime.lifecycle.test.ts",
+      "sourceSha256": "dbd67628f0aceda02d650fd4929d070faf3148fd9ba92a263d0f7bbd53613cf4",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-miniprogram-computed",
+      "source": "e2e/ide/github-issues.runtime.miniprogram-computed.test.ts",
+      "sourceSha256": "38a21de2b0bf6d209e350051f7b1ef30e46048698af0e90b3b63d87a553df2e7",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-props",
+      "source": "e2e/ide/github-issues.runtime.props.test.ts",
+      "sourceSha256": "3d506e826ef00e2f3f34bb25a87bcdc01d7a6ac5d4f5bbdbbbdbb75a709805e8",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-require-async",
+      "source": "e2e/ide/github-issues.runtime.require-async.test.ts",
+      "sourceSha256": "bda6470b447acd6a72d1f3c5488d61c1feb469ec25b9949b8c037f13d24383d2",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-slot-fallback",
+      "source": "e2e/ide/github-issues.runtime.slot-fallback.test.ts",
+      "sourceSha256": "d1940383fbb268fea9ff996211883554415916f6e86c10e1b706175e416781a6",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-slot-fallback-compiler-off",
+      "source": "e2e/ide/github-issues.runtime.slot-fallback-compiler-off.test.ts",
+      "sourceSha256": "93c0a980ff61cd102ab4339c0e84ea673e3d88ee4a88da51492ec433a39a68c0",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-subpackage-item",
+      "source": "e2e/ide/github-issues.runtime.subpackage-item.test.ts",
+      "sourceSha256": "2fad80fcbe8cb7d00cc87091ae7fce34a954650e8446ccbf374dcb164c129e13",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-subpackage-user",
+      "source": "e2e/ide/github-issues.runtime.subpackage-user.test.ts",
+      "sourceSha256": "b5504ae1432588556f30993d93ae2dccfbd0f27876457106afb0a91914cf48de",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-github-issues-runtime-web-runtime",
+      "source": "e2e/ide/github-issues.runtime.web-runtime.test.ts",
+      "sourceSha256": "2cf0345a293123b3be37f091663b77ee2aab1dd7c6d062512a5e6b45242cfb36",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-hmr-auto-classic-runtime",
+      "source": "e2e/ide/hmr-auto-classic.runtime.test.ts",
+      "sourceSha256": "0e26f05df65fc88427a808d2959c4e8b686e6047ce49fb050d8fb0caeb1646f3",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-index",
+      "source": "e2e/ide/index.test.ts",
+      "sourceSha256": "a70f76359813c0fe5c13e77b2c430622cf26aeb4f04d218bd81367738ba690b9",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1015-css-hmr-runtime",
+      "source": "e2e/ide/issue-1015-css-hmr.runtime.test.ts",
+      "sourceSha256": "ea56b28a4f778bb784e1745b1b6b9ec44e1e2d6d8daa99e03489668beba0bbbf",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1029-auto-routes-runtime",
+      "source": "e2e/ide/issue-1029-auto-routes.runtime.test.ts",
+      "sourceSha256": "c0cbff284ff60648be3922394474c5cfad02a1dc9b1667fb0bd8a963a4ef8eaf",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1034-auto-routes-hmr-runtime",
+      "source": "e2e/ide/issue-1034-auto-routes-hmr.runtime.test.ts",
+      "sourceSha256": "89a2e1c1e983755a5fa7d137f22a2cbe3a844fb7d09c45fc768bd7ad9200eb60",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1034-auto-routes-runtime",
+      "source": "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+      "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1058-template-tags-runtime",
+      "source": "e2e/ide/issue-1058-template-tags.runtime.test.ts",
+      "sourceSha256": "00adf03eed85511cd47f33867ed6e1dc897ade9c043671ff6f05a361feb180ea",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1065-provider-runtime",
+      "source": "e2e/ide/issue-1065-provider.runtime.test.ts",
+      "sourceSha256": "f7302c1655cc02eb0b58bd305994b0d5a62ed661c4322a84b9d49366e8ef2387",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1072-json-context-runtime",
+      "source": "e2e/ide/issue-1072-json-context.runtime.test.ts",
+      "sourceSha256": "12ea7f6371de370e35eeabc069996a4206dcf1c047d8e5510b6dfe23f46521e0",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1074-doctor-runtime",
+      "source": "e2e/ide/issue-1074-doctor.runtime.test.ts",
+      "sourceSha256": "59b57da2816ed038303befacb4bd2fcd4bca98041b345901076aa520115fddd5",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1081-tailwind-batch-runtime",
+      "source": "e2e/ide/issue-1081-tailwind-batch.runtime.test.ts",
+      "sourceSha256": "ed91eaa2240e20a2933ea06d4af702114926a244a3d23d9bfa8bf612e00b8f56",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1081-tailwind-snapshot-runtime",
+      "source": "e2e/ide/issue-1081-tailwind-snapshot.runtime.test.ts",
+      "sourceSha256": "111b0581e37d574f610d98965430b3c69d6f2f8aa1dfa1f2dcd327a54d97e770",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1081-transaction-runtime",
+      "source": "e2e/ide/issue-1081-transaction.runtime.test.ts",
+      "sourceSha256": "55b91828b685593ac7dbb767bcde054547020b1c458dd0fe85d5fca958341b83",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1082-confirmation-runtime",
+      "source": "e2e/ide/issue-1082-confirmation.runtime.test.ts",
+      "sourceSha256": "372985c7db5f0ccfb49df364a762cc41e6e091b5fdb85f1711201e8cc1213f36",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1126-1128",
+      "source": "e2e/ide/issue-1126-1128.test.ts",
+      "sourceSha256": "64f8b59464f1c3e9136ea97ee8b96c1b253a2e6aef3862f4293c57ef159f3f97",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1134-native-batch-runtime",
+      "source": "e2e/ide/issue-1134-native-batch.runtime.test.ts",
+      "sourceSha256": "2c0227090bacbeaa0adad1fe3850cb69475c0fc6392a00bed823bd05098cd377",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1134-native-topology-runtime",
+      "source": "e2e/ide/issue-1134-native-topology.runtime.test.ts",
+      "sourceSha256": "bf35213fc2a1b1f2a0343bfb86c080fbc27477bc0a6b55d459025356b31edf7c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1140-mode-cache-runtime",
+      "source": "e2e/ide/issue-1140-mode-cache.runtime.test.ts",
+      "sourceSha256": "92f7cdc4ba0cfe041d874e8daa52ab607b36a163d862157811b835000b009850",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1172",
+      "source": "e2e/ide/issue-1172.test.ts",
+      "sourceSha256": "ac66f783c207546278b17eed27f40fe33b487e6c0d85b98a4b5947cfda3882a7",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1174-native-slot-opt-in",
+      "source": "e2e/ide/issue-1174.native-slot-opt-in.test.ts",
+      "sourceSha256": "37c2332c56cb7cb55a8e8fde9c02cfc4c63fc23c3c423f55f41946845cf06f06",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1182-production-mount-runtime",
+      "source": "e2e/ide/issue-1182-production-mount.runtime.test.ts",
+      "sourceSha256": "618a54f29892015fa49dd32b960179d90ee19c02a452883b4ca6f892e58e65d7",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1185-sibling-entry-runtime",
+      "source": "e2e/ide/issue-1185-sibling-entry.runtime.test.ts",
+      "sourceSha256": "dbb715c07236a1226d8523624715608f951670d1a1ce9775497a108f86e8373f",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-1234-automator-runtime",
+      "source": "e2e/ide/issue-1234-automator.runtime.test.ts",
+      "sourceSha256": "3a26d472f638b6226f7b0436640efc5c8fa1fe5f914d68a7c057ea511a8cd6e8",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-340-hoist-runtime",
+      "source": "e2e/ide/issue-340-hoist.runtime.test.ts",
+      "sourceSha256": "be11ae8a0779e4fdf9a915c4bff48e6cca7ac23bd0c327dbbb1191f1390a54b8",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-963-plugin-es6-runtime",
+      "source": "e2e/ide/issue-963-plugin-es6.runtime.test.ts",
+      "sourceSha256": "f78ef216dbad077b8efdadd4b295e8eb146799dfbcf22cca6a1261884cdf94ff",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-969-launch-runtime",
+      "source": "e2e/ide/issue-969-launch.runtime.test.ts",
+      "sourceSha256": "c3bb836cbedc126054c8db2b84f4efc99cc95628822e3953e0c3dad18853ea9b",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-997-rebuild-runtime",
+      "source": "e2e/ide/issue-997-rebuild.runtime.test.ts",
+      "sourceSha256": "17b8fedc359f6803bfec9054acc3b2d8b890636ae3ad7972210efbf7ccdd8db5",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-issue-998-tailwind-runtime",
+      "source": "e2e/ide/issue-998-tailwind.runtime.test.ts",
+      "sourceSha256": "203e7f827f9890a2cf169ff7604b5f18bc7b1a46122b4e82e85dca8c3e51907f",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-layout-power-demo-message-runtime",
+      "source": "e2e/ide/layout-power-demo-message.runtime.test.ts",
+      "sourceSha256": "cfd54ae6c004d655ced88f63ffd4ea3b47a1439cc2543a690e12f1b904fa155d",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-layout-power-demo-runtime-vendor-hmr",
+      "source": "e2e/ide/layout-power-demo.runtime-vendor-hmr.test.ts",
+      "sourceSha256": "acb1483f02a3f8bd92343af76a7bdbb9601d63fb7f7c104a7e4dbabc1eadc1ba",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-lib-host-runtime",
+      "source": "e2e/ide/lib-host.runtime.test.ts",
+      "sourceSha256": "de77323634ab06aae56f31c806f02aeb052b9dd6080cc48bb32eef1da92556bb",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-lifecycle-compare",
+      "source": "e2e/ide/lifecycle-compare.test.ts",
+      "sourceSha256": "6fbc3be480acd8813786800574e2c780b5e6d50d311df809613a67075def079e",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-mcp-runtime-tools-runtime",
+      "source": "e2e/ide/mcp-runtime-tools.runtime.test.ts",
+      "sourceSha256": "bdce6e46c3c7ee7bb271fcedd90cb05e17f22b59a56df2a1491dee67af399336",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-platform-host-runtime",
+      "source": "e2e/ide/platform-host.runtime.test.ts",
+      "sourceSha256": "f8ed2e849e3aa1648d8a4f8a7bb5528b58b7345d3a968cd60ea8cf9e3c57d970",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-plugin-demo-runtime",
+      "source": "e2e/ide/plugin-demo.runtime.test.ts",
+      "sourceSha256": "8103a506e28b087cf434942de58845e77be5eb54b6a2d0dfa2f00ead859650e2",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-react-runtime-spike-runtime",
+      "source": "e2e/ide/react-runtime-spike.runtime.test.ts",
+      "sourceSha256": "f900d3e6599db231c53b0cef357f489f25f94cfdaa2d8ab4541c6f8642008aef",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-request-clients-real-native-runtime",
+      "source": "e2e/ide/request-clients-real-native.runtime.test.ts",
+      "sourceSha256": "64b4ecee21f4d61fed053746e48dcddb2ab9283d43e64d43557b89d5bcf76afc",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-request-clients-real-runtime",
+      "source": "e2e/ide/request-clients-real.runtime.test.ts",
+      "sourceSha256": "970acc919e83de01945d80bc3be230fe2c37f4bcaad73ca1d915764eb4b67111",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-runtimeerrors",
+      "source": "e2e/ide/runtimeErrors.test.ts",
+      "sourceSha256": "fb769a8b5b966135e7db599d360bea461cfe162b8b09ff7cd20d056c90f61d11",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-script-setup-external-src-runtime",
+      "source": "e2e/ide/script-setup-external-src.runtime.test.ts",
+      "sourceSha256": "7a69ddf05dc8359bb629a1eb600b3c1a46aa00bc7f938497dbf11f37fd5c660b",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-shared-styles-runtime",
+      "source": "e2e/ide/shared-styles.runtime.test.ts",
+      "sourceSha256": "a9c1b5417b6b5d905c07d3e259135947729726fbe90f95ee6b14327cc9c1d0dc",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-shared-taro-hmr-runtime",
+      "source": "e2e/ide/shared-taro-hmr.runtime.test.ts",
+      "sourceSha256": "04185d177dba70f5e112160af50fcc040b7a3dd70a038ff2cd7d780e4f52ce8b",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-stateful-hmr-runtime",
+      "source": "e2e/ide/stateful-hmr.runtime.test.ts",
+      "sourceSha256": "1d741c3f7e97c5f15c1eb8b4139028e533c7c4c8ff494e7c522b6346b263c320",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-stream-capability-runtime",
+      "source": "e2e/ide/stream-capability.runtime.test.ts",
+      "sourceSha256": "01ff48516cec2de9ecf0ebbfabeda0771ca499629618b4264419a6c16b8a01f1",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-subpackage-shared-strategy-complex-runtime",
+      "source": "e2e/ide/subpackage-shared-strategy-complex.runtime.test.ts",
+      "sourceSha256": "4008fe05619d9190e68516d087a3c1ed29578631e3911de640f9b0d0d7c07585",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-swan-runtime-optional",
+      "source": "e2e/ide/swan-runtime.optional.test.ts",
+      "sourceSha256": "8e2c4e3e5c32f71f5df2aa25295836f1a2859fd4a30fc6a81a53aca0fde41279",
+      "kind": "optional",
+      "platforms": [
+        "swan"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-tdesign-dialog-import-runtime",
+      "source": "e2e/ide/tdesign-dialog-import.runtime.test.ts",
+      "sourceSha256": "321addabccfcdae258ca0beabf294c7481ddbebfc8987bac1d4d7c8d39c67bdf",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-tdesign-miniprogram-starter-retail-runtime",
+      "source": "e2e/ide/tdesign-miniprogram-starter-retail.runtime.test.ts",
+      "sourceSha256": "02db82992ac365172c556e5139358dbed3974e98d50cf53a38807ccf1c06f44e",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-dev-open-all-runtime",
+      "source": "e2e/ide/template-dev-open-all.runtime.test.ts",
+      "sourceSha256": "07cc3ad0717e892b09c599dc066ae8c9761aa4400c073826031ba43fcf35e58a",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-multi-platform-sfc-swan-optional",
+      "source": "e2e/ide/template-multi-platform-sfc.swan.optional.test.ts",
+      "sourceSha256": "b570eaeebb27a7668766308f882a37b0874dfb5c647e953cc33856b0b1a6c237",
+      "kind": "optional",
+      "platforms": [
+        "swan"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-multi-platform-swan-optional",
+      "source": "e2e/ide/template-multi-platform.swan.optional.test.ts",
+      "sourceSha256": "0fa4b2fd693209de7baa15a6a0f2c68f5be736d646064eaf7fe557aa6be0d190",
+      "kind": "optional",
+      "platforms": [
+        "swan"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-retail-checkout-runtime",
+      "source": "e2e/ide/template-retail-checkout.runtime.test.ts",
+      "sourceSha256": "1f331e8f65d84e7144ce28c56845ad5baac6631b9f97de87ccbc08516cbd5817",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-tailwindcss-dev-open-multi-runtime",
+      "source": "e2e/ide/template-tailwindcss-dev-open-multi.runtime.test.ts",
+      "sourceSha256": "ec7c7021fefc18d4dcad13dd28a02f8953a311a4bb0ace4b8b9690b3a5cdced5",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-tailwindcss-tdesign-hmr-runtime",
+      "source": "e2e/ide/template-tailwindcss-tdesign-hmr.runtime.test.ts",
+      "sourceSha256": "4d68734c662133b789f2787b0fe21e17f041c5bea56c8fd891903923cbe16a13",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-multi-platform-sfc-template",
+      "source": "e2e/ide/template-weapp-vite-multi-platform-sfc-template.test.ts",
+      "sourceSha256": "41dbc3838ad1a3b7ab6d6d7cd03df7690586d2d0623ca84214cbac2fcec51a8b",
+      "kind": "static",
+      "platforms": [
+        "multi-platform"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-multi-platform-template",
+      "source": "e2e/ide/template-weapp-vite-multi-platform-template.test.ts",
+      "sourceSha256": "5968eea1626e824c54b73555a0d655059e20e2fe87e3fff0908ca9e119da32e7",
+      "kind": "static",
+      "platforms": [
+        "multi-platform"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-tailwindcss-tdesign-template",
+      "source": "e2e/ide/template-weapp-vite-tailwindcss-tdesign-template.test.ts",
+      "sourceSha256": "a3e54f3233ab2e52ffeb1ee08322632bb33cf9355e420e836c48e8c163698ecb",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-tailwindcss-template",
+      "source": "e2e/ide/template-weapp-vite-tailwindcss-template.test.ts",
+      "sourceSha256": "422f045bdb5e482ba057e3645c79df56f9addad29a88c603d00e862e485e35a7",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-tailwindcss-vant-template",
+      "source": "e2e/ide/template-weapp-vite-tailwindcss-vant-template.test.ts",
+      "sourceSha256": "9087fce709a9b08037a8fd4ea4ed4ac78d095efcacae31beaf5aa75e625c654a",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-template",
+      "source": "e2e/ide/template-weapp-vite-template.test.ts",
+      "sourceSha256": "73b0d7c0cfea2e161f3ad30c1bff24c097736d42f3da18745ddd3327a72e2431",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-retail-template",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-retail-template.test.ts",
+      "sourceSha256": "9c09108a04df2d5082ed34cfc5c2d1ee0467b448c4ef9f1d7934bce860c60333",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-retail-template-feedback-runtime",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-retail-template.feedback-runtime.test.ts",
+      "sourceSha256": "1dd6d2f1017b824460c7185fc218344a179851b01bbbc0a65215390c4f666026",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.test.ts",
+      "sourceSha256": "ad2fd61655106a0305b4e7ef65e6e46362779b9fb70a4d25281600a85191ac76",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-class-style-binding",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.class-style-binding.test.ts",
+      "sourceSha256": "56fbd815701dac3cadbb7d25e39da427bd939bd8921efa61fd93fe61b9b4a7af",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-form",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.form.test.ts",
+      "sourceSha256": "2e95a6a4ed6668955f06105339a17358d2eea7cda0134e0f0e937f7c47662580",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-layout-feedback-dialog",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.layout-feedback-dialog.test.ts",
+      "sourceSha256": "0521e1460136791e6b436a250cf2eef14928746922418df488444bf246c4eff7",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-runtime-errors",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.runtime-errors.test.ts",
+      "sourceSha256": "74938a238e9f779ca163b7a920556f3eacf6eb979a497afafe1bca43061190db",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-template",
+      "source": "e2e/ide/template-weapp-vite-wevu-template.test.ts",
+      "sourceSha256": "5c7bd12f1c2daeadbc04637ab5cfd0956051cb163c6aa1c2eabdd03357ef5a14",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-template-dynamic-bindings",
+      "source": "e2e/ide/template-weapp-vite-wevu-template.dynamic-bindings.test.ts",
+      "sourceSha256": "40216165221e3b11e82acb221ba82c1d7520d374d1601f96ff2cee4db5ae0a2c",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-template-layouts-runtime",
+      "source": "e2e/ide/template-weapp-vite-wevu-template.layouts.runtime.test.ts",
+      "sourceSha256": "54973bdcafe8f2fac188f650ca0ecf0e106b2ff965bf0722b3ac58d35354259d",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-wevu-features-app",
+      "source": "e2e/ide/template-wevu-features-app.test.ts",
+      "sourceSha256": "7c4bb383dc37836820edbb9ba3aa4be4f1a8d739644d37fd6325ffd13224cdc7",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-template-wevu-tailwindcss-tdesign-hmr-runtime",
+      "source": "e2e/ide/template-wevu-tailwindcss-tdesign-hmr.runtime.test.ts",
+      "sourceSha256": "d0d1c1a02b00d181d3ee0481c8abe760791cec1549454ff5348ea72d475c663f",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-uview-plus-compat-runtime",
+      "source": "e2e/ide/uview-plus-compat.runtime.test.ts",
+      "sourceSha256": "bee1d14e1c79c5429bed9fd01367bc9dfcbd7711b5180563c71a70cd30ee7e1c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-vite-native-ts-worker-runtime",
+      "source": "e2e/ide/vite-native-ts.worker.runtime.test.ts",
+      "sourceSha256": "65a4d2da00d5f83f14ac66e1e44a72f534fec928ef33d39177772db32b4e9d83",
+      "kind": "worker",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-vite-plugin-npm-runtime",
+      "source": "e2e/ide/vite-plugin-npm.runtime.test.ts",
+      "sourceSha256": "fddeb53c0e5bd6fc665b2589564db6cf5a7c00f3c07c37902036c1361831bbab",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-vite-plugin-runtime",
+      "source": "e2e/ide/vite-plugin.runtime.test.ts",
+      "sourceSha256": "2570ba478473914ac7e08770ba8ef215214d662a5d39463715e83d7b7a815683",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-vue-mini-issue151-wevu-runtime",
+      "source": "e2e/ide/vue-mini-issue151-wevu.runtime.test.ts",
+      "sourceSha256": "85ec508f5a1924d7c3f4a10f92f71ddb3ff02d223deb352ce6f95788d5c404eb",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-composition-api-weapp",
+      "source": "e2e/ide/wevu-composition-api.weapp.test.ts",
+      "sourceSha256": "85b133d3c1e3f8e4d9b9fa49429754320487e1acefc30dbbc31091aec718713f",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-comprehensive-runtime",
+      "source": "e2e/ide/wevu-comprehensive.runtime.test.ts",
+      "sourceSha256": "c362305173db27efe453bd747eaec1ad23fbd50702076a61eb27755f055f3c8c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-features-runtime-behavior",
+      "source": "e2e/ide/wevu-features.runtime.behavior.test.ts",
+      "sourceSha256": "c2bb7a29b278b209b5a5dc08756fccd4ad811c3043406dca0493a39cfacc6b80",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-features-runtime-router",
+      "source": "e2e/ide/wevu-features.runtime.router.test.ts",
+      "sourceSha256": "e68ff1b1e2f309948c299047dfc8857e633252c2cd601a9f2cb3032c1a56f97c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-features-runtime-subpath",
+      "source": "e2e/ide/wevu-features.runtime.subpath.test.ts",
+      "sourceSha256": "a6842516155578f3a8c7a67ee0fce23c0c787b359f5f94656980cf0d4b20e6b9",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-initial-style-runtime",
+      "source": "e2e/ide/wevu-initial-style.runtime.test.ts",
+      "sourceSha256": "1ebbfc455636a41a02d1e1044351d0b6e3247de431068cfce931bc8a980ffac0",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-json-render-runtime",
+      "source": "e2e/ide/wevu-json-render.runtime.test.ts",
+      "sourceSha256": "f49f560859c3c7d9d917de2433d7e9ae1b117bb735547e688888a18885851c1e",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-jsx-tsx-hmr-runtime",
+      "source": "e2e/ide/wevu-jsx-tsx.hmr.runtime.test.ts",
+      "sourceSha256": "61a7577c64308cd6f9d41cc3130a36023ec9fc5f27acc90ccc8cb6c6e7f576c4",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-jsx-tsx-runtime",
+      "source": "e2e/ide/wevu-jsx-tsx.runtime.test.ts",
+      "sourceSha256": "0bfc440ddf5527a0c103ed7ba54b9657dcb09665edd0ca0431dd32fb6ee4af95",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-query-runtime",
+      "source": "e2e/ide/wevu-query.runtime.test.ts",
+      "sourceSha256": "0fb610f29d87d60bf3eab2c0483df9f53249d7f7f7939e495a01a90028c045a0",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-router-hmr-runtime",
+      "source": "e2e/ide/wevu-router-hmr.runtime.test.ts",
+      "sourceSha256": "c351a6251bdd13a7a4f391c58bbe4006a5f9c1e6dbc1e81d7cb5e259d649544d",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-class-computed-weapp",
+      "source": "e2e/ide/wevu-runtime.class-computed.weapp.test.ts",
+      "sourceSha256": "837f77dfd34c1ee3989a86b5b6727efc3f8b54e476e6d0e7f4f66821744f3b17",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-core-hmr",
+      "source": "e2e/ide/wevu-runtime.core-hmr.test.ts",
+      "sourceSha256": "626f79b35d144f9e5290f12de0b295cab60e13e226c02f9db3f9b13460db9762",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-demo-request-globals-weapp",
+      "source": "e2e/ide/wevu-runtime-demo.request-globals.weapp.test.ts",
+      "sourceSha256": "568a68a05a1113a2528d6b8eda50c17871abe8723e0edb5be75750d9551f8508",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-demo-vue-query-weapp",
+      "source": "e2e/ide/wevu-runtime-demo.vue-query.weapp.test.ts",
+      "sourceSha256": "cda1d5b710793fde3d569e4aceba131e2d7b44ae08cf0a889f388f7c27fe86e8",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-function-props-weapp",
+      "source": "e2e/ide/wevu-runtime.function-props.weapp.test.ts",
+      "sourceSha256": "45b4582ccebdee6a6dc378a7d6177dfee701a8e06553dcea09859e25a5aa5244",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-inline-object-reactivity-weapp",
+      "source": "e2e/ide/wevu-runtime.inline-object-reactivity.weapp.test.ts",
+      "sourceSha256": "c61214496728a8a3eaa7643efa16846ddc869025cdd5a29703440477657175e6",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-layout-shared-template-wxs-hmr",
+      "source": "e2e/ide/wevu-runtime.layout-shared-template-wxs.hmr.test.ts",
+      "sourceSha256": "3c9d82a6665105302f8e6e15fa9fbf269adef6a404ba92f9372b9d7fc619ff4c",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-pruning",
+      "source": "e2e/ide/wevu-runtime.pruning.test.ts",
+      "sourceSha256": "a4e93fcdac0d41132b78705d593d50c89231b866644f46705ee76a11a2333ec7",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-shared-template-wxs-hmr",
+      "source": "e2e/ide/wevu-runtime.shared-template-wxs.hmr.test.ts",
+      "sourceSha256": "31542defe4704b2a6c87ddf25f10bed99222c422d81d77c60bc549589fd16815",
+      "kind": "hmr",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-runtime-weapp",
+      "source": "e2e/ide/wevu-runtime.weapp.test.ts",
+      "sourceSha256": "aab62fcb2e75910a705479261af74bb50242d92a2adae2f7665e169eea42c718",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-subpackage-placement-runtime",
+      "source": "e2e/ide/wevu-subpackage-placement.runtime.test.ts",
+      "sourceSha256": "34fb1ae11d4b6518e561972bb98707c0eb71a778c50931855bbffe9cba6ea89c",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-vue-demo-script-setup-emit-runtime",
+      "source": "e2e/ide/wevu-vue-demo.script-setup.emit.runtime.test.ts",
+      "sourceSha256": "58aa817664716aeb910fddca1a1036262b6ceef787955d651ca80d925f714667",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wevu-watch",
+      "source": "e2e/ide/wevu-watch.test.ts",
+      "sourceSha256": "c8e5185618b68f0faff51f58bb40f56c3800c14e151f4f126f66c05c4264c695",
+      "kind": "static",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-worker-host-runtime",
+      "source": "e2e/ide/worker-host.runtime.test.ts",
+      "sourceSha256": "ec7dc132ab84eef94dd03563c7eecad181df6468611ebc793912adb4adfa0e35",
+      "kind": "worker",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wot-ui-compat-runtime",
+      "source": "e2e/ide/wot-ui-compat.runtime.test.ts",
+      "sourceSha256": "95ecf43a07121ff34d292010afefe7d0440045b3205df867bbef08d2c4c7194d",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wxml-transform-runtime",
+      "source": "e2e/ide/wxml-transform.runtime.test.ts",
+      "sourceSha256": "697e7f72f545f1c8df358930c5ecca297d8888bb16f0cf01a4bc88084392d4a2",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    },
+    {
+      "id": "ide-wxml-transform-watch-runtime",
+      "source": "e2e/ide/wxml-transform-watch.runtime.test.ts",
+      "sourceSha256": "2e57bd0297dbbcbd5fa7d0cab99567e0d3d6268d64d5e81cdef6f88d3b81faae",
+      "kind": "runtime",
+      "platforms": [
+        "weapp"
+      ],
+      "oracles": [
+        "wechat-devtools",
+        "mpcore"
+      ],
+      "status": "unknown"
+    }
+  ]
+}

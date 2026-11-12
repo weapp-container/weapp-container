@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "kind": "fresh-r5b-official-full-production-oracle-review",
+  "startedAt": "2026-11-07T01:26:41.568Z",
+  "endedAt": "2026-11-07T01:27:59.427Z",
+  "caseId": "ide-issue-1072-json-context-runtime",
+  "indexedStatus": "blocked",
+  "run": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/01-1072/run.json",
+    "sha256": "1eb99b8b6f27e0b984292521b5f24750afe295c66061ba53d2f09f811f531b78",
+    "bytes": 9893
+  },
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/source-freeze.json",
+    "sha256": "4ec38f58fa85f04ef6bf9a8e266c2f64b9aa4c240195bec30eee7cdc7eb8d7f4",
+    "bytes": 114366
+  },
+  "index": {
+    "path": "docs/conformance/case-index-v1.json",
+    "sha256": "d6e94164580fa0a533cf8296a7994ef0d4d117359db0a2fa0cc137362c99bb4b",
+    "bytes": 71514
+  },
+  "attemptInspection": {
+    "status": "passed",
+    "errors": [],
+    "diagnosticOnly": true
+  },
+  "result": {
+    "status": "passed"
+  },
+  "registry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/01-1072/execution-recipes.json",
+    "sha256": "4510ca1368920141d55083b36b5fdce58834d8449016b85a2e3dc9317fd2c30e",
+    "bytes": 6989
+  },
+  "candidateEntry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/control/01-1072/candidate-entry.json",
+    "sha256": "cd25fb8b23182c777cf97b2d8fc5ec872b980d8d3f7c6d3d2e31d33045d72b32",
+    "bytes": 16579
+  },
+  "candidateReviewedItem": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/control/01-1072/candidate-reviewed-item.json",
+    "sha256": "a0fad57167edf2c0178f0fea4329b3c7b97abb0750f9e1eeecfcc9ace29b8f8b",
+    "bytes": 2112
+  },
+  "summary": {
+    "trace": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/01-1072/ide-issue-1072-json-context-runtime/official-trace.json",
+      "sha256": "dc24269a1c36464fbce43382d27f3f0358188d25a34c92361351dccae3d59861",
+      "bytes": 3693
+    },
+    "execution": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/01-1072/ide-issue-1072-json-context-runtime/official-execution.json",
+      "sha256": "993978781a6fc8e038a0aaf0b54ef793f8322de4fadf6c8558e857a39842f847",
+      "bytes": 3196
+    },
+    "compilerUse": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/01-1072/ide-issue-1072-json-context-runtime/compiler-use/objects/sha256/da3f29e7e929c7196dc8da60752a78782fde5a6ec9be03a933c453eb265717a9",
+      "sha256": "da3f29e7e929c7196dc8da60752a78782fde5a6ec9be03a933c453eb265717a9",
+      "bytes": 166450
+    },
+    "fixtureBuild": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5b-v1/01-1072/ide-issue-1072-json-context-runtime/fixture-build/objects/sha256/0cf1d89d25067409bd64f440294883c443fcdac5a6f6a944de8b9e360b62aec0",
+      "sha256": "0cf1d89d25067409bd64f440294883c443fcdac5a6f6a944de8b9e360b62aec0",
+      "bytes": 25915
+    },
+    "events": 12,
+    "assertions": [
+      {
+        "id": "issue #1072: JSON context page runtime navigates to metadata-configured pages with working reactive events",
+        "passed": true
+      }
+    ],
+    "observedDevtoolsVersion": "2.02.2609250",
+    "observedBaseLibraryVersion": "3.17.3"
+  },
+  "sourceInputsReverified": 150,
+  "sourceUnchanged": true,
+  "rootIndexUnchanged": true,
+  "indexPromoted": false,
+  "formalPairs": 0,
+  "boundary": "Candidate item is an artifact-only review proposal. Root index, old receipts, original assertions and official source remain unchanged. Complete current production oracle reader verifies actual build/consumer/fixture/SDK/cleanup receipts. No differential pair is implied."
+}

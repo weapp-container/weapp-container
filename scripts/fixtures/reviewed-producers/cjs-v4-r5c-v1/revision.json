@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "kind": "reviewed-producer-revision",
+  "id": "cjs-v4-r5c-reviewed-v1",
+  "profile": "pinned-json-macro-esm-cjs-v4-runtime-input",
+  "caseScopes": [
+    {
+      "caseId": "ide-github-issues-runtime-issue1012",
+      "sourceSha256": "c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff",
+      "caseSourcePath": "e2e/ide/github-issues.runtime.issue1012.test.ts",
+      "snapshotProfile": "github-static-snapshot-v1"
+    }
+  ],
+  "sources": {
+    "compilerUseProducer": {
+      "path": "sources/compilerUseProducer.txt",
+      "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+      "bytes": 45701
+    },
+    "compilerUsePreload": {
+      "path": "sources/compilerUsePreload.txt",
+      "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+      "bytes": 19764
+    },
+    "fixtureBuildProducer": {
+      "path": "sources/fixtureBuildProducer.txt",
+      "sha256": "a255acd7fd5f7c2de07ed65d1f3a90a2dec472c598c606df58bd68cc537589ee",
+      "bytes": 81634
+    },
+    "fixturePackerPreload": {
+      "path": "sources/fixturePackerPreload.txt",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    "macroProducer": {
+      "path": "sources/macroProducer.txt",
+      "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+      "bytes": 11113
+    },
+    "macroManifest": {
+      "path": "sources/macroManifest.txt",
+      "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+      "bytes": 19533
+    },
+    "macroObserver": {
+      "path": "sources/macroObserver.txt",
+      "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+      "bytes": 3868
+    },
+    "macroValidator": {
+      "path": "sources/macroValidator.txt",
+      "sha256": "b9106b81e7d3442b2790cbed727f1b38b9ffe82839da25d8b6f1472c9a3704e2",
+      "bytes": 35757
+    },
+    "githubProducer": {
+      "path": "sources/githubProducer.txt",
+      "sha256": "c4f12de0384c5bb76d28ec0bbcd475da5df60c43dad8f0c7f66d1329d0b1e2ff",
+      "bytes": 15050
+    },
+    "wxmlProducer": {
+      "path": "sources/wxmlProducer.txt",
+      "sha256": "0aef38401c26e19d15cea19ca179c0e4bfe5ccc3ce7d032dd691f2f769baf94c",
+      "bytes": 8045
+    },
+    "snapshotTransport": {
+      "path": "sources/snapshotTransport.txt",
+      "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+      "bytes": 19321
+    }
+  },
+  "snapshotModules": [
+    {
+      "key": "githubProducer",
+      "path": "scripts/conformance-github-producer.mjs"
+    },
+    {
+      "key": "wxmlProducer",
+      "path": "scripts/conformance-wxml-producer.mjs"
+    },
+    {
+      "key": "snapshotTransport",
+      "path": "scripts/conformance-snapshot-transport.mjs"
+    }
+  ],
+  "provenance": [
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/source-freeze.json",
+        "sha256": "243e0540d3a68ad15c57fa44aa684efa5ed25aa3db9a0446547514daa068ce92",
+        "bytes": 132755
+      },
+      "copy": "provenance/00-source-freeze.json",
+      "sha256": "243e0540d3a68ad15c57fa44aa684efa5ed25aa3db9a0446547514daa068ce92",
+      "bytes": 132755
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/r5c-root-integration-v1/integration.json",
+        "sha256": "cc319e1a179fd9ff4256e2521fefcdd938ae54b21134618a2ecca5aaf08b2c98",
+        "bytes": 17549
+      },
+      "copy": "provenance/01-integration.json",
+      "sha256": "cc319e1a179fd9ff4256e2521fefcdd938ae54b21134618a2ecca5aaf08b2c98",
+      "bytes": 17549
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/completion-summary.json",
+        "sha256": "7e42555c21d167339336723c0da1a635d5077300ffef48b1267088e382bdb9c7",
+        "bytes": 8478
+      },
+      "copy": "provenance/02-completion-summary.json",
+      "sha256": "7e42555c21d167339336723c0da1a635d5077300ffef48b1267088e382bdb9c7",
+      "bytes": 8470
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/oracle-full-reader-audit.json",
+        "sha256": "17385547fa695b2b6813ae21e1ccb4a2503bcbe3c44c72f5f16dd03063accd20",
+        "bytes": 3658
+      },
+      "copy": "provenance/03-oracle-full-reader-audit.json",
+      "sha256": "17385547fa695b2b6813ae21e1ccb4a2503bcbe3c44c72f5f16dd03063accd20",
+      "bytes": 3658
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/r5c-root-result-review-v1/native-review-1012.json",
+        "sha256": "5b2d1e31d5f6fa8632d617201d28e66243f53aa0152d4e2bef7830923955ed2e",
+        "bytes": 3370
+      },
+      "copy": "provenance/04-native-review-1012.json",
+      "sha256": "5b2d1e31d5f6fa8632d617201d28e66243f53aa0152d4e2bef7830923955ed2e",
+      "bytes": 3370
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/r5c-root-result-review-v1/official-review.json",
+        "sha256": "1fb6d41edab56db5ac499e44253c187706efb205df1d269fe10e812d46267981",
+        "bytes": 2748
+      },
+      "copy": "provenance/05-official-review.json",
+      "sha256": "1fb6d41edab56db5ac499e44253c187706efb205df1d269fe10e812d46267981",
+      "bytes": 2748
+    }
+  ],
+  "boundary": "Exact completed r5c 1012 producer revision only. Its unchanged original assertion and both actual macOS engines passed. No scope or execution is granted to 1034 or the six unexecuted cases; archived code is inert text and current strict validators still execute. Formal pairs remain zero."
+}

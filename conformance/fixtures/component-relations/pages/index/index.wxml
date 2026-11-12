@@ -1,0 +1,9 @@
+<view id="relations-page" style="width:200px;height:160px;background-color:#ffffff">
+  <relation-parent id="relation-parent">
+    <view id="native-projection-wrapper">
+      <relation-child wx:if="{{showChild}}" id="relation-child"/>
+    </view>
+  </relation-parent>
+  <view id="remove-child" bindtap="removeChild" style="position:absolute;left:24px;top:110px;width:68px;height:24px;background-color:#eeeeee">Remove</view>
+  <view id="restore-child" bindtap="restoreChild" style="position:absolute;left:110px;top:110px;width:68px;height:24px;background-color:#eeeeee">Restore</view>
+</view>

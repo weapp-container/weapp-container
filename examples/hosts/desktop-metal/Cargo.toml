@@ -1,0 +1,22 @@
+[package]
+name = "weapp-desktop-metal-surface-smoke"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[profile.dev]
+debug = 1
+
+[profile.test]
+debug = 1
+
+[dependencies]
+container-bridge = { path = "../../../crates/container-bridge" }
+container-host-common = { path = "../../../crates/container-host-common" }
+container-host-desktop = { path = "../../../crates/container-host-desktop", features = ["metal-window"] }
+container-ir = { path = "../../../crates/container-ir" }
+container-runtime = { path = "../../../crates/container-runtime", features = ["skia-gpu-metal"] }
+serde_json = "1"
+winit = "0.30"

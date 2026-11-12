@@ -1,0 +1,14 @@
+<wxs module="tools">
+var shared = require('../view/shared.wxs');
+var count = 0;
+var log = [];
+exports.mark = function(label, value) {
+  count = count + 1;
+  var sample = 'nested:' + label + '#' + count + '=' + value + ';shared=' + shared.next();
+  log.push(sample);
+  return sample;
+};
+exports.history = function() { return log.join('|'); };
+</wxs>
+<text id="nested-headline">{{tools.mark('headline', marker)}}</text>
+<text id="nested-history">{{tools.history(marker)}}</text>

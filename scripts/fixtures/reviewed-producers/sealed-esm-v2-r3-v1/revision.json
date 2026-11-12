@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "reviewed-producer-revision",
+  "id": "sealed-esm-v2-r3-reviewed-v1",
+  "profile": "pinned-json-macro-esm-v2-rolldown-runtime",
+  "caseIds": [
+    "ide-issue-1058-template-tags-runtime",
+    "ide-issue-1185-sibling-entry-runtime"
+  ],
+  "sources": {
+    "compilerUseProducer": {
+      "path": "sources/compilerUseProducer.txt",
+      "sha256": "c6ef48c62ca72ce754884ac343a343c8b74272ed60192dcc0fe32642036d2446",
+      "bytes": 38029
+    },
+    "compilerUsePreload": {
+      "path": "sources/compilerUsePreload.txt",
+      "sha256": "39a058635baba1abaee42b404e0aaa004aefb038a071b82da26f739b0d55ec50",
+      "bytes": 16705
+    },
+    "fixtureBuildProducer": {
+      "path": "sources/fixtureBuildProducer.txt",
+      "sha256": "e1c32bb30e267f1e26229acf80dbf7ba9c3814453c0d05ee24f8f3cf8cdec2cb",
+      "bytes": 52951
+    },
+    "fixturePackerPreload": {
+      "path": "sources/fixturePackerPreload.txt",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    "macroProducer": {
+      "path": "sources/macroProducer.txt",
+      "sha256": "b1b2e0db856af9b47a932f9398cd556fc40389ddd8131a19a86875562a5db090",
+      "bytes": 11011
+    },
+    "macroManifest": {
+      "path": "sources/macroManifest.txt",
+      "sha256": "07f7a6a48ba9539ec42f3e8eccec2845741386b5d8745c1cc669aa3f697d81c2",
+      "bytes": 16131
+    },
+    "macroObserver": {
+      "path": "sources/macroObserver.txt",
+      "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+      "bytes": 3868
+    },
+    "macroValidator": {
+      "path": "sources/macroValidator.txt",
+      "sha256": "c1295c96796480a102099f5407509acc9cbc8728852bec13d433100b2c890480",
+      "bytes": 25372
+    }
+  },
+  "provenance": [
+    {
+      "original": {
+        "path": "artifacts/conformance-official/2026-11-07-sealed-esm-r3-v1/source-freeze.json",
+        "sha256": "86a3aa2720288ce99ebd59c126ae9870746632ca20e20c51494ec80fab7161ff",
+        "bytes": 22699
+      },
+      "copy": "provenance/00-2026-11-07-sealed-esm-r3-v1-source-freeze.json",
+      "sha256": "86a3aa2720288ce99ebd59c126ae9870746632ca20e20c51494ec80fab7161ff",
+      "bytes": 22699
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/report.json",
+        "sha256": "aed6a897fd67e58ef2dd96fc8ceb1fe84909be57c86adf72b191a426d233f7f3",
+        "bytes": 11897
+      },
+      "copy": "provenance/01-1058-r3-independent-review-v1-report.json",
+      "sha256": "aed6a897fd67e58ef2dd96fc8ceb1fe84909be57c86adf72b191a426d233f7f3",
+      "bytes": 11887
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/freeze.json",
+        "sha256": "13e07e66167adec95cfb9fedfc2ee2b08c06ed7dafcdcb0c99d924ec09394072",
+        "bytes": 2107
+      },
+      "copy": "provenance/02-1058-r3-independent-review-v1-freeze.json",
+      "sha256": "13e07e66167adec95cfb9fedfc2ee2b08c06ed7dafcdcb0c99d924ec09394072",
+      "bytes": 2107
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/report.json",
+        "sha256": "42cc650d6965a587e2e7099024c0cea8ab3e08a3ac64abca7de3e74d8ce995e3",
+        "bytes": 12154
+      },
+      "copy": "provenance/03-1185-r3-independent-review-v1-report.json",
+      "sha256": "42cc650d6965a587e2e7099024c0cea8ab3e08a3ac64abca7de3e74d8ce995e3",
+      "bytes": 12144
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/1185-r3-independent-review-v1/freeze.json",
+        "sha256": "99ed2973d8b117e15ea72f38405d979138db2f1dbc88a4bfc901358645026dc2",
+        "bytes": 1885
+      },
+      "copy": "provenance/04-1185-r3-independent-review-v1-freeze.json",
+      "sha256": "99ed2973d8b117e15ea72f38405d979138db2f1dbc88a4bfc901358645026dc2",
+      "bytes": 1885
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/report.json",
+        "sha256": "f7cd747be9d6c66df3fdc3140901bdbea15aef0f514bba9977e60c197a7c3797",
+        "bytes": 23338
+      },
+      "copy": "provenance/05-sealed-esm-independent-review-v1-report.json",
+      "sha256": "f7cd747be9d6c66df3fdc3140901bdbea15aef0f514bba9977e60c197a7c3797",
+      "bytes": 23338
+    },
+    {
+      "original": {
+        "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/freeze.json",
+        "sha256": "1b8191a5f6f975187436fd4715c8b006819bfd80c30f7efaa8cf5a03dc3c6a04",
+        "bytes": 2124
+      },
+      "copy": "provenance/06-sealed-esm-independent-review-v1-freeze.json",
+      "sha256": "1b8191a5f6f975187436fd4715c8b006819bfd80c30f7efaa8cf5a03dc3c6a04",
+      "bytes": 2124
+    }
+  ],
+  "boundary": "Fixed source bytes are inert provenance only. Actual observed events remain subject to the current strict legacy-v2 validator. No archived JavaScript is imported or executed."
+}

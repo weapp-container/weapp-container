@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-official-receipt-review-freeze",
+  "members": [
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/README.md",
+      "sha256": "08264ef3194f8fa4fb4ccb47e96953c86f0ca2e3576f28cbc1d0f2c5d0bb58e6",
+      "bytes": 1113
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/audit-loader.mjs",
+      "sha256": "79406ed4b01cd2460b57dc0c5fce9446b411dad7cc83b351785345b07161ac71",
+      "bytes": 3172
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/audit-readers.mjs",
+      "sha256": "e7a9f7af0d30331ff12d119fccc0e91641ef132df2c1ff8c1c456ec49bb51b8c",
+      "bytes": 2563
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/candidate-entry.json",
+      "sha256": "9cfd0984cb788d492a2fe8a7f73a32045a36e9011fad22d95dcccf0e7d512dd5",
+      "bytes": 21190
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/candidate-reviewed-item.json",
+      "sha256": "862f2824c0906d44c60bfc0bd26e5f5b19dbc77b95c86a5d7537505313a3a986",
+      "bytes": 489
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/loader-audit.json",
+      "sha256": "9515be77b5e04d874f07b7d43cc210c3fd425b3d93349e5c40d8ad5fa4a12292",
+      "bytes": 13977
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/reader-result.json",
+      "sha256": "5eb6800d8f33f47871a43bc7aff154679f12215ba19e9a452a80423450f6aea7",
+      "bytes": 463
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/report.json",
+      "sha256": "aed6a897fd67e58ef2dd96fc8ceb1fe84909be57c86adf72b191a426d233f7f3",
+      "bytes": 11897
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/1058-r3-independent-review-v1/strict-loader-audit.json",
+      "sha256": "6b3d251a80f37ca913bbcbfd8d453a5c49c43a9a1048ed29a1e3de6debbed3e5",
+      "bytes": 61416
+    }
+  ]
+}

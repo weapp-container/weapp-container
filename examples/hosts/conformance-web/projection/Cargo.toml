@@ -1,0 +1,19 @@
+[package]
+name = "weapp-conformance-web-projection-candidate"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+resolver = "2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+container-core = { path = "../../../../crates/container-core" }
+container-render-skia = { path = "../../../../crates/container-render-skia", default-features = false }
+serde_json = { version = "1", features = ["float_roundtrip"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "=0.2.129"

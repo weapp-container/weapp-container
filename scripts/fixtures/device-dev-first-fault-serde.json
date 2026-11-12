@@ -1,0 +1,1390 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Synthetic values serialized by exact extracted Rust source declarations; no runtime or device execution.",
+  "cases": [
+    {
+      "case": "serde-state-prepare-no-provider",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "cacheHit": false,
+                  "elapsedNs": 0,
+                  "providerInitializationNs": 0,
+                  "providerNs": 0,
+                  "providerStages": null,
+                  "succeeded": false,
+                  "validationEncodingNs": 0
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "prepare",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": null,
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-prepare-quickjs-classic",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "cacheHit": false,
+                  "elapsedNs": 0,
+                  "providerInitializationNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "quickjs",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": false,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "load",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "lastBatchBreakdown": {
+                      "batchSequence": "9007199254740993",
+                      "engine": "quickjs",
+                      "modern": false,
+                      "operation": "load",
+                      "ownerThreadId": "17",
+                      "phases": {
+                        "contextCall": {
+                          "completed": false,
+                          "monotonicEndNs": "9",
+                          "monotonicStartNs": "7",
+                          "threadCpuElapsedNs": null,
+                          "threadCpuEndNs": null,
+                          "threadCpuStartNs": null,
+                          "wallElapsedNs": "2"
+                        },
+                        "finalDeadlineCheck": null,
+                        "jsonStringifyApi": null,
+                        "outputBytes": null,
+                        "poisonDrop": null,
+                        "utf8CopyApi": null
+                      },
+                      "schemaVersion": 1
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false,
+                  "validationEncodingNs": 0
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "prepare",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "quickjs",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": false,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "load",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": {
+                    "batchSequence": "9007199254740993",
+                    "engine": "quickjs",
+                    "modern": false,
+                    "operation": "load",
+                    "ownerThreadId": "17",
+                    "phases": {
+                      "contextCall": {
+                        "completed": false,
+                        "monotonicEndNs": "9",
+                        "monotonicStartNs": "7",
+                        "threadCpuElapsedNs": null,
+                        "threadCpuEndNs": null,
+                        "threadCpuStartNs": null,
+                        "wallElapsedNs": "2"
+                      },
+                      "finalDeadlineCheck": null,
+                      "jsonStringifyApi": null,
+                      "outputBytes": null,
+                      "poisonDrop": null,
+                      "utf8CopyApi": null
+                    },
+                    "schemaVersion": 1
+                  }
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-prepare-quickjs-modern",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "cacheHit": false,
+                  "elapsedNs": 0,
+                  "providerInitializationNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "quickjs",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": true,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "load",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "lastBatchBreakdown": {
+                      "batchSequence": "9007199254740993",
+                      "engine": "quickjs",
+                      "modern": true,
+                      "operation": "load",
+                      "ownerThreadId": "17",
+                      "phases": {
+                        "contextCall": {
+                          "completed": false,
+                          "monotonicEndNs": "9",
+                          "monotonicStartNs": "7",
+                          "threadCpuElapsedNs": null,
+                          "threadCpuEndNs": null,
+                          "threadCpuStartNs": null,
+                          "wallElapsedNs": "2"
+                        },
+                        "finalDeadlineCheck": null,
+                        "jsonStringifyApi": null,
+                        "outputBytes": null,
+                        "poisonDrop": null,
+                        "utf8CopyApi": null
+                      },
+                      "schemaVersion": 1
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false,
+                  "validationEncodingNs": 0
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "prepare",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "quickjs",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": true,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "load",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": {
+                    "batchSequence": "9007199254740993",
+                    "engine": "quickjs",
+                    "modern": true,
+                    "operation": "load",
+                    "ownerThreadId": "17",
+                    "phases": {
+                      "contextCall": {
+                        "completed": false,
+                        "monotonicEndNs": "9",
+                        "monotonicStartNs": "7",
+                        "threadCpuElapsedNs": null,
+                        "threadCpuEndNs": null,
+                        "threadCpuStartNs": null,
+                        "wallElapsedNs": "2"
+                      },
+                      "finalDeadlineCheck": null,
+                      "jsonStringifyApi": null,
+                      "outputBytes": null,
+                      "poisonDrop": null,
+                      "utf8CopyApi": null
+                    },
+                    "schemaVersion": 1
+                  }
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-prepare-uninstrumented",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "cacheHit": false,
+                  "elapsedNs": 0,
+                  "providerInitializationNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": null,
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false,
+                  "validationEncodingNs": 0
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "prepare",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": null,
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-prepare-v8",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "cacheHit": false,
+                  "elapsedNs": 0,
+                  "providerInitializationNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "v8",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": false,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "load",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false,
+                  "validationEncodingNs": 0
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "prepare",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "v8",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": false,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "load",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-release-no-provider",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": null,
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "release",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": null,
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-release-quickjs-classic",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "quickjs",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": false,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "releaseScopes",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "lastBatchBreakdown": {
+                      "batchSequence": "9007199254740993",
+                      "engine": "quickjs",
+                      "modern": false,
+                      "operation": "releaseScopes",
+                      "ownerThreadId": "17",
+                      "phases": {
+                        "contextCall": {
+                          "completed": false,
+                          "monotonicEndNs": "9",
+                          "monotonicStartNs": "7",
+                          "threadCpuElapsedNs": null,
+                          "threadCpuEndNs": null,
+                          "threadCpuStartNs": null,
+                          "wallElapsedNs": "2"
+                        },
+                        "finalDeadlineCheck": null,
+                        "jsonStringifyApi": null,
+                        "outputBytes": null,
+                        "poisonDrop": null,
+                        "utf8CopyApi": null
+                      },
+                      "schemaVersion": 1
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "release",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "quickjs",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": false,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "releaseScopes",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": {
+                    "batchSequence": "9007199254740993",
+                    "engine": "quickjs",
+                    "modern": false,
+                    "operation": "releaseScopes",
+                    "ownerThreadId": "17",
+                    "phases": {
+                      "contextCall": {
+                        "completed": false,
+                        "monotonicEndNs": "9",
+                        "monotonicStartNs": "7",
+                        "threadCpuElapsedNs": null,
+                        "threadCpuEndNs": null,
+                        "threadCpuStartNs": null,
+                        "wallElapsedNs": "2"
+                      },
+                      "finalDeadlineCheck": null,
+                      "jsonStringifyApi": null,
+                      "outputBytes": null,
+                      "poisonDrop": null,
+                      "utf8CopyApi": null
+                    },
+                    "schemaVersion": 1
+                  }
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-release-quickjs-modern",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "quickjs",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": true,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "releaseScopes",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "lastBatchBreakdown": {
+                      "batchSequence": "9007199254740993",
+                      "engine": "quickjs",
+                      "modern": true,
+                      "operation": "releaseScopes",
+                      "ownerThreadId": "17",
+                      "phases": {
+                        "contextCall": {
+                          "completed": false,
+                          "monotonicEndNs": "9",
+                          "monotonicStartNs": "7",
+                          "threadCpuElapsedNs": null,
+                          "threadCpuEndNs": null,
+                          "threadCpuStartNs": null,
+                          "wallElapsedNs": "2"
+                        },
+                        "finalDeadlineCheck": null,
+                        "jsonStringifyApi": null,
+                        "outputBytes": null,
+                        "poisonDrop": null,
+                        "utf8CopyApi": null
+                      },
+                      "schemaVersion": 1
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "release",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "quickjs",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": true,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "releaseScopes",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": {
+                    "batchSequence": "9007199254740993",
+                    "engine": "quickjs",
+                    "modern": true,
+                    "operation": "releaseScopes",
+                    "ownerThreadId": "17",
+                    "phases": {
+                      "contextCall": {
+                        "completed": false,
+                        "monotonicEndNs": "9",
+                        "monotonicStartNs": "7",
+                        "threadCpuElapsedNs": null,
+                        "threadCpuEndNs": null,
+                        "threadCpuStartNs": null,
+                        "wallElapsedNs": "2"
+                      },
+                      "finalDeadlineCheck": null,
+                      "jsonStringifyApi": null,
+                      "outputBytes": null,
+                      "poisonDrop": null,
+                      "utf8CopyApi": null
+                    },
+                    "schemaVersion": 1
+                  }
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-release-uninstrumented",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": null,
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "release",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": null,
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-release-v8",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "v8",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": false,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "releaseScopes",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "release",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "v8",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": false,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "releaseScopes",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-render-no-provider",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "documentCacheHit": false,
+                  "documentRegistrations": 0,
+                  "documentValidationEncodingNs": 0,
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": null,
+                  "receiptValidationNs": 0,
+                  "registrationCacheHits": 0,
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "render",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": null,
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-render-quickjs-classic",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "documentCacheHit": false,
+                  "documentRegistrations": 0,
+                  "documentValidationEncodingNs": 0,
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "quickjs",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": false,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "renderRegistered",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "lastBatchBreakdown": {
+                      "batchSequence": "9007199254740993",
+                      "engine": "quickjs",
+                      "modern": false,
+                      "operation": "renderRegistered",
+                      "ownerThreadId": "17",
+                      "phases": {
+                        "contextCall": {
+                          "completed": false,
+                          "monotonicEndNs": "9",
+                          "monotonicStartNs": "7",
+                          "threadCpuElapsedNs": null,
+                          "threadCpuEndNs": null,
+                          "threadCpuStartNs": null,
+                          "wallElapsedNs": "2"
+                        },
+                        "finalDeadlineCheck": null,
+                        "jsonStringifyApi": null,
+                        "outputBytes": null,
+                        "poisonDrop": null,
+                        "utf8CopyApi": null
+                      },
+                      "schemaVersion": 1
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "receiptValidationNs": 0,
+                  "registrationCacheHits": 0,
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "render",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "quickjs",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": false,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "renderRegistered",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": {
+                    "batchSequence": "9007199254740993",
+                    "engine": "quickjs",
+                    "modern": false,
+                    "operation": "renderRegistered",
+                    "ownerThreadId": "17",
+                    "phases": {
+                      "contextCall": {
+                        "completed": false,
+                        "monotonicEndNs": "9",
+                        "monotonicStartNs": "7",
+                        "threadCpuElapsedNs": null,
+                        "threadCpuEndNs": null,
+                        "threadCpuStartNs": null,
+                        "wallElapsedNs": "2"
+                      },
+                      "finalDeadlineCheck": null,
+                      "jsonStringifyApi": null,
+                      "outputBytes": null,
+                      "poisonDrop": null,
+                      "utf8CopyApi": null
+                    },
+                    "schemaVersion": 1
+                  }
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-render-quickjs-modern",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "documentCacheHit": false,
+                  "documentRegistrations": 0,
+                  "documentValidationEncodingNs": 0,
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "quickjs",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": true,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "renderRegistered",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "lastBatchBreakdown": {
+                      "batchSequence": "9007199254740993",
+                      "engine": "quickjs",
+                      "modern": true,
+                      "operation": "renderRegistered",
+                      "ownerThreadId": "17",
+                      "phases": {
+                        "contextCall": {
+                          "completed": false,
+                          "monotonicEndNs": "9",
+                          "monotonicStartNs": "7",
+                          "threadCpuElapsedNs": null,
+                          "threadCpuEndNs": null,
+                          "threadCpuStartNs": null,
+                          "wallElapsedNs": "2"
+                        },
+                        "finalDeadlineCheck": null,
+                        "jsonStringifyApi": null,
+                        "outputBytes": null,
+                        "poisonDrop": null,
+                        "utf8CopyApi": null
+                      },
+                      "schemaVersion": 1
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "receiptValidationNs": 0,
+                  "registrationCacheHits": 0,
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "render",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "quickjs",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": true,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "renderRegistered",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": {
+                    "batchSequence": "9007199254740993",
+                    "engine": "quickjs",
+                    "modern": true,
+                    "operation": "renderRegistered",
+                    "ownerThreadId": "17",
+                    "phases": {
+                      "contextCall": {
+                        "completed": false,
+                        "monotonicEndNs": "9",
+                        "monotonicStartNs": "7",
+                        "threadCpuElapsedNs": null,
+                        "threadCpuEndNs": null,
+                        "threadCpuStartNs": null,
+                        "wallElapsedNs": "2"
+                      },
+                      "finalDeadlineCheck": null,
+                      "jsonStringifyApi": null,
+                      "outputBytes": null,
+                      "poisonDrop": null,
+                      "utf8CopyApi": null
+                    },
+                    "schemaVersion": 1
+                  }
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-render-uninstrumented",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "documentCacheHit": false,
+                  "documentRegistrations": 0,
+                  "documentValidationEncodingNs": 0,
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": null,
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "receiptValidationNs": 0,
+                  "registrationCacheHits": 0,
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "render",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": null,
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    },
+    {
+      "case": "serde-state-render-v8",
+      "state": {
+        "executionHealth": {
+          "appServiceFault": null,
+          "navigationFault": null,
+          "requiresRestart": true,
+          "schemaVersion": 1,
+          "viewFault": {
+            "code": "ERR_TIMEOUT",
+            "details": {
+              "schemaVersion": 1,
+              "sessionId": "sdk-serde-review-1",
+              "witness": {
+                "faultSequence": "1",
+                "metrics": {
+                  "documentCacheHit": false,
+                  "documentRegistrations": 0,
+                  "documentValidationEncodingNs": 0,
+                  "elapsedNs": 0,
+                  "providerNs": 0,
+                  "providerStages": {
+                    "batches": 1,
+                    "compileNs": null,
+                    "documentRegistrations": 0,
+                    "elapsedNs": 9,
+                    "executeIncludingLazyCompileNs": 0,
+                    "inputBytes": 0,
+                    "inputEncodeNs": 0,
+                    "lastBatch": {
+                      "androidTraceEmitted": false,
+                      "androidTraceEnabled": null,
+                      "batchSequence": "9007199254740993",
+                      "boottimeEndNs": null,
+                      "boottimeStartNs": null,
+                      "engine": "v8",
+                      "errorCode": "ERR_TIMEOUT",
+                      "modern": false,
+                      "monotonicEndNs": "9",
+                      "monotonicStartNs": "7",
+                      "operation": "renderRegistered",
+                      "ownerThreadId": "17",
+                      "schemaVersion": 1,
+                      "threadCpuElapsedNs": null,
+                      "threadCpuEndNs": null,
+                      "threadCpuStartNs": null
+                    },
+                    "outputDecodeNs": 0,
+                    "registeredRenderBatches": 0,
+                    "vmInputParseNs": 0,
+                    "vmOutputEncodeNs": 0
+                  },
+                  "receiptValidationNs": 0,
+                  "registrationCacheHits": 0,
+                  "succeeded": false
+                },
+                "monotonicElapsedNs": "18446744073709551615",
+                "operation": "render",
+                "operationSequence": "9007199254740993",
+                "provider": {
+                  "lastBatch": {
+                    "androidTraceEmitted": false,
+                    "androidTraceEnabled": null,
+                    "batchSequence": "9007199254740993",
+                    "boottimeEndNs": null,
+                    "boottimeStartNs": null,
+                    "engine": "v8",
+                    "errorCode": "ERR_TIMEOUT",
+                    "modern": false,
+                    "monotonicEndNs": "9",
+                    "monotonicStartNs": "7",
+                    "operation": "renderRegistered",
+                    "ownerThreadId": "17",
+                    "schemaVersion": 1,
+                    "threadCpuElapsedNs": null,
+                    "threadCpuEndNs": null,
+                    "threadCpuStartNs": null
+                  },
+                  "lastBatchBreakdown": null
+                }
+              }
+            },
+            "domain": "view",
+            "message": "synthetic-serde-review",
+            "requiresRestart": true
+          }
+        },
+        "inputEnabled": false,
+        "presentationEnabled": false,
+        "sessionId": "sdk-serde-review-1"
+      }
+    }
+  ]
+}

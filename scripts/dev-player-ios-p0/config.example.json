@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "dashboardOrigin": "http://127.0.0.1:58830",
+  "bundleIdentifier": "dev.weapp.weappContainerDevPlayer",
+  "bindings": [
+    {"role": "appExecutable", "path": "/absolute/new/Player.app/Runner", "sha256": "REPLACE_WITH_SHA256"},
+    {"role": "runtimeLock", "path": "/absolute/new/runtime-lock.json", "sha256": "REPLACE_WITH_SHA256"},
+    {"role": "sourceManifest", "path": "/absolute/new/source-manifest.json", "sha256": "REPLACE_WITH_SHA256"},
+    {"role": "playerBuildReceipt", "path": "/absolute/new/player-build/ios/build.json", "sha256": "REPLACE_WITH_SHA256"},
+    {"role": "harnessBuildReceipt", "path": "/absolute/new/harness-build/harness-build.json", "sha256": "REPLACE_WITH_SHA256"}
+  ],
+  "profiles": [
+    {"name": "iphone-se", "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation", "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0", "udid": "REPLACE_WITH_OWNED_UDID", "deviceId": "REPLACE_WITH_PAIRED_DEVICE_ID", "ownership": "task-owned"},
+    {"name": "iphone-max", "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro-Max", "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0", "udid": "REPLACE_WITH_OWNED_UDID", "deviceId": "REPLACE_WITH_PAIRED_DEVICE_ID", "ownership": "task-owned"},
+    {"name": "ipad", "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M5-12GB", "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0", "udid": "REPLACE_WITH_OWNED_UDID", "deviceId": "REPLACE_WITH_PAIRED_DEVICE_ID", "ownership": "task-owned"}
+  ],
+  "c018ExpectedAccepted": {"root": "COPY_FROM_BASELINE_SNAPSHOT", "sessionId": "COPY_FROM_BASELINE_SNAPSHOT", "acceptedPackRevision": "COPY_FROM_BASELINE_SNAPSHOT"},
+  "c018ExpectedCandidate": {"root": "COPY_FROM_CANDIDATE_DESCRIPTOR", "generation": "COPY_FROM_CANDIDATE_DESCRIPTOR", "runId": "COPY_FROM_CANDIDATE_DESCRIPTOR"}
+}

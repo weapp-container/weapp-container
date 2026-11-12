@@ -1,0 +1,206 @@
+import { instrumentSnapshotAutomator, snapshotConfigBytes, verifySnapshotTransport, verifySnapshotCleanupFinal, verifySnapshotSourceFinal } from './conformance-snapshot-transport.mjs'
+/** Closed GitHub producer transaction. Pure validation and exact pinned helper
+ * transforms only; this module never manufactures or executes compiler output. */
+import { createHash } from 'node:crypto'
+import { isAbsolute, join } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { assertReviewedSnapshotProducer } from './conformance-producer-revisions.mjs'
+const MODULE = new URL('./conformance-github-producer.mjs', import.meta.url)
+const hash = bytes => createHash('sha256').update(bytes).digest('hex')
+const ensure = (ok, message) => { if (!ok) throw new Error(message) }
+const object = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+// The pinned @weapp-core/shared/node writeJSON serializes without a final LF.
+// Automator's wrapper writer has its own distinct LF contract in transport.
+const json = value => Buffer.from(JSON.stringify(value, null, 2))
+const same = (left, right) => Buffer.from(left).equals(Buffer.from(right))
+const safe = path => typeof path === 'string' && path && !isAbsolute(path) && !path.includes('\\') && !path.includes('\0')
+  && path.split('/').every(part => part && part !== '.' && part !== '..')
+function replaceExactly(source, before, after) {
+  ensure(source.split(before).length === 2, `Pinned runner instrumentation anchor is missing or ambiguous: ${before.slice(0, 100)}`)
+  return source.replace(before, after)
+}
+
+export function instrumentGithubAutomator(source, baseLibraryVersion = '3.17.3') {
+  return instrumentSnapshotAutomator(source, baseLibraryVersion)
+}
+
+export function instrumentGithubSharedRuntime(source) {
+  let result = `import { getManagedProjectSessionOwner } from '../utils/managedProjectSession'\n${source}`
+  result = replaceExactly(result, `  try {\n    await runAutomatorOp('close mini program', () => miniProgram.close(), {\n      timeoutMs: 6_000,\n      retries: 1,\n    })`,
+    `  try {\n    const managedSession = sharedSessionOwners.get(miniProgram)?.current() ?? miniProgram\n    if (getManagedProjectSessionOwner(managedSession)) {\n      await miniProgram.close()\n      return\n    }\n    await runAutomatorOp('close mini program', () => miniProgram.close(), {\n      timeoutMs: 6_000,\n      retries: 1,\n    })`)
+  return result
+}
+
+export const GITHUB_PRODUCER_PROFILE = 'github-static-snapshot-v1'
+export const GITHUB_PRODUCER_CASES = Object.freeze([
+  Object.freeze({ caseId: 'ide-github-issues-runtime-issue1012', caseSourcePath: 'e2e/ide/github-issues.runtime.issue1012.test.ts', sourceSha256: 'c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff' }),
+  Object.freeze({ caseId: 'ide-github-issues-runtime-issue1014', caseSourcePath: 'e2e/ide/github-issues.runtime.issue1014.test.ts', sourceSha256: '332a6673e36403659dc83eb634177e239400e748e2d346b50c7569f17e552bc8' }),
+  Object.freeze({ caseId: 'ide-github-issues-runtime-subpackage-item', caseSourcePath: 'e2e/ide/github-issues.runtime.subpackage-item.test.ts', sourceSha256: '2fad80fcbe8cb7d00cc87091ae7fce34a954650e8446ccbf374dcb164c129e13' }),
+  Object.freeze({ caseId: 'ide-github-issues-runtime-subpackage-user', caseSourcePath: 'e2e/ide/github-issues.runtime.subpackage-user.test.ts', sourceSha256: 'b5504ae1432588556f30993d93ae2dccfbd0f27876457106afb0a91914cf48de' }),
+  Object.freeze({ caseId: 'ide-github-issues-runtime-web-runtime', caseSourcePath: 'e2e/ide/github-issues.runtime.web-runtime.test.ts', sourceSha256: '2cf0345a293123b3be37f091663b77ee2aab1dd7c6d062512a5e6b45242cfb36' }),
+  Object.freeze({ caseId: 'ide-github-issues-runtime-issue547', caseSourcePath: 'e2e/ide/github-issues.runtime.issue547.test.ts', sourceSha256: '46bd53dda261261a5a9cd5e1e3fc89e07a8fd7660e0fcbbe3e8bdd73499f3f11' }),
+  Object.freeze({ caseId: 'ide-github-issues-runtime-issue289', caseSourcePath: 'e2e/ide/github-issues.runtime.issue289.test.ts', sourceSha256: 'eebdc8af20fa9f95c145520fd26914788bebfc46208adb2362797ac711c34c53' }),
+  Object.freeze({ caseId: 'ide-github-issues-runtime-issue1013', caseSourcePath: 'e2e/ide/github-issues.runtime.issue1013.test.ts', sourceSha256: 'dd214fe8af937331788f4b491b51c9fd0816fe45614c28e3f9a192c29781cb35' }),
+])
+export const GITHUB_PRODUCER_GUARDS = Object.freeze([
+  Object.freeze({ path: 'e2e/ide/github-issues.runtime.shared.ts', sha256: '958b47bf162ba7646bf296cb43a17f3bde3c9914430021c69121990407caebcb' }),
+  Object.freeze({ path: 'e2e/utils/automator.ts', sha256: '3389347206d95d6cbaa3fba9a0f72ab75519868032dc868810019599186f0938' }),
+  Object.freeze({ path: 'e2e/utils/buildLog.ts', sha256: '1c992ab9649f2a56fa6c37e3d7f9f4f02c254f3427999a51b26146e941419868' }),
+  Object.freeze({ path: '@weapp-core/shared/src/fs/index.ts', sha256: 'da632aa0a8953e5eaa30a76a567ff2ab4cb2a375886451856a952767f9fb71db' }),
+  Object.freeze({ path: '@weapp-core/shared/src/node.ts', sha256: 'e36a754907ff84f386d6ea2048146b79cee13ce095a6309f420f485bf7e69eaa' }),
+  Object.freeze({ path: '@weapp-core/shared/package.json', sha256: '05964b3c6e2f4b84d0df6dfd7d33ee54c7a6d2cbe5c98da3b36876534257f157' }),
+])
+
+export function githubProducerCase({ caseId, caseSourcePath, sourceSha256 }) {
+  return GITHUB_PRODUCER_CASES.find(item => item.caseId === caseId && item.caseSourcePath === caseSourcePath && item.sourceSha256 === sourceSha256) ?? null
+}
+
+export function githubProducerInvocation({ args, cliPath, cwd, checkout, ...identity }) {
+  const item = githubProducerCase(identity)
+  if (!item || !isAbsolute(checkout ?? '')) return null
+  const target = item.caseSourcePath.slice(4).replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '')
+  const sourceRoot = join(checkout, '.tmp/e2e-projects/github-issues', target)
+  // All reviewed cases copy the shared package manifest with dependencies: buildLog deliberately
+  // removes skipNpm. No other case or flag shape acquires this profile.
+  if (!Array.isArray(args) || args.length !== 5 || args[0] !== cliPath || args[1] !== 'build'
+    || args[2] !== sourceRoot || args[3] !== '--platform' || args[4] !== 'weapp' || cwd !== sourceRoot) return null
+  return Object.freeze({ profile: GITHUB_PRODUCER_PROFILE, ...item, sourceRoot, generatedRoot: join(sourceRoot, 'dist') })
+}
+
+export function githubProducerBytes() { return readFileSync(MODULE) }
+
+export function verifyGithubProducerGuards({ guards, members, load }) {
+  ensure(Array.isArray(guards) && guards.length === GITHUB_PRODUCER_GUARDS.length && Array.isArray(members), 'GitHub producer source guards are missing')
+  const map = new Map(members.map(item => [item.path, item]))
+  for (let at = 0; at < GITHUB_PRODUCER_GUARDS.length; at++) {
+    const expected = GITHUB_PRODUCER_GUARDS[at], guard = guards[at], member = map.get(expected.path)
+    ensure(guard.path === expected.path && hash(load(guard.original)) === expected.sha256, 'GitHub producer original source guard differs')
+    const original = load(guard.original).toString('utf8')
+    const transformed = expected.path.endsWith('/automator.ts') ? instrumentGithubAutomator(original)
+      : expected.path.endsWith('/github-issues.runtime.shared.ts') ? instrumentGithubSharedRuntime(original) : original
+    const observed = load(guard.observed)
+    ensure(same(observed, Buffer.from(transformed)) && member?.kind === 'file'
+      && member.sha256 === hash(observed) && member.bytes === observed.length
+      && member.origin === (/\/(?:automator|github-issues\.runtime\.shared)\.ts$/.test(expected.path) ? 'patch' : 'source'), 'GitHub producer observed helper is not the exact reviewed transform')
+  }
+}
+
+function fileMap(files, load, links = false) {
+  ensure(Array.isArray(files), 'GitHub producer closure is missing')
+  const map = new Map()
+  for (const item of files) {
+    ensure(safe(item.path) && !map.has(item.path), 'GitHub producer closure has an unsafe or duplicate member')
+    ensure(item.kind === 'file' && item.artifact || links && item.kind === 'consumer-link', 'GitHub producer closure has a symlink or special member')
+    if (item.kind === 'file') load(item.artifact)
+    map.set(item.path, item)
+  }
+  return map
+}
+function parsed(map, path, load) {
+  const item = map.get(path)
+  ensure(item?.kind === 'file', `GitHub producer required actual file is missing: ${path}`)
+  const value = JSON.parse(load(item.artifact))
+  ensure(object(value), `GitHub producer config is not an object: ${path}`)
+  return value
+}
+function routes(config) {
+  const pages = Array.isArray(config.pages) ? config.pages.filter(item => typeof item === 'string' && item.trim().length > 0) : []
+  const packages = [...(Array.isArray(config.subPackages) ? config.subPackages : []), ...(Array.isArray(config.subpackages) ? config.subpackages : [])].filter(object)
+  const result = [...pages]
+  for (const pkg of packages) {
+    const root = typeof pkg.root === 'string' ? pkg.root.replace(/^\/+|\/+$/g, '') : ''
+    const pages = Array.isArray(pkg.pages) ? pkg.pages.filter(item => typeof item === 'string' && item.trim().length > 0) : []
+    for (const page of pages) result.push([root, page.replace(/^\/+/, '')].filter(Boolean).join('/'))
+  }
+  return result
+}
+function normalizeCustomTabBar(config, generated) {
+  const components = object(config.usingComponents) ? config.usingComponents : undefined
+  if (components?.['custom-tab-bar'] !== '/custom-tab-bar/index' || generated.has('custom-tab-bar/index.json')) return false
+  delete components['custom-tab-bar']
+  if (object(config.tabBar) && config.tabBar.custom === true) delete config.tabBar
+  return true
+}
+
+/** Pure expected transition bytes. Its results are compared to actual archived
+ * reads; they must never be materialized as replacement runtime output. */
+export function githubPostHelperBytes({ build, load }) {
+  const generated = fileMap(build.generated, load), source = fileMap(build.sourceAfter, load, true)
+  ensure(!generated.has('project.config.json') && !generated.has('project.private.config.json'), 'GitHub CLI output contains reserved snapshot config paths')
+  const app = parsed(generated, 'app.json', load)
+  ensure(Array.isArray(app.pages) && app.pages.length && (app.subPackages == null || Array.isArray(app.subPackages))
+    && (app.subpackages == null || Array.isArray(app.subpackages)), 'GitHub app routes are malformed')
+  if (app.preloadRule != null) {
+    ensure(object(app.preloadRule), 'GitHub preloadRule is not an object')
+    const normalized = route => route.split('?', 1)[0].split('#', 1)[0].replace(/^\/+/, '').replace(/\/+$/g, '')
+    const routePaths = new Set(routes(app))
+    const packages = [...(app.subPackages ?? []), ...(app.subpackages ?? [])].filter(object)
+    const roots = new Set(packages.map(pkg => typeof pkg.root === 'string' ? normalized(pkg.root) : '').filter(Boolean))
+    for (const [route, rule] of Object.entries(app.preloadRule)) {
+      ensure(routePaths.has(normalized(route)), 'GitHub preloadRule references a missing route')
+      if (!object(rule) || !Array.isArray(rule.packages)) continue
+      for (const name of rule.packages) ensure(typeof name !== 'string' || name === '__APP__' || roots.has(normalized(name)), 'GitHub preloadRule references a missing package')
+    }
+  }
+  const output = new Map([...generated].map(([path, item]) => [path, Buffer.from(load(item.artifact))]))
+  normalizeCustomTabBar(app, generated)
+  const packages = Array.isArray(app.subPackages) ? app.subPackages : Array.isArray(app.subpackages) ? app.subpackages : []
+  // A JSON read cannot share array identity across these two properties. The
+  // pinned helper writes its exact 2-space/LF representation when aliasing.
+  app.subPackages = packages; app.subpackages = packages
+  output.set('app.json', json(app))
+  if (generated.has('__weapp_vite_app_shell.json')) {
+    let shell
+    try { shell = JSON.parse(load(generated.get('__weapp_vite_app_shell.json').artifact)) } catch {}
+    if (object(shell) && normalizeCustomTabBar(shell, generated)) output.set('__weapp_vite_app_shell.json', json(shell))
+  }
+  const privateConfig = parsed(source, 'project.private.config.json', load), routePaths = routes(app)
+  ensure(routePaths.length, 'GitHub app has no runtime routes')
+  privateConfig.setting = { ...(object(privateConfig.setting) ? privateConfig.setting : {}), compileHotReLoad: false }
+  const condition = object(privateConfig.condition) ? privateConfig.condition : {}
+  const miniprogram = object(condition.miniprogram) ? condition.miniprogram : {}
+  const original = Array.isArray(miniprogram.list) ? miniprogram.list : [], routeSet = new Set(routePaths)
+  const list = original.filter(item => object(item) && typeof item.pathName === 'string' && routeSet.has(item.pathName))
+  const known = new Set(list.map(item => item.pathName))
+  for (const route of routePaths) if (!known.has(route)) list.push({ launchMode: 'default', name: route, pathName: route, query: '', scene: null })
+  privateConfig.condition = { ...condition, miniprogram: { ...miniprogram, list } }
+  const remaining = new Map()
+  for (const [path, item] of source) {
+    if (['.weapp-vite', 'node_modules', 'src'].some(root => path === root || path.startsWith(root + '/'))) continue
+    ensure(item.kind === 'file', 'GitHub post-prune retained an unsupported dependency link')
+    remaining.set(path, path === 'project.private.config.json' ? json(privateConfig) : Buffer.from(load(item.artifact)))
+  }
+  return { source: remaining, generated: output }
+}
+
+export function githubSnapshotConfigBytes(options) { return snapshotConfigBytes(options) }
+
+function exactBytes(files, expected, load, label) {
+  const actual = fileMap(files, load)
+  ensure(actual.size === expected.size, `GitHub ${label} closure added or omitted members`)
+  for (const [path, bytes] of expected) ensure(actual.has(path) && same(load(actual.get(path).artifact), bytes), `GitHub ${label} bytes differ: ${path}`)
+}
+
+export function verifyGithubProducerTransaction({ transaction: t, build, checkout, members, load, identity, producerRevision }) {
+  const profile = githubProducerInvocation({ ...build.producerProfile, args: build.command?.slice(1), cliPath: build.command?.[1], cwd: build.cwd, checkout })
+  ensure(profile && JSON.stringify(profile) === JSON.stringify(build.producerProfile), 'GitHub producer invocation or case binding differs')
+  ensure(githubProducerCase(identity ?? {}) && profile.caseId === identity.caseId && profile.caseSourcePath === identity.caseSourcePath
+    && profile.sourceSha256 === identity.sourceSha256, 'GitHub producer profile belongs to another consumer case')
+  ensure(t.schemaVersion === 1 && t.kind === 'weapp-container.github-producer-transaction' && t.profile === GITHUB_PRODUCER_PROFILE,
+    'GitHub producer transaction profile differs')
+  if (producerRevision === undefined) ensure(hash(load(t.producer)) === hash(githubProducerBytes()), 'GitHub producer verifier implementation differs')
+  else assertReviewedSnapshotProducer({ reference: t.producer, profile: GITHUB_PRODUCER_PROFILE, identity }, producerRevision, load)
+  verifyGithubProducerGuards({ guards: t.guards, members, load })
+  const expected = githubPostHelperBytes({ build, load })
+  exactBytes(t.postHelperSource, expected.source, load, 'post-helper source/prune')
+  exactBytes(t.postHelperGenerated, expected.generated, load, 'post-helper generated')
+  const runtimeGenerated = verifySnapshotTransport({ transaction: t, build, profile, checkout, load, label: 'GitHub' })
+  return { profile, runtimeGenerated }
+}
+
+export function verifyGithubSnapshotFinal(options) {
+  return verifySnapshotCleanupFinal({ ...options, profile: GITHUB_PRODUCER_PROFILE, prefix: 'github', label: 'GitHub',
+    verifyTransaction: transaction => verifyGithubProducerTransaction({ ...options, transaction }) })
+}
+
+export function verifyGithubSourceFinal(options) { return verifySnapshotSourceFinal({ ...options, label: 'GitHub' }) }

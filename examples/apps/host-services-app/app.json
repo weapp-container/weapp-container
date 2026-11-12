@@ -1,0 +1,4 @@
+{
+  "pages": ["pages/index/index"],
+  "window": {"navigationBarTitleText": "宿主账号与支付", "navigationBarBackgroundColor": "#f8fafc"}
+}

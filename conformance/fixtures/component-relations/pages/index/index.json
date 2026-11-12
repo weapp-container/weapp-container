@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "relation-parent": "../../components/parent/index",
+    "relation-child": "../../components/child/index"
+  }
+}

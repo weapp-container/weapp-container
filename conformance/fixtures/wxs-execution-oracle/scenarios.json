@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "baseline": { "ide": "2.02.2608080", "sdk": "3.17.3", "renderer": "webview" },
+  "status": "unknown",
+  "steps": [
+    { "id": "initial-first-stable", "kind": "capture", "observes": ["scope counters", "onLoad and first available frame", "lexical alias ownership", "slots and fallback"] },
+    { "id": "same-a-1", "kind": "patch" },
+    { "id": "same-a-2", "kind": "patch" },
+    { "id": "to-b", "kind": "patch" },
+    { "id": "back-to-a", "kind": "patch" },
+    { "id": "hide-branch", "kind": "patch" },
+    { "id": "show-branch", "kind": "patch" },
+    { "id": "reorder-rows", "kind": "patch" },
+    { "id": "hide-middle-row", "kind": "patch" },
+    { "id": "restore-rows", "kind": "patch" },
+    { "id": "style-data", "kind": "patch" },
+    { "id": "same-style-data", "kind": "patch" },
+    { "id": "hide-slots", "kind": "patch" },
+    { "id": "show-slots", "kind": "patch" },
+    { "id": "relaunch", "kind": "relaunch" },
+    { "id": "wxss-file-edit", "kind": "file-edit" }
+  ],
+  "expectations": "None for WXS counters or evaluation order until a version-verified official run has been reviewed."
+}

@@ -1,0 +1,7 @@
+<wxs module="tools" src="../../view/component.wxs" />
+<view class="shell">
+  <text class="component-headline">{{tools.mark('headline:' + label, marker)}}</text>
+  <slot name="header"><text class="fallback-header">{{tools.mark('fallback:header:' + label, marker)}}</text></slot>
+  <slot><text class="fallback-default">{{tools.mark('fallback:default:' + label, marker)}}</text></slot>
+  <text class="component-history">{{tools.history(marker, label)}}</text>
+</view>

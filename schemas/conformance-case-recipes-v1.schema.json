@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-case-recipes-v1.schema.json",
+  "title": "Reviewed pinned-source conformance case recipes v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "baselineId", "compilerCommit", "recipes"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "const": "weapp-container-case-recipes" },
+    "baselineId": { "type": "string", "minLength": 1 },
+    "compilerCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "recipes": { "type": "array", "items": { "$ref": "#/$defs/recipe" } }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "recipe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["caseId", "sourceSha256", "collector", "collectorInputs"],
+      "oneOf": [
+        { "required": ["fixture", "resources"], "properties": { "fixtureProfile": false } },
+        { "required": ["fixtureProfile"], "properties": { "fixture": false, "resources": false, "oracle": false } }
+      ],
+      "properties": {
+        "caseId": { "type": "string", "pattern": "^ide-[a-z0-9][a-z0-9-]*$" },
+        "sourceSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "fixtureProfile": { "const": "captured-static-v1" },
+        "fixture": { "$ref": "#/$defs/artifact" },
+        "resources": { "type": "object", "additionalProperties": { "$ref": "#/$defs/artifact" } },
+        "collector": { "$ref": "#/$defs/artifact" },
+        "collectorInputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+        "oracle": {
+          "type": "object", "additionalProperties": false, "required": ["trace", "execution"],
+          "properties": { "trace": { "$ref": "#/$defs/artifact" }, "execution": { "$ref": "#/$defs/artifact" } }
+        }
+      }
+    }
+  }
+}

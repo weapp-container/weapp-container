@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "kind": "fresh-r5f-official-case-independent-completion-review",
+  "recordedAt": "2026-11-07T04:52:58.818892+00:00",
+  "key": "1034",
+  "caseId": "ide-issue-1034-auto-routes-runtime",
+  "status": "passed",
+  "completion": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/completion-summary.json",
+    "sha256": "692feb67fd472c31ee3822215adbcbeecfa1f1ed6e105a57ae84f16a358f6b54",
+    "bytes": 8499
+  },
+  "fullProductionOracleAudit": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/oracle-full-reader-audit.json",
+    "sha256": "7610e6f2f5e166793e34201ad6a0683534d339e6a0bfb0308677a1dcc19da185",
+    "bytes": 3691
+  },
+  "commands": {
+    "inspection": {
+      "command": [
+        "rtk",
+        "proxy",
+        "python3",
+        "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/inspect-case.py",
+        "1034"
+      ],
+      "exitCode": 0,
+      "log": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/completion-inspection.log",
+        "sha256": "58a774e9354133a3e51a850b89755f5b8d2c23950208f47651db9292b2b13e86",
+        "bytes": 702
+      }
+    },
+    "fullOracleAudit": {
+      "command": [
+        "rtk",
+        "proxy",
+        "node",
+        "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/audit-case-oracle.mjs",
+        "1034"
+      ],
+      "exitCode": 0,
+      "log": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/full-oracle-audit.log",
+        "sha256": "cb00a64163107968ade0ac1926a5c10f482b701e8352bb3336f1ddff6ac237d5",
+        "bytes": 1652
+      }
+    }
+  },
+  "originalTests": {
+    "numTotalTests": 1,
+    "numPassedTests": 1,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numRuntimeErrorTestSuites": null,
+    "success": true
+  },
+  "events": 12,
+  "actualRuntime": [
+    {
+      "recordedAt": "2026-11-07T04:49:44.740Z",
+      "projectPath": "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/checkout/.tmp/e2e-ide-bridge-projects/93d8813a016a6bf0",
+      "installationId": "cfb4b996ecf67c6b9043748163f6c783950d1e56a1935be50652b3b443e477a6",
+      "tool": {
+        "version": "2.02.2609250",
+        "SDKVersion": "3.17.3"
+      },
+      "system": {
+        "SDKVersion": "3.17.3",
+        "platform": "devtools"
+      }
+    }
+  ],
+  "failures": [],
+  "artifactsIndependentlyVerified": 940,
+  "sourceInputsAndCopiesStable": 211,
+  "ownedPids": [
+    {
+      "pid": 44096,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 44099,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 50955,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 52020,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 53663,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 54332,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 54462,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 54600,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "allOwnedPidsAbsent": true,
+  "borrowedHostProcess": {
+    "pid": 97351,
+    "absent": false,
+    "exitCode": 0,
+    "stdout": "97351 Sat Nov  7 01:00:58 2026     /Applications/wechatwebdevtools.app/Contents/MacOS/Electron\n",
+    "stderr": ""
+  },
+  "borrowedHostUnchanged": true,
+  "machineLeaseDirectoryAbsent": true,
+  "allProjectsReleased": true,
+  "resources": {
+    "owner": "conformance-44099",
+    "machineLeaseAcquired": true,
+    "machineLeaseReleased": true,
+    "hostLeaseAcquired": true,
+    "hostLeaseReleased": true,
+    "ownedResourcesReleased": true,
+    "borrowedResourcesPreserved": true
+  },
+  "sharedBatchStopped": false,
+  "formalPairs": 0,
+  "indexPromoted": false,
+  "boundary": "Actual official original assertions, runtime versions, full production oracle admission and independent cleanup/source/artifact checks. Attempt inspection passed validates the diagnostic record; only the actual run outcome and full oracle determine semantic evidence availability."
+}

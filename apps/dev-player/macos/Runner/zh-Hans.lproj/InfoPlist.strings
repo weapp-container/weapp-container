@@ -1,0 +1,2 @@
+"NSCameraUsageDescription" = "扫描开发服务器的一次性配对二维码，也可手动粘贴连接。";
+"NSLocalNetworkUsageDescription" = "连接开发电脑，在本机运行和更新小程序。";

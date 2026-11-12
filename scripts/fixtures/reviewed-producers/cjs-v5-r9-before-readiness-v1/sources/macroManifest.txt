@@ -1,0 +1,482 @@
+{
+  "schemaVersion": 1,
+  "profile": "pinned-json-macro-esm-cjs-v5-npm-support",
+  "observerSpecifier": "weapp-container:conformance-observer-v1",
+  "targets": [
+    {
+      "path": "packages/weapp-vite/dist/createCompilerContextInstance-Dy9vT_DQ.mjs",
+      "target": "weapp-vite",
+      "originalSha256": "7a47ca00132270d0ef7dd15cf50be765bc890486d5eb311130c11eaa11fda945",
+      "originalBytes": 1865701,
+      "patchedSha256": "8d0b1f81370f883cd1bb2722241e21fe044bdb51506e7ed075b91dc1e29c50b6",
+      "patchedBytes": 1868758,
+      "insertions": [
+        {
+          "offset": 1741118,
+          "code": "return await __weappConformanceObserver.span(\"transformVueLikeFile\",{code:options.code,id:options.id,optionKeys:Object.keys(options)},async()=>{",
+          "label": "transformVueLikeFile:span-start"
+        },
+        {
+          "offset": 1747964,
+          "code": "});",
+          "label": "transformVueLikeFile:span-end"
+        },
+        {
+          "offset": 1742689,
+          "code": ";__weappConformanceObserver.record(\"source\",{source,filename,id});",
+          "label": "transformVueLikeFile:after-source"
+        },
+        {
+          "offset": 1702838,
+          "code": "return await __weappConformanceObserver.span(\"compileVueLikeFile\",{source:options.source,rawSource:options.rawSource,filename:options.filename},async()=>{",
+          "label": "compileVueLikeFile:span-start"
+        },
+        {
+          "offset": 1704019,
+          "code": "});",
+          "label": "compileVueLikeFile:span-end"
+        },
+        {
+          "offset": 1694857,
+          "code": "return await __weappConformanceObserver.span(\"compileTransformEntryResult\",{source:options.transformedSource,filename:options.filename},async()=>{",
+          "label": "compileTransformEntryResult:span-start"
+        },
+        {
+          "offset": 1695214,
+          "code": "});",
+          "label": "compileTransformEntryResult:span-end"
+        },
+        {
+          "offset": 1686054,
+          "code": "return await __weappConformanceObserver.span(\"resolveTransformAutoRoutesSource\",{source:options.source},async()=>{",
+          "label": "resolveTransformAutoRoutesSource:span-start"
+        },
+        {
+          "offset": 1686929,
+          "code": "});",
+          "label": "resolveTransformAutoRoutesSource:span-end"
+        },
+        {
+          "offset": 1686527,
+          "code": ";__weappConformanceObserver.record(\"signature\",{source,routesRef,inlineRoutes,signature});",
+          "label": "resolveTransformAutoRoutesSource:after-signature"
+        },
+        {
+          "offset": 1686149,
+          "code": "__weappConformanceObserver.value(\"auto-routes-unmodified\",(",
+          "label": "resolveTransformAutoRoutesSource:auto-routes-unmodified-start"
+        },
+        {
+          "offset": 1686183,
+          "code": "),[\"source\",\"signature\"])",
+          "label": "resolveTransformAutoRoutesSource:auto-routes-unmodified-end"
+        },
+        {
+          "offset": 1686569,
+          "code": "__weappConformanceObserver.value(\"auto-routes-result\",(",
+          "label": "resolveTransformAutoRoutesSource:auto-routes-result-start"
+        },
+        {
+          "offset": 1686927,
+          "code": "),[\"source\",\"signature\"])",
+          "label": "resolveTransformAutoRoutesSource:auto-routes-result-end"
+        },
+        {
+          "offset": 0,
+          "code": "import { observer as __weappConformanceObserver } from \"weapp-container:conformance-observer-v1\";\n",
+          "label": "observer-import"
+        },
+        {
+          "offset": 600795,
+          "code": "return await __weappConformanceObserver.span(\"npm-service-build\",{cwd:ctx.configService?.cwd,platform:ctx.configService?.platform},async()=>{",
+          "label": "npm-service-build:span-start"
+        },
+        {
+          "offset": 604390,
+          "code": "});",
+          "label": "npm-service-build:span-end"
+        },
+        {
+          "offset": 584476,
+          "code": "return await __weappConformanceObserver.span(\"npm-package-build\",{dep,outDir,packageRoot:packageInfo.rootPath,packageJson:packageInfo.packageJson,isDependenciesCacheOutdate},async()=>{",
+          "label": "npm-package-build:span-start"
+        },
+        {
+          "offset": 588259,
+          "code": "});",
+          "label": "npm-package-build:span-end"
+        },
+        {
+          "offset": 602405,
+          "code": ";__weappConformanceObserver.record(\"npm-service-plan\",{cwd:configService.cwd,platform:configService.platform,packageJsonPath,resolveFrom,npmDistDirName,outDir,cachedSourceOutDir,sourceOutDir,allDependencies,mainDependencies,localSubPackageRoots:localSubPackageMetas.map(meta=>meta.subPackage.root),packageFiles:configService.weappViteConfig?.npm?.packageFiles??null,hasBuildOptions:typeof configService.weappViteConfig?.npm?.buildOptions===\"function\"});",
+          "label": "npm-service-plan"
+        },
+        {
+          "offset": 586069,
+          "code": ";__weappConformanceObserver.record(\"npm-package-output\",{mode:\"copy-normalize\",name:dep,packageRoot:rootPath,sourceDir,outDir:destOutDir,cacheRoot:outDir,packageJson:targetJson,platform:ctx.configService.platform,packageFiles:ctx.configService.weappViteConfig?.npm?.packageFiles?.[dep]??null});",
+          "label": "npm-package-copy-output"
+        },
+        {
+          "offset": 587959,
+          "code": ";__weappConformanceObserver.record(\"npm-package-output\",{mode:\"bundle\",name:dep,packageRoot:rootPath,entry:index,outDir:destOutDir,cacheRoot:outDir,packageJson:targetJson,platform:ctx.configService.platform,build:{root:resolvedTarget.options?.root,configFile:resolvedTarget.options?.configFile,publicDir:resolvedTarget.options?.publicDir,define:resolvedTarget.options?.define,lib:resolvedTarget.options?.build?.lib&&{entry:resolvedTarget.options.build.lib.entry,formats:resolvedTarget.options.build.lib.formats},sourcemap:resolvedTarget.options?.build?.sourcemap,minify:resolvedTarget.options?.build?.minify,target:resolvedTarget.options?.build?.target}});",
+          "label": "npm-package-bundle-output"
+        },
+        {
+          "offset": 603932,
+          "code": "__weappConformanceObserver.record(\"npm-subpackage-plan\",{cwd:configService.cwd,sourceOutDir,targetDir,root:meta.subPackage.root,dependencies:subPackageDependencies});",
+          "label": "npm-subpackage-plan"
+        },
+        {
+          "offset": 604279,
+          "code": ";__weappConformanceObserver.record(\"npm-subpackage-output\",{cwd:configService.cwd,sourceOutDir,targetDir,root:meta.subPackage.root,dependencies:subPackageDependencies});",
+          "label": "npm-subpackage-output"
+        }
+      ]
+    },
+    {
+      "path": "packages/weapp-vite/dist/file-BgWUnoVc.mjs",
+      "target": "vue-config",
+      "originalSha256": "8e8441c87b9590a606ccb591546ff72562ba480aaee75e9baca491eb09bd34e3",
+      "originalBytes": 12949,
+      "patchedSha256": "9a20ff5855e73c73fd06cc9d4ec0e2849398200ceca1cde3a0fa9ff783dda805",
+      "patchedBytes": 14409,
+      "insertions": [
+        {
+          "offset": 8863,
+          "code": "return await __weappConformanceObserver.span(\"extractConfigFromVue\",{vueFilePath,source:options?.source,sourceProvider:options?.readSource?'readSource':options?.source!==undefined?'source':'filesystem'},async()=>{",
+          "label": "extractConfigFromVue:span-start"
+        },
+        {
+          "offset": 12467,
+          "code": "});",
+          "label": "extractConfigFromVue:span-end"
+        },
+        {
+          "offset": 9609,
+          "code": ";__weappConformanceObserver.record(\"content\",{filename:vueFilePath,source:content});",
+          "label": "extractConfigFromVue:after-content"
+        },
+        {
+          "offset": 10393,
+          "code": ";__weappConformanceObserver.record(\"setupContent\",{filename:vueFilePath,source:content,scriptSetup:descriptor.scriptSetup&&{content:descriptor.scriptSetup.content,lang:descriptor.scriptSetup.lang,src:descriptor.scriptSetup.src,loc:descriptor.scriptSetup.loc},script:descriptor.script&&{content:descriptor.script.content,lang:descriptor.script.lang,src:descriptor.script.src,loc:descriptor.script.loc}});",
+          "label": "extractConfigFromVue:after-setupContent"
+        },
+        {
+          "offset": 10992,
+          "code": ";__weappConformanceObserver.record(\"macroEvalPreamble\",{filename:vueFilePath,setupContent,preambleContent,autoRoutesInline,macroEvalPreamble});",
+          "label": "extractConfigFromVue:after-macroEvalPreamble"
+        },
+        {
+          "offset": 3358,
+          "code": "return await __weappConformanceObserver.span(\"resolveAutoRoutesInlineSnapshot\",{},async()=>{",
+          "label": "resolveAutoRoutesInlineSnapshot:span-start"
+        },
+        {
+          "offset": 3955,
+          "code": "});",
+          "label": "resolveAutoRoutesInlineSnapshot:span-end"
+        },
+        {
+          "offset": 3740,
+          "code": "__weappConformanceObserver.value(\"inline-routes-snapshot\",(",
+          "label": "inline-routes-snapshot:start"
+        },
+        {
+          "offset": 3874,
+          "code": "),[\"pages\",\"entries\",\"subPackages\"])",
+          "label": "inline-routes-snapshot:end"
+        },
+        {
+          "offset": 3896,
+          "code": "__weappConformanceObserver.value(\"inline-routes-snapshot\",(",
+          "label": "inline-routes-snapshot:start"
+        },
+        {
+          "offset": 3950,
+          "code": "),[\"pages\",\"entries\",\"subPackages\"])",
+          "label": "inline-routes-snapshot:end"
+        },
+        {
+          "offset": 4013,
+          "code": "return __weappConformanceObserver.spanSync(\"inlineAutoRoutesImports\",{source,inlineRoutes},()=>{",
+          "label": "inlineAutoRoutesImports:span-start"
+        },
+        {
+          "offset": 4521,
+          "code": "});",
+          "label": "inlineAutoRoutesImports:span-end"
+        },
+        {
+          "offset": 4061,
+          "code": "__weappConformanceObserver.value(\"inline-routes-unmodified\",(",
+          "label": "inlineAutoRoutesImports:inline-routes-unmodified-start"
+        },
+        {
+          "offset": 4067,
+          "code": "),null)",
+          "label": "inlineAutoRoutesImports:inline-routes-unmodified-end"
+        },
+        {
+          "offset": 4110,
+          "code": "__weappConformanceObserver.value(\"inline-routes-result\",(",
+          "label": "inlineAutoRoutesImports:inline-routes-result-start"
+        },
+        {
+          "offset": 4519,
+          "code": "),null)",
+          "label": "inlineAutoRoutesImports:inline-routes-result-end"
+        },
+        {
+          "offset": 0,
+          "code": "import { observer as __weappConformanceObserver } from \"weapp-container:conformance-observer-v1\";\n",
+          "label": "observer-import"
+        }
+      ]
+    },
+    {
+      "path": "packages-runtime/wevu-compiler/dist/index.mjs",
+      "target": "wevu-compiler",
+      "originalSha256": "1e0ef7079f7716e25ddf1f6721f5556071996732b50842b9377183e74b403be9",
+      "originalBytes": 653304,
+      "patchedSha256": "a14208fcc8541f14ec2268380a5bd3f3eeccfdde67dd9d283b57e28f06a1ff72",
+      "patchedBytes": 654632,
+      "insertions": [
+        {
+          "offset": 604421,
+          "code": "return await __weappConformanceObserver.span(\"parseVueFile\",{source,filename,optionKeys:Object.keys(options??{})},async()=>{",
+          "label": "parseVueFile:span-start"
+        },
+        {
+          "offset": 612308,
+          "code": "});",
+          "label": "parseVueFile:span-end"
+        },
+        {
+          "offset": 307997,
+          "code": "return await __weappConformanceObserver.span(\"evaluateScriptSetupJsonMacro\",{preambleContent:params.preambleContent,originalContent:params.originalContent,filename:params.filename,lang:params.lang,macroName:params.macroName},async()=>{",
+          "label": "evaluateScriptSetupJsonMacro:span-start"
+        },
+        {
+          "offset": 311225,
+          "code": "});",
+          "label": "evaluateScriptSetupJsonMacro:span-end"
+        },
+        {
+          "offset": 607682,
+          "code": ";__weappConformanceObserver.record(\"scriptSetup\",{filename,source,normalizedSource,parserSource,scriptSetup:scriptSetup&&{content:scriptSetup.content,lang:scriptSetup.lang,src:scriptSetup.src,loc:scriptSetup.loc},script:resolvedDescriptor.script&&{content:resolvedDescriptor.script.content,lang:resolvedDescriptor.script.lang,src:resolvedDescriptor.script.src,loc:resolvedDescriptor.script.loc},preambleContent:resolvedDescriptor.script?.content,sfcSrcDeps,scriptResolvedId,scriptSetupResolvedId});",
+          "label": "parseVueFile:after-scriptSetup"
+        },
+        {
+          "offset": 310165,
+          "code": ";__weappConformanceObserver.record(\"evalSource\",{filename,lang,macroName,preambleContent,originalContent,combinedContent,evalSource,tempDir,keptRanges:[...keptStatementPaths].map(p=>[p.node.start,p.node.end]),macroRanges:macroStatements.map(p=>[p.node.start,p.node.end])});",
+          "label": "evaluateScriptSetupJsonMacro:after-evalSource"
+        },
+        {
+          "offset": 310416,
+          "code": ";__weappConformanceObserver.record(\"after:writeFile(tempFile\",{filename,tempFile,evalSource});",
+          "label": "evaluateScriptSetupJsonMacro:after-writeFile(tempFile"
+        },
+        {
+          "offset": 0,
+          "code": "import { observer as __weappConformanceObserver } from \"weapp-container:conformance-observer-v1\";\n",
+          "label": "observer-import"
+        }
+      ]
+    },
+    {
+      "path": "packages/rolldown-require/dist/index.mjs",
+      "target": "rolldown-require",
+      "originalSha256": "96739bdecf2ae18832d726bd144f1d54a1a1ae0bd6286ef89287f0288f0252e6",
+      "originalBytes": 31314,
+      "patchedSha256": "f005c4edfd0747ba0718273f7b97fa1a19fb578767b81ff9008cacfbadeb4f0d",
+      "patchedBytes": 35393,
+      "insertions": [
+        {
+          "offset": 30120,
+          "code": "return await __weappConformanceObserver.span(\"bundleRequire\",{options:Object.fromEntries(Object.entries(options??{}).map(([key,value])=>[key,typeof value==='function'?{unsupportedFunction:true}:value]))},async()=>{",
+          "label": "bundleRequire:span-start"
+        },
+        {
+          "offset": 30974,
+          "code": "});",
+          "label": "bundleRequire:span-end"
+        },
+        {
+          "offset": 30262,
+          "code": ";__weappConformanceObserver.record(\"internalOptions\",{resolvedPath,internalOptions:Object.fromEntries(Object.entries(internalOptions??{}).map(([key,value])=>[key,typeof value==='function'?{unsupportedFunction:true}:value]))});",
+          "label": "bundleRequire:after-internalOptions"
+        },
+        {
+          "offset": 30335,
+          "code": ";__weappConformanceObserver.record(\"cacheConfig\",{cacheConfig});",
+          "label": "bundleRequire:after-cacheConfig"
+        },
+        {
+          "offset": 14518,
+          "code": "return await __weappConformanceObserver.span(\"bundleFile\",{fileName,options:Object.fromEntries(Object.entries(options??{}).map(([key,value])=>[key,typeof value==='function'?{unsupportedFunction:true}:value]))},async()=>{",
+          "label": "bundleFile:span-start"
+        },
+        {
+          "offset": 17534,
+          "code": "});",
+          "label": "bundleFile:span-end"
+        },
+        {
+          "offset": 17194,
+          "code": ";__weappConformanceObserver.record(\"entryChunk\",{fileName,output:result.output.map(c=>c.type==='chunk'?{type:c.type,fileName:c.fileName,isEntry:c.isEntry,code:c.code,moduleIds:c.moduleIds,imports:c.imports,dynamicImports:c.dynamicImports}:{type:c.type,fileName:c.fileName})});",
+          "label": "bundleFile:after-entryChunk"
+        },
+        {
+          "offset": 18395,
+          "code": "const __weappConformanceBundleContext=__weappConformanceObserver.context();",
+          "label": "file-scope-factory:capture-context"
+        },
+        {
+          "offset": 18521,
+          "code": ";__weappConformanceObserver.recordAt(__weappConformanceBundleContext,\"actual-bundler-input\",{id,code});",
+          "label": "file-scope-handler:actual-input"
+        },
+        {
+          "offset": 18533,
+          "code": "__weappConformanceObserver.valueAt(__weappConformanceBundleContext,\"file-scope-result\",(",
+          "label": "createFileScopeVariablesPlugin:file-scope-result-start"
+        },
+        {
+          "offset": 18762,
+          "code": "),[\"code\",\"map\"],{id})",
+          "label": "createFileScopeVariablesPlugin:file-scope-result-end"
+        },
+        {
+          "offset": 24893,
+          "code": "return await __weappConformanceObserver.span(\"resolveTempOutputFile\",{sourceFile,code,options:Object.fromEntries(Object.entries(options??{}).map(([key,value])=>[key,typeof value==='function'?{unsupportedFunction:true}:value]))},async()=>{",
+          "label": "resolveTempOutputFile:span-start"
+        },
+        {
+          "offset": 26141,
+          "code": "});",
+          "label": "resolveTempOutputFile:span-end"
+        },
+        {
+          "offset": 25610,
+          "code": ";__weappConformanceObserver.record(\"before:fsp.writeFile(target\",{sourceFile,target,code});",
+          "label": "resolveTempOutputFile:before-fsp.writeFile(target"
+        },
+        {
+          "offset": 25644,
+          "code": ";__weappConformanceObserver.record(\"after:fsp.writeFile(target\",{sourceFile,target,code});",
+          "label": "resolveTempOutputFile:after-fsp.writeFile(target"
+        },
+        {
+          "offset": 25765,
+          "code": ";__weappConformanceObserver.record(\"after:fsp.unlink(target\",{sourceFile,target});",
+          "label": "resolveTempOutputFile:after-fsp.unlink(target"
+        },
+        {
+          "offset": 26363,
+          "code": "return await __weappConformanceObserver.span(\"loadFromBundledFile\",{fileName,bundledCode,options:Object.fromEntries(Object.entries(options??{}).map(([key,value])=>[key,typeof value==='function'?{unsupportedFunction:true}:value])),dependencies},async()=>{",
+          "label": "loadFromBundledFile:span-start"
+        },
+        {
+          "offset": 28651,
+          "code": "});",
+          "label": "loadFromBundledFile:span-end"
+        },
+        {
+          "offset": 26424,
+          "code": ";__weappConformanceObserver.record(\"cacheConfig\",{fileName,cacheConfig});",
+          "label": "loadFromBundledFile:after-cacheConfig"
+        },
+        {
+          "offset": 27104,
+          "code": ";__weappConformanceObserver.record(\"req\",{fileName,outfile,format:options.format,defaultRequire:req===dynamicImport,bundledCode,dependencies});",
+          "label": "loadFromBundledFile:after-req"
+        },
+        {
+          "offset": 27169,
+          "code": ";__weappConformanceObserver.record(\"after:mod = await req(outfile\",{fileName,outfile,format:options.format});",
+          "label": "loadFromBundledFile:after-mod = await req(outfile"
+        },
+        {
+          "offset": 0,
+          "code": "import { observer as __weappConformanceObserver } from \"weapp-container:conformance-observer-v1\";\n",
+          "label": "observer-import"
+        },
+        {
+          "offset": 28955,
+          "code": "return __weappConformanceObserver.spanSync(\"detectModuleType\",{resolvedPath},()=>{",
+          "label": "detectModuleType:span-start"
+        },
+        {
+          "offset": 29037,
+          "code": "});",
+          "label": "detectModuleType:span-end"
+        },
+        {
+          "offset": 28964,
+          "code": "((isESM)=>{__weappConformanceObserver.record(\"module-type-result\",{resolvedPath,isESM,deno:typeof process.versions.deno === \"string\"});return isESM;})(",
+          "label": "detectModuleType:result-start"
+        },
+        {
+          "offset": 29036,
+          "code": ")",
+          "label": "detectModuleType:result-end"
+        },
+        {
+          "offset": 2225,
+          "code": "((regular)=>{if(__weappConformanceObserver.context()?.kind===\"detectModuleType\")__weappConformanceObserver.record(\"module-type-stat\",{pkgPath,regular});return regular;})(",
+          "label": "findNearestPackageData:stat-start"
+        },
+        {
+          "offset": 2255,
+          "code": ")",
+          "label": "findNearestPackageData:stat-end"
+        },
+        {
+          "offset": 2660,
+          "code": "if(__weappConformanceObserver.context()?.kind===\"detectModuleType\")__weappConformanceObserver.record(\"module-type-package\",{pkgPath,data});",
+          "label": "loadPackageData:parsed-package"
+        },
+        {
+          "offset": 27805,
+          "code": "return __weappConformanceObserver.spanSync(\"cjs-compile-loader\",{fileName,realFileName,filename,bundledCode,extension,selected:filename===realFileName},()=>{",
+          "label": "cjs-compile-loader:span-start"
+        },
+        {
+          "offset": 27921,
+          "code": "});",
+          "label": "cjs-compile-loader:span-end"
+        },
+        {
+          "offset": 27949,
+          "code": "__weappConformanceObserver.record(\"cjs-extension-before\",{fileName,realFileName,extension,originalLoaderType:typeof originalLoader,fallbackLoaderType:typeof fallbackLoader});",
+          "label": "cjs-extension:before-install"
+        },
+        {
+          "offset": 27996,
+          "code": "__weappConformanceObserver.record(\"cjs-extension-installed\",{fileName,realFileName,extension,installed:_require.extensions[extension]===compileLoader});",
+          "label": "cjs-extension:after-install"
+        },
+        {
+          "offset": 28050,
+          "code": "__weappConformanceObserver.record(\"cjs-cache-cleared\",{fileName,realFileName,cacheAbsent:_require.cache[realFileName]===undefined});",
+          "label": "cjs-require:cache-cleared"
+        },
+        {
+          "offset": 28054,
+          "code": "__weappConformanceObserver.record(\"cjs-require-before\",{fileName,realFileName,extension,defaultRequire:true,bundledCode,dependencies});",
+          "label": "cjs-require:before"
+        },
+        {
+          "offset": 28079,
+          "code": "__weappConformanceObserver.record(\"cjs-require-after\",{fileName,realFileName,extension});",
+          "label": "cjs-require:after"
+        },
+        {
+          "offset": 28258,
+          "code": "__weappConformanceObserver.record(\"cjs-extension-restored\",{fileName,realFileName,extension,restored:originalLoader?_require.extensions[extension]===originalLoader:!Object.hasOwn(_require.extensions,extension)});",
+          "label": "cjs-extension:restored"
+        }
+      ]
+    }
+  ]
+}

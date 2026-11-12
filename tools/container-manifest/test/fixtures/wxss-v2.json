@@ -1,0 +1,204 @@
+[
+  {
+    "name": "ordered imports retain source positions",
+    "source": "@import './base.wxss'; .card { color: red; } @import './late.wxss';",
+    "ir": {
+      "version": 2,
+      "imports": [],
+      "rules": [
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [],
+          "atRule": "@import './base.wxss'"
+        },
+        {
+          "selectors": [
+            ".card"
+          ],
+          "declarations": [
+            {
+              "property": "color",
+              "value": "red",
+              "important": false
+            }
+          ],
+          "nested": []
+        },
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [],
+          "atRule": "@import './late.wxss'"
+        }
+      ]
+    }
+  },
+  {
+    "name": "nested conditions and import sites remain nested",
+    "source": "@media (min-width: 200px) { @import './nested.wxss'; .card { color: blue; } @supports (display: flex) { .item { display: flex; } } }",
+    "ir": {
+      "version": 2,
+      "imports": [],
+      "rules": [
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [
+            {
+              "selectors": [],
+              "declarations": [],
+              "nested": [],
+              "atRule": "@import './nested.wxss'"
+            },
+            {
+              "selectors": [
+                ".card"
+              ],
+              "declarations": [
+                {
+                  "property": "color",
+                  "value": "blue",
+                  "important": false
+                }
+              ],
+              "nested": []
+            },
+            {
+              "selectors": [],
+              "declarations": [],
+              "nested": [
+                {
+                  "selectors": [
+                    ".item"
+                  ],
+                  "declarations": [
+                    {
+                      "property": "display",
+                      "value": "flex",
+                      "important": false
+                    }
+                  ],
+                  "nested": []
+                }
+              ],
+              "atRule": "@supports (display: flex)"
+            }
+          ],
+          "atRule": "@media (min-width: 200px)"
+        }
+      ]
+    }
+  },
+  {
+    "name": "import-only conditional is a rule list",
+    "source": "@media print { @import './print.wxss'; }",
+    "ir": {
+      "version": 2,
+      "imports": [],
+      "rules": [
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [
+            {
+              "selectors": [],
+              "declarations": [],
+              "nested": [],
+              "atRule": "@import './print.wxss'"
+            }
+          ],
+          "atRule": "@media print"
+        }
+      ]
+    }
+  },
+  {
+    "name": "font declarations and animation selectors stay separated",
+    "source": "@font-face { font-family: Fixture; src: url('./fixture.woff2'); } @keyframes pulse { from { opacity: 0; } to { opacity: 1; } }",
+    "ir": {
+      "version": 2,
+      "imports": [],
+      "rules": [
+        {
+          "selectors": [],
+          "declarations": [
+            {
+              "property": "font-family",
+              "value": "Fixture",
+              "important": false
+            },
+            {
+              "property": "src",
+              "value": "url('./fixture.woff2')",
+              "important": false
+            }
+          ],
+          "nested": [],
+          "atRule": "@font-face"
+        },
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [
+            {
+              "selectors": [
+                "from"
+              ],
+              "declarations": [
+                {
+                  "property": "opacity",
+                  "value": "0",
+                  "important": false
+                }
+              ],
+              "nested": []
+            },
+            {
+              "selectors": [
+                "to"
+              ],
+              "declarations": [
+                {
+                  "property": "opacity",
+                  "value": "1",
+                  "important": false
+                }
+              ],
+              "nested": []
+            }
+          ],
+          "atRule": "@keyframes pulse"
+        }
+      ]
+    }
+  },
+  {
+    "name": "keyword boundaries and standalone at-rules are lossless",
+    "source": "@IMPORT url('./a.wxss') screen; @imported 'metadata'; @charset \"UTF-8\";",
+    "ir": {
+      "version": 2,
+      "imports": [],
+      "rules": [
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [],
+          "atRule": "@IMPORT url('./a.wxss') screen"
+        },
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [],
+          "atRule": "@imported 'metadata'"
+        },
+        {
+          "selectors": [],
+          "declarations": [],
+          "nested": [],
+          "atRule": "@charset \"UTF-8\""
+        }
+      ]
+    }
+  }
+]

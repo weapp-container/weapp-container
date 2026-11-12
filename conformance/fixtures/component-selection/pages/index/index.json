@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "probe-parent": "/components/parent/index",
+    "probe-leaf": "/components/leaf/index",
+    "probe-exporter": "/components/exporter/index",
+    "probe-nested-exporter": "/components/nested-exporter/index",
+    "probe-plain-exporter": "/components/plain-exporter/index"
+  }
+}

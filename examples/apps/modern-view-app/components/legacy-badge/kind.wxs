@@ -1,0 +1,4 @@
+function kind(value) {
+  return value.constructor;
+}
+module.exports = { kind: kind };

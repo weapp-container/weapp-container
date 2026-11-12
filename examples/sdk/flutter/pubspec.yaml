@@ -1,0 +1,23 @@
+name: weapp_sdk_consumer
+publish_to: none
+description: Independent installed Weapp Container Flutter SDK acceptance consumer.
+version: 0.1.0+1
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  path_provider: ^2.1.5
+  weapp_container:
+    path: ../../../sdk/flutter/weapp_container
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/fixture-index.json
+    - assets/portable-pack/
+    - assets/portable-pack/blobs/sha256/

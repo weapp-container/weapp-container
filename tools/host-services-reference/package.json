@@ -1,0 +1,12 @@
+{
+  "name": "@weapp-container/host-services-reference",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "start": "node src/cli.mjs",
+    "test": "node --test test/*.test.mjs",
+    "demo": "node scripts/demo.mjs"
+  }
+}

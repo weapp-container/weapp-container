@@ -1,0 +1,13 @@
+{
+  "description": "Weapp Container modern synchronous View example",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "appid": "touristappid",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "postcss": false,
+    "ignoreUploadUnusedFiles": true
+  }
+}

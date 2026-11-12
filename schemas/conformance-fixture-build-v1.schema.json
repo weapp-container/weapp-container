@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-fixture-build-v1.schema.json",
+  "title": "Actual static CLI output to portable fixture provenance v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "profile", "status", "ownerId", "caseId", "sourceSha256", "compilerBuild", "compilerUse", "checkpoint", "recorderSummary", "producer", "packer", "before"],
+  "properties": {
+    "schemaVersion": { "const": 1 }, "kind": { "const": "weapp-container.fixture-build" }, "profile": { "const": "static-cli-v1" },
+    "status": { "enum": ["built", "blocked"] }, "ownerId": { "type": "string", "pattern": "^[0-9a-f-]{36}$" },
+    "caseId": { "type": "string", "minLength": 1 }, "sourceSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "compilerBuild": { "$ref": "#/$defs/artifact" }, "compilerUse": { "$ref": "#/$defs/artifact" },
+    "checkpoint": { "$ref": "#/$defs/artifact" }, "recorderSummary": { "$ref": "#/$defs/artifact" }, "producer": { "$ref": "#/$defs/artifact" },
+    "before": { "$ref": "#/$defs/artifact" }, "after": { "$ref": "#/$defs/artifact" }, "fixture": { "$ref": "#/$defs/artifact" },
+    "resources": { "type": "object", "additionalProperties": { "$ref": "#/$defs/artifact" } },
+    "outputFiles": { "type": "array", "items": { "$ref": "#/$defs/file" } },
+    "producerProfile": { "enum": ["github-static-snapshot-v1", "wxml-static-snapshot-v1", "issue1034-static-snapshot-v1", "template-native-static-snapshot-v1"] },
+    "producerInputs": { "type": "array", "oneOf": [{ "minItems": 3, "maxItems": 3 }, { "minItems": 5, "maxItems": 5 }], "items": { "$ref": "#/$defs/module" } },
+    "staticProfileInputs": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "$ref": "#/$defs/module" } },
+    "failure": { "type": "string", "minLength": 1 },
+    "packer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["modules", "preload", "executor", "input", "output", "config", "command", "run", "loads"],
+      "properties": {
+        "modules": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/module" } },
+        "preload": { "$ref": "#/$defs/artifact" }, "config": { "$ref": "#/$defs/artifact" }, "loads": { "$ref": "#/$defs/artifact" },
+        "executor": { "type": "string", "minLength": 1 }, "input": { "type": "string", "minLength": 1 }, "output": { "type": "string", "minLength": 1 },
+        "command": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "run": { "type": "object", "required": ["exitCode", "signal", "pid", "timedOut", "startedAt", "endedAt", "stdout", "stderr"], "properties": { "stdout": { "$ref": "#/$defs/artifact" }, "stderr": { "$ref": "#/$defs/artifact" } } }
+      }
+    }
+  },
+  "$defs": {
+    "artifact": { "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"], "properties": {
+      "path": { "type": "string", "minLength": 1 }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "bytes": { "type": "integer", "minimum": 0 }
+    } },
+    "module": { "type": "object", "additionalProperties": false, "required": ["path", "artifact"], "properties": { "path": { "type": "string", "minLength": 1 }, "artifact": { "$ref": "#/$defs/artifact" } } },
+    "file": { "type": "object", "additionalProperties": false, "required": ["path", "kind", "artifact"], "properties": { "path": { "type": "string", "minLength": 1 }, "kind": { "const": "file" }, "artifact": { "$ref": "#/$defs/artifact" } } }
+  }
+}

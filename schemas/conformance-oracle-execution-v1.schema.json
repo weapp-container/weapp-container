@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-oracle-execution-v1.schema.json",
+  "title": "Weapp Container official case execution receipt v1",
+  "description": "An archived official DevTools runner receipt, not execution attestation. Semantic validation also binds this receipt to pinned upstream bytes, the fixture, normalized trace, observed installation and actual Vitest assertion results.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "status",
+    "provider",
+    "caseId",
+    "sourceSha256",
+    "compilerCommit",
+    "baseline",
+    "sourceUnchanged",
+    "sourceBefore",
+    "sourceAfter",
+    "manifestIntegrity",
+    "traceSha256",
+    "observedDevtoolsVersion",
+    "observedBaseLibraryVersion",
+    "run",
+    "resources",
+    "log",
+    "selection",
+    "suiteReport"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "kind": {
+      "const": "wechat-devtools-case-execution"
+    },
+    "status": {
+      "const": "passed"
+    },
+    "provider": {
+      "const": "wechat-devtools"
+    },
+    "caseId": {
+      "type": "string",
+      "pattern": "^ide-[a-z0-9][a-z0-9-]*$"
+    },
+    "sourceSha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "compilerCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "baseline": {
+      "$ref": "#/$defs/baseline"
+    },
+    "sourceUnchanged": {
+      "const": true
+    },
+    "sourceBefore": {
+      "$ref": "#/$defs/hash"
+    },
+    "sourceAfter": {
+      "$ref": "#/$defs/hash"
+    },
+    "manifestIntegrity": {
+      "$ref": "#/$defs/hash"
+    },
+    "traceSha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "observedDevtoolsVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observedBaseLibraryVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exitCode",
+        "startedAt",
+        "endedAt"
+      ],
+      "properties": {
+        "exitCode": {
+          "const": 0
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "leaseAcquired",
+        "leaseReleased",
+        "ownedResourcesReleased",
+        "borrowedResourcesPreserved"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "leaseAcquired": {
+          "const": true
+        },
+        "leaseReleased": {
+          "const": true
+        },
+        "ownedResourcesReleased": {
+          "const": true
+        },
+        "borrowedResourcesPreserved": {
+          "const": true
+        }
+      }
+    },
+    "log": {
+      "$ref": "#/$defs/artifact"
+    },
+    "selection": {
+      "$ref": "#/$defs/artifact"
+    },
+    "runtimeObservation": {
+      "$ref": "#/$defs/artifact",
+      "description": "Actual Tool and wx SDK observation, bound to the selected installation and execution interval; required by the semantic gate."
+    },
+    "compilerBuild": {
+      "$ref": "#/$defs/artifact",
+      "description": "Archived fresh pinned compiler build and consumed output provenance; required by the active baseline semantic gate. Retained diagnostic dist is insufficient."
+    },
+    "compilerUse": {
+      "$ref": "#/$defs/artifact",
+      "description": "Per-case verified execution checkout, input guards and actual compiler module loads bound to compilerBuild; required by the active baseline semantic gate."
+    },
+    "fixtureBuild": {
+      "$ref": "#/$defs/artifact",
+      "description": "Actual case CLI generation opened by the official runtime and consumed by the reviewed portable packer; required by the active baseline semantic gate."
+    },
+    "suiteReport": {
+      "$ref": "#/$defs/artifact"
+    },
+    "sourcePollJournal": {
+      "$ref": "#/$defs/artifact",
+      "description": "Complete actual raw attempts for source-pinned pure-read poll terminal normalization; required whenever trace contains method.poll."
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "devtoolsVersion",
+        "baseLibraryVersion",
+        "protocolVersion",
+        "manifestVersion"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "devtoolsVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseLibraryVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "protocolVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifestVersion": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

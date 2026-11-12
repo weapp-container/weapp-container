@@ -1,0 +1,31 @@
+{
+  "id": "ide-issue-1034-auto-routes-runtime",
+  "source": "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+  "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+  "kind": "runtime",
+  "platforms": [
+    "weapp"
+  ],
+  "oracles": [
+    "wechat-devtools",
+    "mpcore"
+  ],
+  "status": "passed",
+  "evidence": [
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/02-1034/run.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/02-1034/ide-issue-1034-auto-routes-runtime/attempt.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/02-1034/completion-summary.json",
+    "docs/conformance/evidence/2026-11-07-r5c-result/report.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/02-1034/root-cause.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/02-1034/cleanup-verification.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5d-v1/01-1034/run.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5d-v1/01-1034/ide-issue-1034-auto-routes-runtime/attempt.json",
+    "docs/conformance/evidence/2026-11-07-r5d-result/report.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5d-v1/batch-summary.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5d-v1/control/01-1034/root-cause-evidence.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5d-v1/control/01-1034/final-seal-recheck.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5d-v1/control/01-1034/final-compiler-use-review.json",
+    "artifacts/conformance-triage-2026-11-07/r5d-root-stopped-review-v1/review.json",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-execution.json"
+  ]
+}

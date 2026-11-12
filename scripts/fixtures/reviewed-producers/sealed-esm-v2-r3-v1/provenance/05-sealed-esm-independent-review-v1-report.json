@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-sealed-esm-policy-source-review",
+  "recordedAt": "2026-11-06T22:34:48.567664+00:00",
+  "status": "no-remaining-specific-static-blocker",
+  "owner": "/root/static_recipe_inventory",
+  "rootSourcesModifiedByReviewer": false,
+  "reviewerExecutions": {
+    "compiler": 0,
+    "sdk": 0,
+    "ui": 0,
+    "tests": 0,
+    "existingCompilerOnlyInertLoaderProbe": "separately archived, not repeated here"
+  },
+  "reviewedContract": {
+    "enabledConfig": "Only new sealed macro-observed consumer config contains internal sealed-esm-v1 policy; unknown policy or policy without declared observation fails.",
+    "rawPath": "Only sealed kind:file map entries with output/observed-output origin, canonical real file URL and .mjs suffix are considered. Actual bytes are hash/size guarded before any next loader. Candidate is checked as a regular file before raw return, with module context and empty attributes. Result is actual raw Buffer, module and shortCircuit:true.",
+    "otherPaths": "Sources/dependencies/noncanonical or attributed loads retain original next return/throw behavior. Attribute/format candidate checks are not added to nonpolicy/noncandidate paths. Missing/unsupported policy never relaxes old strict output equality.",
+    "offline": "Config/start policy matches, all enabled-policy built .mjs require marker, marker is validated before classification early branches and requires bound+eligible origin+canonical URL+module context+empty attrs+terminalResult; output/observed-output loaded hash must still equal raw hash.",
+    "diagnostic": "Actual returned source bytes for transformed bound outputs are archived while attestation stays rejected."
+  },
+  "resolvedFindings": [
+    {
+      "id": "policy-marker-early-continue",
+      "initial": "unbound/observation-helper branches continued before marker eligibility validation",
+      "resolution": "Validation moved before classification branches, forced bound classification; built .mjs under enabled policy now requires its marker. Offline forged classification tests cover the former hole."
+    },
+    {
+      "id": "unconditional-context-inspection",
+      "initial": "attrs validation ran for all file loads including legacy/noncandidate paths",
+      "resolution": "policy/origin/suffix/canonical filtering now precedes context attribute inspection."
+    },
+    {
+      "id": "physical-regular-file-proof",
+      "initial": "map kind:file alone was the raw eligibility type proof",
+      "resolution": "candidate lstat regular and nonsymlink proof added before raw return. This is trusted loader-path observation, not a claim of atomic kernel mapping or concurrent replacement protection."
+    }
+  ],
+  "tests": {
+    "parentReported": {
+      "suites": [
+        "compiler-observation",
+        "compiler-use",
+        "fixture-build"
+      ],
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0,
+      "provenance": "root message reports completed exec transcript only; no independent complete archived log exists for this 58-test run",
+      "reviewerReran": false
+    },
+    "reviewedNewActualNodeTests": 5,
+    "newActualNodeTestScope": "synthetic member identities, actual Node hook execution; output and observed-output stay raw while source/dependency transform; absent policy preserves transformed result and archives bytes; aliases/attrs cannot acquire marker; changed member rejected; unknown policy rejected before source execution",
+    "reviewedOfflineTamperScope": "unsupported/undeclared config, startup mismatch and forged policy markers across bound/unbound/observation-helper/runner classifications",
+    "fullSuite": "root launched a separate broader suite with log artifacts/conformance-triage-2026-11-07/sealed-esm-integrated-v1/evidence-test.log; pending at this static freeze, no result asserted",
+    "integrationBoundary": "Hook-layer positive behavior is executed by actual Node synthetic tests. A full valid enabled-policy official macro receipt roundtrip is not claimed here; root plans a new fresh1058 attempt."
+  },
+  "limits": [
+    "Target direct static CLI macro admission retains the existing complete terminal hook chain and strict macro source/input/result rules.",
+    "No-macro bridge/worker profile is intentionally limited to existing startup/isolation and trusted recorder per-load actual terminal bytes. This review does not claim its complete macro terminal chain.",
+    "No generalized output hash allowance or tsx transform profile was introduced.",
+    "No historical run was rewritten or promoted. Original formal assertions, fixture production, SDK project identity, packer and native differential gates remain separate."
+  ],
+  "diagnosticInputs": [
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/automator-tsx-loader-diagnostic-v1/report.json",
+      "sha256": "3b20a9811a974931d19f89c759890a91ca6cf01a8ed8f8e3c122269d5b465f4d"
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/tsx-automator-static-audit-v1/report.json",
+      "sha256": "67a3139e1113240f45dcdef03020240882fecbb5fea96a2a0c3b3288e6cbcc23"
+    }
+  ],
+  "reviewedSources": [
+    {
+      "path": "scripts/conformance-compiler-use-preload.cjs",
+      "sha256": "39a058635baba1abaee42b404e0aaa004aefb038a071b82da26f739b0d55ec50",
+      "bytes": 16705,
+      "frozenCopy": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-use-preload.cjs",
+      "anchors": [
+        {
+          "line": 17,
+          "text": "if (config.outputLoadPolicy !== undefined && (config.outputLoadPolicy !== 'sealed-esm-v1' || !config.macroObservation))"
+        },
+        {
+          "line": 47,
+          "text": "const expected = new Map(JSON.parse(guardBytes).members.filter(item => item.kind === 'file').map(item => [item.path, item]))"
+        },
+        {
+          "line": 58,
+          "text": "  outputLoadPolicy: config.outputLoadPolicy,"
+        },
+        {
+          "line": 89,
+          "text": "    return result"
+        },
+        {
+          "line": 109,
+          "text": "      return result"
+        },
+        {
+          "line": 119,
+          "text": "    if ((item || runner || observer) && (hash(bytes) !== (item ?? runner ?? observer).sha256 || bytes.length !== (item ?? runner ?? observer).bytes)) {"
+        },
+        {
+          "line": 128,
+          "text": "    let rawOutput = false"
+        },
+        {
+          "line": 129,
+          "text": "    if (config.outputLoadPolicy === 'sealed-esm-v1' && ['output', 'observed-output'].includes(item?.origin)"
+        },
+        {
+          "line": 132,
+          "text": "      if (!info.isFile() || info.isSymbolicLink()) throw new Error('Sealed compiler output is not a regular file')"
+        },
+        {
+          "line": 133,
+          "text": "      const attributes = context.importAttributes"
+        },
+        {
+          "line": 136,
+          "text": "      rawOutput = context.format === 'module' && emptyAttributes"
+        },
+        {
+          "line": 138,
+          "text": "    const result = rawOutput ? { format: 'module', source: bytes, shortCircuit: true } : next(url, context)"
+        },
+        {
+          "line": 165,
+          "text": "      ...(rawOutput ? { outputLoadPolicy: config.outputLoadPolicy, url, contextFormat: context.format, importAttributes: {} } : {}),"
+        },
+        {
+          "line": 167,
+          "text": "        ? { loadedSourceArtifact: archive(source) } : {}),"
+        },
+        {
+          "line": 168,
+          "text": "      ...(config.macroObservation ? { witnessToken: token, terminalResult: shape && generation === activeToken && depth === 0 && registrationDepth === 0 } : {}),"
+        },
+        {
+          "line": 176,
+          "text": "    return result"
+        },
+        {
+          "line": 211,
+          "text": "      return result"
+        },
+        {
+          "line": 225,
+          "text": "      if (file !== input || !stat.isFile() || stat.isSymbolicLink()) throw new Error('Native addon is not an exact canonical regular file')"
+        },
+        {
+          "line": 246,
+          "text": "    return result"
+        },
+        {
+          "line": 257,
+          "text": "          const bytes = stat.isFile() && !stat.isSymbolicLink() ? readFileSync(file) : null"
+        }
+      ]
+    },
+    {
+      "path": "scripts/conformance-compiler-use.mjs",
+      "sha256": "c6ef48c62ca72ce754884ac343a343c8b74272ed60192dcc0fe32642036d2446",
+      "bytes": 38029,
+      "frozenCopy": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-use.mjs",
+      "anchors": [
+        {
+          "line": 11,
+          "text": "const SEALED_ESM_LOAD_POLICY = 'sealed-esm-v1'"
+        },
+        {
+          "line": 120,
+          "text": "      && event.path === path && event.file === file && event.classification === 'bound'"
+        },
+        {
+          "line": 155,
+          "text": "  ensure(events.some(event => event.kind === 'load' && event.path === 'e2e/utils/automator.cli-bridge.ts' && event.classification === 'bound'), fail('bridge source was not loaded'))"
+        },
+        {
+          "line": 301,
+          "text": "      ? { macroObservation: macroObservationConfig, outputLoadPolicy: SEALED_ESM_LOAD_POLICY } : {}) }"
+        },
+        {
+          "line": 447,
+          "text": "    ensure(config.outputLoadPolicy === undefined || config.outputLoadPolicy === SEALED_ESM_LOAD_POLICY && a.macroObservation,"
+        },
+        {
+          "line": 462,
+          "text": "      ensure(events[0].outputLoadPolicy === config.outputLoadPolicy, 'Compiler consumer startup output load policy differs')"
+        },
+        {
+          "line": 475,
+          "text": "        if (config.outputLoadPolicy && ['output', 'observed-output'].includes(member?.origin) && event.path.endsWith('.mjs'))"
+        },
+        {
+          "line": 476,
+          "text": "          ensure(event.outputLoadPolicy === config.outputLoadPolicy, 'Compiler consumer sealed ESM load lacks its actual policy witness')"
+        },
+        {
+          "line": 477,
+          "text": "        if (event.outputLoadPolicy !== undefined) ensure(config.outputLoadPolicy === SEALED_ESM_LOAD_POLICY"
+        },
+        {
+          "line": 478,
+          "text": "          && event.outputLoadPolicy === config.outputLoadPolicy && event.classification === 'bound'"
+        },
+        {
+          "line": 495,
+          "text": "        if (event.classification === 'bound') ensure(member && event.file === join(a.checkout, event.path)"
+        },
+        {
+          "line": 500,
+          "text": "        if (['output', 'observed-output'].includes(member?.origin)) ensure(event.loadedSourceSha256 === event.sha256, `Compiler consumer output was transformed: ${event.path}`)"
+        },
+        {
+          "line": 502,
+          "text": "          ensure(member?.origin === 'output' && event.loadedSourceSha256 === event.sha256, `Compiler consumer entry was transformed or not a fresh output: ${event.path}`)"
+        }
+      ]
+    },
+    {
+      "path": "scripts/conformance-compiler-observation.test.mjs",
+      "sha256": "2600875682a10d220156a5141506d6d5fb848c074f6136fe7fba2767163563cf",
+      "bytes": 20033,
+      "frozenCopy": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-observation.test.mjs",
+      "anchors": [
+        {
+          "line": 108,
+          "text": "test('sealed ESM keeps actual output bytes while later loaders still transform sources and dependencies', async t => {"
+        },
+        {
+          "line": 130,
+          "text": "test('absent sealed ESM policy preserves the loader result and archives mismatched actual output bytes', async t => {"
+        },
+        {
+          "line": 140,
+          "text": "test('query aliases and import attributes cannot acquire a canonical raw ESM policy witness', async t => {"
+        },
+        {
+          "line": 151,
+          "text": "test('a changed sealed output fails before load and cannot fall back to raw policy success', async t => {"
+        },
+        {
+          "line": 161,
+          "text": "test('an unknown sealed ESM policy is rejected by the actual child before loading outputs', async t => {"
+        }
+      ]
+    },
+    {
+      "path": "scripts/conformance-compiler-use.test.mjs",
+      "sha256": "1a3e0e9e173f2743db7a4311aaa4134bff9d8461b528a47d3a65c6efb106ceeb",
+      "bytes": 26356,
+      "frozenCopy": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-use.test.mjs",
+      "anchors": [
+        {
+          "line": 163,
+          "text": "test('offline consumer rejects undeclared or unsupported output policy and forged markers in every load classification', async t => {"
+        },
+        {
+          "line": 168,
+          "text": "  for (const outputLoadPolicy of ['unreviewed', 'sealed-esm-v1']) {"
+        },
+        {
+          "line": 174,
+          "text": "  const startup = structuredClone(events); startup[0].outputLoadPolicy = 'sealed-esm-v1'"
+        },
+        {
+          "line": 177,
+          "text": "  for (const classification of ['bound', 'unbound', 'observation-helper', 'runner']) {"
+        }
+      ]
+    },
+    {
+      "path": "docs/conformance/compiler-build.md",
+      "sha256": "9ffb76af4309dbdb39f4c2027162446b4205a2fa80fcb57636c91fdd1938c6f8",
+      "bytes": 12467,
+      "frozenCopy": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/docs/conformance/compiler-build.md",
+      "anchors": [
+        {
+          "line": 14,
+          "text": "归档包含原始 Git commit、完整 tree 与 blob 对象，读取器重算 Git 对象身份并检查完整树叶。Git 按固定属性对文本执行的 CRLF 转换单独记录并由原始 blob 重算。构建前后检查物理源码内容，因此 `assume-unchanged` 或 `skip-worktree` 不能隐藏修改。"
+        },
+        {
+          "line": 22,
+          "text": "启用宏观察的新消费配置另封存内部 `outputLoadPolicy: \"sealed-esm-v1\"`。对闭包中 `output` / `observed-output` 的精确 `.mjs` 常规文件，最外层 hook 在核验磁盘 hash 后直接返回原始 ESM 字节；要求规范 file URL、module 上下文及空 import attributes。这样 TSX 只转换仍需转换的 helper，不再改写已构建 ESM 的动态 import。配置、实际 startup 与每次成品 load 的 policy witness 必须一致；缺失、未知、伪造或作用于其他来源的标记均拒绝。未声明策略的旧记录仍按原始严格 hash 校验。未被策略接受的成品若实际加载内容发生变化，另归档返回字节供诊断，回执继续失败。"
+        },
+        {
+          "line": 28,
+          "text": "后注册的同步 hook 完成后，记录器重挂最外层观察，并记录连续 generation；目标 direct static CLI 的动态宏执行另要求完整 Terminal chain、封存的原始输入及成功结束。没有动态宏的 bridge / worker 只验证既有 startup 隔离与逐次实际 load 终值，不宣称完整宏执行链。观察 helper 保留原返回值和抛出对象，失败状态不可恢复。CJS addon 通过实际 `process.dlopen` 成功返回后，才记录同一封闭依赖文件的前后身份和 hash。此处是受信工具链的路径观察，不是内核映射证明；accessor 等不支持的 load 结果不保证与未安装 hook 时相同的 getter 调用次数。证据失败保持 blocked，不回填历史执行。"
+        },
+        {
+          "line": 30,
+          "text": "记录器通过 `NODE_OPTIONS --require` 同步安装，在子进程的 `execArgv --require/--import` 前开始观察。额外加载器只接受两种实际上下文：Vitest `5.0.4` 的线程 worker 加载该包的 `suppress-warnings.cjs`，或固定源码的 `e2e/utils/automator.cli-bridge.ts` 以 `--import tsx` 使用安装闭包中的 TSX `4.23.15`。包名、版本、真实入口、argv、cwd、PID/线程、同线程实际 resolve/load 和加载内容 hash 均须匹配；bridge 另保存真实受管项目的配置内容与 hash。Worker 的同步 preload 早于 `argv[1]` 赋值，因此还须在后续实际 worker 入口加载时核对完整 argv。仅有包文件、require cache、相似路径或成功退出均不能替代加载证据；外部包、别名、shadow loader、缺失加载及变换 fresh compiler output 均拒绝。"
+        },
+        {
+          "line": 43,
+          "text": "新增支持文件也保存完整内容身份；额外路径、符号链接、原文件删除或改写均拒绝。checkpoint 与离线读取器使用同一差集验证，不能通过忽略整个 `.weapp-vite` 目录绕过源校验。支持文件属于项目归档，packer 仍只消费实际生成的 miniprogramRoot 闭包。"
+        },
+        {
+          "line": 45,
+          "text": "官方连接后采集的 Tool/wx 观察必须指向同一项目、安装和构建后的时间；checkpoint 检查实际 `project.config.json` 与 `miniprogramRoot`。worker 结束时还须证明目标没有第二次 build、dev/watch 或输入/生成物修改。fixture 正常删除后，可用此前归档闭包与完整 recorder summary 复核。"
+        },
+        {
+          "line": 47,
+          "text": "固定 helper 会清除 companion 的 `NODE_OPTIONS`。启用观察 profile 时，recorder 仅对精确受管 companion 恢复与目标相同的 preload、空 `NODE_PATH` 及配置路径；已有的外部 preload、其他项目或 CLI 参数仍拒绝。companion 不继承目标的 fixture input closure。实时 flush 只检查其归属、产物隔离和清理；编译器消费日志封存后，离线读取器再核对同一 PID 的实际启动 argv、cwd、父进程、环境及 compiler dist 加载。该启动证据不代表 companion 的完整动态宏链通过，目标 static 构建仍须单独完成严格验证。"
+        },
+        {
+          "line": 49,
+          "text": "官方 setup 自带的 HMR companion 单独记录，不计为目标构建。仅允许同一 worker 在受管 checkout 的 `.tmp/e2e-ide-hmr-companion/<精确 case 标签>` 执行 `dev --non-interactive`，其 cwd、项目及输出必须与目标完全分离，依赖链接须绑定编译器消费闭包。记录保留实际 argv、PID、时间、stdout/stderr、输入和输出；companion 必须先正常退出或经 SIGTERM 结束，并在目标构建前观测到项目目录已删除。SIGTERM signal 或处理该信号后返回 143 的退出，都必须绑定当前 worker 对该仍存活子进程的实际成功 `process.kill` / `child.kill` 请求；请求、返回和退出时间须按序且在固定 helper 的 4 秒清理界限内。单独的 143、未知来源信号、失败请求和其他终止信号不能证明正常清理。仍运行、退出异常、删除过晚、未知项目或其他 CLI action 都会阻断。companion 的产物不参与目标 pack，也不作为目标 HMR 通过证据。"
+        },
+        {
+          "line": 51,
+          "text": "运行结束后，独立子进程使用归档的受审 packer 模块及其依赖打包该生成闭包，并记录实际加载、输入 guard 与全部输出。`compilerBuild → compilerUse → fixtureBuild → official execution` 由同一验证器检查；缺少实际 CLI、runtime checkpoint、packer 或完整闭包时，不生成正式通过回执。HMR、重复构建、bridge wrapper 替代项目与未证明的生成代际仍会阻断。"
+        },
+        {
+          "line": 53,
+          "text": "静态作者 recipe 可选 `fixtureProfile: \"captured-static-v1\"`，只声明 case/source 和 collector 闭包。该模式禁止预填 fixture、resources 或 oracle：真实编译产物会包含临时项目路径，不能预先假定跨运行的 JS 字节相同，也不删除注释或改写标识符来消除差异。worker 先完成实际项目/SDK checkpoint，绑定其精确 `{path, sha256, bytes}`，再安装收集器并记录事件；绑定缺失、重复或晚于事件均阻断。parent 验证完整来源链后，要求观测绑定的 checkpoint 与该链逐字段相同，才使用本轮 pack 的原始 manifest 与全部 blob 生成正式 trace。"
+        },
+        {
+          "line": 55,
+          "text": "成功收尾会另写 `execution-recipes.json`：它把作者描述绑定为本轮固定 fixture、资源及 oracle，供全部容器 host/engine 读取同一份字节。未绑定的作者描述不能执行 matrix，记录 `unbound-case-fixture`。原固定 fixture recipe 仍兼容，并继续要求与实际 pack 完整一致；`issue1058-v1.json` 保留原候选，fresh 执行改用 `issue1058-captured-static-v1.json`。"
+        },
+        {
+          "line": 65,
+          "text": "该命令还需要固定版本 DevTools 的登录、服务端口和资源 lease。现有 1058 recipe 与本地验证器测试不代表 172 个官方 case 或 2,408 个容器 pair 已执行；完整覆盖、七端双引擎、GPU、真机和性能仍分别验收。"
+        }
+      ]
+    },
+    {
+      "path": "scripts/conformance-compiler-observation.mjs",
+      "sha256": "b1b2e0db856af9b47a932f9398cd556fc40389ddd8131a19a86875562a5db090",
+      "bytes": 11011,
+      "frozenCopy": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-observation.mjs",
+      "anchors": [
+        {
+          "line": 91,
+          "text": "  if (observation && directCLI) ensure(events.at(-1)?.kind === 'end' && events.at(-1).observerFailed === false"
+        },
+        {
+          "line": 94,
+          "text": "  if (!macro.length && !loads.some(event => event.classification === 'unbound')) return new Set()"
+        },
+        {
+          "line": 117,
+          "text": "  let hookChainClosed = start.hookWitness === 'terminal-rearm-registerHooks-v1'"
+        },
+        {
+          "line": 124,
+          "text": "      hookChainClosed &&= event.api === 'registerHooks' && event.reentrant === false"
+        },
+        {
+          "line": 127,
+          "text": "    } else if (event.kind === 'hook-rearmed' || event.kind === 'hook-ready') hookChainClosed = false"
+        },
+        {
+          "line": 128,
+          "text": "    else if (event.kind === 'load') hookChainClosed &&= event.witnessToken === witnessToken"
+        },
+        {
+          "line": 129,
+          "text": "      && (event.boundary === 'process.dlopen' ? event.nativeFileStable === true && event.format === 'addon' : event.terminalResult === true)"
+        },
+        {
+          "line": 130,
+          "text": "    else if (event.kind === 'resolve' || event.kind === 'builtin-load' || event.kind === 'end') hookChainClosed &&= event.witnessToken === witnessToken"
+        },
+        {
+          "line": 132,
+          "text": "  ensure(hookChainClosed, 'Compiler macro execution has an open hook chain or failed terminal observation')"
+        },
+        {
+          "line": 151,
+          "text": "    transforms: observation.transforms, validatedTransforms: true, hookChainClosed, macroProfile: observation.profile,"
+        }
+      ]
+    }
+  ]
+}

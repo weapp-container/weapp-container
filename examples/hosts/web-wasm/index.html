@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Weapp Container · WebAssembly</title>
+<style>
+:root{font:14px system-ui,sans-serif;color:#182126;background:#eef0f2}body{margin:24px}main{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}#surface-root{background:white;border:1px solid #aab0b5;max-width:100%;overflow:auto}canvas{max-width:100%;height:auto;touch-action:manipulation}section{max-width:640px}h1{font-size:22px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:16px;border:1px solid #c8cdd1;max-height:480px;overflow:auto}button{font:inherit;padding:8px 16px}#error{color:#9d1717}
+</style>
+<main data-worker-product-entry>
+<div id="surface-root" aria-label="小程序画面"></div>
+<section><h1>Weapp Container / WebAssembly</h1>
+<p>小程序 AppService 在独立 Worker 的 QuickJS/WASM 中执行。HTTP 只提供固定产物的静态文件。</p>
+<p>按 manifest 选择 DOM 或 CanvasKit / WebGL2。运行时就绪与画面确认分别记录；不支持的渲染器明确报错。旧同步接入示例位于 <a href="./legacy.html">legacy.html</a>。</p>
+<p id="status" role="status">加载中…</p>
+<button id="dispose" disabled>卸载小程序</button>
+<pre id="summary"></pre><pre id="error" role="alert" hidden></pre>
+</section>
+</main>
+<script type="module" src="./worker-app.mjs"></script>
+</html>

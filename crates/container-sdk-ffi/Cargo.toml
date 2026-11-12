@@ -1,0 +1,33 @@
+[package]
+name = "container-sdk-ffi"
+version = "0.1.0-preview.6.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Versioned C embedding ABI for Weapp Container"
+
+[lib]
+name = "weapp_container_sdk"
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[features]
+default = ["quickjs-native", "skia-backend"]
+restricted-showcase = ["container-sdk/restricted-showcase"]
+quickjs-native = ["container-sdk/quickjs-native"]
+quickjs-native-android = ["quickjs-native", "container-sdk/quickjs-native-android"]
+quickjs-native-ios = ["quickjs-native", "container-sdk/quickjs-native-ios"]
+skia-backend = ["container-sdk/skia-backend"]
+skia-gpu-gles = ["skia-backend", "container-sdk/skia-gpu-gles", "container-render-skia/skia-gpu-gles"]
+skia-gpu-metal = ["skia-backend", "container-sdk/skia-gpu-metal", "container-render-skia/skia-gpu-metal"]
+
+view-batch-diagnostics = ["container-sdk/view-batch-diagnostics"]
+android-view-atrace = ["view-batch-diagnostics", "container-sdk/android-view-atrace"]
+
+[dependencies]
+container-sdk = { path = "../container-sdk", default-features = false }
+container-render-skia = { path = "../container-render-skia", default-features = false }
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile = "3"

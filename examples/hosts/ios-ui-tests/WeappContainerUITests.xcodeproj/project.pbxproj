@@ -1,0 +1,36 @@
+// !$*UTF8*$!
+{
+ archiveVersion = 1;
+ classes = {};
+ objectVersion = 56;
+ objects = {
+  A00000000000000000000001 = {isa = PBXBuildFile; fileRef = A00000000000000000000002; };
+  A00000000000000000000002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeappContainerUITests.swift; sourceTree = "<group>"; };
+  A00000000000000000000003 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeappContainerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+  A00000000000000000000004 = {isa = PBXGroup; children = (A00000000000000000000002, A00000000000000000000005); sourceTree = "<group>"; };
+  A00000000000000000000005 = {isa = PBXGroup; children = (A00000000000000000000003); name = Products; sourceTree = "<group>"; };
+  A00000000000000000000006 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A00000000000000000000001); runOnlyForDeploymentPostprocessing = 0; };
+  A00000000000000000000007 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+  A00000000000000000000008 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+  A00000000000000000000009 = {isa = PBXNativeTarget; buildConfigurationList = A0000000000000000000000A; buildPhases = (A00000000000000000000006, A00000000000000000000007, A00000000000000000000008); buildRules = (); dependencies = (); name = WeappContainerUITests; productName = WeappContainerUITests; productReference = A00000000000000000000003; productType = "com.apple.product-type.bundle.ui-testing"; };
+  A0000000000000000000000A = {isa = XCConfigurationList; buildConfigurations = (A0000000000000000000000B); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+  A0000000000000000000000B = {isa = XCBuildConfiguration; name = Debug; buildSettings = {
+   CODE_SIGN_IDENTITY = "-";
+   CODE_SIGN_STYLE = Automatic;
+   GENERATE_INFOPLIST_FILE = YES;
+   IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+   LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks");
+   PRODUCT_BUNDLE_IDENTIFIER = "$(WEAPP_CONTAINER_UI_TEST_BUNDLE_ID)";
+   PRODUCT_NAME = "$(TARGET_NAME)";
+   SDKROOT = iphonesimulator;
+   SUPPORTED_PLATFORMS = iphonesimulator;
+   SWIFT_EMIT_LOC_STRINGS = NO;
+   SWIFT_VERSION = 5.0;
+   TARGETED_DEVICE_FAMILY = "1,2";
+  }; };
+  A0000000000000000000000C = {isa = XCConfigurationList; buildConfigurations = (A0000000000000000000000D); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+  A0000000000000000000000D = {isa = XCBuildConfiguration; name = Debug; buildSettings = {CLANG_ENABLE_MODULES = YES; ENABLE_TESTING_SEARCH_PATHS = YES; SDKROOT = iphonesimulator; }; };
+  A0000000000000000000000E = {isa = PBXProject; attributes = {LastUpgradeCheck = 1600; }; buildConfigurationList = A0000000000000000000000C; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = A00000000000000000000004; productRefGroup = A00000000000000000000005; projectDirPath = ""; projectRoot = ""; targets = (A00000000000000000000009); };
+ };
+ rootObject = A0000000000000000000000E;
+}

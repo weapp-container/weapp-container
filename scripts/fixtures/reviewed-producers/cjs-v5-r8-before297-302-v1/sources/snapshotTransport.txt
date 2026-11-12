@@ -1,0 +1,342 @@
+import { assertReviewedSnapshotTransport } from './conformance-producer-revisions.mjs'
+/** Exact pinned owned-snapshot transport. Pure comparisons never write output. */
+import { createHash } from 'node:crypto'
+import { isAbsolute, join, posix, resolve, sep, win32 } from 'node:path'
+import { readFileSync } from 'node:fs'
+const MODULE = new URL('./conformance-snapshot-transport.mjs', import.meta.url)
+const hash = bytes => createHash('sha256').update(bytes).digest('hex')
+const ensure = (ok, message) => { if (!ok) throw new Error(message) }
+const object = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+const json = value => Buffer.from(JSON.stringify(value, null, 2) + '\n')
+const same = (left, right) => Buffer.from(left).equals(Buffer.from(right))
+const inside = (root, file) => file === root || file.startsWith(root + sep)
+const safe = path => typeof path === 'string' && path && !isAbsolute(path) && !path.includes('\\') && !path.includes('\0')
+  && path.split('/').every(part => part && part !== '.' && part !== '..')
+function replaceExactly(source, before, after) {
+  ensure(source.split(before).length === 2, `Pinned runner instrumentation anchor is missing or ambiguous: ${before.slice(0, 100)}`)
+  return source.replace(before, after)
+}
+export function snapshotTransportBytes() { return readFileSync(MODULE) }
+export function verifyPhysicalDirectoryIdentity(actual, expected, label) {
+  const valid = value => object(value) && Object.keys(value).sort().join(',') === 'birthtimeNs,device,inode'
+    && Object.values(value).every(item => typeof item === 'string' && /^\d+$/.test(item))
+    && BigInt(value.inode) > 0n && BigInt(value.birthtimeNs) > 0n
+  ensure(valid(actual) && valid(expected) && JSON.stringify(actual) === JSON.stringify(expected),
+    `${label} physical directory identity differs`)
+}
+/** Capture an owner synchronously, observe around its original awaited call,
+ * and preserve that call's result/error even when passive observation fails. */
+export function createObservedOwnedRm({ original, claim, before, after, failure, pending, settled = () => {} }) {
+  return function (...args) {
+    let owner
+    try { owner = claim(args) } catch (error) { failure(error) }
+    if (!owner) return original.apply(this, args)
+    const context = this
+    const operation = (async () => {
+      let captured
+      try { captured = before(owner, args) } catch (error) { failure(error) }
+      let result
+      try { result = await original.apply(context, args) }
+      catch (error) { failure(error); throw error }
+      try { await after(owner, captured, args) } catch (error) { failure(error) }
+      return result
+    })()
+    pending.push(operation.then(() => settled(owner), () => settled(owner)))
+    return operation
+  }
+}
+export function snapshotFileMap(files, load, links = false, label = 'Snapshot producer') {
+  ensure(Array.isArray(files), `${label} closure is missing`)
+  const map = new Map()
+  for (const item of files) {
+    ensure(safe(item.path) && !map.has(item.path), `${label} closure has an unsafe or duplicate member`)
+    ensure(item.kind === 'file' && item.artifact || links && item.kind === 'consumer-link', `${label} closure has a symlink or special member`)
+    if (item.kind === 'file') load(item.artifact)
+    map.set(item.path, item)
+  }
+  return map
+}
+function parsed(map, path, load) {
+  const item = map.get(path)
+  ensure(item?.kind === 'file', `Snapshot required actual file is missing: ${path}`)
+  const value = JSON.parse(load(item.artifact))
+  ensure(object(value), `Snapshot config is not an object: ${path}`)
+  return value
+}
+export function exactSnapshotBytes(files, expected, load, label) {
+  const actual = snapshotFileMap(files, load, false, label)
+  ensure(actual.size === expected.size, `${label} closure added or omitted members`)
+  for (const [path, bytes] of expected) ensure(actual.has(path) && same(load(actual.get(path).artifact), bytes), `${label} bytes differ: ${path}`)
+}
+
+export function instrumentSnapshotAutomator(source, baseLibraryVersion = '3.17.3') {
+  let result = `import { recordConformanceSession, recordConformanceRuntime, recordConformanceSnapshot, recordConformanceSnapshotCleanup } from './conformanceEvidence.mjs'\n${source}`
+  result = replaceExactly(result, "const DEFAULT_LIB_VERSION = '3.13.2'", `const DEFAULT_LIB_VERSION = '${baseLibraryVersion}'`)
+  result = replaceExactly(result, 'onOwnedSnapshot, onSessionMetadata, bridgeProjectMode', 'onOwnedSnapshot, onSessionMetadata: callerSessionMetadata, bridgeProjectMode')
+  result = replaceExactly(result, '  const selectedCliPath = resolveWechatCliPath(rest.cliPath)',
+    `  const onSessionMetadata = async (metadata: any) => {\n    await recordConformanceSession(metadata)\n    await callerSessionMetadata?.(metadata)\n  }\n  const selectedCliPath = resolveWechatCliPath(rest.cliPath)`)
+  result = replaceExactly(result, `            const mergedProjectConfig = projectConfig\n              ? {\n                  libVersion: DEFAULT_LIB_VERSION,\n                  ...projectConfig,\n                }\n              : undefined`,
+    `            const mergedProjectConfig = { ...projectConfig, libVersion: DEFAULT_LIB_VERSION }`)
+  result = replaceExactly(result, '            await lifecycle.step(() => assertSelectedWechatDevtoolsRuntime(selectedTarget, miniProgram))',
+    '            await lifecycle.step(() => assertSelectedWechatDevtoolsRuntime(selectedTarget, miniProgram))\n            await lifecycle.step(() => recordConformanceRuntime(miniProgram, { projectPath: launchProjectPath }))')
+  result = replaceExactly(result, '                  await reconnectScope.step(() => assertSelectedWechatDevtoolsRuntime(selectedTarget, session))',
+    '                  await reconnectScope.step(() => assertSelectedWechatDevtoolsRuntime(selectedTarget, session))\n                  await reconnectScope.step(() => recordConformanceRuntime(session, { projectPath: launchProjectPath }))')
+  // A view-only probe must leave time for text/button roots. Keep the pinned
+  // runner's readiness semantics and total deadline, sharing its current
+  // remaining budget across the selectors that have not been tried yet.
+  result = replaceExactly(result, `        for (const selector of renderedSelectors) {\n          signal?.throwIfAborted()\n          const remaining = Math.max(1, timeoutMs - (Date.now() - start))\n          const probeTimeout = Math.min(ROUTE_READY_PAGE_ROOT_PROBE_TIMEOUT, remaining)`,
+    `        for (const [selectorIndex, selector] of renderedSelectors.entries()) {\n          signal?.throwIfAborted()\n          const remaining = Math.max(1, timeoutMs - (Date.now() - start))\n          const remainingProbes = renderedSelectors.length - selectorIndex + (hasExplicitRootSelectors ? 0 : 1)\n          const probeTimeout = Math.min(ROUTE_READY_PAGE_ROOT_PROBE_TIMEOUT, Math.max(1, Math.floor(remaining / remainingProbes)))`)
+  // A structured fatal log error must not become retryable merely because
+  // its diagnostic text contains "timeout". Pending startup errors retain
+  // upstream's original readiness and connection recovery budget.
+  result = replaceExactly(result, `      if (!isRecoverableBridgeConnectError(error)\n`,
+    `      if (error instanceof DevtoolsSimulatorBootLogError && error.issue.state === 'fatal') throw error\n      if (!isRecoverableBridgeConnectError(error)\n`)
+  result = replaceExactly(result, '              await onOwnedSnapshot?.({ projectPath: bridgeWrapperProject.path, cliPath: rest.cliPath! })',
+    `              await recordConformanceSnapshot({ sourceProjectPath: rest.projectPath, generatedRoot: bridgeWrapperProject.distRoot, projectPath: bridgeWrapperProject.path, runtimeRoot: bridgeWrapperProject.runtimeRoot, cliPath: rest.cliPath! })\n              await onOwnedSnapshot?.({ projectPath: bridgeWrapperProject.path, cliPath: rest.cliPath! })`)
+  // The original awaited rm stays byte-for-byte unchanged. The scoped passive
+  // fs.promises.rm observer captures identity and dispatches that same call
+  // synchronously, with no await between its last identity read and dispatch.
+  return result
+}
+
+export function snapshotConfigBytes({ sourceFiles, load, allowSourceLinks = false, allowMissingPrivateConfig = false }) {
+  const source = snapshotFileMap(sourceFiles, load, allowSourceLinks), project = parsed(source, 'project.config.json', load)
+  const privateConfig = allowMissingPrivateConfig && !source.has('project.private.config.json') ? {} : parsed(source, 'project.private.config.json', load)
+  const root = project.miniprogramRoot
+  ensure(project.compileType === 'miniprogram' && !Object.hasOwn(project, 'pluginRoot') && !Object.hasOwn(privateConfig, 'pluginRoot')
+    && typeof root === 'string' && root && !root.includes('\\') && !root.includes('\0')
+    && !posix.isAbsolute(root) && !win32.isAbsolute(root) && !root.split('/').includes('..')
+    && posix.normalize(root).replace(/\/+$/, '') === 'dist', 'Snapshot plugin or foreign project roots are unsupported')
+  const bridgePrivate = { ...privateConfig, simulatorType: 'wechat', simulatorPluginLibVersion: {} }
+  for (const key of ['miniprogramRoot', 'qcloudRoot', 'srcMiniprogramRoot']) delete bridgePrivate[key]
+  const rest = { ...project }, patch = { ...bridgePrivate }
+  for (const key of ['miniprogramRoot', 'qcloudRoot', 'srcMiniprogramRoot']) { delete rest[key]; delete patch[key] }
+  const setting = { ...(object(project.setting) ? project.setting : {}), ...(object(bridgePrivate.setting) ? bridgePrivate.setting : {}),
+    packNpmManually: false, packNpmRelationList: [] }
+  const config = { compileType: 'miniprogram', ...rest, ...patch, miniprogramRoot: './', srcMiniprogramRoot: './', setting,
+    condition: { ...(object(project.condition) ? project.condition : {}), ...(object(bridgePrivate.condition) ? bridgePrivate.condition : {}) } }
+  return new Map([['project.config.json', json(config)], ['project.private.config.json', json(bridgePrivate)]])
+}
+
+
+export function verifySnapshotTransport({ transaction: t, build, profile, checkout, load, label, allowSourceLinks = false, allowMissingPrivateConfig = false, producerRevision, producerProfile, identity }) {
+  ensure(t.buildPid === build.pid && t.sourceRoot === profile.sourceRoot && t.generatedRoot === profile.generatedRoot
+    && build.projectPath === profile.sourceRoot && build.outputRoot === profile.generatedRoot && build.outputRelative === 'dist'
+    && t.runtimeRoot === t.runtimeProjectPath && isAbsolute(t.runtimeRoot) && resolve(t.runtimeRoot) === t.runtimeRoot && isAbsolute(t.cliPath)
+    && /^[0-9a-f]{16}$/.test(t.runtimeProjectPath.split(sep).at(-1))
+    && resolve(t.runtimeProjectPath, '..') === join(checkout, '.tmp/e2e-ide-bridge-projects')
+    && !inside(t.sourceRoot, t.runtimeProjectPath) && !inside(t.runtimeProjectPath, t.sourceRoot)
+    && JSON.stringify(t.observer) === JSON.stringify(build.observer)
+    && Date.parse(t.capturedAt) >= Date.parse(build.endedAt), `${label} source/generated/owned snapshot roots or interval differ`)
+  verifyPhysicalDirectoryIdentity(t.sourceRootIdentity, build.sourceRootIdentity, `${label} source`)
+  verifyPhysicalDirectoryIdentity(t.runtimeRootIdentity, t.runtimeRootIdentity, `${label} runtime snapshot`)
+  if (producerRevision === undefined) ensure(hash(load(t.transport)) === hash(snapshotTransportBytes()), `${label} snapshot transport implementation differs`)
+  else assertReviewedSnapshotTransport({ reference: t.transport, profile: producerProfile, identity }, producerRevision, load)
+  const generated = snapshotFileMap(t.postHelperGenerated, load)
+  ensure(!generated.has('project.config.json') && !generated.has('project.private.config.json'), `${label} CLI output contains reserved snapshot config paths`)
+  const expected = new Map([...generated].map(([path, item]) => [path, load(item.artifact)]))
+  for (const [path, bytes] of snapshotConfigBytes({ sourceFiles: t.postHelperSource, load, allowSourceLinks, allowMissingPrivateConfig })) expected.set(path, bytes)
+  exactSnapshotBytes(t.snapshotFiles, expected, load, `${label} actual snapshot`)
+  return t.snapshotFiles.filter(item => !['project.config.json', 'project.private.config.json'].includes(item.path))
+}
+export function verifySnapshotCleanupFinal({ final, transactionReference, build, checkpointAt, recordingEndedAt, load, verifyTransaction, profile, prefix, label, members, runtimeConfigurationReference }) {
+  ensure(Array.isArray(final) && final.length, `${label} snapshot final ownership/cleanup proof is missing`)
+  const paths = new Set()
+  let selected = 0
+  for (const item of final) {
+    const transaction = JSON.parse(load(item.transaction)), cleanup = JSON.parse(load(item.cleanup))
+    const before = JSON.parse(load(cleanup.beforeCleanup))
+    verifyTransaction(transaction)
+    let expectedRuntime = transaction.snapshotFiles
+    if (transaction.launchProjectConfig !== undefined) {
+      ensure(item.runtimeConfiguration, `${label} cleanup omitted its launch configuration phase`)
+      const phase = JSON.parse(load(item.runtimeConfiguration))
+      expectedRuntime = verifySnapshotRuntimeConfiguration({ transition: phase, transaction, transactionReference: item.transaction, members, load })
+      ensure(Date.parse(phase.capturedAt) <= Date.parse(before.capturedAt), `${label} cleanup preceded launch configuration observation`)
+      if (item.transaction.sha256 === transactionReference.sha256) ensure(equal(item.runtimeConfiguration, runtimeConfigurationReference)
+        && phase.phase === 'sdk-checkpoint', `${label} cleanup launch phase differs from actual SDK checkpoint`)
+    } else ensure(item.runtimeConfiguration === undefined, `${label} cleanup selected an unrelated launch configuration`)
+    ensure(!paths.has(transaction.runtimeProjectPath), `Duplicate ${label} final snapshot owner`); paths.add(transaction.runtimeProjectPath)
+    const isSelected = item.transaction.sha256 === transactionReference.sha256 && item.transaction.bytes === transactionReference.bytes
+    if (isSelected) selected++
+    ensure(cleanup.kind === `weapp-container.${prefix}-snapshot-cleanup` && cleanup.schemaVersion === 1 && cleanup.profile === profile
+      && JSON.stringify(cleanup.transaction) === JSON.stringify(item.transaction) && cleanup.runtimeProjectPath === transaction.runtimeProjectPath
+      && JSON.stringify(cleanup.observer) === JSON.stringify(build.observer) && cleanup.projectAbsent === true
+      && before.kind === `weapp-container.${prefix}-snapshot-before-cleanup` && before.schemaVersion === 1 && before.profile === profile
+      && JSON.stringify(before.transaction) === JSON.stringify(item.transaction) && before.runtimeProjectPath === transaction.runtimeProjectPath
+      && JSON.stringify(before.observer) === JSON.stringify(build.observer)
+      && JSON.stringify(before.snapshotFiles) === JSON.stringify(expectedRuntime)
+      && Date.parse(before.capturedAt) >= Date.parse(isSelected ? checkpointAt : transaction.capturedAt)
+      && Date.parse(before.capturedAt) <= Date.parse(cleanup.removedAt)
+      && Date.parse(cleanup.removedAt) <= Date.parse(recordingEndedAt), `${label} final snapshot cleanup belongs to another owner or interval`)
+    verifyPhysicalDirectoryIdentity(before.runtimeRootIdentity, transaction.runtimeRootIdentity, `${label} before-cleanup runtime snapshot`)
+    verifyPhysicalDirectoryIdentity(cleanup.runtimeRootIdentity, transaction.runtimeRootIdentity, `${label} cleanup runtime snapshot`)
+    const removal = cleanup.originalRemoval
+    ensure(removal?.status === 'fulfilled' && removal.pathAbsent === true
+      && removal.boundary === 'identity-at-dispatch-original-remove-settlement-path-absence'
+      && Date.parse(removal.dispatchedAt) >= Date.parse(before.capturedAt)
+      && Date.parse(removal.settledAt) >= Date.parse(removal.dispatchedAt)
+      && Date.parse(removal.settledAt) <= Date.parse(cleanup.removedAt), `${label} original snapshot removal boundary is missing`)
+    verifyPhysicalDirectoryIdentity(removal.identityAtDispatch, transaction.runtimeRootIdentity, `${label} original removal dispatch`)
+    snapshotFileMap(before.snapshotFiles, load)
+  }
+  ensure(selected === 1, `${label} final snapshot proof omits the actual SDK project`)
+}
+export function verifySnapshotSourceFinal({ final, transaction, checkpointAt, recordingEndedAt, load, label, allowSourceLinks = false }) {
+  ensure(final && final.sourceRoot === transaction.sourceRoot && final.generatedRoot === transaction.generatedRoot
+    && Date.parse(final.capturedAt) >= Date.parse(checkpointAt) && Date.parse(final.capturedAt) <= Date.parse(recordingEndedAt),
+  `${label} final source/generated closure is missing or outside the owned interval`)
+  verifyPhysicalDirectoryIdentity(final.sourceRootIdentity, transaction.sourceRootIdentity, `${label} final source`)
+  for (const [field, original] of [['sourceFiles', transaction.postHelperSource], ['generatedFiles', transaction.postHelperGenerated]]) {
+    const actual = snapshotFileMap(final[field], load, allowSourceLinks && field === 'sourceFiles', label)
+    const expected = snapshotFileMap(original, load, allowSourceLinks && field === 'sourceFiles', label)
+    ensure(actual.size === expected.size, `${label} final source/generated closure added or omitted members`)
+    for (const [path, item] of expected) {
+      const current = actual.get(path)
+      ensure(current && current.kind === item.kind && (item.kind === 'file' ? same(load(current.artifact), load(item.artifact))
+        : JSON.stringify(current) === JSON.stringify(item)), `${label} final source/generated bytes differ: ${path}`)
+    }
+  }
+}
+
+/** Raw readable candidates are archived before semantic validation. Only an
+ * independently archived successful validation may join the final proof. */
+export function verifySnapshotCandidateLedger({ entries, final, identity, ownerId, runId, observer, build, transactionReference, checkpointAt, recordingEndedAt, load }) {
+  ensure(Array.isArray(entries) && entries.length && entries.length === final?.length, 'Snapshot producer candidate ledger is incomplete')
+  const seen = new Set()
+  for (const entry of entries) {
+    const candidate = JSON.parse(load(entry.candidate)), validation = JSON.parse(load(entry.validation))
+    const transaction = JSON.parse(load(candidate.transaction)), rawBuild = JSON.parse(load(candidate.build))
+    const key = candidate.transaction.sha256 + ':' + candidate.transaction.bytes
+    ensure(!seen.has(key) && final.some(item => JSON.stringify(item.transaction) === JSON.stringify(candidate.transaction)),
+      'Snapshot producer candidate is duplicated or unrelated to the admitted final snapshot'); seen.add(key)
+    ensure(candidate.schemaVersion === 1 && candidate.kind === 'weapp-container.snapshot-producer-candidate' && candidate.complete === true
+      && candidate.ownerId === ownerId && candidate.runId === runId
+      && candidate.caseId === identity.caseId && candidate.caseSourcePath === identity.caseSourcePath && candidate.sourceSha256 === identity.sourceSha256
+      && candidate.profile === transaction.profile && JSON.stringify(candidate.observer) === JSON.stringify(observer)
+      && JSON.stringify(candidate.consumerGuard) === JSON.stringify(identity.consumerGuard)
+      && JSON.stringify(candidate.compilerBuild) === JSON.stringify(identity.compilerBuild)
+      && JSON.stringify(rawBuild) === JSON.stringify(build)
+      && candidate.observation.sourceProjectPath === (transaction.profile === 'template-native-static-snapshot-v1' ? transaction.sourceProjectPath : transaction.sourceRoot) && candidate.observation.generatedRoot === transaction.generatedRoot
+      && candidate.observation.projectPath === transaction.runtimeProjectPath && candidate.observation.runtimeRoot === transaction.runtimeRoot
+      && candidate.observation.cliPath === transaction.cliPath
+      && validation.schemaVersion === 1 && validation.kind === 'weapp-container.snapshot-producer-validation' && validation.status === 'validated'
+      && JSON.stringify(validation.candidate) === JSON.stringify(entry.candidate)
+      && JSON.stringify(validation.transaction) === JSON.stringify(candidate.transaction)
+      && Date.parse(candidate.captureStartedAt) <= Date.parse(transaction.capturedAt)
+      && Date.parse(transaction.capturedAt) <= Date.parse(candidate.captureCompletedAt)
+      && Date.parse(candidate.captureCompletedAt) <= Date.parse(validation.completedAt)
+      && (JSON.stringify(candidate.transaction) !== JSON.stringify(transactionReference) || Date.parse(validation.completedAt) <= Date.parse(checkpointAt))
+      && Date.parse(validation.completedAt) <= Date.parse(recordingEndedAt), 'Snapshot producer candidate is rejected, incomplete, cross-owned or outside its validation interval')
+    load(candidate.consumerGuard); load(candidate.compilerBuild)
+  }
+}
+
+
+// A launch configuration phase is admitted only for the pinned native template
+// helper. This is an exact deterministic rewrite, never a config-file exclusion.
+export const TEMPLATE_LAUNCH_CONFIGURATION = Object.freeze({ setting: Object.freeze({ skylineRenderEnable: false }), libVersion: '3.17.3' })
+export const TEMPLATE_LAUNCH_HELPER = Object.freeze({ path: 'e2e/utils/automator.cli-bridge.ts', sha256: '253897d300cce2982e7572b6fc2858c695ae8ce4d8df70b3edcc032a4f5f0d3a', bytes: 16863 })
+const canonical = value => Array.isArray(value) ? `[${value.map(canonical).join(',')}]` : object(value)
+  ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}` : JSON.stringify(value)
+const equal = (left, right) => canonical(left) === canonical(right)
+const time = value => typeof value === 'string' && Number.isFinite(Date.parse(value))
+export function verifyTemplateLaunchInputs(transaction, members, load) {
+  if (transaction.launchProjectConfig === undefined) {
+    ensure(transaction.launchHelper === undefined && transaction.launchConfigurationOrigin === undefined, 'Snapshot launch helper is detached from a configuration phase')
+    return false
+  }
+  ensure(transaction.profile === 'template-native-static-snapshot-v1'
+    && transaction.launchConfigurationOrigin === 'pinned-template-helper-input-and-forced-sdk'
+    && equal(transaction.launchProjectConfig, TEMPLATE_LAUNCH_CONFIGURATION), 'Snapshot launch configuration is not the exact original template helper input')
+  const helper = transaction.launchHelper, member = members?.find(item => item.path === TEMPLATE_LAUNCH_HELPER.path)
+  ensure(helper?.path === TEMPLATE_LAUNCH_HELPER.path && helper.artifact?.sha256 === TEMPLATE_LAUNCH_HELPER.sha256
+    && helper.artifact.bytes === TEMPLATE_LAUNCH_HELPER.bytes && hash(load(helper.artifact)) === TEMPLATE_LAUNCH_HELPER.sha256
+    && member?.kind === 'file' && member.origin === 'source' && member.sha256 === TEMPLATE_LAUNCH_HELPER.sha256
+    && member.bytes === TEMPLATE_LAUNCH_HELPER.bytes, 'Snapshot launch helper is not the original sealed bridge source')
+  return true
+}
+export function snapshotLaunchConfigurationBytes(transaction, load) {
+  const files = snapshotFileMap(transaction.snapshotFiles, load)
+  const bytes = new Map([...files].map(([path, item]) => [path, Buffer.from(load(item.artifact))]))
+  if (transaction.launchProjectConfig === undefined) return bytes
+  ensure(equal(transaction.launchProjectConfig, TEMPLATE_LAUNCH_CONFIGURATION), 'Snapshot launch configuration differs')
+  const source = bytes.get('project.config.json')?.toString('utf8'), base = JSON.parse(source)
+  ensure(object(base), 'Snapshot launch pre-configuration is not an object')
+  // Exact recursive merge and newline behavior of the pinned exported helper.
+  const merge = (base, patch) => {
+    for (const [key, value] of Object.entries(patch)) base[key] = Array.isArray(value) ? value.slice()
+      : object(value) ? merge(object(base[key]) ? { ...base[key] } : {}, value) : value
+    return base
+  }
+  bytes.set('project.config.json', Buffer.from(JSON.stringify(merge({ ...base }, transaction.launchProjectConfig), null, 2) + (/\r?\n$/.test(source) ? '\n' : '')))
+  return bytes
+}
+export function snapshotClosureDifference(expected, actual) {
+  if (!Array.isArray(expected) || !Array.isArray(actual)) return { added: [], removed: [], changed: [], readable: false }
+  const before = new Map(expected.map(item => [item.path, item])), after = new Map(actual.map(item => [item.path, item]))
+  return { added: actual.filter(item => !before.has(item.path)), removed: expected.filter(item => !after.has(item.path)),
+    changed: expected.filter(item => after.has(item.path) && !equal(item, after.get(item.path))).map(item => ({ path: item.path, before: item, after: after.get(item.path) })), readable: true }
+}
+export function verifySnapshotGenerationGuards({ guards: g, transaction: t, transactionReference, load, allowUnchangedRuntime = false }) {
+  ensure(g?.schemaVersion === 1 && g.kind === 'weapp-container.snapshot-generation-guards'
+    && equal(g.transaction, transactionReference) && equal(g.observer, t.observer) && time(g.captureStartedAt)
+    && time(g.captureCompletedAt) && Date.parse(g.captureStartedAt) >= Date.parse(t.capturedAt)
+    && Date.parse(g.captureCompletedAt) >= Date.parse(g.captureStartedAt), 'Snapshot generation operands belong to another transaction/interval')
+  ensure(g.runtimePhase === 'post-launch' || allowUnchangedRuntime && g.runtimePhase === 'pre-launch', 'Snapshot runtime phase cannot stand in for an actual SDK post-launch generation')
+  const expected = { source: t.postHelperSource, generated: t.postHelperGenerated, runtime: undefined,
+    ...(t.postHelperProjectOutput ? { project: t.postHelperProjectOutput } : {}) }
+  ensure(equal(Object.keys(g.closures ?? {}).sort(), Object.keys(expected).sort()), 'Snapshot generation operand set is incomplete')
+  const closureRoots = { source: t.sourceRoot, generated: t.generatedRoot, runtime: t.runtimeProjectPath,
+    ...(t.postHelperProjectOutput ? { project: resolve(t.sourceProjectPath, '..') } : {}) }
+  for (const [name, original] of Object.entries(expected)) {
+    const operand = g.closures[name]
+    ensure(operand && operand.root === closureRoots[name] && operand.readError === undefined && Array.isArray(operand.actual), `Snapshot generation ${name} root/read failed`)
+    snapshotFileMap(operand.actual, load, name === 'source')
+    if (name === 'runtime') {
+      exactSnapshotBytes(g.launchConfigurationExpected, snapshotLaunchConfigurationBytes(t, load), load, 'Snapshot post-launch expected runtime')
+      ensure(equal(operand.expected, g.runtimePhase === 'pre-launch' ? t.snapshotFiles : g.launchConfigurationExpected), 'Snapshot runtime expected phase differs')
+    }
+    else ensure(equal(operand.expected, original), `Snapshot generation ${name} expected operands changed`)
+    ensure(equal(operand.diff, snapshotClosureDifference(operand.expected, operand.actual))
+      && operand.passed === equal(operand.expected, operand.actual) && operand.passed, `Snapshot generation ${name} changed`)
+  }
+  const expectedIdentities = { source: t.sourceRootIdentity, runtime: t.runtimeRootIdentity,
+    ...(t.generatedProjectIdentity ? { project: t.generatedProjectIdentity } : {}) }
+  ensure(equal(Object.keys(g.identities ?? {}).sort(), Object.keys(expectedIdentities).sort()), 'Snapshot generation identity operand set is incomplete')
+  for (const [name, original] of Object.entries(expectedIdentities)) {
+    const operand = g.identities[name]
+    ensure(operand?.readError === undefined && operand.root === (name === 'project' ? t.sourceProjectPath : closureRoots[name])
+      && equal(operand.expected, original) && operand.passed === true,
+      `Snapshot generation ${name} physical identity read failed`)
+    verifyPhysicalDirectoryIdentity(operand.before, original, `Snapshot generation ${name} before`)
+    verifyPhysicalDirectoryIdentity(operand.after, original, `Snapshot generation ${name} after`)
+  }
+  ensure(g.status === 'passed', 'Snapshot generation guard set failed')
+}
+export function verifySnapshotRuntimeConfiguration({ transition: p, transaction: t, transactionReference, members, load }) {
+  ensure(verifyTemplateLaunchInputs(t, members, load), 'Snapshot has no reviewed launch configuration phase')
+  ensure(p?.schemaVersion === 1 && p.kind === 'weapp-container.snapshot-runtime-configuration'
+    && p.profile === 'template-native-launch-config-v1' && equal(p.transaction, transactionReference)
+    && equal(p.observer, t.observer) && p.runtimeProjectPath === t.runtimeProjectPath
+    && equal(p.configuration, t.launchProjectConfig) && equal(p.helper, t.launchHelper)
+    && equal(p.beforeFiles, t.snapshotFiles) && time(p.capturedAt)
+    && ['sdk-checkpoint', 'before-cleanup', 'unchanged-before-cleanup'].includes(p.phase), 'Snapshot runtime configuration belongs to another phase/owner')
+  verifyPhysicalDirectoryIdentity(p.runtimeRootIdentity, t.runtimeRootIdentity, 'Snapshot runtime configuration')
+  const unchanged = p.phase === 'unchanged-before-cleanup'
+  const expected = unchanged ? new Map(t.snapshotFiles.map(item => [item.path, load(item.artifact)])) : snapshotLaunchConfigurationBytes(t, load)
+  exactSnapshotBytes(p.afterFiles, expected, load, unchanged ? 'Snapshot actual uncommitted runtime' : 'Snapshot actual post-launch runtime')
+  const guards = JSON.parse(load(p.generationGuards))
+  verifySnapshotGenerationGuards({ guards, transaction: t, transactionReference, load, allowUnchangedRuntime: unchanged })
+  ensure(guards.runtimePhase === (unchanged ? 'pre-launch' : 'post-launch'), 'Snapshot configuration phase differs from its generation operands')
+  ensure(equal(p.afterFiles, guards.closures.runtime.actual) && Date.parse(p.capturedAt) >= Date.parse(guards.captureCompletedAt),
+    'Snapshot runtime configuration is detached from complete observed generation operands')
+  if (p.phase === 'sdk-checkpoint') {
+    const runtime = JSON.parse(load(p.runtimeObservation))
+    ensure(runtime.projectPath === t.runtimeProjectPath && /^[0-9a-f]{64}$/.test(runtime.installationId)
+      && runtime.system?.SDKVersion === '3.17.3' && time(runtime.recordedAt)
+      && Date.parse(runtime.recordedAt) >= Date.parse(t.capturedAt)
+      && Date.parse(runtime.recordedAt) <= Date.parse(guards.captureStartedAt), 'Snapshot runtime configuration has no actual fixed SDK checkpoint identity')
+  } else ensure(p.runtimeObservation === undefined, 'Cleanup configuration phase claimed an SDK observation')
+  return p.afterFiles
+}

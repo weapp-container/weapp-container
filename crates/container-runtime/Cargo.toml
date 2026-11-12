@@ -1,0 +1,96 @@
+[package]
+name = "container-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Manifest-loading AppService/View/Renderer session runtime for Weapp Container"
+
+[features]
+default = []
+# A separately produced demo runtime. Its policy is a required build input;
+# application or host configuration cannot replace it at runtime.
+restricted-showcase = []
+# The default runtime keeps a headless QuickJS boundary for protocol tests.
+# This opt-in feature links the actual rquickjs provider and validates it when
+# a QuickJS session is requested.
+quickjs-native = ["dep:container-engine-quickjs", "container-engine-quickjs/quickjs-native"]
+quickjs-native-android = [
+    "quickjs-native",
+    "container-engine-quickjs/quickjs-native-android",
+]
+quickjs-native-ios = [
+    "quickjs-native",
+    "container-engine-quickjs/quickjs-native-ios",
+]
+quickjs-native-harmony = [
+    "quickjs-native",
+    "container-engine-quickjs/quickjs-native-harmony",
+]
+# V8 is opt-in all the way through the host boundary.  Enabling this feature
+# links the pinned rusty_v8 provider and makes a V8 Session own its isolate;
+# without it a V8 session is rejected during construction rather than
+# silently running with a different engine.
+v8-native = ["dep:container-engine-v8", "container-engine-v8/v8-native"]
+# Local opt-in mirrors the renderer capability for runtime conformance cases.
+# Defaults and engine-only selections retain the software/headless profile.
+skia-backend = ["container-render-skia/skia-backend"]
+# Compile the explicit macOS Ganesh Metal attachment boundary.  The runtime
+# remains CPU/raster by default and reports a GPU surface only after a host
+# supplies real device/queue and drawable texture handles.
+skia-gpu-metal = ["skia-backend", "container-render-skia/skia-gpu-metal"]
+# Host-owned OpenGL ES/Ganesh attachment used by Android EGL surfaces.
+skia-gpu-gles = ["skia-backend", "container-render-skia/skia-gpu-gles"]
+
+# Opt-in diagnostic identity is forwarded only to already-selected engines.
+view-batch-diagnostics = [
+    "container-core/view-batch-diagnostics",
+    "container-engine-quickjs?/view-batch-diagnostics",
+    "container-engine-v8?/view-batch-diagnostics",
+]
+android-view-atrace = [
+    "view-batch-diagnostics",
+    "container-core/android-view-atrace",
+    "container-engine-quickjs?/android-view-atrace",
+    "container-engine-v8?/android-view-atrace",
+]
+
+# Internal conformance observation; no bridge protocol/public wx surface.
+conformance-observation = [
+    "container-core/conformance-observation",
+    "container-engine-quickjs?/conformance-observation",
+    "container-engine-v8?/conformance-observation",
+]
+
+[dependencies]
+container-bridge = { path = "../container-bridge" }
+container-core = { path = "../container-core" }
+container-engine-quickjs = { path = "../container-engine-quickjs", optional = true }
+container-engine-v8 = { path = "../container-engine-v8", optional = true }
+container-ir = { path = "../container-ir" }
+container-render-skia = { path = "../container-render-skia" }
+serde.workspace = true
+serde_json = { workspace = true, features = ["unbounded_depth"] }
+thiserror.workspace = true
+md-5.workspace = true
+sha1.workspace = true
+image = { version = "=0.25.9", default-features = false, features = ["png", "jpeg", "webp"] }
+getrandom = "=0.3.4"
+
+[build-dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+web-time = "1.1.0"
+getrandom = { version = "=0.3.4", features = ["wasm_js"] }
+
+# Real-device Session integration test only; no production Metal API expansion.
+[target.'cfg(target_os = "macos")'.dev-dependencies]
+objc2 = { version = "0.5.3", default-features = false, features = ["std"] }
+objc2-metal = { version = "0.2.2", default-features = false, features = [
+    "std", "MTLDevice", "MTLCommandQueue", "MTLCommandBuffer",
+    "MTLCommandEncoder", "MTLBlitCommandEncoder", "MTLResource",
+    "MTLTexture", "MTLPixelFormat", "MTLTypes",
+] }

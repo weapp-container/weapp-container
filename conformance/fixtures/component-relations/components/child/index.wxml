@@ -1,0 +1,1 @@
+<view id="relation-marker" bindtap="bump" data-count="{{count}}" style="position:absolute;left:24px;top:32px;width:64px;height:48px;background-color:{{color}}"/>

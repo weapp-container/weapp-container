@@ -1,0 +1,10 @@
+<view class="screen">
+  <text id="title" class="title">{{fmt.greeting(user)}}</text>
+  <text id="modern-result" class="result">{{fmt.summary(values, count)}}</text>
+  <text id="modern-identity" class="detail">{{fmt.identity()}}</text>
+  <text id="modern-shared" class="detail">Shared ESM counter: {{fmt.sequence()}} / {{stats.sequence()}}</text>
+  <view id="increment" class="button" bindtap="increment">Update: {{count}}</view>
+  <legacy-badge value="{{values}}">
+    <text id="modern-slot" class="detail">Modern parent slot: {{fmt.greeting(user)}} / {{count}}</text>
+  </legacy-badge>
+</view>

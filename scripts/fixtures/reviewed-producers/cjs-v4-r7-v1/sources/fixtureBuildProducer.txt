@@ -1,0 +1,1177 @@
+import fs from 'node:fs'
+/** Static CLI checkpoint provenance. No inferred HMR/watch generation and no
+ * hand-authored pack can stand in for the actual opened project's output. */
+import childProcess, { spawn } from 'node:child_process'
+import { createHash, randomUUID } from 'node:crypto'
+import { accessSync, constants, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, statSync, writeFileSync } from 'node:fs'
+import { syncBuiltinESMExports, createRequire } from 'node:module'
+import { basename, delimiter, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { threadId } from 'node:worker_threads'
+import { archiveCompilerBuildBytes, COMPILER_BUILD_PROFILE, inspectCompilerBuildEvidence } from './conformance-compiler-build.mjs'
+import { inspectCompilerUseEvidence, verifyCompilerBridgeProjects } from './conformance-compiler-use.mjs'
+import { assertReviewedFixtureProducer } from './conformance-producer-revisions.mjs'
+import { inspectExecutionFixture } from './pack-execution-evidence.mjs'
+import { GITHUB_PRODUCER_PROFILE, GITHUB_PRODUCER_GUARDS, githubProducerCase, githubProducerInvocation, githubProducerBytes, verifyGithubProducerGuards, verifyGithubProducerTransaction, verifyGithubSnapshotFinal, verifyGithubSourceFinal } from './conformance-github-producer.mjs'
+import { WXML_PRODUCER_PROFILE, WXML_PRODUCER_GUARDS, wxmlProducerCase, wxmlProducerInvocation, wxmlProducerBytes, verifyWxmlProducerGuards, verifyWxmlProducerTransaction, verifyWxmlSnapshotFinal, verifyWxmlSourceCleanup } from './conformance-wxml-producer.mjs'
+import { ISSUE1034_PRODUCER_PROFILE, ISSUE1034_PRODUCER_GUARDS, issue1034ProducerCase, issue1034ProducerInvocation, issue1034ProducerBytes, verifyIssue1034ProducerGuards, verifyIssue1034ProducerTransaction, verifyIssue1034SnapshotFinal, verifyIssue1034SourceCleanup } from './conformance-issue1034-producer.mjs'
+import { temporaryProjectProducerBytes } from './conformance-temporary-project-producer.mjs'
+import { TEMPLATE_LAUNCH_CONFIGURATION, TEMPLATE_LAUNCH_HELPER, snapshotLaunchConfigurationBytes, snapshotClosureDifference, verifySnapshotGenerationGuards, verifySnapshotRuntimeConfiguration, snapshotTransportBytes, createObservedOwnedRm, verifySnapshotCandidateLedger, verifyPhysicalDirectoryIdentity } from './conformance-snapshot-transport.mjs'
+import { parseStaticCliInvocation, staticFixtureInputClosure, TEMPLATE_STATIC_CLI_PROFILE } from './conformance-static-cli-profile.mjs'
+import { readTemplateSourceProject, verifyTemplateSourceMembers, verifyTemplateProjectEvidence, TEMPLATE_PRODUCER_PROFILE, templateProducerGuards, templateProducerCase, templateProducerInvocation, templateProducerBytes, verifyTemplateProducerGuards, verifyTemplateProducerTransaction, verifyTemplateSnapshotFinal, verifyTemplateSourceFinal } from './conformance-fixture-project.mjs'
+
+const MODULE = fileURLToPath(import.meta.url)
+const PRELOAD = fileURLToPath(new URL('./conformance-fixture-packer-preload.mjs', import.meta.url))
+const REPOSITORY = resolve(dirname(MODULE), '..')
+export const FIXTURE_BUILD_PROFILE = 'static-cli-v1'
+const CLI = 'packages/weapp-vite/bin/weapp-vite.js'
+const STATIC_PROFILE_INPUTS = ['conformance-static-cli-profile.mjs', 'conformance-fixture-project.mjs']
+const staticProfileInputs = () => STATIC_PROFILE_INPUTS.map(name => ({ path: `scripts/${name}`, bytes: readFileSync(new URL(`./${name}`, import.meta.url)) }))
+const PACKER = 'tools/container-manifest/bin/container-pack.mjs'
+const PACKER_MODULES = ['tools/container-manifest/bin/container-pack.mjs', ...['index', 'json-integrity', 'rendering', 'wxs-dependencies', 'wxs-compiler', 'modern-view'].map(name => `tools/container-manifest/src/${name}.mjs`)]
+const hash = bytes => createHash('sha256').update(bytes).digest('hex')
+const canonical = value => Array.isArray(value) ? `[${value.map(canonical).join(',')}]` : value && typeof value === 'object'
+  ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}` : JSON.stringify(value)
+const equal = (a, b) => canonical(a) === canonical(b)
+const ensure = (ok, message) => { if (!ok) throw new Error(message) }
+const inside = (root, file) => file === root || file.startsWith(root + sep)
+const slash = path => path.split(sep).join('/')
+const runtimeFacts = value => Object.fromEntries(['recordedAt', 'installationId', 'projectPath', 'tool', 'system'].map(key => [key, value[key]]))
+const fileIdentities = files => files.map(({ artifact, ...item }) => ({ ...item, ...(artifact ? { sha256: artifact.sha256, bytes: artifact.bytes } : {}) }))
+// Exact non-executable support outputs of the pinned CLI. New names still fail
+// closed, including adjacent declaration files in this same directory.
+const GENERATED_SUPPORT_PATHS = new Set(['tsconfig.json', ...['tsconfig.app.json', 'tsconfig.node.json', 'tsconfig.server.json', 'tsconfig.shared.json', 'tsconfig.shared.empty.d.ts', 'uni-app.d.ts', 'typed-router.d.ts'].map(path => `.weapp-vite/${path}`)])
+// The pinned helper waits 3s for SIGTERM and 1s for stdio drain. A numeric
+// 128+SIGTERM exit is evidence only when this observer saw that live child's
+// successful cleanup request within the same bound.
+const COMPANION_CLEANUP_BOUND_MS = 4_000
+const recorderOwners = new Set()
+function producerSpec(identity) {
+  if (templateProducerCase(identity)) return { profile: TEMPLATE_PRODUCER_PROFILE, prefix: 'template', label: 'Template', guards: templateProducerGuards(identity),
+    invocation: templateProducerInvocation, bytes: templateProducerBytes, verifyGuards: options => verifyTemplateProducerGuards({ ...options, identity }),
+    verifyTransaction: verifyTemplateProducerTransaction, verifyFinal: verifyTemplateSnapshotFinal, verifySourceFinal: verifyTemplateSourceFinal }
+
+  if (githubProducerCase(identity)) return { profile: GITHUB_PRODUCER_PROFILE, prefix: 'github', label: 'GitHub', guards: GITHUB_PRODUCER_GUARDS,
+    invocation: githubProducerInvocation, bytes: githubProducerBytes, verifyGuards: verifyGithubProducerGuards,
+    verifyTransaction: verifyGithubProducerTransaction, verifyFinal: verifyGithubSnapshotFinal }
+  if (wxmlProducerCase(identity)) return { profile: WXML_PRODUCER_PROFILE, prefix: 'wxml', label: 'WXML', guards: WXML_PRODUCER_GUARDS,
+    invocation: wxmlProducerInvocation, bytes: wxmlProducerBytes, verifyGuards: verifyWxmlProducerGuards,
+    verifyTransaction: verifyWxmlProducerTransaction, verifyFinal: verifyWxmlSnapshotFinal, verifySourceCleanup: verifyWxmlSourceCleanup }
+  if (issue1034ProducerCase(identity)) return { profile: ISSUE1034_PRODUCER_PROFILE, prefix: 'issue1034', label: 'Issue1034', guards: ISSUE1034_PRODUCER_GUARDS,
+    invocation: issue1034ProducerInvocation, bytes: issue1034ProducerBytes, verifyGuards: verifyIssue1034ProducerGuards,
+    verifyTransaction: verifyIssue1034ProducerTransaction, verifyFinal: verifyIssue1034SnapshotFinal, verifySourceCleanup: verifyIssue1034SourceCleanup }
+  return null
+}
+const producerModules = () => [
+  { path: 'scripts/conformance-github-producer.mjs', bytes: githubProducerBytes() },
+  { path: 'scripts/conformance-wxml-producer.mjs', bytes: wxmlProducerBytes() },
+  { path: 'scripts/conformance-snapshot-transport.mjs', bytes: snapshotTransportBytes() },
+  { path: 'scripts/conformance-temporary-project-producer.mjs', bytes: temporaryProjectProducerBytes() },
+  { path: 'scripts/conformance-issue1034-producer.mjs', bytes: issue1034ProducerBytes() },
+]
+
+function selectedNode(command, options, cwd) {
+  ensure(options.shell === undefined || options.shell === false, 'Static compiler shell invocation is unsupported')
+  ensure(options.argv0 === undefined, 'Static compiler argv0 alias is unsupported')
+  const selected = process.execPath, physical = realpathSync(selected)
+  if (isAbsolute(command)) {
+    ensure(realpathSync(command) === physical, 'Static compiler executable differs from the selected Node')
+    return { method: 'absolute', selected, physical, executable: physical }
+  }
+  ensure(command === 'node' && process.platform !== 'win32', 'Static compiler executable name or platform is unsupported')
+  const path = (options.env ?? process.env).PATH
+  ensure(typeof path === 'string' && !path.includes('\0'), 'Static compiler bare node requires an explicit PATH')
+  for (const directory of path.split(delimiter)) {
+    const file = resolve(cwd, directory, 'node')
+    try {
+      if (!statSync(file).isFile()) continue
+      accessSync(file, constants.X_OK)
+    } catch (error) {
+      if (['ENOENT', 'ENOTDIR', 'EACCES'].includes(error.code)) continue
+      throw error
+    }
+    const executable = realpathSync(file)
+    ensure(executable === physical, 'Static compiler PATH selected a different Node executable')
+    return { method: 'path', selected, physical, executable, path }
+  }
+  throw new Error('Static compiler PATH did not resolve node')
+}
+function runtimeArguments(action) {
+  const invocation = action.command, argv = action.runtimeArgv ?? invocation, node = action.nodeResolution
+  ensure(Array.isArray(invocation) && invocation.length && invocation.every(arg => typeof arg === 'string')
+    && Array.isArray(argv) && argv.length === invocation.length && argv.every(arg => typeof arg === 'string')
+    && isAbsolute(argv[0]) && equal(argv.slice(1), invocation.slice(1)), 'Static compiler raw invocation/runtime argv differs')
+  if (action.runtimeArgv) {
+    ensure(node && node.selected === argv[0] && isAbsolute(node.physical) && node.executable === node.physical,
+      'Static compiler executable identity is incomplete')
+    ensure(node.method === 'absolute' && isAbsolute(invocation[0]) && Object.keys(node).sort().join(',') === 'executable,method,physical,selected'
+      || node.method === 'path' && invocation[0] === 'node' && typeof node.path === 'string' && !node.path.includes('\0')
+        && Object.keys(node).sort().join(',') === 'executable,method,path,physical,selected',
+    'Static compiler raw executable is not the reviewed Node invocation')
+  } else ensure(isAbsolute(invocation[0]), 'Static compiler bare invocation has no executable identity witness')
+  return argv
+}
+function companionExited(action) {
+  if (action.exitCode === 0 && !action.signal) return true
+  if (!(action.exitCode === null && action.signal === 'SIGTERM' || action.exitCode === 143 && !action.signal)) return false
+  const requests = action.cleanupRequests
+  return Array.isArray(requests) && !requests.some(item => item.success && item.signal !== 'SIGTERM') && requests.some(item => {
+    const started = Date.parse(action.startedAt), requested = Date.parse(item.requestedAt)
+    const completed = Date.parse(item.completedAt), ended = Date.parse(action.endedAt)
+    return item.pid === action.pid && item.signal === 'SIGTERM' && item.success === true
+      && ['process.kill', 'child.kill'].includes(item.via) && equal(item.observer, action.observer)
+      && started <= requested && requested <= completed && completed <= ended && ended - requested <= COMPANION_CLEANUP_BOUND_MS
+  })
+}
+export function verifyStaticGeneratedSupport(before, after, { identity, guards, members, load } = {}) {
+  ensure(Array.isArray(before) && Array.isArray(after), 'Static source closure is missing')
+  const original = new Map(before.map(item => [item.path, item])), current = new Map(after.map(item => [item.path, item]))
+  ensure(original.size === before.length && current.size === after.length, 'Duplicate static source member')
+  for (const [path, item] of original) ensure(equal(item, current.get(path)), `Static CLI mutated its original source/dependency closure: ${path}`)
+  const added = after.filter(item => !original.has(item.path))
+  ensure(added.every(item => (GENERATED_SUPPORT_PATHS.has(item.path) || item.path === '.weapp-vite/auto-routes.cache.json'
+    && issue1034ProducerCase(identity)) && item.kind === 'file' && item.artifact), 'Static CLI added an unreviewed support file')
+  const cache = added.find(item => item.path === '.weapp-vite/auto-routes.cache.json')
+  if (cache) {
+    // The exact data output is admitted only with its real pinned source/helper
+    // producers. No filename wildcard, changed original source or cache script.
+    verifyIssue1034ProducerGuards({ guards, members, load })
+    const value = JSON.parse(load(cache.artifact))
+    ensure(value && typeof value === 'object' && !Array.isArray(value) && value.version === 6,
+      'Static auto-routes cache is not the pinned non-executable JSON data')
+  }
+  return added
+}
+function companionPath(checkout, caseSourcePath) {
+  ensure(typeof caseSourcePath === 'string' && caseSourcePath.startsWith('e2e/'), 'Companion case source is missing')
+  safe(caseSourcePath)
+  return join(checkout, '.tmp/e2e-ide-hmr-companion', caseSourcePath.slice(4).replaceAll('/', '__'))
+}
+function safe(path) {
+  ensure(typeof path === 'string' && path && !isAbsolute(path) && !path.includes('\\') && !path.includes('\0')
+    && path.split('/').every(part => part && part !== '.' && part !== '..'), 'Unsafe fixture artifact/member path')
+  return path
+}
+function physicalNewPath(path) {
+  let parent = resolve(path), parts = []
+  while (!existsSync(parent)) { parts.unshift(basename(parent)); parent = dirname(parent) }
+  return resolve(realpathSync(parent), ...parts)
+}
+function archive(root, directory) {
+  root = realpathSync(root); directory = physicalNewPath(directory)
+  ensure(inside(root, directory) && directory !== root, 'Fixture evidence directory escapes root')
+  mkdirSync(directory, { recursive: true })
+  return { root, directory, put: bytes => archiveCompilerBuildBytes({ root, directory, bytes }) }
+}
+function reader(root, loader, references = new Map()) {
+  return (ref, label = 'fixture build') => {
+    safe(ref?.path)
+    const target = resolve(root, ref.path)
+    if (!loader) ensure(inside(realpathSync(root), realpathSync(target)) && lstatSync(target).isFile() && !lstatSync(target).isSymbolicLink(), 'Fixture artifact escapes evidence root')
+    const bytes = Buffer.from(loader ? loader(ref, label, false) : readFileSync(target))
+    ensure(bytes.length === ref.bytes && hash(bytes) === ref.sha256, `Fixture artifact hash/size differs: ${ref.path}`)
+    ensure(!references.has(ref.path) || equal(references.get(ref.path), ref), 'Conflicting fixture artifact references')
+    references.set(ref.path, ref)
+    return bytes
+  }
+}
+function snapshot(directory, put, { exclude = new Set(), checkout, consumerGuard } = {}) {
+  directory = realpathSync(directory)
+  const files = []
+  const walk = (base, prefix = '') => {
+    for (const entry of readdirSync(base, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const path = prefix ? `${prefix}/${entry.name}` : entry.name
+      if (exclude.has(path)) continue
+      const file = join(base, entry.name)
+      if (entry.isDirectory()) walk(file, path)
+      else if (entry.isFile()) files.push({ path, kind: 'file', artifact: put(readFileSync(file)) })
+      else {
+        ensure(checkout && consumerGuard && entry.isSymbolicLink() && inside(checkout, realpathSync(file)), `Fixture snapshot contains an unbound symlink/special file: ${path}`)
+        files.push({ path, kind: 'consumer-link', target: slash(relative(checkout, realpathSync(file))), consumerGuard })
+      }
+    }
+  }
+  walk(directory)
+  return files
+}
+function readProject(projectPath) {
+  projectPath = realpathSync(projectPath)
+  const configPath = join(projectPath, 'project.config.json')
+  ensure(lstatSync(configPath).isFile() && !lstatSync(configPath).isSymbolicLink(), 'Actual project config is not a regular file')
+  const bytes = readFileSync(configPath), config = JSON.parse(bytes)
+  const root = config.miniprogramRoot ?? '.'
+  ensure(typeof root === 'string' && !isAbsolute(root) && !root.includes('\\') && !root.includes('\0'), 'Actual miniprogramRoot is unsafe')
+  const outputRoot = resolve(projectPath, root)
+  ensure(inside(projectPath, outputRoot) && outputRoot !== projectPath, 'Static profile requires a separate generated miniprogramRoot')
+  return { projectPath, configPath, configBytes: bytes, outputRoot, outputRelative: slash(relative(projectPath, outputRoot)) }
+}
+function physicalSourceIdentity(path, label = 'WXML source') {
+  const stat = lstatSync(path, { bigint: true })
+  ensure(stat.isDirectory() && !stat.isSymbolicLink() && realpathSync(path) === path && stat.ino > 0n && stat.birthtimeNs > 0n,
+    `${label} root has no stable actual directory identity`)
+  return { device: stat.dev.toString(), inode: stat.ino.toString(), birthtimeNs: stat.birthtimeNs.toString() }
+}
+
+/** Install in the actual case worker before its CLI build. The wrapper only
+ * observes owned Node CLI invocations through the reviewed static profiles; unsupported
+ * commands still run normally and cannot produce a formal checkpoint. */
+export function installStaticFixtureBuildRecorder({ root, directory, compilerUseConfigPath, compilerBuild, expectedCommit,
+  expectedProfile = COMPILER_BUILD_PROFILE, caseId, sourceSha256, caseSourcePath, fixtureCliPath }) {
+  const a = archive(root, directory), load = reader(a.root)
+  const checked = inspectCompilerBuildEvidence({ root: a.root, reference: compilerBuild, expectedCommit, expectedProfile })
+  ensure(!checked.errors.length, checked.errors.join('\n'))
+  const config = JSON.parse(readFileSync(compilerUseConfigPath))
+  ensure(config.caseId === caseId && config.sourceSha256 === sourceSha256 && config.caseSourcePath === caseSourcePath, 'Fixture recorder differs from actual compiler consumer case')
+  ensure(hash(readFileSync(join(config.evidenceRoot, config.membersReference.path))) === config.membersReference.sha256, 'Fixture recorder compiler guard changed')
+  let sealedMemberCache
+  const sealedMembers = () => sealedMemberCache ??= JSON.parse(load(config.membersReference)).members
+  const cliRelativePath = expectedProfile === COMPILER_BUILD_PROFILE ? CLI : fixtureCliPath
+  safe(cliRelativePath)
+  const cliPath = realpathSync(join(config.checkout, cliRelativePath))
+  ensure(inside(config.checkout, cliPath) && checked.attestation.source.files.some(item => item.path === cliRelativePath), 'Fixture CLI is not pinned owned compiler source')
+  ensure(!recorderOwners.size, 'A static fixture build recorder already owns this worker')
+  const ownerId = randomUUID(), original = childProcess.spawn, originalKill = process.kill, builds = [], pending = []
+  const liveCompanions = new Map(), restoreChildKills = new Set()
+  const controlledEnvironment = { NODE_OPTIONS: `--require=${JSON.stringify(join(dirname(compilerUseConfigPath), 'compiler-use-preload.cjs'))}`,
+    NODE_PATH: '', WEAPP_CONTAINER_COMPILER_USE_CONFIG: compilerUseConfigPath }
+  ensure(hash(readFileSync(join(dirname(compilerUseConfigPath), 'compiler-use-preload.cjs'))) === hash(readFileSync(new URL('./conformance-compiler-use-preload.cjs', import.meta.url))), 'Static compiler spawn has an unreviewed consumer preload')
+  const record = { ...a, ownerId, config, compilerBuild, expectedCommit, expectedProfile, caseId, sourceSha256, caseSourcePath,
+    cliRelativePath, cliPath, staticProfileInputs: staticProfileInputs().map(item => ({ path: item.path, artifact: a.put(item.bytes) })), observer: { pid: process.pid, threadId }, builds, pending, snapshots: [], snapshotFailures: [], disposed: false }
+  const spec = producerSpec(record)
+  if (spec) {
+    ensure(expectedProfile === COMPILER_BUILD_PROFILE, `${spec.label} producer requires the pinned real compiler profile`)
+    const members = JSON.parse(load(config.membersReference)).members
+    record.producerGuards = spec.guards.map(({ path }) => {
+      const original = checked.attestation.source.files.find(item => item.path === path)?.artifact
+      ensure(original, 'GitHub producer original helper source is absent')
+      return { path, original, observed: a.put(readFileSync(join(config.checkout, path))) }
+    })
+    spec.verifyGuards({ guards: record.producerGuards, members, load })
+  }
+  recorderOwners.add(ownerId)
+  function observeCleanup(candidate, via, signal, invoke) {
+    const request = { pid: candidate.pid, signal: signal === undefined || signal === 15 ? 'SIGTERM' : signal,
+      via, observer: record.observer, requestedAt: new Date().toISOString() }
+    candidate.cleanupRequests.push(request)
+    try { const result = invoke(); request.success = result === true; return result }
+    catch (error) { request.success = false; request.errorCode = error.code ?? null; throw error }
+    finally { request.completedAt = new Date().toISOString() }
+  }
+  function observedKill(pid, signal) {
+    const owned = liveCompanions.get(pid)
+    if (!owned || signal === 0 || owned.child.exitCode !== null || owned.child.signalCode !== null)
+      return originalKill.apply(this, arguments)
+    return observeCleanup(owned.candidate, 'process.kill', signal, () => originalKill.apply(this, arguments))
+  }
+  function observedSpawn(command, args = [], options = {}) {
+    let candidate
+    try {
+      const cwd = realpathSync(options.cwd ?? process.cwd())
+      const cliAt = args.findIndex(arg => typeof arg === 'string' && resolve(cwd, arg) === cliPath)
+      if (cliAt < 0) return original.call(childProcess, command, args, options)
+      candidate = { status: 'blocked', command: [command, ...args], cwd, startedAt: new Date().toISOString(), observer: record.observer,
+        failure: 'Unsupported compiler CLI action: only the exact reviewed static target or owned companion is supported' }
+      builds.push(candidate)
+      const nodeResolution = selectedNode(command, options, cwd)
+      ensure(cliAt === 0, candidate.failure)
+      const invocation = parseStaticCliInvocation({ args, cliPath, cwd, checkout: config.checkout, caseId, caseSourcePath, sourceSha256 })
+      const staticBuild = !!invocation
+      const companion = args.length === 3 && args[1] === 'dev' && args[2] === '--non-interactive'
+        && cwd === companionPath(config.checkout, caseSourcePath)
+      ensure(staticBuild || companion, candidate.failure)
+      const producerProfile = staticBuild && spec ? spec.invocation({ ...record, args, cwd, checkout: config.checkout, cliPath }) : null
+      if (staticBuild && spec) ensure(producerProfile, `${spec.label} producer static invocation differs from the reviewed target`)
+      const template = invocation?.profile === TEMPLATE_STATIC_CLI_PROFILE
+      const project = template ? readTemplateSourceProject(invocation) : readProject(staticBuild ? invocation.sourceRoot : cwd)
+      if (staticBuild) {
+        for (const action of builds) if (action.action === 'companion-dev' && action.status === 'closed' && !existsSync(action.projectPath)) {
+          action.projectRemovedBeforeTargetAt = new Date().toISOString()
+        }
+      }
+      ensure(!existsSync(project.outputRoot), 'Static compiler output existed before this build')
+      const sourceRootIdentity = producerSpec(record) || template ? physicalSourceIdentity(project.projectPath, 'Snapshot source') : undefined
+      const sourceBefore = snapshot(project.projectPath, a.put, { exclude: new Set(['.git', project.sourceOutputRelative ?? project.outputRelative]), checkout: config.checkout, consumerGuard: config.membersReference })
+      if (sourceRootIdentity) ensure(equal(sourceRootIdentity, physicalSourceIdentity(project.projectPath)), 'WXML source root changed while capturing its build inputs')
+      if (template) verifyTemplateSourceMembers({ profile: invocation, sourceBefore, members: sealedMembers(), checkout: config.checkout, load })
+      const fixtureInputClosure = staticBuild && config.macroObservation
+        ? a.put(JSON.stringify(staticFixtureInputClosure(invocation, sourceBefore))) : undefined
+      const controlledConsumer = staticBuild || Boolean(config.macroObservation)
+      if (controlledConsumer) {
+        for (const [key, value] of Object.entries(controlledEnvironment)) ensure(!options.env?.[key] || options.env[key] === value, `Static compiler spawn selected an unreviewed ${key}`)
+        const environment = { ...(options.env ?? process.env), ...controlledEnvironment }
+        // Both approved actions load the same observed compiler. The pinned
+        // companion deliberately sanitizes NODE_OPTIONS, so restore its owned
+        // loader too, while keeping target fixture provenance static-only.
+        delete environment.WEAPP_CONTAINER_COMPILER_FIXTURE_INPUTS
+        if (fixtureInputClosure) environment.WEAPP_CONTAINER_COMPILER_FIXTURE_INPUTS = JSON.stringify(fixtureInputClosure)
+        options = { ...options, env: environment }
+      } else ensure(!options.env?.NODE_OPTIONS || options.env.NODE_OPTIONS === controlledEnvironment.NODE_OPTIONS, 'Companion selected an unreviewed NODE_OPTIONS')
+      Object.assign(candidate, { status: staticBuild ? 'building' : 'running', action: staticBuild ? 'static-build' : 'companion-dev',
+        ...(sourceRootIdentity ? { sourceRootIdentity } : {}),
+        runtimeArgv: [process.execPath, ...args], nodeResolution,
+        environment: controlledConsumer ? controlledEnvironment : { NODE_OPTIONS: options.env?.NODE_OPTIONS ?? '', NODE_PATH: options.env?.NODE_PATH ?? '' }, ...project,
+        projectConfig: a.put(project.configBytes), outputAbsent: true, sourceBefore,
+        ...(producerProfile ? { producerProfile } : {}),
+        ...(fixtureInputClosure ? { fixtureInputClosure } : {}), stdout: [], stderr: [] })
+      candidate.startedAt = new Date().toISOString()
+      delete candidate.failure
+    } catch (error) {
+      if (candidate) { candidate.status = 'blocked'; candidate.failure = error.message }
+      else { candidate = { status: 'blocked', command: [command, ...args], failure: error.message }; builds.push(candidate) }
+    }
+    let child
+    try { child = original.call(childProcess, command, args, options) }
+    catch (error) { if (candidate) { candidate.status = 'blocked'; candidate.failure = error.message; candidate.endedAt = new Date().toISOString() } throw error }
+    if (candidate) {
+      candidate.pid = child.pid
+      if (candidate.action === 'companion-dev' && candidate.status === 'running') {
+        candidate.cleanupRequests = []
+        liveCompanions.set(child.pid, { candidate, child })
+        const originalChildKill = child.kill
+        function observedChildKill(signal) {
+          if (!liveCompanions.has(candidate.pid) || child.exitCode !== null || child.signalCode !== null || signal === 0)
+            return originalChildKill.apply(this, arguments)
+          return observeCleanup(candidate, 'child.kill', signal, () => originalChildKill.apply(this, arguments))
+        }
+        child.kill = observedChildKill
+        const restore = () => { if (child.kill === observedChildKill) child.kill = originalChildKill; restoreChildKills.delete(restore) }
+        restoreChildKills.add(restore)
+        child.once('exit', () => { liveCompanions.delete(candidate.pid); restore() })
+        child.once('error', () => { liveCompanions.delete(candidate.pid); restore() })
+      }
+      const captured = candidate.stdout && candidate.stderr
+      if (captured) {
+        child.stdout?.on('data', bytes => candidate.stdout.push(Buffer.from(bytes)))
+        child.stderr?.on('data', bytes => candidate.stderr.push(Buffer.from(bytes)))
+      }
+      candidate.outputCaptured = !!child.stdout && !!child.stderr
+      const settled = new Promise(accept => {
+        child.once('error', error => { candidate.status = 'blocked'; candidate.failure = error.message; candidate.endedAt = new Date().toISOString(); accept() })
+        child.once('close', (exitCode, signal) => {
+          Object.assign(candidate, { exitCode, signal, endedAt: new Date().toISOString(),
+            ...(captured ? { stdout: a.put(Buffer.concat(candidate.stdout)), stderr: a.put(Buffer.concat(candidate.stderr)) } : {}) })
+          try {
+            ensure(candidate.status !== 'blocked', candidate.failure)
+            ensure(candidate.outputCaptured, 'CLI output streams were not captured')
+            if (candidate.action === 'companion-dev') {
+              ensure(companionExited(candidate), 'Companion did not exit normally or by observed bounded owned SIGTERM cleanup')
+              candidate.sourceAfter = snapshot(candidate.projectPath, a.put, { exclude: new Set(['.git', candidate.outputRelative]), checkout: config.checkout, consumerGuard: config.membersReference })
+              candidate.generated = snapshot(candidate.outputRoot, a.put)
+              candidate.status = 'closed'
+            } else {
+              ensure(exitCode === 0 && !signal, 'Static CLI build failed')
+              candidate.sourceAfter = snapshot(candidate.projectPath, a.put, { exclude: new Set(['.git', candidate.sourceOutputRelative ?? candidate.outputRelative]), checkout: config.checkout, consumerGuard: config.membersReference })
+              candidate.generatedSupport = verifyStaticGeneratedSupport(candidate.sourceBefore, candidate.sourceAfter, { identity: record, guards: record.producerGuards,
+                members: JSON.parse(load(config.membersReference)).members, load })
+              candidate.generated = snapshot(candidate.outputRoot, a.put)
+              if (candidate.staticCliProfile?.profile === TEMPLATE_STATIC_CLI_PROFILE) {
+                const runtime = readProject(candidate.runtimeProjectPath)
+                ensure(runtime.projectPath === candidate.runtimeProjectPath && runtime.outputRoot === candidate.outputRoot,
+                  'Template actual generated runtime project/config root differs from the recognized invocation')
+                candidate.runtimeRootIdentity = physicalSourceIdentity(candidate.runtimeProjectPath, 'Generated template IDE project')
+                candidate.runtimeProjectConfig = a.put(runtime.configBytes)
+                candidate.projectOutput = snapshot(join(candidate.projectPath, candidate.sourceOutputRelative), a.put)
+                verifyTemplateProjectEvidence({ build: candidate, profile: candidate.staticCliProfile, load, members: sealedMembers(), checkout: config.checkout })
+                ensure(equal(candidate.projectOutput, snapshot(join(candidate.projectPath, candidate.sourceOutputRelative), a.put)), 'Template project output changed while capturing')
+              }
+              ensure(candidate.generated.length && candidate.generated.some(item => item.path === 'app.json'), 'Static CLI generated no complete mini-program')
+              ensure(equal(candidate.generated, snapshot(candidate.outputRoot, a.put)), 'Static CLI output changed while capturing')
+              candidate.status = 'built'
+            }
+          } catch (error) { candidate.status = 'blocked'; candidate.failure = error.message }
+          accept()
+        })
+      })
+      // A companion watcher must already be closed before target compilation;
+      // never wait indefinitely for a live unrelated watcher at checkpoint.
+      if (candidate.action !== 'companion-dev') pending.push(settled)
+    }
+    return child
+  }
+  const restoreSnapshotCleanup = producerSpec(record) ? installOwnedSnapshotCleanupObserver({ recorder: record }) : () => {}
+  const restoreSourceCleanup = spec?.verifySourceCleanup ? installTemporaryProjectSourceCleanupObserver({ recorder: record }) : () => {}
+  childProcess.spawn = observedSpawn; process.kill = observedKill; syncBuiltinESMExports()
+  record.dispose = () => {
+    if (record.disposed) return
+    ensure(childProcess.spawn === observedSpawn, 'Static fixture recorder lost its scoped spawn ownership')
+    ensure(process.kill === observedKill, 'Static fixture recorder lost its scoped signal ownership')
+    restoreSourceCleanup()
+    restoreSnapshotCleanup()
+    childProcess.spawn = original; process.kill = originalKill
+    for (const restore of restoreChildKills) restore()
+    liveCompanions.clear()
+    syncBuiltinESMExports(); recorderOwners.delete(ownerId); record.disposed = true
+  }
+  record.flush = () => flushStaticFixtureBuildRecorder({ recorder: record })
+  return record
+}
+
+/** Called only by the exact pinned Automator observer at its owned snapshot
+ * boundary. Archive actual post-helper and actual copy bytes before SDK use. */
+function writeSnapshotCandidateIndex(r) {
+  writeFileSync(join(r.directory, 'snapshot-producer-candidates.json'), JSON.stringify({ schemaVersion: 1,
+    kind: 'weapp-container.snapshot-producer-candidate-index', ownerId: r.ownerId, runId: r.config.runId,
+    caseId: r.caseId, sourceSha256: r.sourceSha256, caseSourcePath: r.caseSourcePath, observer: r.observer,
+    candidates: r.snapshotCandidates }, null, 2) + '\n')
+}
+function archiveSnapshotCandidate(r, candidate) {
+  const entry = { candidate: r.put(JSON.stringify(candidate, null, 2) + '\n'), validation: null }
+  ;(r.snapshotCandidates ??= []).push(entry)
+  writeSnapshotCandidateIndex(r)
+  return entry
+}
+function completeSnapshotCandidate(r, entry, candidate, status, error) {
+  entry.validation = r.put(JSON.stringify({ schemaVersion: 1, kind: 'weapp-container.snapshot-producer-validation',
+    status, candidate: entry.candidate, ...(candidate.transaction ? { transaction: candidate.transaction } : {}),
+    completedAt: new Date().toISOString(), ...(error ? { failure: { name: error.name, code: error.code ?? null, message: error.message } } : {}) }, null, 2) + '\n')
+  writeSnapshotCandidateIndex(r)
+}
+
+export async function captureOwnedSnapshot({ recorder: r, observation }) {
+  const spec = producerSpec(r)
+  if (!spec) return null
+  const candidate = { schemaVersion: 1, kind: 'weapp-container.snapshot-producer-candidate', profile: spec.profile,
+    ownerId: r.ownerId, runId: r.config.runId, caseId: r.caseId, caseSourcePath: r.caseSourcePath, sourceSha256: r.sourceSha256,
+    observer: r.observer, consumerGuard: r.config.membersReference, compilerBuild: r.compilerBuild,
+    observation: { ...observation }, captureStartedAt: new Date().toISOString(), complete: false }
+  let entry
+  try {
+    await Promise.all(r.pending)
+    const matches = r.builds.filter(item => item.status === 'built' && item.producerProfile
+      && (item.runtimeProjectPath ?? item.projectPath) === observation.sourceProjectPath && item.outputRoot === observation.generatedRoot)
+    ensure(matches.length === 1 && r.builds.filter(item => (item.runtimeProjectPath ?? item.projectPath) === observation.sourceProjectPath).length === 1,
+      'GitHub snapshot has no unique owned static producer')
+    const build = matches[0]
+    const { configBytes, configPath, stdout, stderr, ...details } = build
+    candidate.build = r.put(JSON.stringify({ ...details, stdout, stderr }, null, 2) + '\n')
+    ensure(observation.runtimeRoot === observation.projectPath && isAbsolute(observation.cliPath)
+      && realpathSync(observation.projectPath) === observation.projectPath
+      && realpathSync(observation.sourceProjectPath) === observation.sourceProjectPath
+      && realpathSync(observation.generatedRoot) === observation.generatedRoot
+      && !r.snapshots.some(item => item.value.runtimeProjectPath === observation.projectPath), 'GitHub snapshot ownership metadata differs or repeats')
+    const value = { schemaVersion: 1, kind: `weapp-container.${spec.prefix}-producer-transaction`, profile: spec.profile,
+      buildPid: build.pid, observer: r.observer, sourceRoot: build.projectPath, generatedRoot: observation.generatedRoot,
+      ...(build.staticCliProfile?.profile === TEMPLATE_STATIC_CLI_PROFILE ? { sourceProjectPath: observation.sourceProjectPath, generatedProjectIdentity: physicalSourceIdentity(build.runtimeProjectPath, 'Template generated IDE project'),
+        postHelperProjectOutput: snapshot(join(build.projectPath, build.sourceOutputRelative), r.put) } : {}),
+      ...(build.staticCliProfile?.profile === TEMPLATE_STATIC_CLI_PROFILE ? {
+        // Declared input of the pinned template helper, closed later against
+        // the actual audited CLI startup payload. This is not an execution claim.
+        launchConfigurationOrigin: 'pinned-template-helper-input-and-forced-sdk',
+        launchProjectConfig: structuredClone(TEMPLATE_LAUNCH_CONFIGURATION),
+        launchHelper: { path: TEMPLATE_LAUNCH_HELPER.path, artifact: r.put(readFileSync(join(r.config.checkout, TEMPLATE_LAUNCH_HELPER.path))) } } : {}),
+      runtimeProjectPath: observation.projectPath, runtimeRoot: observation.runtimeRoot, cliPath: observation.cliPath,
+      capturedAt: new Date().toISOString(), producer: r.put(spec.bytes()), transport: r.put(snapshotTransportBytes()), guards: r.producerGuards,
+      sourceRootIdentity: physicalSourceIdentity(build.projectPath, `${spec.label} source`),
+      runtimeRootIdentity: physicalSourceIdentity(observation.projectPath, `${spec.label} runtime snapshot`),
+      postHelperSource: snapshot(build.projectPath, r.put, { exclude: new Set(['.git', build.sourceOutputRelative ?? build.outputRelative]), checkout: r.config.checkout, consumerGuard: r.config.membersReference }),
+      postHelperGenerated: snapshot(build.outputRoot, r.put), snapshotFiles: snapshot(observation.projectPath, r.put) }
+    // Persist the complete actual first read and its identity before any
+    // semantic verifier can reject it. It remains a candidate until validated.
+    const reference = r.put(JSON.stringify(value, null, 2) + '\n')
+    candidate.transaction = reference; candidate.complete = true; candidate.captureCompletedAt = new Date().toISOString()
+    entry = archiveSnapshotCandidate(r, candidate)
+    spec.verifyTransaction({ transaction: value, build, identity: r, checkout: r.config.checkout,
+      members: JSON.parse(reader(r.root)(r.config.membersReference)).members, load: reader(r.root) })
+    if (build.staticCliProfile?.profile === TEMPLATE_STATIC_CLI_PROFILE) ensure(equal(value.postHelperProjectOutput, snapshot(join(build.projectPath, build.sourceOutputRelative), r.put)), 'Template generated IDE project changed while capturing SDK snapshot')
+    // A second complete read catches a concurrently changing producer/copy.
+    ensure(equal(value.postHelperSource, snapshot(build.projectPath, r.put, { exclude: new Set(['.git', build.sourceOutputRelative ?? build.outputRelative]), checkout: r.config.checkout, consumerGuard: r.config.membersReference }))
+      && equal(value.postHelperGenerated, snapshot(build.outputRoot, r.put))
+      && equal(value.snapshotFiles, snapshot(observation.projectPath, r.put)), 'GitHub snapshot changed while capturing actual closures')
+    verifyPhysicalDirectoryIdentity(physicalSourceIdentity(build.projectPath, `${spec.label} source`), value.sourceRootIdentity, `${spec.label} source capture`)
+    verifyPhysicalDirectoryIdentity(physicalSourceIdentity(observation.projectPath, `${spec.label} runtime snapshot`), value.runtimeRootIdentity, `${spec.label} runtime snapshot capture`)
+    completeSnapshotCandidate(r, entry, candidate, 'validated')
+    r.snapshots.push({ reference, value })
+    return { reference, attestation: value }
+  } catch (error) {
+    r.snapshotFailures.push(error.message)
+    try {
+      if (!entry) { candidate.captureCompletedAt = new Date().toISOString(); entry = archiveSnapshotCandidate(r, candidate) }
+      completeSnapshotCandidate(r, entry, candidate, 'rejected', error)
+      error.snapshotCandidate = entry.candidate; error.snapshotValidation = entry.validation
+    } catch (archiveError) { r.snapshotFailures.push(`Snapshot candidate diagnostic archive failed: ${archiveError.message}`) }
+    throw error
+  }
+}
+
+
+/** Read every independent operand even when an earlier read/comparison fails.
+ * The raw record is persisted before any admission, including on rejection. */
+function observeSnapshotGeneration(r, build, item, { allowUnchangedRuntime = false } = {}) {
+  const t = item.value, record = { schemaVersion: 1, kind: 'weapp-container.snapshot-generation-guards',
+    transaction: item.reference, observer: r.observer, captureStartedAt: new Date().toISOString(), runtimePhase: 'post-launch', closures: {}, identities: {}, status: 'failed' }
+  const identityRoots = { source: [build.projectPath, t.sourceRootIdentity], runtime: [t.runtimeProjectPath, t.runtimeRootIdentity],
+    ...(t.generatedProjectIdentity ? { project: [build.runtimeProjectPath, t.generatedProjectIdentity] } : {}) }
+  for (const [name, [root, expected]] of Object.entries(identityRoots)) {
+    const operand = record.identities[name] = { root, expected, passed: false }
+    try { operand.before = physicalSourceIdentity(root, `Snapshot generation ${name}`) } catch (error) { operand.readError = { name: error.name, code: error.code ?? null, message: error.message } }
+  }
+  let runtimeExpected
+  try { runtimeExpected = [...snapshotLaunchConfigurationBytes(t, reader(r.root))].map(([path, bytes]) => ({ path, kind: 'file', artifact: r.put(bytes) })) }
+  catch (error) { record.runtimeExpectedError = { name: error.name, message: error.message } }
+  record.launchConfigurationExpected = runtimeExpected
+  const roots = { source: [build.projectPath, t.postHelperSource, { exclude: new Set(['.git', build.sourceOutputRelative ?? build.outputRelative]), checkout: r.config.checkout, consumerGuard: r.config.membersReference }],
+    generated: [build.outputRoot, t.postHelperGenerated], runtime: [t.runtimeProjectPath, runtimeExpected],
+    ...(t.postHelperProjectOutput ? { project: [join(build.projectPath, build.sourceOutputRelative), t.postHelperProjectOutput] } : {}) }
+  for (const [name, [root, expected, options]] of Object.entries(roots)) {
+    const operand = record.closures[name] = { root, expected: expected ?? null, passed: false }
+    try {
+      operand.actual = snapshot(root, r.put, options)
+      if (name === 'runtime' && allowUnchangedRuntime && !equal(expected, operand.actual) && equal(t.snapshotFiles, operand.actual)) {
+        operand.expected = t.snapshotFiles; record.runtimePhase = 'pre-launch'
+      }
+      operand.diff = snapshotClosureDifference(operand.expected, operand.actual); operand.passed = equal(operand.expected, operand.actual)
+    }
+    catch (error) { operand.readError = { name: error.name, code: error.code ?? null, message: error.message }; operand.diff = snapshotClosureDifference(expected, undefined) }
+  }
+  for (const [name, [root, expected]] of Object.entries(identityRoots)) {
+    const operand = record.identities[name]
+    try { operand.after = physicalSourceIdentity(root, `Snapshot generation ${name}`); operand.passed = !operand.readError && equal(operand.before, expected) && equal(operand.after, expected) }
+    catch (error) { operand.readError = { name: error.name, code: error.code ?? null, message: error.message } }
+  }
+  record.status = !record.runtimeExpectedError && Object.values(record.closures).every(item => item.passed)
+    && Object.values(record.identities).every(item => item.passed) ? 'passed' : 'failed'
+  record.captureCompletedAt = new Date().toISOString()
+  return { value: record, reference: r.put(JSON.stringify(record, null, 2) + '\n') }
+}
+function recordSnapshotRuntimeConfiguration(r, item, guards, { phase, runtimeObservation } = {}) {
+  const t = item.value
+  if (t.launchProjectConfig === undefined) return null
+  ensure(!item.runtimeConfiguration, 'Snapshot launch configuration phase is duplicated')
+  const value = { schemaVersion: 1, kind: 'weapp-container.snapshot-runtime-configuration', profile: 'template-native-launch-config-v1', phase,
+    transaction: item.reference, observer: r.observer, runtimeProjectPath: t.runtimeProjectPath, runtimeRootIdentity: guards.value.identities.runtime.after,
+    configuration: t.launchProjectConfig, helper: t.launchHelper, beforeFiles: t.snapshotFiles, afterFiles: guards.value.closures.runtime.actual,
+    generationGuards: guards.reference, ...(runtimeObservation ? { runtimeObservation } : {}), capturedAt: new Date().toISOString() }
+  const reference = r.put(JSON.stringify(value, null, 2) + '\n')
+  // Candidate archived above even if semantic verification below rejects it.
+  const entry = { candidate: reference, transaction: item.reference, phase, status: 'candidate' }
+  const entries = r.runtimeConfigurationCandidates ??= []
+  entries.push(entry)
+  const archive = () => writeFileSync(join(r.directory, 'runtime-configuration-candidates.json'), JSON.stringify({
+    schemaVersion: 1, kind: 'weapp-container.snapshot-runtime-configuration-candidates', ownerId: r.ownerId,
+    runId: r.config.runId, caseId: r.caseId, caseSourcePath: r.caseSourcePath, sourceSha256: r.sourceSha256,
+    observer: r.observer, entries }, null, 2) + '\n')
+  archive()
+  try {
+    verifySnapshotRuntimeConfiguration({ transition: value, transaction: t, transactionReference: item.reference,
+      members: JSON.parse(reader(r.root)(r.config.membersReference)).members, load: reader(r.root) })
+    entry.status = 'validated'
+  } catch (error) {
+    entry.status = 'rejected'; entry.failure = { name: error.name, code: error.code ?? null, message: error.message }
+    error.runtimeConfigurationCandidate = reference
+    throw error
+  } finally { archive() }
+  item.runtimeConfiguration = reference; item.runtimeConfigurationValue = value
+  return reference
+}
+/** These two observations enclose the same owned awaited rm(wrapperRoot). */
+export async function captureOwnedSnapshotCleanup(options) { return captureOwnedSnapshotCleanupBoundary(options) }
+function captureOwnedSnapshotCleanupBoundary({ recorder: r, observation }) {
+  const spec = producerSpec(r)
+  if (!spec) return null
+  try {
+    const matches = r.snapshots.filter(item => item.value.runtimeProjectPath === observation.projectPath)
+    ensure(matches.length === 1 && !matches[0].cleanup, 'GitHub owned snapshot cleanup is absent or duplicated')
+    const item = matches[0]
+    if (observation.phase === 'before-remove') {
+      verifyPhysicalDirectoryIdentity(physicalSourceIdentity(observation.projectPath, `${spec.label} runtime snapshot`), item.value.runtimeRootIdentity, `${spec.label} before-cleanup runtime snapshot`)
+      if (item.value.launchProjectConfig !== undefined && !item.runtimeConfiguration) {
+        const build = r.builds.find(build => build.pid === item.value.buildPid)
+        const guards = observeSnapshotGeneration(r, build, item, { allowUnchangedRuntime: true })
+        recordSnapshotRuntimeConfiguration(r, item, guards, { phase: guards.value.runtimePhase === 'pre-launch' ? 'unchanged-before-cleanup' : 'before-cleanup' })
+      }
+      const expectedRuntime = item.runtimeConfigurationValue?.afterFiles ?? item.value.snapshotFiles
+      ensure(!item.beforeCleanup && equal(expectedRuntime, snapshot(observation.projectPath, r.put)), 'GitHub runtime snapshot changed before owned cleanup')
+      item.beforeCleanup = r.put(JSON.stringify({ schemaVersion: 1, kind: `weapp-container.${spec.prefix}-snapshot-before-cleanup`, profile: spec.profile,
+        transaction: item.reference, runtimeProjectPath: observation.projectPath, runtimeRootIdentity: item.value.runtimeRootIdentity, observer: r.observer,
+        capturedAt: new Date().toISOString(), snapshotFiles: snapshot(observation.projectPath, r.put) }, null, 2) + '\n')
+      verifyPhysicalDirectoryIdentity(physicalSourceIdentity(observation.projectPath, `${spec.label} runtime snapshot`), item.value.runtimeRootIdentity, `${spec.label} before-cleanup runtime snapshot`)
+      return item.beforeCleanup
+    }
+    ensure(observation.phase === 'after-remove' && item.beforeCleanup && item.originalRemoval?.status === 'fulfilled'
+      && item.originalRemoval.pathAbsent === true && !lstatSync(observation.projectPath, { throwIfNoEntry: false }), 'GitHub owned snapshot cleanup is not complete')
+    const value = { schemaVersion: 1, kind: `weapp-container.${spec.prefix}-snapshot-cleanup`, profile: spec.profile,
+      transaction: item.reference, runtimeProjectPath: observation.projectPath, runtimeRootIdentity: item.value.runtimeRootIdentity,
+      originalRemoval: item.originalRemoval, observer: r.observer,
+      beforeCleanup: item.beforeCleanup, removedAt: new Date().toISOString(), projectAbsent: true }
+    ensure(Date.parse(value.removedAt) >= Date.parse(item.value.capturedAt), 'GitHub snapshot cleanup preceded its capture')
+    item.cleanup = r.put(JSON.stringify(value, null, 2) + '\n')
+    return item.cleanup
+  } catch (error) { r.snapshotFailures.push(error.message); throw error }
+}
+
+/** Observe the original awaited snapshot rm with its identity read and
+ * original dispatch in the same turn. This proves boundary identity, original
+ * successful settlement and path absence, not physical-body unlink under an
+ * external replacement while asynchronous rm is executing. No FD is opened. */
+export function installOwnedSnapshotCleanupObserver({ recorder: r }) {
+  const spec = producerSpec(r)
+  ensure(spec, 'Snapshot cleanup observer requires a reviewed producer')
+  const original = fs.promises.rm
+  let active = 0, restored = false
+  const observed = createObservedOwnedRm({ original, pending: r.pending,
+    failure: error => r.snapshotFailures.push(error.message),
+    claim: args => {
+      const matches = r.snapshots.filter(item => item.value.runtimeProjectPath === args[0])
+      if (!matches.length) return null
+      ensure(matches.length === 1 && !matches[0].removalClaimed, 'Snapshot original removal owner is duplicated')
+      const item = matches[0]
+      item.removalClaimed = true; active++
+      return { item, path: args[0] }
+    },
+    before: (owner, args) => {
+      ensure(args.length === 2 && equal(args[1], { recursive: true, force: true }), 'Snapshot original removal differs from the pinned awaited call')
+      captureOwnedSnapshotCleanupBoundary({ recorder: r, observation: { projectPath: owner.path, phase: 'before-remove' } })
+      const identityAtDispatch = physicalSourceIdentity(owner.path, `${spec.label} runtime snapshot`)
+      verifyPhysicalDirectoryIdentity(identityAtDispatch, owner.item.value.runtimeRootIdentity, `${spec.label} original removal dispatch`)
+      return { identityAtDispatch, dispatchedAt: new Date().toISOString() }
+    },
+    after: (owner, captured) => {
+      ensure(captured && !lstatSync(owner.path, { throwIfNoEntry: false }), 'Snapshot original awaited removal did not settle with path absent')
+      owner.item.originalRemoval = { ...captured, status: 'fulfilled', pathAbsent: true, settledAt: new Date().toISOString(),
+        boundary: 'identity-at-dispatch-original-remove-settlement-path-absence' }
+      captureOwnedSnapshotCleanupBoundary({ recorder: r, observation: { projectPath: owner.path, phase: 'after-remove' } })
+    },
+    settled: () => { active-- },
+  })
+  fs.promises.rm = observed; syncBuiltinESMExports()
+  return () => {
+    if (restored) return
+    ensure(active === 0 && fs.promises.rm === observed, 'Snapshot removal observer is active or lost its scoped ownership')
+    fs.promises.rm = original; syncBuiltinESMExports(); restored = true
+  }
+}
+
+/** Observe the pinned case's original rm call. The hook never removes files
+ * itself, and passive failure cannot replace the original result or error. */
+export function installTemporaryProjectSourceCleanupObserver({ recorder: r }) {
+  const spec = producerSpec(r)
+  ensure(spec?.verifySourceCleanup, 'Source cleanup observer requires an exact temporary-project case')
+  const original = fs.promises.rm
+  let active = 0, restored = false
+  const observed = createObservedOwnedRm({ original, pending: r.pending,
+    failure: error => r.snapshotFailures.push(error.message),
+    claim: args => {
+      const matches = r.builds.filter(build => build.producerProfile?.profile === spec.profile && build.projectPath === args[0])
+      if (!matches.length) return null
+      ensure(matches.length === 1 && !r.sourceRemovalClaimed, `${spec.label} source cleanup owner is duplicated`)
+      r.sourceRemovalClaimed = true
+      const build = matches[0], sourceRoot = args[0], physicalSourceRoot = realpathSync(sourceRoot), sourceRootIdentity = physicalSourceIdentity(sourceRoot)
+      ensure(isAbsolute(sourceRoot) && resolve(sourceRoot) === sourceRoot && physicalSourceRoot === sourceRoot,
+        `${spec.label} source cleanup target is not its actual physical owned root`)
+      ensure(equal(sourceRootIdentity, build.sourceRootIdentity), `${spec.label} source cleanup physical directory identity differs from the build`)
+      active++
+      return Object.freeze({ ownerId: r.ownerId, build, sourceRoot, physicalSourceRoot, sourceRootIdentity })
+    },
+    before: (owner, args) => {
+      ensure(args.length === 2 && equal(args[1], { recursive: true, force: true }) && owner.ownerId === r.ownerId
+        && owner.build.status === 'built' && realpathSync(owner.sourceRoot) === owner.physicalSourceRoot,
+      `${spec.label} source cleanup call differs from the pinned owned removal`)
+      const checkpoint = JSON.parse(reader(r.root)(r.checkpoint))
+      const selected = r.snapshots.filter(item => equal(item.reference, checkpoint.producerTransaction))
+      ensure(checkpoint.status === 'captured' && selected.length === 1 && selected[0].value.sourceRoot === owner.sourceRoot,
+        `${spec.label} source cleanup has no selected actual SDK snapshot`)
+      const transaction = selected[0].value
+      const read = () => ({ sourceFiles: snapshot(owner.sourceRoot, r.put, { exclude: new Set(['.git', owner.build.outputRelative]),
+        checkout: r.config.checkout, consumerGuard: r.config.membersReference }), generatedFiles: snapshot(owner.build.outputRoot, r.put) })
+      const files = read()
+      ensure(equal(files.sourceFiles, transaction.postHelperSource) && equal(files.generatedFiles, transaction.postHelperGenerated)
+        && equal(files, read()) && equal(owner.sourceRootIdentity, physicalSourceIdentity(owner.sourceRoot)), `${spec.label} source/generated changed before owned source cleanup`)
+      const beforeCleanup = r.put(JSON.stringify({ schemaVersion: 1, kind: `weapp-container.${spec.prefix}-source-before-cleanup`, profile: spec.profile,
+        ownerId: owner.ownerId, transaction: selected[0].reference, observer: r.observer, sourceRoot: owner.sourceRoot,
+        generatedRoot: owner.build.outputRoot, sourceRootIdentity: owner.sourceRootIdentity, capturedAt: new Date().toISOString(), ...files }, null, 2) + '\n')
+      return { beforeCleanup, transaction: selected[0].reference }
+    },
+    after: (owner, captured) => {
+      ensure(captured && !lstatSync(owner.sourceRoot, { throwIfNoEntry: false }), `${spec.label} original source cleanup is not complete`)
+      r.sourceCleanup = r.put(JSON.stringify({ schemaVersion: 1, kind: `weapp-container.${spec.prefix}-source-cleanup`, profile: spec.profile,
+        ownerId: owner.ownerId, observer: r.observer, transaction: captured.transaction, beforeCleanup: captured.beforeCleanup,
+        sourceRoot: owner.sourceRoot, generatedRoot: owner.build.outputRoot, sourceRootIdentity: owner.sourceRootIdentity,
+        removedAt: new Date().toISOString(), projectAbsent: true }, null, 2) + '\n')
+    },
+    settled: () => { active-- },
+  })
+  fs.promises.rm = observed
+  syncBuiltinESMExports()
+  return () => {
+    if (restored) return
+    ensure(active === 0, `${spec.label} source cleanup is still recording`)
+    ensure(fs.promises.rm === observed, `${spec.label} source recorder lost its scoped removal ownership`)
+    fs.promises.rm = original
+    syncBuiltinESMExports(); restored = true
+  }
+}
+
+/** Compatibility entry point stays bound to the old exact WXML source tuple. */
+export function installWxmlSourceCleanupObserver(options) {
+  ensure(wxmlProducerCase(options.recorder), 'Source cleanup observer requires the exact WXML case')
+  return installTemporaryProjectSourceCleanupObserver(options)
+}
+
+export const captureOwnedGithubSnapshot = captureOwnedSnapshot
+export const captureOwnedGithubSnapshotCleanup = captureOwnedSnapshotCleanup
+
+export async function captureOfficialFixtureCheckpoint({ recorder: r, runtimeObservation, checkpointId = 'static-initial' }) {
+  await Promise.all(r.pending)
+  const value = { schemaVersion: 1, kind: 'weapp-container.static-generated-checkpoint', profile: FIXTURE_BUILD_PROFILE, status: 'blocked',
+    ownerId: r.ownerId, runId: r.config.runId, caseId: r.caseId, sourceSha256: r.sourceSha256, caseSourcePath: r.caseSourcePath,
+    compilerBuild: r.compilerBuild, consumerGuard: r.config.membersReference, checkpointId,
+    observer: r.observer, staticProfileInputs: r.staticProfileInputs, recorderDirectory: r.directory, runtimeObservation: r.put(JSON.stringify(runtimeObservation)), capturedAt: new Date().toISOString(), cliRelativePath: r.cliRelativePath }
+  try {
+    ensure(checkpointId === 'static-initial', 'Only static-initial checkpoint is supported; HMR generation is unproved')
+    ensure(!r.snapshotFailures?.length, 'GitHub producer snapshot observation failed')
+    const owned = r.snapshots?.filter(item => item.value.runtimeProjectPath === runtimeObservation.projectPath) ?? []
+    ensure(owned.length <= 1, 'GitHub producer snapshot ownership is ambiguous')
+    const actual = owned.length ? { projectPath: owned[0].value.sourceRoot, outputRoot: owned[0].value.generatedRoot } : readProject(runtimeObservation.projectPath)
+    const matches = r.builds.filter(build => build.status === 'built' && (owned.length ? build.projectPath : build.runtimeProjectPath ?? build.projectPath) === actual.projectPath && build.outputRoot === actual.outputRoot)
+    ensure(matches.length === 1 && r.builds.filter(build => (owned.length ? build.projectPath : build.runtimeProjectPath ?? build.projectPath) === actual.projectPath).length === 1, 'Actual runtime project has no unique successful static CLI build; dev/watch/wrapper projects are unsupported')
+    const build = matches[0]
+    const { configBytes: diagnosticConfigBytes, configPath: diagnosticConfigPath, ...diagnosticBuild } = build
+    value.build = diagnosticBuild
+    if (build.producerProfile) {
+      ensure(owned.length === 1, 'GitHub producer actual owned snapshot bytes were not captured')
+      const transaction = owned[0].value
+      value.producerTransaction = owned[0].reference
+      const guards = observeSnapshotGeneration(r, build, owned[0])
+      value.generationGuards = guards.reference
+      const checked = producerSpec(r).verifyTransaction({ transaction, build, identity: r, checkout: r.config.checkout,
+        members: JSON.parse(reader(r.root)(r.config.membersReference)).members, load: reader(r.root) })
+      value.sourceRootIdentity = physicalSourceIdentity(build.projectPath, `${producerSpec(r).label} actual SDK source`)
+      value.runtimeRootIdentity = physicalSourceIdentity(transaction.runtimeProjectPath, `${producerSpec(r).label} actual SDK runtime snapshot`)
+      verifyPhysicalDirectoryIdentity(value.sourceRootIdentity, transaction.sourceRootIdentity, 'Actual SDK source')
+      verifyPhysicalDirectoryIdentity(value.runtimeRootIdentity, transaction.runtimeRootIdentity, 'Actual SDK runtime snapshot')
+      if (transaction.generatedProjectIdentity) verifyPhysicalDirectoryIdentity(guards.value.identities.project.before,
+        transaction.generatedProjectIdentity, 'Template generated IDE project')
+      ensure(guards.value.status === 'passed', 'GitHub producer generation changed before actual SDK checkpoint')
+      verifySnapshotGenerationGuards({ guards: guards.value, transaction, transactionReference: owned[0].reference, load: reader(r.root) })
+      const phase = recordSnapshotRuntimeConfiguration(r, owned[0], guards, { phase: 'sdk-checkpoint', runtimeObservation: value.runtimeObservation })
+      if (phase) value.runtimeConfiguration = phase
+      ensure(Date.parse(runtimeObservation.recordedAt) >= Date.parse(transaction.capturedAt), 'GitHub SDK observation preceded its actual snapshot capture')
+      value.producerTransaction = owned[0].reference; value.runtimeGenerated = checked.runtimeGenerated
+    } else {
+      ensure(!owned.length, 'Unreviewed case attempted the GitHub snapshot profile')
+      ensure((build.runtimeProjectConfig ?? build.projectConfig).sha256 === hash(actual.configBytes), 'Opened project configuration differs from the compiled project')
+      if (build.staticCliProfile?.profile === TEMPLATE_STATIC_CLI_PROFILE) {
+        verifyPhysicalDirectoryIdentity(physicalSourceIdentity(build.projectPath, 'Template source'), build.sourceRootIdentity, 'Template source')
+        verifyPhysicalDirectoryIdentity(physicalSourceIdentity(build.runtimeProjectPath, 'Generated template IDE project'), build.runtimeRootIdentity, 'Generated template IDE project')
+        ensure(equal(build.projectOutput, snapshot(join(build.projectPath, build.sourceOutputRelative), r.put)), 'Opened template project differs from its captured full fresh project output')
+      }
+      ensure(equal(build.generated, snapshot(actual.outputRoot, r.put)), 'Opened mini-program generation differs from the captured static CLI output')
+    }
+    ensure(typeof runtimeObservation.installationId === 'string' && /^[0-9a-f]{64}$/.test(runtimeObservation.installationId)
+      && Date.parse(runtimeObservation.recordedAt) >= Date.parse(build.endedAt) && Date.parse(runtimeObservation.recordedAt) <= Date.parse(value.capturedAt), 'Actual runtime installation/time observation is incomplete or preceded the build')
+    const { configBytes, configPath, stdout, stderr, ...details } = build
+    value.build = { ...details, stdout, stderr }; value.status = 'captured'
+  } catch (error) { value.failure = error.message; if (error.runtimeConfigurationCandidate) value.runtimeConfigurationCandidate = error.runtimeConfigurationCandidate }
+  value.capturedAt = new Date().toISOString()
+  const reference = r.put(JSON.stringify(value, null, 2) + '\n')
+  const checkpointPath = join(r.directory, 'static-checkpoint.json')
+  writeFileSync(checkpointPath, JSON.stringify(value, null, 2) + '\n')
+  r.checkpoint = reference
+  if (value.status !== 'captured') throw Object.assign(new Error(value.failure), { fixtureCheckpoint: reference })
+  return { reference, attestation: value }
+}
+
+/** Flush after all case actions, before restoring the scoped observer. A
+ * deleted cleanup project needs no live files; all observed later compiler
+ * actions still make this static proof unusable. */
+export async function flushStaticFixtureBuildRecorder({ recorder: r }) {
+  await Promise.all(r.pending)
+  const value = { schemaVersion: 1, kind: 'weapp-container.static-recorder-summary', profile: FIXTURE_BUILD_PROFILE,
+    status: 'blocked', ownerId: r.ownerId, runId: r.config.runId, caseId: r.caseId, sourceSha256: r.sourceSha256,
+    ...(producerSpec(r) ? { producerCandidates: r.snapshotCandidates ?? [] } : {}),
+    checkpoint: r.checkpoint ?? null, observedCliSpawns: r.builds.length, recordingEndedAt: new Date().toISOString(),
+    actions: r.builds.map(({ stdout, stderr, configBytes, configPath, ...build }) => ({ ...build, ...(stdout && !Array.isArray(stdout) ? { stdout, stderr } : {}) })) }
+  try {
+    ensure(equal(r.staticProfileInputs, staticProfileInputs().map(item => ({ path: item.path, artifact: r.put(item.bytes) }))), 'Static profile helper bytes changed during the recorder interval')
+    ensure(r.checkpoint, 'Static recorder has no runtime checkpoint')
+    const checkpoint = JSON.parse(readFileSync(join(r.root, r.checkpoint.path)))
+    ensure(checkpoint.status === 'captured', `Static runtime checkpoint is blocked: ${checkpoint.failure ?? 'unknown failure'}`)
+    const build = r.builds.find(build => build.pid === checkpoint.build?.pid)
+    ensure(build && build.status === 'built', 'Static recorder observed no successful target build')
+    for (const action of value.actions) {
+      if (action.pid === build.pid) continue
+      action.projectRemoved = !!action.projectPath && !existsSync(action.projectPath)
+    }
+    verifyActions(value.actions, checkpoint, r.config.checkout, r.caseSourcePath, r.config.membersReference, reader(r.root))
+    if (checkpoint.producerTransaction && producerSpec(r)?.verifySourceCleanup) ensure(r.sourceCleanup
+      && !lstatSync(build.projectPath, { throwIfNoEntry: false }), 'Temporary-project actual source cleanup is missing or incomplete')
+    ensure(!checkpoint.producerTransaction || existsSync(build.projectPath) || producerSpec(r)?.verifySourceCleanup && r.sourceCleanup, 'Snapshot source transaction final source closure is missing')
+    if (existsSync(build.projectPath)) {
+      const actual = readProject(build.runtimeProjectPath ?? build.projectPath)
+      if (build.staticCliProfile?.profile === TEMPLATE_STATIC_CLI_PROFILE) {
+        verifyPhysicalDirectoryIdentity(physicalSourceIdentity(build.projectPath, 'Template final source'), build.sourceRootIdentity, 'Template final source')
+        verifyPhysicalDirectoryIdentity(physicalSourceIdentity(build.runtimeProjectPath, 'Template final IDE project'), build.runtimeRootIdentity, 'Template final IDE project')
+        ensure(equal(build.projectOutput, snapshot(join(build.projectPath, build.sourceOutputRelative), r.put)), 'Template project output changed after the runtime checkpoint')
+        value.templateFinal = { capturedAt: new Date().toISOString(), sourceRoot: build.projectPath, runtimeProjectPath: build.runtimeProjectPath,
+          sourceRootIdentity: build.sourceRootIdentity, runtimeRootIdentity: build.runtimeRootIdentity,
+          sourceAfter: build.sourceAfter, generated: build.generated, projectOutput: build.projectOutput }
+      }
+      const transaction = checkpoint.producerTransaction ? JSON.parse(reader(r.root)(checkpoint.producerTransaction)) : null
+      const finalGenerated = snapshot(actual.outputRoot, r.put)
+      const finalSource = snapshot(build.projectPath, r.put, { exclude: new Set(['.git', build.sourceOutputRelative ?? build.outputRelative]), checkout: r.config.checkout, consumerGuard: r.config.membersReference })
+      ensure(equal(transaction?.postHelperGenerated ?? build.generated, finalGenerated) && equal(transaction?.postHelperSource ?? build.sourceAfter, finalSource), 'Static source/generated generation changed after the runtime checkpoint')
+      if (transaction) value.producerSourceFinal = { capturedAt: new Date().toISOString(), sourceRoot: build.projectPath,
+        generatedRoot: actual.outputRoot, sourceRootIdentity: physicalSourceIdentity(build.projectPath, 'Snapshot final source'),
+        sourceFiles: finalSource, generatedFiles: finalGenerated }
+      if (transaction) verifyPhysicalDirectoryIdentity(value.producerSourceFinal.sourceRootIdentity, transaction.sourceRootIdentity, 'Snapshot final source')
+      value.finalGuard = 'same-source-and-generated-closure'
+    } else {
+      value.finalGuard = 'owned-project-cleaned-after-captured-generation'
+      if (checkpoint.producerTransaction && producerSpec(r)?.verifySourceCleanup) value.producerSourceCleanup = r.sourceCleanup
+    }
+    if (checkpoint.producerTransaction && producerSpec(r)?.verifySourceCleanup) producerSpec(r).verifySourceCleanup({ final: value.producerSourceCleanup,
+      transaction: JSON.parse(reader(r.root)(checkpoint.producerTransaction)), transactionReference: checkpoint.producerTransaction,
+      ownerId: r.ownerId, checkpointAt: checkpoint.capturedAt, recordingEndedAt: value.recordingEndedAt, load: reader(r.root) })
+    if (checkpoint.producerTransaction) {
+      ensure(!r.snapshotFailures.length && r.snapshots.length && r.snapshots.every(item => item.cleanup), 'GitHub owned snapshot cleanup is incomplete')
+      value.producerFinal = r.snapshots.map(item => ({ transaction: item.reference, cleanup: item.cleanup, ...(item.runtimeConfiguration ? { runtimeConfiguration: item.runtimeConfiguration } : {}) }))
+    }
+    value.status = 'complete'
+  } catch (error) { value.failure = error.message }
+  value.recordingEndedAt = new Date().toISOString()
+  const reference = r.put(JSON.stringify(value, null, 2) + '\n')
+  writeFileSync(join(r.directory, 'static-recorder-summary.json'), JSON.stringify(value, null, 2) + '\n')
+  return { reference, attestation: value }
+}
+
+export function reviewedFixturePackerClosure() {
+  const files = PACKER_MODULES.map(path => ({ path, bytes: readFileSync(join(REPOSITORY, path)) }))
+  const require = createRequire(join(REPOSITORY, PACKER)), dependencyRoot = dirname(require.resolve('acorn/package.json'))
+  const walk = (directory, prefix = 'node_modules/acorn') => {
+    for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const file = join(directory, entry.name), path = `${prefix}/${entry.name}`
+      if (entry.isDirectory()) walk(file, path)
+      else { ensure(entry.isFile(), 'Packer dependency closure contains a link/special file'); files.push({ path, bytes: readFileSync(file) }) }
+    }
+  }
+  walk(dependencyRoot)
+  return files.sort((a, b) => a.path.localeCompare(b.path))
+}
+function materialize(files, directory, load) {
+  ensure(!existsSync(directory), 'Fixture packer input/executor directory already exists')
+  mkdirSync(directory, { recursive: true })
+  for (const item of files) {
+    safe(item.path); ensure(item.kind === undefined || item.kind === 'file', 'Generated fixture closure cannot contain links')
+    const file = join(directory, item.path); mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, load(item.artifact), { flag: 'wx' })
+  }
+}
+function resourceReferences(manifest, outputFiles) {
+  const hashes = new Set()
+  const visit = (value, key = '') => {
+    if (Array.isArray(value)) value.forEach(child => visit(child))
+    else if (value && typeof value === 'object') Object.entries(value).forEach(([key, child]) => visit(child, key))
+    else if (typeof value === 'string') {
+      if (['sha256', 'sourceSha256', 'executableSha256'].includes(key) && /^[0-9a-f]{64}$/.test(value)) hashes.add(value)
+      if (['wxmlAst', 'wxssIr'].includes(key) && /^sha256:[0-9a-f]{64}$/.test(value)) hashes.add(value.slice(7))
+    }
+  }
+  visit(manifest)
+  const resources = {}
+  for (const sha256 of [...hashes].sort()) {
+    const file = outputFiles.find(item => item.path === `blobs/sha256/${sha256}`)
+    ensure(file?.artifact.sha256 === sha256, 'Actual packer output blob closure is incomplete')
+    resources[sha256] = file.artifact
+  }
+  return resources
+}
+export async function finalizeStaticFixtureBuild({ root, directory, checkpoint, compilerBuild, compilerUse, expectedCommit,
+  expectedProfile = COMPILER_BUILD_PROFILE, timeoutMs = 30_000, fixtureId, recorderSummary }) {
+  const a = archive(root, directory), load = reader(a.root)
+  checkpoint = typeof checkpoint === 'string' ? a.put(readFileSync(checkpoint)) : checkpoint.reference ?? checkpoint
+  const captured = JSON.parse(load(checkpoint))
+  recorderSummary = recorderSummary?.reference ?? recorderSummary ?? join(captured.recorderDirectory, 'static-recorder-summary.json')
+  if (typeof recorderSummary === 'string') recorderSummary = a.put(readFileSync(recorderSummary))
+  const consumed = inspectCompilerUseEvidence({ root: a.root, reference: compilerUse, compilerBuild, expectedCommit, expectedProfile,
+    caseId: captured.caseId, sourceSha256: captured.sourceSha256 })
+  ensure(!consumed.errors.length, consumed.errors.join('\n'))
+  verifyCheckpoint(captured, consumed.attestation, load, expectedProfile, consumed.validatedMembers)
+  verifySummary(JSON.parse(load(recorderSummary)), captured, checkpoint, consumed.attestation, load, consumed.validatedMembers)
+  verifyCompilerBridgeProjects({ witness: consumed.bridgeProjectWitness, use: consumed.attestation, checkpoint: captured,
+    summary: JSON.parse(load(recorderSummary)), load })
+  const ownerId = randomUUID(), executor = join(a.directory, 'packer-executor'), input = join(a.directory, 'packer-input'), output = join(a.directory, 'packer-output')
+  const modules = reviewedFixturePackerClosure().map(item => ({ path: item.path, artifact: a.put(item.bytes) }))
+  materialize(modules, executor, load); materialize(captured.runtimeGenerated ?? captured.build.generated, input, load)
+  const before = a.put(JSON.stringify(snapshot(input, a.put)))
+  const preload = a.put(readFileSync(PRELOAD)), preloadPath = join(a.directory, 'packer-preload.mjs'), logPath = join(a.directory, 'packer-loads.jsonl')
+  writeFileSync(preloadPath, load(preload), { flag: 'wx' }); writeFileSync(logPath, '', { flag: 'wx' })
+  const configPath = join(a.directory, 'packer-config.json'), config = { log: logPath, files: modules.map(item => ({ file: join(executor, item.path), sha256: item.artifact.sha256, bytes: item.artifact.bytes })) }
+  writeFileSync(configPath, JSON.stringify(config), { flag: 'wx' })
+  const command = [process.execPath, '--import', preloadPath, join(executor, PACKER), input, '--out', output, '--compiler-commit', expectedCommit]
+  const startedAt = new Date().toISOString(), stdout = [], stderr = []
+  const child = spawn(command[0], command.slice(1), { cwd: executor, env: { PATH: process.env.PATH, NODE_OPTIONS: '', NODE_PATH: '', WEAPP_CONTAINER_FIXTURE_PACKER_CONFIG: configPath }, stdio: ['ignore', 'pipe', 'pipe'] })
+  child.stdout.on('data', bytes => stdout.push(bytes)); child.stderr.on('data', bytes => stderr.push(bytes))
+  let timedOut = false
+  const timer = setTimeout(() => { timedOut = true; child.kill('SIGKILL') }, timeoutMs)
+  const terminal = await new Promise(accept => { child.once('error', error => { stderr.push(Buffer.from(error.message)); accept({ exitCode: null, signal: 'spawn-error' }) }); child.once('close', (exitCode, signal) => accept({ exitCode, signal })) })
+  clearTimeout(timer)
+  const value = { schemaVersion: 1, kind: 'weapp-container.fixture-build', profile: FIXTURE_BUILD_PROFILE, status: 'blocked', ownerId,
+    caseId: captured.caseId, sourceSha256: captured.sourceSha256, compilerBuild, compilerUse, checkpoint, recorderSummary,
+    producer: a.put(readFileSync(MODULE)),
+    staticProfileInputs: captured.staticProfileInputs,
+    ...(captured.producerTransaction ? { producerProfile: captured.build.producerProfile.profile, producerInputs: producerModules().map(({ path, bytes }) => ({ path, artifact: a.put(bytes) })) } : {}), packer: { modules, preload, executor, input, output, config: a.put(readFileSync(configPath)),
+      command, run: { ...terminal, pid: child.pid ?? null, timedOut, startedAt, endedAt: new Date().toISOString(), stdout: a.put(Buffer.concat(stdout)), stderr: a.put(Buffer.concat(stderr)) },
+      loads: a.put(readFileSync(logPath)) }, before }
+  try {
+    ensure(terminal.exitCode === 0 && !terminal.signal && !timedOut, 'Actual archived packer failed; inspect retained logs')
+    value.after = a.put(JSON.stringify(snapshot(input, a.put)))
+    ensure(equal(value.before, value.after), 'Actual packer mutated immutable generated input')
+    ensure(equal(modules, snapshot(executor, a.put).map(({ path, artifact }) => ({ path, artifact }))), 'Packer executable module closure changed')
+    value.outputFiles = snapshot(output, a.put)
+    const manifest = JSON.parse(load(value.outputFiles.find(item => item.path === 'manifest.json')?.artifact))
+    const fixtureValue = { id: fixtureId ?? `official-static-${captured.caseId}-${manifest.integrity.root}`, manifest }
+    ensure(inspectExecutionFixture(fixtureValue, expectedCommit).status === 'passed', 'Actual packer did not produce a valid pinned fixture')
+    value.fixture = a.put(JSON.stringify(fixtureValue, null, 2) + '\n'); value.resources = resourceReferences(manifest, value.outputFiles); value.status = 'built'
+  } catch (error) { value.failure = error.message }
+  const reference = a.put(JSON.stringify(value, null, 2) + '\n')
+  return { reference, fixtureBuild: reference, attestation: value, fixture: value.fixture,
+    fixtureValue: value.fixture ? JSON.parse(load(value.fixture)) : null, resources: value.resources }
+}
+
+function verifyActions(actions, checkpoint, checkout, caseSourcePath, consumerGuard, load, validatedMembers) {
+  ensure(Array.isArray(actions) && actions.length, 'Static recorder has no compiler actions')
+  const target = actions.filter(action => action.pid === checkpoint.build?.pid)
+  ensure(target.length === 1 && equal(target[0], checkpoint.build), 'Static target action differs from checkpoint')
+  const members = validatedMembers ?? JSON.parse(load(consumerGuard)).members
+  const memberPaths = members.map(item => item.path)
+  for (const action of actions) {
+    if (action === target[0]) continue
+    const expected = companionPath(checkout, caseSourcePath)
+    ensure(action.action === 'companion-dev' && action.status === 'closed' && action.projectRemoved === true
+      && action.projectPath === expected && action.cwd === expected && action.outputRoot === join(expected, action.outputRelative)
+      && inside(expected, action.outputRoot) && action.outputRoot !== expected
+      && !inside(expected, checkpoint.build.projectPath) && !inside(checkpoint.build.projectPath, expected)
+      && equal(action.observer, checkpoint.observer) && action.command?.length === 4
+      && runtimeArguments(action)[0] === runtimeArguments(checkpoint.build)[0] && action.command[1] === checkpoint.build.command[1]
+      && action.command[2] === 'dev' && action.command[3] === '--non-interactive'
+      && Number.isSafeInteger(action.pid) && action.pid > 0 && action.outputCaptured && action.outputAbsent
+      && companionExited(action)
+      && Date.parse(action.endedAt) >= Date.parse(action.startedAt)
+      && Date.parse(action.projectRemovedBeforeTargetAt) >= Date.parse(action.endedAt)
+      && Date.parse(action.projectRemovedBeforeTargetAt) <= Date.parse(checkpoint.build.startedAt)
+      && Date.parse(action.endedAt) < Date.parse(checkpoint.build.startedAt),
+    'Unrelated compiler action is not a closed, removed, disjoint owned companion before the target build')
+    ensure(Array.isArray(action.sourceBefore) && action.sourceBefore.length && Array.isArray(action.sourceAfter) && action.sourceAfter.length
+      && Array.isArray(action.generated) && action.generated.some(item => item.path === 'app.json'), 'Companion input/output closure is incomplete')
+    for (const [files, links] of [[action.sourceBefore, true], [action.sourceAfter, true], [action.generated, false]]) {
+      const names = new Set()
+      for (const item of files) {
+        safe(item.path); ensure(!names.has(item.path), 'Duplicate companion member'); names.add(item.path)
+        if (item.kind === 'file') load(item.artifact)
+        else ensure(links && item.kind === 'consumer-link' && equal(item.consumerGuard, consumerGuard)
+          && memberPaths.some(path => path === item.target || path.startsWith(item.target + '/')), 'Companion has an unbound dependency or target-project link')
+      }
+    }
+    const config = JSON.parse(load(action.projectConfig))
+    ensure(action.sourceBefore.some(item => item.path === 'project.config.json' && equal(item.artifact, action.projectConfig))
+      && resolve(expected, config.miniprogramRoot ?? '.') === action.outputRoot, 'Companion output is not its owned project root')
+    load(action.stdout); load(action.stderr)
+  }
+}
+
+// Live recording can validate action ownership and cleanup before compiler-use
+// logs are sealed. Only the offline reader has the complete verified use; keep
+// its actual startup proof separate so live flush never borrows partial logs.
+function verifyObservedCompanionStartups(actions, checkpoint, use, load) {
+  if (!use.macroObservation) return
+  const logs = use.logs.flatMap(ref => load(ref).toString('utf8').trim().split('\n').map(line => JSON.parse(line)))
+  for (const action of actions) {
+    if (action.pid === checkpoint.build.pid) continue
+    const startups = logs.filter(event => event.kind === 'start' && event.pid === action.pid && event.threadId === 0)
+    ensure(equal(action.environment, checkpoint.build.environment) && startups.length === 1
+      && equal(startups[0].argv, runtimeArguments(action)) && startups[0].cwd === action.cwd
+      && startups[0].ppid === action.observer.pid && startups[0].nodeOptions === use.nodeOptions
+      && !startups[0].fixtureInputClosure
+      && logs.some(event => event.kind === 'load' && event.pid === action.pid
+        && event.path?.startsWith('packages/weapp-vite/dist/') && event.loadedSourceSha256 === event.sha256),
+    'Observed compiler companion lacks its exact controlled environment and actual compiler startup')
+  }
+}
+
+function verifySummary(summary, checkpoint, checkpointReference, use, load, validatedMembers, producerRevision) {
+  ensure(summary.schemaVersion === 1 && summary.kind === 'weapp-container.static-recorder-summary' && summary.profile === FIXTURE_BUILD_PROFILE
+    && summary.status === 'complete' && summary.ownerId === checkpoint.ownerId && summary.runId === use.ownerId
+    && summary.caseId === use.caseId && summary.sourceSha256 === use.sourceSha256
+    && summary.checkpoint?.sha256 === checkpointReference.sha256 && summary.checkpoint?.bytes === checkpointReference.bytes
+    && summary.observedCliSpawns === summary.actions?.length
+    && ['same-source-and-generated-closure', 'owned-project-cleaned-after-captured-generation'].includes(summary.finalGuard)
+    && Date.parse(summary.recordingEndedAt) >= Date.parse(checkpoint.capturedAt) && Date.parse(summary.recordingEndedAt) <= Date.parse(use.endedAt),
+  'Static recorder summary is incomplete, changed generation, or observed later compiler actions')
+  verifyActions(summary.actions, checkpoint, use.checkout, use.caseSourcePath, use.before, load, validatedMembers)
+  verifyObservedCompanionStartups(summary.actions, checkpoint, use, load)
+  for (const action of summary.actions) ensure(Date.parse(action.startedAt) >= Date.parse(use.startedAt)
+    && Date.parse(action.endedAt) <= Date.parse(use.endedAt), 'Compiler action is outside the owned consumer interval')
+  if (checkpoint.producerTransaction) {
+    const transaction = JSON.parse(load(checkpoint.producerTransaction)), final = summary.producerSourceFinal
+    const spec = producerSpec(checkpoint)
+    ensure(spec, 'Snapshot producer case is unsupported')
+    verifySnapshotCandidateLedger({ entries: summary.producerCandidates, final: summary.producerFinal, identity: checkpoint,
+      ownerId: checkpoint.ownerId, runId: checkpoint.runId, observer: checkpoint.observer, build: checkpoint.build,
+      transactionReference: checkpoint.producerTransaction, checkpointAt: checkpoint.capturedAt, recordingEndedAt: summary.recordingEndedAt, load })
+    if (spec.verifySourceCleanup) {
+      ensure(summary.finalGuard === 'owned-project-cleaned-after-captured-generation' && final === undefined, 'Temporary-project final source cleanup lacks its actual removal proof')
+      spec.verifySourceCleanup({ final: summary.producerSourceCleanup, transaction, transactionReference: checkpoint.producerTransaction,
+        ownerId: checkpoint.ownerId, checkpointAt: checkpoint.capturedAt, recordingEndedAt: summary.recordingEndedAt, load })
+    } else {
+      ensure(summary.producerSourceCleanup === undefined && summary.finalGuard === 'same-source-and-generated-closure', 'GitHub final source generation lacks its actual final read')
+      ;(spec.verifySourceFinal ?? verifyGithubSourceFinal)({ final, transaction, checkpointAt: checkpoint.capturedAt, recordingEndedAt: summary.recordingEndedAt, load })
+    }
+    spec.verifyFinal({ final: summary.producerFinal, identity: checkpoint, producerRevision,
+      transactionReference: checkpoint.producerTransaction, runtimeConfigurationReference: checkpoint.runtimeConfiguration, build: checkpoint.build, checkpointAt: checkpoint.capturedAt,
+      recordingEndedAt: summary.recordingEndedAt, checkout: use.checkout,
+      members: validatedMembers ?? JSON.parse(load(use.before)).members, load })
+  } else ensure(summary.producerFinal === undefined && summary.producerSourceFinal === undefined && summary.producerSourceCleanup === undefined && summary.producerCandidates === undefined, 'Direct fixture selected unrelated snapshot cleanup')
+  if (checkpoint.build.staticCliProfile?.profile === TEMPLATE_STATIC_CLI_PROFILE) {
+    const final = summary.templateFinal, build = checkpoint.build
+    ensure(final && summary.finalGuard === 'same-source-and-generated-closure'
+      && final.sourceRoot === build.projectPath && final.runtimeProjectPath === build.runtimeProjectPath
+      && equal(final.sourceRootIdentity, build.sourceRootIdentity) && equal(final.runtimeRootIdentity, build.runtimeRootIdentity)
+      && equal(final.sourceAfter, build.sourceAfter) && equal(final.generated, build.generated) && equal(final.projectOutput, build.projectOutput)
+      && Date.parse(final.capturedAt) >= Date.parse(checkpoint.capturedAt) && Date.parse(final.capturedAt) <= Date.parse(summary.recordingEndedAt),
+    'Template final source/project/generated transaction is absent or changed')
+  } else ensure(summary.templateFinal === undefined, 'Direct fixture selected unrelated template final metadata')
+  load(summary.checkpoint)
+}
+
+function verifyCheckpoint(c, use, load, expectedProfile, validatedMembers, producerRevision) {
+  ensure(c.kind === 'weapp-container.static-generated-checkpoint' && c.schemaVersion === 1 && c.profile === FIXTURE_BUILD_PROFILE
+    && c.status === 'captured' && c.checkpointId === 'static-initial', 'Static fixture checkpoint is absent, blocked, or a nonstatic generation')
+  ensure(c.runId === use.ownerId && c.caseId === use.caseId && c.sourceSha256 === use.sourceSha256 && c.caseSourcePath === use.caseSourcePath
+    && equal(c.compilerBuild, use.compilerBuild) && equal(c.consumerGuard, use.before), 'Fixture checkpoint belongs to another consumer/case/generation')
+  const build = c.build, runtime = JSON.parse(load(c.runtimeObservation))
+  ensure(runtime.status === undefined || runtime.status === 'passed', 'Fixture checkpoint captured a failed runtime observation')
+  ensure(build.status === 'built' && build.exitCode === 0 && !build.signal && build.outputCaptured && build.outputAbsent === true && isAbsolute(build.projectPath)
+    && isAbsolute(build.outputRoot) && inside(build.projectPath, build.outputRoot) && build.projectPath !== build.outputRoot, 'Static CLI build is failed, not fresh, or lacks an owned output')
+  ensure(build.environment?.NODE_OPTIONS === use.nodeOptions && build.environment?.NODE_PATH === ''
+    && typeof build.environment?.WEAPP_CONTAINER_COMPILER_USE_CONFIG === 'string', 'Static CLI did not inherit the exact controlled compiler consumer environment')
+  let transaction
+  if (c.producerTransaction || build.producerProfile || c.runtimeGenerated) {
+    ensure(c.producerTransaction && build.producerProfile && Array.isArray(c.runtimeGenerated), 'GitHub producer checkpoint fields are incomplete')
+    transaction = JSON.parse(load(c.producerTransaction))
+    const spec = producerSpec(c)
+    ensure(spec, 'Snapshot producer case is unsupported')
+    const checked = spec.verifyTransaction({ transaction, build, identity: c, checkout: use.checkout, members: validatedMembers, load, producerRevision })
+    verifyPhysicalDirectoryIdentity(c.sourceRootIdentity, transaction.sourceRootIdentity, 'Actual SDK source')
+    verifyPhysicalDirectoryIdentity(c.runtimeRootIdentity, transaction.runtimeRootIdentity, 'Actual SDK runtime snapshot')
+    if (c.generationGuards) verifySnapshotGenerationGuards({ guards: JSON.parse(load(c.generationGuards)), transaction, transactionReference: c.producerTransaction, load })
+    if (transaction.launchProjectConfig !== undefined) {
+      ensure(c.runtimeConfiguration && c.generationGuards, 'Snapshot checkpoint omitted the actual launch configuration transaction')
+      const phase = JSON.parse(load(c.runtimeConfiguration))
+      verifySnapshotRuntimeConfiguration({ transition: phase, transaction, transactionReference: c.producerTransaction, members: validatedMembers, load })
+      ensure(phase.phase === 'sdk-checkpoint' && equal(phase.runtimeObservation, c.runtimeObservation)
+        && equal(phase.generationGuards, c.generationGuards) && Date.parse(phase.capturedAt) <= Date.parse(c.capturedAt),
+      'Snapshot checkpoint launch configuration names another SDK observation/interval')
+    } else ensure(c.runtimeConfiguration === undefined, 'Snapshot checkpoint selected an unrelated launch configuration transaction')
+    ensure(equal(checked.runtimeGenerated, c.runtimeGenerated), 'GitHub packer runtime closure is detached from its actual snapshot')
+    ensure(Date.parse(transaction.capturedAt) <= Date.parse(runtime.recordedAt), 'GitHub SDK observation preceded snapshot capture')
+  }
+  ensure(runtime.projectPath === (transaction?.runtimeProjectPath ?? build.runtimeProjectPath ?? build.projectPath) && /^[0-9a-f]{64}$/.test(runtime.installationId)
+    && Date.parse(runtime.recordedAt) >= Date.parse(build.endedAt) && Date.parse(runtime.recordedAt) <= Date.parse(c.capturedAt)
+    && Date.parse(build.startedAt) >= Date.parse(use.startedAt) && Date.parse(build.endedAt) >= Date.parse(build.startedAt)
+    && Date.parse(c.capturedAt) <= Date.parse(use.endedAt), 'Fixture runtime project/installation/time is unrelated to compiler execution')
+  ensure(equal(verifyStaticGeneratedSupport(build.sourceBefore, build.sourceAfter, { identity: c, guards: transaction?.guards, members: validatedMembers, load }), build.generatedSupport ?? []) && build.sourceBefore.length
+    && Array.isArray(build.generated) && build.generated.length, 'Fixture source or generated closure is missing or changed')
+  const expectedCli = expectedProfile === COMPILER_BUILD_PROFILE ? CLI : c.cliRelativePath
+  const invocation = parseStaticCliInvocation({ args: build.command?.slice(1), cliPath: join(use.checkout, expectedCli),
+    cwd: build.cwd, checkout: use.checkout, caseId: use.caseId, caseSourcePath: use.caseSourcePath, sourceSha256: use.sourceSha256 })
+  ensure(c.cliRelativePath === expectedCli && invocation && invocation.sourceRoot === build.projectPath,
+    'Fixture build did not execute the supported pinned static CLI/project')
+  if (invocation.profile === TEMPLATE_STATIC_CLI_PROFILE) {
+    ensure(transaction && build.producerProfile?.profile === TEMPLATE_PRODUCER_PROFILE, 'Template original default launch requires its owned SDK snapshot transaction')
+    verifyTemplateProjectEvidence({ build, profile: invocation, load, members: validatedMembers, checkout: use.checkout })
+  } else {
+    ensure(build.staticCliProfile === undefined && build.sourceRoot === undefined && build.sourceOutputRelative === undefined
+      && build.runtimeProjectPath === undefined && build.runtimeProjectConfig === undefined && build.projectOutput === undefined,
+    'Direct static project contains unrecognized template profile metadata')
+    const projectConfig = JSON.parse(load(build.projectConfig))
+    ensure(build.sourceBefore.some(item => item.path === 'project.config.json' && equal(item.artifact, build.projectConfig)), 'Opened project config was not in the compiled source closure')
+    ensure(resolve(build.projectPath, projectConfig.miniprogramRoot ?? '.') === build.outputRoot, 'Fixture generated root differs from actual opened project config')
+  }
+  const runtimeArgv = runtimeArguments(build)
+  // The consumer verifier already parsed, hashed and matched this exact
+  // immutable member list. Reuse that internal output rather than rereading a
+  // multi-megabyte shared guard for every case in the same audit.
+  ensure(Array.isArray(validatedMembers) && Object.isFrozen(validatedMembers), 'Fixture consumer member closure was not internally verified')
+  const consumerMembers = new Map(validatedMembers.map(item => [item.path, item]))
+  const validateFiles = (files, links) => {
+    const names = new Set()
+    for (const item of files) {
+      safe(item.path); ensure(!names.has(item.path), 'Duplicate fixture closure path'); names.add(item.path)
+      if (item.kind === 'file') load(item.artifact)
+      else ensure(links && item.kind === 'consumer-link' && equal(item.consumerGuard, use.before)
+        && [...consumerMembers.keys()].some(path => path === item.target || path.startsWith(item.target + '/')), 'Fixture dependency link is not bound to actual consumer closure')
+    }
+  }
+  validateFiles(build.sourceBefore, true); validateFiles(build.sourceAfter, true); validateFiles(build.generated, false); load(build.stdout); load(build.stderr)
+  const logs = use.logs.flatMap(ref => load(ref).toString('utf8').trim().split('\n').map(line => JSON.parse(line)))
+  const startup = logs.find(event => event.kind === 'start' && event.pid === build.pid)
+  const consumerStartup = logs.find(event => event.kind === 'start' && event.pid === use.process.pid && event.threadId === 0)
+  if (invocation.profile === TEMPLATE_STATIC_CLI_PROFILE) ensure(startup?.cwd === build.cwd,
+    'Template CLI startup cwd differs from the recognized source root')
+  ensure(consumerStartup && runtimeArgv[0] === consumerStartup.argv?.[0], 'Fixture compiler Node differs from the actual root consumer executable')
+  if (use.macroObservation) ensure(build.fixtureInputClosure && equal(startup?.fixtureInputClosure, build.fixtureInputClosure)
+    && equal(JSON.parse(load(build.fixtureInputClosure)), staticFixtureInputClosure(invocation, build.sourceBefore)),
+  'Fixture macro inputs differ from the actual unique static CLI action')
+  ensure(startup && equal(startup.argv, runtimeArgv) && startup.ppid === c.observer.pid
+    && logs.some(event => event.pid === build.pid && event.kind === 'load' && event.path?.startsWith('packages/weapp-vite/dist/')
+      && event.loadedSourceSha256 === event.sha256 || expectedProfile !== COMPILER_BUILD_PROFILE && event.pid === build.pid && event.kind === 'load' && consumerMembers.get(event.path)?.origin === 'output'), 'Fixture CLI process was not the actual observed compiler consumer')
+}
+
+export function inspectConformanceFixtureBuildEvidence({ root, reference, compilerBuild, compilerUse, expectedCommit, caseId, sourceSha256,
+  fixture, resources, runtimeObservation, expectedProfile = COMPILER_BUILD_PROFILE, loadArtifact, compilerBuildCache }) {
+  const errors = [], references = new Map(), load = reader(root, loadArtifact, references)
+  let attestation, compilerUseAttestation
+  try {
+    attestation = JSON.parse(load(reference))
+    const a = attestation
+    ensure(a.schemaVersion === 1 && a.kind === 'weapp-container.fixture-build' && a.profile === FIXTURE_BUILD_PROFILE && a.status === 'built', 'Fixture build is absent, blocked or unsupported')
+    ensure(a.caseId === caseId && a.sourceSha256 === sourceSha256 && equal(a.compilerBuild, compilerBuild) && equal(a.compilerUse, compilerUse), 'Fixture build source/compiler consumer differs')
+    const consumed = inspectCompilerUseEvidence({ root, reference: compilerUse, compilerBuild, expectedCommit, caseId, sourceSha256, expectedProfile, loadArtifact, compilerBuildCache })
+    ensure(!consumed.errors.length, consumed.errors.join('\n'))
+    compilerUseAttestation = consumed.attestation
+    for (const ref of consumed.artifactReferences) references.set(ref.path, ref)
+    const producerRevision = assertReviewedFixtureProducer(a, consumed.reviewedProducerRevision, load)
+    const captured = JSON.parse(load(a.checkpoint));
+    ensure(equal(a.staticProfileInputs, captured.staticProfileInputs), 'Fixture static profile helpers differ from actual recorder startup')
+    verifyCheckpoint(captured, consumed.attestation, load, expectedProfile, consumed.validatedMembers, producerRevision)
+    const recorderSummary = JSON.parse(load(a.recorderSummary))
+    verifySummary(recorderSummary, captured, a.checkpoint, consumed.attestation, load, consumed.validatedMembers, producerRevision)
+    verifyCompilerBridgeProjects({ witness: consumed.bridgeProjectWitness, use: consumed.attestation, checkpoint: captured, summary: recorderSummary, load })
+    if (runtimeObservation) ensure(equal(runtimeFacts(JSON.parse(load(captured.runtimeObservation))), runtimeFacts(runtimeObservation)), 'Fixture checkpoint belongs to a different official runtime observation')
+    if (captured.producerTransaction) ensure(a.producerProfile === captured.build.producerProfile.profile,
+      'Snapshot fixture producer profile differs from its complete reviewed closure')
+    else ensure(a.producerProfile === undefined && a.producerInputs === undefined, 'Direct fixture selected an unrelated producer profile')
+    const actualModules = a.packer.modules
+    const reviewed = reviewedFixturePackerClosure()
+    ensure(equal(actualModules.map(item => ({ path: item.path, sha256: item.artifact.sha256, bytes: item.artifact.bytes })), reviewed.map(item => ({ path: item.path, sha256: hash(item.bytes), bytes: item.bytes.length }))), 'Archived packer module/dependency closure is not the reviewed implementation')
+    actualModules.forEach(item => load(item.artifact))
+    const p = a.packer, run = p.run
+    if (captured.producerTransaction) ensure(Date.parse(run.startedAt) >= Date.parse(recorderSummary.recordingEndedAt), 'GitHub packer preceded final producer closure and cleanup')
+    ensure([p.executor, p.input, p.output].every(isAbsolute) && p.executor !== p.input && p.executor !== p.output && p.input !== p.output, 'Packer execution/input/output directories are not distinct absolute paths')
+    ensure(run.exitCode === 0 && !run.signal && !run.timedOut && Number.isSafeInteger(run.pid) && run.pid > 0
+      && Date.parse(run.endedAt) >= Date.parse(run.startedAt) && Date.parse(run.startedAt) >= Date.parse(captured.capturedAt), 'Actual packer invocation was not successful or preceded its input capture')
+    ensure(equal(p.command, [p.command[0], '--import', join(dirname(p.executor), 'packer-preload.mjs'), join(p.executor, PACKER), p.input, '--out', p.output, '--compiler-commit', expectedCommit]), 'Packer invocation selected other inputs/compiler/options')
+    load(run.stdout); load(run.stderr)
+    ensure(equal(a.before, a.after) && equal(fileIdentities(JSON.parse(load(a.before))), fileIdentities(captured.runtimeGenerated ?? captured.build.generated)), 'Packer did not consume the captured complete generated closure unchanged')
+    load(a.after)
+    const moduleFiles = new Map(actualModules.map(item => [join(p.executor, item.path), item.artifact]))
+    const config = JSON.parse(load(p.config))
+    ensure(equal(config.files, actualModules.map(item => ({ file: join(p.executor, item.path), sha256: item.artifact.sha256, bytes: item.artifact.bytes }))), 'Packer loader config differs from archived modules')
+    const events = load(p.loads).toString('utf8').trim().split('\n').map(line => JSON.parse(line))
+    ensure(events.length && events.some(event => event.file === join(p.executor, PACKER)), 'Packer actual entry was not loaded')
+    for (const event of events) ensure(event.pid === run.pid && event.sha256 === moduleFiles.get(event.file)?.sha256 && event.bytes === moduleFiles.get(event.file)?.bytes
+      && (event.sourceSha256 === null || event.sourceSha256 === event.sha256)
+      && Date.parse(event.at) >= Date.parse(run.startedAt) && Date.parse(event.at) <= Date.parse(run.endedAt), 'Packer loaded different modules or belongs to another process/time')
+    const paths = new Set()
+    for (const item of a.outputFiles) { safe(item.path); ensure(item.kind === 'file' && !paths.has(item.path), 'Invalid/duplicate packer output'); paths.add(item.path); load(item.artifact) }
+    const fixtureValue = JSON.parse(load(a.fixture)), manifestOutput = a.outputFiles.find(item => item.path === 'manifest.json')
+    ensure(inspectExecutionFixture(fixtureValue, expectedCommit).status === 'passed' && equal(JSON.parse(load(manifestOutput?.artifact)), fixtureValue.manifest), 'Recipe fixture differs from actual archived packer manifest')
+    ensure(equal(a.resources, resourceReferences(fixtureValue.manifest, a.outputFiles)), 'Recipe resource closure differs from actual packer output')
+    if (fixture) ensure(equal(fixtureValue, fixture.manifest ? fixture : JSON.parse(load(fixture))), 'Recipe substituted an unrelated hand-authored fixture')
+    if (resources) {
+      ensure(equal(Object.keys(a.resources).sort(), Object.keys(resources).sort()), 'Recipe substituted a different blob closure')
+      for (const [sha256, ref] of Object.entries(resources)) ensure(ref.sha256 === a.resources[sha256].sha256 && ref.bytes === a.resources[sha256].bytes
+        && load(ref).length === ref.bytes, 'Recipe substituted different blob resources')
+    }
+  } catch (error) { errors.push(error.message) }
+  return { errors, attestation, compilerUseAttestation, artifactReferences: [...references.values()] }
+}

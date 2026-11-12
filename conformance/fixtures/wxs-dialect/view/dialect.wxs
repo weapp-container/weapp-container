@@ -1,0 +1,53 @@
+function constructors() {
+  var values = [
+    12,
+    'string',
+    true,
+    { value: 1 },
+    function () {},
+    [1],
+    getDate(0),
+    getRegExp('a', 'i')
+  ];
+  return values.map(function (value) { return value.constructor; }).join(',');
+}
+
+function arrays() {
+  var source = [1, 2, 3];
+  var mapped = source.map(function (value) { return value * 2; });
+  var filtered = source.filter(function (value) { return value > 1; });
+  var sliced = source.slice(1);
+  var combined = source.concat([4]);
+  var removed = source.splice(1, 1, 8);
+  return [
+    mapped.join(','),
+    filtered.join(','),
+    sliced.join(','),
+    combined.join(','),
+    removed.join(','),
+    source.join(',')
+  ].join('|');
+}
+
+function computed() {
+  var key = 'con' + 'structor';
+  return [][key] + '|' + ({ value: 1 })[key];
+}
+
+function own() {
+  return ({ constructor: 'Own' }).constructor;
+}
+
+function forIn() {
+  var holder = {};
+  for (holder.constructor in { first: 1, second: 2 }) {}
+  return holder.constructor;
+}
+
+module.exports = {
+  constructors: constructors,
+  arrays: arrays,
+  computed: computed,
+  own: own,
+  forIn: forIn
+};

@@ -1,0 +1,45 @@
+[package]
+name = "container-simulator"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Deterministic developer simulator and JSONL harness for Weapp Container mini-program packs"
+
+[[bin]]
+name = "weapp-simulator"
+path = "src/main.rs"
+
+[features]
+default = ["quickjs-native", "skia-raster"]
+quickjs-native = ["container-runtime/quickjs-native"]
+v8-native = ["container-runtime/v8-native"]
+skia-raster = ["container-render-skia/skia-backend", "container-runtime/skia-backend"]
+desktop-window = ["dep:container-host-desktop", "dep:winit", "container-host-desktop/window"]
+
+[dependencies]
+container-bridge = { path = "../container-bridge" }
+container-core = { path = "../container-core" }
+container-host-common = { path = "../container-host-common" }
+container-host-desktop = { path = "../container-host-desktop", optional = true }
+winit = { version = "0.30", optional = true }
+container-ir = { path = "../container-ir" }
+container-render-skia = { path = "../container-render-skia" }
+container-runtime = { path = "../container-runtime" }
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+ctrlc.workspace = true
+mio = { version = "1", features = ["net", "os-poll"] }
+getrandom = "=0.3.4"
+
+[target.'cfg(unix)'.dependencies]
+nix = { version = "0.31", default-features = false, features = ["signal", "process"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+container-host-desktop = { path = "../container-host-desktop", optional = true, features = ["metal-window"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Diagnostics_ToolHelp", "Win32_System_JobObjects", "Win32_System_Threading"] }

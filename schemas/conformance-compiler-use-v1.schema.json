@@ -1,0 +1,310 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-compiler-use-v1.schema.json",
+  "title": "Archived compiler producer to actual Node consumer binding v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "status",
+    "ownerId",
+    "compilerBuild",
+    "caseId",
+    "sourceSha256",
+    "caseSourcePath",
+    "checkout",
+    "patches",
+    "before",
+    "preload",
+    "producer",
+    "config",
+    "nodeOptions",
+    "allowedModuleRoots",
+    "runnerFiles",
+    "startedAt",
+    "endedAt",
+    "process",
+    "logs"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "kind": {
+      "const": "weapp-container.compiler-use"
+    },
+    "status": {
+      "enum": [
+        "used",
+        "failed"
+      ]
+    },
+    "ownerId": {
+      "type": "string",
+      "pattern": "^[0-9a-f-]{36}$"
+    },
+    "compilerBuild": {
+      "$ref": "#/$defs/artifact"
+    },
+    "caseId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "caseSourcePath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checkout": {
+      "type": "string",
+      "minLength": 1
+    },
+    "patches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "artifact",
+          "executable"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact": {
+            "$ref": "#/$defs/artifact"
+          },
+          "executable": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "before": {
+      "$ref": "#/$defs/artifact"
+    },
+    "after": {
+      "$ref": "#/$defs/artifact"
+    },
+    "preload": {
+      "$ref": "#/$defs/artifact"
+    },
+    "producer": {
+      "$ref": "#/$defs/artifact"
+    },
+    "config": {
+      "$ref": "#/$defs/artifact"
+    },
+    "nodeOptions": {
+      "type": "string",
+      "pattern": "^--require=\".+compiler-use-preload\\.cjs\"$",
+      "description": "Synchronous reviewed witness, installed before execArgv loaders; extra loaders require exact reviewed context and same-thread actual resolve/load evidence."
+    },
+    "allowedModuleRoots": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "runnerFiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "file",
+          "sha256",
+          "bytes",
+          "artifact"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "artifact": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      }
+    },
+    "startedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "endedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "process": {
+      "type": "object",
+      "required": [
+        "exitCode",
+        "pid"
+      ],
+      "properties": {
+        "exitCode": {
+          "type": "integer"
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "logs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "failure": {
+      "type": "string",
+      "minLength": 1
+    },
+    "macroObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "producer",
+        "manifest",
+        "observer",
+        "validator",
+        "transforms"
+      ],
+      "properties": {
+        "profile": {
+          "enum": [
+            "pinned-json-macro-esm-v2-rolldown-runtime",
+            "pinned-json-macro-esm-cjs-v3",
+            "pinned-json-macro-esm-cjs-v4-runtime-input",
+            "pinned-json-macro-esm-cjs-v5-npm-support",
+            "pinned-json-macro-esm-cjs-v6-core-transform"
+          ]
+        },
+        "producer": {
+          "$ref": "#/$defs/artifact"
+        },
+        "manifest": {
+          "$ref": "#/$defs/artifact"
+        },
+        "observer": {
+          "$ref": "#/$defs/artifact"
+        },
+        "validator": {
+          "$ref": "#/$defs/artifact"
+        },
+        "transforms": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "original",
+              "patched"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "original": {
+                "$ref": "#/$defs/artifact"
+              },
+              "patched": {
+                "$ref": "#/$defs/artifact"
+              }
+            }
+          }
+        },
+        "profileInputs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "artifact"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "artifact": {
+                "$ref": "#/$defs/artifact"
+              }
+            }
+          }
+        }
+      }
+    },
+    "staticProfileInputs": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "artifact"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "artifact": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

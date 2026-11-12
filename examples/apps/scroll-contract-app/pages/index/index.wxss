@@ -1,0 +1,21 @@
+.screen { position: relative; width: 240px; height: 600px; background: #ffffff; }
+.scroller { position: absolute; top: 10px; width: 100px; height: 80px; }
+.a { left: 10px; background: #e53935; }
+.b { left: 130px; background: #1976d2; }
+.c { left: 130px; top: 260px; background: #40d0d0; }
+.content { position: relative; }
+.content-a { width: 260px; height: 240px; }
+.content-b { width: 220px; height: 200px; }
+.content-c { width: 220px; height: 200px; }
+.target { position: absolute; width: 40px; height: 40px; }
+.target-a { left: 70px; top: 60px; background: #00a060; }
+.target-b { left: 90px; top: 70px; background: #ffcc00; }
+.page-target { position: absolute; left: 20px; top: 260px; width: 60px; height: 40px; background: #8040c0; }
+.control { position: absolute; width: 65px; height: 24px; background: #ececec; color: #202020; font-size: 11px; }
+.inspect { left: 10px; top: 110px; }
+.set-offsets { left: 80px; top: 110px; }
+.page-scroll { left: 150px; top: 110px; }
+.observe { left: 10px; top: 142px; }
+.patch { left: 80px; top: 142px; }
+.navigate { left: 150px; top: 142px; }
+.relaunch { left: 150px; top: 174px; }

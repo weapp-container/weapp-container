@@ -1,0 +1,5 @@
+<wxs module="tools" src="../../view/no-slot.wxs" />
+<view>
+  <text class="component-headline">{{tools.mark('headline:' + label, marker)}}</text>
+  <text class="component-history">{{tools.history(marker, label)}}</text>
+</view>

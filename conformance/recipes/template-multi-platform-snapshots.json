@@ -1,0 +1,12 @@
+{
+  "source": {
+    "path": "vendor/weapp-vite/e2e/ide/__snapshots__/template-weapp-vite-multi-platform-template.test.ts.snap",
+    "sha256": "6216494786c314ab4f7385cdda74ffda1c60450aca59a955ba6f2a4910d4e9ec",
+    "bytes": 1410
+  },
+  "serialization": "Exact static AST template-literal values; unwrap the two existing multiline string envelopes only",
+  "snapshots": {
+    "template e2e: weapp-vite-multi-platform-template > renders and updates the WeChat target > weapp-vite-multi-platform-template::app.wxss 1": "page {\n    background: #f4f6f8;\n    color: #17212b;\n    min-height: 100%;\n}\n",
+    "template e2e: weapp-vite-multi-platform-template > renders and updates the WeChat target > weapp-vite-multi-platform-template::pages/index/index 1": "<wxs module=\"platformTools\" src=\"./platform.wxs\"/>\n\n<view class=\"page-shell\">\n  <view class=\"page-heading\">\n    <view class=\"page-heading__eyebrow\">weapp-vite</view>\n    <view class=\"page-heading__title\">原生多平台 + Web</view>\n    <view class=\"page-heading__description\">一次维护，按目标平台独立构建和验收。</view>\n  </view>\n\n  <view id=\"platform-marker\" class=\"runtime-marker\">MP_PLATFORM={{platformTools.label(platform)}}</view>\n  <view id=\"runtime-status\" class=\"runtime-status\">status={{status}}</view>\n\n  <PlatformCard id=\"platform-card-host\" platform=\"{{platform}}\"/>\n\n  <view class=\"counter-panel\">\n    <view class=\"counter-panel__label\">跨端交互检查</view>\n    <view id=\"counter-value\" class=\"counter-panel__value\">{{count}}</view>\n    <button activity-type=\"0\" entrance-path=\"\" need-show-entrance=\"\" id=\"increment-button\" class=\"counter-panel__button\">\n      增加计数\n    </button>\n  </view>\n</view>\n"
+  }
+}

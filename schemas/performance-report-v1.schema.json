@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/performance-report-v1.schema.json",
+  "title": "Weapp Container performance evidence report",
+  "description": "Versioned performance evidence. A report with incomplete metrics cannot be used as a host or device pass.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "benchmark",
+    "referenceApp",
+    "host",
+    "engine",
+    "commit",
+    "environment",
+    "iterations",
+    "metrics",
+    "thresholds",
+    "status",
+    "evidence",
+    "disclaimer"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "benchmark": { "const": "container-performance" },
+    "referenceApp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodes", "setDataEntries", "scrollItems", "networkRequests"],
+      "properties": {
+        "nodes": { "const": 1000 },
+        "setDataEntries": { "const": 10000 },
+        "scrollItems": { "const": 1000 },
+        "networkRequests": { "const": 20 }
+      }
+    },
+    "host": { "enum": ["web", "macos", "windows", "linux", "desktop", "android", "ios", "harmony", "miniProgram"] },
+    "engine": { "enum": ["quickjs", "v8", "host"] },
+    "hostClass": { "enum": ["desktop", "mobile", "unknown"] },
+    "commit": { "type": "string", "minLength": 1 },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node", "platform", "arch", "pid"],
+      "properties": {
+        "node": { "type": "string", "minLength": 1 },
+        "platform": { "type": "string", "minLength": 1 },
+        "arch": { "type": "string", "minLength": 1 },
+        "pid": { "type": "integer", "minimum": 0 },
+        "osRelease": { "type": "string", "minLength": 1 },
+        "cpuCount": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }] },
+        "ci": { "type": "boolean" },
+        "gitBranch": { "type": "string", "minLength": 1 },
+        "gitDirty": { "type": "boolean" },
+        "target": { "type": "string", "minLength": 1 }
+      }
+    },
+    "iterations": { "type": "integer", "minimum": 20 },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cold_start_ms",
+        "hot_start_ms",
+        "first_frame_ms",
+        "set_data_10k_ms",
+        "bridge_p99_ms",
+        "scroll_dropped_frame_rate",
+        "steady_state_memory_mb",
+        "quickjs_runtime_package_mb"
+      ],
+      "properties": {
+        "cold_start_ms": { "$ref": "#/$defs/metric" },
+        "hot_start_ms": { "$ref": "#/$defs/metric" },
+        "first_frame_ms": { "$ref": "#/$defs/metric" },
+        "set_data_10k_ms": { "$ref": "#/$defs/metric" },
+        "bridge_p99_ms": { "$ref": "#/$defs/metric" },
+        "scroll_dropped_frame_rate": { "$ref": "#/$defs/metric" },
+        "steady_state_memory_mb": { "$ref": "#/$defs/metric" },
+        "quickjs_runtime_package_mb": { "$ref": "#/$defs/metric" }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_frame_p50_ms",
+        "first_frame_p95_ms",
+        "set_data_10k_p95_ms",
+        "bridge_p99_ms",
+        "scroll_dropped_frame_rate",
+        "steady_state_memory_mb",
+        "quickjs_runtime_package_mb"
+      ],
+      "properties": {
+        "first_frame_p50_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "first_frame_p95_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "set_data_10k_p95_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "bridge_p99_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "scroll_dropped_frame_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "steady_state_memory_mb": { "type": "number", "exclusiveMinimum": 0 },
+        "quickjs_runtime_package_mb": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "status": { "enum": ["passed", "failed", "incomplete"] },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "nativeHost"],
+      "properties": {
+        "protocol": { "enum": ["passed", "failed", "not_measured"] },
+        "nativeHost": { "enum": ["passed", "failed", "not_measured"] }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason"],
+      "properties": {
+        "status": { "enum": ["available", "protocol_only", "unavailable", "blocked"] },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hostProbe": {
+      "type": "object",
+      "description": "Optional host-owned diagnostic probe. Simulator-process evidence is deliberately separate from native GPU evidence.",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "mode",
+        "process",
+        "runtime",
+        "rendererBackends",
+        "nativeSurfaceAttached",
+        "gpuFrameSamplerAttached",
+        "evidenceBoundary"
+      ],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "mode": { "enum": ["simulator-process", "native-host"] },
+        "process": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lifecycle", "coldStart", "rss", "sampleCount"],
+          "properties": {
+            "lifecycle": { "enum": ["measured", "not_measured"] },
+            "coldStart": { "$ref": "#/$defs/metric" },
+            "rss": { "$ref": "#/$defs/metric" },
+            "sampleCount": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "runtime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lifecycleStates", "firstFrame", "snapshots"],
+          "properties": {
+            "lifecycleStates": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "firstFrame": { "$ref": "#/$defs/metric" },
+            "snapshots": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["frame_id", "width", "height", "stride", "format", "pixelBytes"],
+                "properties": {
+                  "frame_id": { "type": "integer", "minimum": 0 },
+                  "width": { "type": "integer", "minimum": 0 },
+                  "height": { "type": "integer", "minimum": 0 },
+                  "stride": { "type": "integer", "minimum": 0 },
+                  "format": { "type": "string", "minLength": 1 },
+                  "pixelBytes": { "type": "integer", "minimum": 0 }
+                }
+              }
+            }
+          }
+        },
+        "rendererBackends": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "nativeSurfaceAttached": { "type": "boolean" },
+        "gpuFrameSamplerAttached": { "type": "boolean" },
+        "evidenceBoundary": { "type": "string", "minLength": 1 }
+      }
+    },
+    "disclaimer": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "metric": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "unit", "value", "p50", "p95", "p99"],
+          "properties": {
+            "status": { "const": "measured" },
+            "unit": { "type": "string", "minLength": 1 },
+            "value": { "type": "number", "minimum": 0 },
+            "p50": { "type": "number", "minimum": 0 },
+            "p95": { "type": "number", "minimum": 0 },
+            "p99": { "type": "number", "minimum": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "unit", "reason"],
+          "properties": {
+            "status": { "enum": ["not_measured", "unsupported"] },
+            "unit": { "type": "string", "minLength": 1 },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    }
+  }
+}

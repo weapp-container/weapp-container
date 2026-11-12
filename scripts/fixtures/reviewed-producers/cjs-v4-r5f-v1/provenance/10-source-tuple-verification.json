@@ -1,0 +1,2909 @@
+{
+  "schemaVersion": 1,
+  "kind": "r5f-complete-producer-tuple-source-cas-verification",
+  "recordedAt": "2026-11-07T05:00:48.773441+00:00",
+  "status": "passed",
+  "caseScope": {
+    "caseId": "ide-issue-1034-auto-routes-runtime",
+    "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+    "caseSourcePath": "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+    "snapshotProfile": "issue1034-static-snapshot-v1"
+  },
+  "primaryMembers": 8,
+  "snapshotMembers": 5,
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/source-freeze.json",
+    "sha256": "5201915fbe6974710efcbfe7883441e4f1d1487b902acce5c71b4f1c2f09babb",
+    "bytes": 163627
+  },
+  "verifiedSourcePairs": [
+    {
+      "source": {
+        "path": "artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/compiler-build.json",
+        "sha256": "9a90ace29f5cb55e6dd11081b4de986b24008960f92851145808332db99a93ad",
+        "bytes": 10459037
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/compiler-build.json",
+        "sha256": "9a90ace29f5cb55e6dd11081b4de986b24008960f92851145808332db99a93ad",
+        "bytes": 10459037
+      }
+    },
+    {
+      "source": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/audit-case-oracle.mjs",
+        "sha256": "54fe13c20874bd430921e3f679d848d583206cb50c45e042fd6a2526bf35b223",
+        "bytes": 5047
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/audit-case-oracle.mjs",
+        "sha256": "54fe13c20874bd430921e3f679d848d583206cb50c45e042fd6a2526bf35b223",
+        "bytes": 5047
+      }
+    },
+    {
+      "source": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/execution-plan.json",
+        "sha256": "4930cae0ccc0634db975225d4f7e7540fe4a5826dce975a0416f8511cf64abd8",
+        "bytes": 5019
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/execution-plan.json",
+        "sha256": "4930cae0ccc0634db975225d4f7e7540fe4a5826dce975a0416f8511cf64abd8",
+        "bytes": 5019
+      }
+    },
+    {
+      "source": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/inspect-case.py",
+        "sha256": "6eaf53b4b83e3c51852e8fa73ca985f439eb86add0be0a8a6c757ac1b10f1092",
+        "bytes": 6339
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/inspect-case.py",
+        "sha256": "6eaf53b4b83e3c51852e8fa73ca985f439eb86add0be0a8a6c757ac1b10f1092",
+        "bytes": 6339
+      }
+    },
+    {
+      "source": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/native-prerequisite.json",
+        "sha256": "737c674afed3bb5fb0709d6a3958dbdc288e7dcb79afa1baf2357a013a3af286",
+        "bytes": 7854
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/native-prerequisite.json",
+        "sha256": "737c674afed3bb5fb0709d6a3958dbdc288e7dcb79afa1baf2357a013a3af286",
+        "bytes": 7854
+      }
+    },
+    {
+      "source": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/review-official-case.py",
+        "sha256": "48112f5bf0ae9834dd43b2baa59b6ed079929d4f1c991248f0218291944959a1",
+        "bytes": 4913
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/review-official-case.py",
+        "sha256": "48112f5bf0ae9834dd43b2baa59b6ed079929d4f1c991248f0218291944959a1",
+        "bytes": 4913
+      }
+    },
+    {
+      "source": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/run-case.py",
+        "sha256": "46d3d1100b6ca7faa4f9d068d66f661967bb115ce33d8a9409cbcfe44a1fdd9e",
+        "bytes": 10103
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/run-case.py",
+        "sha256": "46d3d1100b6ca7faa4f9d068d66f661967bb115ce33d8a9409cbcfe44a1fdd9e",
+        "bytes": 10103
+      }
+    },
+    {
+      "source": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/seal-batch.py",
+        "sha256": "e513af33340004e1c9d5a70573844369a682b688684379a92b5fe3d84e5863fb",
+        "bytes": 16424
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/seal-batch.py",
+        "sha256": "e513af33340004e1c9d5a70573844369a682b688684379a92b5fe3d84e5863fb",
+        "bytes": 16424
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/README.md",
+        "sha256": "de1e16004153d91bd83e8837597726e4fd808949bc253d8293f3a32f72695968",
+        "bytes": 1333
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/README.md",
+        "sha256": "de1e16004153d91bd83e8837597726e4fd808949bc253d8293f3a32f72695968",
+        "bytes": 1333
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/authoring-provenance.json",
+        "sha256": "d3b36a05862465452890ad80262cc1e7f9faa82b475b8ce6fdc6a82c1ff5ebbc",
+        "bytes": 6565
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/authoring-provenance.json",
+        "sha256": "d3b36a05862465452890ad80262cc1e7f9faa82b475b8ce6fdc6a82c1ff5ebbc",
+        "bytes": 6565
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064",
+        "sha256": "0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064",
+        "bytes": 163917
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064",
+        "sha256": "0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064",
+        "bytes": 163917
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/0d44c6f276e19dbf83a101523d24f8e4c1781bd31a7feef1a36b80ae10925157",
+        "sha256": "0d44c6f276e19dbf83a101523d24f8e4c1781bd31a7feef1a36b80ae10925157",
+        "bytes": 786
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/0d44c6f276e19dbf83a101523d24f8e4c1781bd31a7feef1a36b80ae10925157",
+        "sha256": "0d44c6f276e19dbf83a101523d24f8e4c1781bd31a7feef1a36b80ae10925157",
+        "bytes": 786
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf",
+        "sha256": "1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf",
+        "bytes": 280
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf",
+        "sha256": "1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf",
+        "bytes": 280
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592",
+        "sha256": "168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592",
+        "bytes": 72
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592",
+        "sha256": "168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592",
+        "bytes": 72
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/1f15da45e296b3433a52e6955d2a86a94280de4fb2cd72f8bc859c7bfbd1269d",
+        "sha256": "1f15da45e296b3433a52e6955d2a86a94280de4fb2cd72f8bc859c7bfbd1269d",
+        "bytes": 908
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/1f15da45e296b3433a52e6955d2a86a94280de4fb2cd72f8bc859c7bfbd1269d",
+        "sha256": "1f15da45e296b3433a52e6955d2a86a94280de4fb2cd72f8bc859c7bfbd1269d",
+        "bytes": 908
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4",
+        "sha256": "270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4",
+        "bytes": 834
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4",
+        "sha256": "270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4",
+        "bytes": 834
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7",
+        "sha256": "2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7",
+        "bytes": 76
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7",
+        "sha256": "2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7",
+        "bytes": 76
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e",
+        "sha256": "3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e",
+        "bytes": 92
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e",
+        "sha256": "3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e",
+        "bytes": 92
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646",
+        "sha256": "4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646",
+        "bytes": 23
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646",
+        "sha256": "4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646",
+        "bytes": 23
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/607663aa5b1eeb43f07565607d3f5cb6c63694402c3646f77170f21cc297a363",
+        "sha256": "607663aa5b1eeb43f07565607d3f5cb6c63694402c3646f77170f21cc297a363",
+        "bytes": 8
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/607663aa5b1eeb43f07565607d3f5cb6c63694402c3646f77170f21cc297a363",
+        "sha256": "607663aa5b1eeb43f07565607d3f5cb6c63694402c3646f77170f21cc297a363",
+        "bytes": 8
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/652767de8b637a9833682f8cfbafaef74702eb52b17232e71dabeeeaf863c20a",
+        "sha256": "652767de8b637a9833682f8cfbafaef74702eb52b17232e71dabeeeaf863c20a",
+        "bytes": 21
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/652767de8b637a9833682f8cfbafaef74702eb52b17232e71dabeeeaf863c20a",
+        "sha256": "652767de8b637a9833682f8cfbafaef74702eb52b17232e71dabeeeaf863c20a",
+        "bytes": 21
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/6e69e0c0351dd282beccfbfa4bd823ff77d76944c31e6129067811ffaa2c6171",
+        "sha256": "6e69e0c0351dd282beccfbfa4bd823ff77d76944c31e6129067811ffaa2c6171",
+        "bytes": 17
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/6e69e0c0351dd282beccfbfa4bd823ff77d76944c31e6129067811ffaa2c6171",
+        "sha256": "6e69e0c0351dd282beccfbfa4bd823ff77d76944c31e6129067811ffaa2c6171",
+        "bytes": 17
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d",
+        "sha256": "6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d",
+        "bytes": 1483
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d",
+        "sha256": "6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d",
+        "bytes": 1483
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/7cbe3c8b21facc3e160a46a9c49748dd13f45d221244db8123b5a0a195d66a34",
+        "sha256": "7cbe3c8b21facc3e160a46a9c49748dd13f45d221244db8123b5a0a195d66a34",
+        "bytes": 10
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/7cbe3c8b21facc3e160a46a9c49748dd13f45d221244db8123b5a0a195d66a34",
+        "sha256": "7cbe3c8b21facc3e160a46a9c49748dd13f45d221244db8123b5a0a195d66a34",
+        "bytes": 10
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/95604159b93a3567b3af99b2d6806b0f1250c49f7536b65200d47e1b0c4f3f1e",
+        "sha256": "95604159b93a3567b3af99b2d6806b0f1250c49f7536b65200d47e1b0c4f3f1e",
+        "bytes": 33
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/95604159b93a3567b3af99b2d6806b0f1250c49f7536b65200d47e1b0c4f3f1e",
+        "sha256": "95604159b93a3567b3af99b2d6806b0f1250c49f7536b65200d47e1b0c4f3f1e",
+        "bytes": 33
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/9a5efd01444c5589367b9fab1bc2796ec757da3a5a610ab532f2943f390b06f9",
+        "sha256": "9a5efd01444c5589367b9fab1bc2796ec757da3a5a610ab532f2943f390b06f9",
+        "bytes": 18
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/9a5efd01444c5589367b9fab1bc2796ec757da3a5a610ab532f2943f390b06f9",
+        "sha256": "9a5efd01444c5589367b9fab1bc2796ec757da3a5a610ab532f2943f390b06f9",
+        "bytes": 18
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71",
+        "sha256": "aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71",
+        "bytes": 904
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71",
+        "sha256": "aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71",
+        "bytes": 904
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/c457152af0c0251cf7d24933ee5cd733b00a0d7475d1d034189b62a2bdc2864f",
+        "sha256": "c457152af0c0251cf7d24933ee5cd733b00a0d7475d1d034189b62a2bdc2864f",
+        "bytes": 150
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/c457152af0c0251cf7d24933ee5cd733b00a0d7475d1d034189b62a2bdc2864f",
+        "sha256": "c457152af0c0251cf7d24933ee5cd733b00a0d7475d1d034189b62a2bdc2864f",
+        "bytes": 150
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3",
+        "sha256": "da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3",
+        "bytes": 2719
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3",
+        "sha256": "da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3",
+        "bytes": 2719
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/blobs/sha256/f15114431d8e9671a7c7858be5616bc14b6fa59f414e480f9d004ce0d5090e51",
+        "sha256": "f15114431d8e9671a7c7858be5616bc14b6fa59f414e480f9d004ce0d5090e51",
+        "bytes": 8
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/blobs/sha256/f15114431d8e9671a7c7858be5616bc14b6fa59f414e480f9d004ce0d5090e51",
+        "sha256": "f15114431d8e9671a7c7858be5616bc14b6fa59f414e480f9d004ce0d5090e51",
+        "bytes": 8
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/fixture.json",
+        "sha256": "08218d453bb33e45b8c2411227f60991963a70f9e935e522a3bb360601d2c062",
+        "bytes": 11713
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/fixture.json",
+        "sha256": "08218d453bb33e45b8c2411227f60991963a70f9e935e522a3bb360601d2c062",
+        "bytes": 11713
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/fixtures/issue1058/manifest.json",
+        "sha256": "1824793fb124a0850d075a7d39a8592980ac2e6d4fd0752dfe9141ba279f31a0",
+        "bytes": 8467
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/fixtures/issue1058/manifest.json",
+        "sha256": "1824793fb124a0850d075a7d39a8592980ac2e6d4fd0752dfe9141ba279f31a0",
+        "bytes": 8467
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1012-collector.mjs",
+        "sha256": "9c22af295f85b8099cf78a6816f07ad7431548ba51e55a3059691562f018dfe5",
+        "bytes": 1270
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1012-collector.mjs",
+        "sha256": "9c22af295f85b8099cf78a6816f07ad7431548ba51e55a3059691562f018dfe5",
+        "bytes": 1270
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1012-collector.test.mjs",
+        "sha256": "b77a960896e3f857401d94e83309eef4d63ed26ef48b537da882dcdb2bf4e9e7",
+        "bytes": 22231
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1012-collector.test.mjs",
+        "sha256": "b77a960896e3f857401d94e83309eef4d63ed26ef48b537da882dcdb2bf4e9e7",
+        "bytes": 22231
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1012-descriptor.mjs",
+        "sha256": "f2d42a299ace11e3f6c208cbd32a3b3c6386bc2495cd1b61b63acfa280c9ba4e",
+        "bytes": 596
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1012-descriptor.mjs",
+        "sha256": "f2d42a299ace11e3f6c208cbd32a3b3c6386bc2495cd1b61b63acfa280c9ba4e",
+        "bytes": 596
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1012-v1.json",
+        "sha256": "d2a65df856b48fed37be9a526fbf84e0508b15bc42b5c63e15190210747de432",
+        "bytes": 1248
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1012-v1.json",
+        "sha256": "d2a65df856b48fed37be9a526fbf84e0508b15bc42b5c63e15190210747de432",
+        "bytes": 1248
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1013-collector.mjs",
+        "sha256": "af05ea061c749307bf1f6e6fefcfa50d0e84a20b8bb1fcf36ee9b7d36513566e",
+        "bytes": 313
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1013-collector.mjs",
+        "sha256": "af05ea061c749307bf1f6e6fefcfa50d0e84a20b8bb1fcf36ee9b7d36513566e",
+        "bytes": 313
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1013-descriptor.mjs",
+        "sha256": "ee9cfaeaef3466ff12b20c96d1866366adc82fb640c687017de6310ee132b3ee",
+        "bytes": 2015
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1013-descriptor.mjs",
+        "sha256": "ee9cfaeaef3466ff12b20c96d1866366adc82fb640c687017de6310ee132b3ee",
+        "bytes": 2015
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1013-v1.json",
+        "sha256": "76e591b4f6b0979a54f862e21d2b93306a94de385ca7336b42e90faf480a3905",
+        "bytes": 1254
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1013-v1.json",
+        "sha256": "76e591b4f6b0979a54f862e21d2b93306a94de385ca7336b42e90faf480a3905",
+        "bytes": 1254
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1014-collector.mjs",
+        "sha256": "96d2b1edd8f5100d391ac01b29e5311fc78dda9d39b455cd0d54b4241e49ecba",
+        "bytes": 1980
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1014-collector.mjs",
+        "sha256": "96d2b1edd8f5100d391ac01b29e5311fc78dda9d39b455cd0d54b4241e49ecba",
+        "bytes": 1980
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1014-collector.test.mjs",
+        "sha256": "9c15eb37bb3f8e224b6683bd061e861df5cfb1868525566b0fc4b939359f94c5",
+        "bytes": 8422
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1014-collector.test.mjs",
+        "sha256": "9c15eb37bb3f8e224b6683bd061e861df5cfb1868525566b0fc4b939359f94c5",
+        "bytes": 8422
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1014-descriptor.mjs",
+        "sha256": "839d9688a3a5140bd80f36c54c36bcc9b0f52c3b20e827f574cfc576fa1c567a",
+        "bytes": 940
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1014-descriptor.mjs",
+        "sha256": "839d9688a3a5140bd80f36c54c36bcc9b0f52c3b20e827f574cfc576fa1c567a",
+        "bytes": 940
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1014-v1.json",
+        "sha256": "b90ed00f9828b5fe87a94416c503cf9e4933373c80850f9af237abd9bf54fea5",
+        "bytes": 1248
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1014-v1.json",
+        "sha256": "b90ed00f9828b5fe87a94416c503cf9e4933373c80850f9af237abd9bf54fea5",
+        "bytes": 1248
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1034-collector.mjs",
+        "sha256": "002af68126d3f3cc6c93de7c0a6378dc58933f57dc961d32536072608cacb3b8",
+        "bytes": 12990
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1034-collector.mjs",
+        "sha256": "002af68126d3f3cc6c93de7c0a6378dc58933f57dc961d32536072608cacb3b8",
+        "bytes": 12990
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1034-collector.test.mjs",
+        "sha256": "5d05aa746da25600de4d61d2cc5c267a7d94de2d808142802298c111b05d590d",
+        "bytes": 28092
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1034-collector.test.mjs",
+        "sha256": "5d05aa746da25600de4d61d2cc5c267a7d94de2d808142802298c111b05d590d",
+        "bytes": 28092
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1034-descriptor.mjs",
+        "sha256": "b9db94ac2ea365255c343251480d57ff5b3ab4144ba36132f968157db2e0121e",
+        "bytes": 643
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1034-descriptor.mjs",
+        "sha256": "b9db94ac2ea365255c343251480d57ff5b3ab4144ba36132f968157db2e0121e",
+        "bytes": 643
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1034-v1.json",
+        "sha256": "9f8c052272d293d04fb12e2194dde9e078207410bf4b274f931f6fe650d423c1",
+        "bytes": 846
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1034-v1.json",
+        "sha256": "9f8c052272d293d04fb12e2194dde9e078207410bf4b274f931f6fe650d423c1",
+        "bytes": 846
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1058-captured-static-v1.json",
+        "sha256": "b41a14277a9b690b77ea113da8b2d50b9d9c291094f306b28ba5e45f7e4513ad",
+        "bytes": 643
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1058-captured-static-v1.json",
+        "sha256": "b41a14277a9b690b77ea113da8b2d50b9d9c291094f306b28ba5e45f7e4513ad",
+        "bytes": 643
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1058-collector.mjs",
+        "sha256": "227ee8a5a4166fdada2c65cf25344f9bf64bf7cbe3853558bb854e1efe1ecdf5",
+        "bytes": 6173
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1058-collector.mjs",
+        "sha256": "227ee8a5a4166fdada2c65cf25344f9bf64bf7cbe3853558bb854e1efe1ecdf5",
+        "bytes": 6173
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1058-collector.test.mjs",
+        "sha256": "194b4d2bd40f9fbb0e7869205184e843f174fe481c3319220bbc8a74800a0ca7",
+        "bytes": 5157
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1058-collector.test.mjs",
+        "sha256": "194b4d2bd40f9fbb0e7869205184e843f174fe481c3319220bbc8a74800a0ca7",
+        "bytes": 5157
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1058-v1.json",
+        "sha256": "72f35203d9c3b7a4c2cc5f23ca4e46484a963b10e439d8d57c97149783324b4d",
+        "bytes": 7586
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1058-v1.json",
+        "sha256": "72f35203d9c3b7a4c2cc5f23ca4e46484a963b10e439d8d57c97149783324b4d",
+        "bytes": 7586
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1072-collector.mjs",
+        "sha256": "4c5e1b133b895b1c3de6b17e93086d89329622db60476d79c34c6ba17bc1152e",
+        "bytes": 14556
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1072-collector.mjs",
+        "sha256": "4c5e1b133b895b1c3de6b17e93086d89329622db60476d79c34c6ba17bc1152e",
+        "bytes": 14556
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1072-collector.test.mjs",
+        "sha256": "c22ce0b45456ee7f90ac793867b0653a7b9326341557d0803d7d88089c12efb2",
+        "bytes": 28770
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1072-collector.test.mjs",
+        "sha256": "c22ce0b45456ee7f90ac793867b0653a7b9326341557d0803d7d88089c12efb2",
+        "bytes": 28770
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1072-provider-query.test.mjs",
+        "sha256": "0d164093e88ec477a9bcfc2e06b5fe1efa902ecb9f4a3698a443d8cf71b54e89",
+        "bytes": 8025
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1072-provider-query.test.mjs",
+        "sha256": "0d164093e88ec477a9bcfc2e06b5fe1efa902ecb9f4a3698a443d8cf71b54e89",
+        "bytes": 8025
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1072-v1.json",
+        "sha256": "6d101f88d8dead25339031da4e1ca566f7fe8571bf6c89b02857cb3d96b80453",
+        "bytes": 849
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1072-v1.json",
+        "sha256": "6d101f88d8dead25339031da4e1ca566f7fe8571bf6c89b02857cb3d96b80453",
+        "bytes": 849
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1185-collector.mjs",
+        "sha256": "4dc9d2d9510b01ae70e53d31053c9fb74d78fba94dc3b33d45ef91776a744970",
+        "bytes": 8153
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1185-collector.mjs",
+        "sha256": "4dc9d2d9510b01ae70e53d31053c9fb74d78fba94dc3b33d45ef91776a744970",
+        "bytes": 8153
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1185-collector.test.mjs",
+        "sha256": "d65452b9e9e605d5bad3e955b89f288d6fcc8e64331a69a8596027abc8529e27",
+        "bytes": 13984
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1185-collector.test.mjs",
+        "sha256": "d65452b9e9e605d5bad3e955b89f288d6fcc8e64331a69a8596027abc8529e27",
+        "bytes": 13984
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue1185-v1.json",
+        "sha256": "627593e9dd69527df94282eb398eddcf9b0a1ebaf98bda82254bc00c55637107",
+        "bytes": 643
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue1185-v1.json",
+        "sha256": "627593e9dd69527df94282eb398eddcf9b0a1ebaf98bda82254bc00c55637107",
+        "bytes": 643
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue289-collector.mjs",
+        "sha256": "ef0b38f6071f8381796e5d2731bf72653a2d3477047e0efe72d697055d0c228d",
+        "bytes": 234
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue289-collector.mjs",
+        "sha256": "ef0b38f6071f8381796e5d2731bf72653a2d3477047e0efe72d697055d0c228d",
+        "bytes": 234
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue289-descriptor.mjs",
+        "sha256": "4071fe199c5d0564eaa83c93669f57d67ea942ceb5d4758b0fa42416ded821fc",
+        "bytes": 21054
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue289-descriptor.mjs",
+        "sha256": "4071fe199c5d0564eaa83c93669f57d67ea942ceb5d4758b0fa42416ded821fc",
+        "bytes": 21054
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue289-v1.json",
+        "sha256": "cefa04571b515e537a260dd73e806d4c683e3fbee48cf272367614e0a100bf66",
+        "bytes": 1252
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue289-v1.json",
+        "sha256": "cefa04571b515e537a260dd73e806d4c683e3fbee48cf272367614e0a100bf66",
+        "bytes": 1252
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue547-collector.mjs",
+        "sha256": "ce6494dd44d8a12c0e5afdaf9d7ea457ce7d92f2705779ba0462f91ff016515f",
+        "bytes": 234
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue547-collector.mjs",
+        "sha256": "ce6494dd44d8a12c0e5afdaf9d7ea457ce7d92f2705779ba0462f91ff016515f",
+        "bytes": 234
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue547-descriptor.mjs",
+        "sha256": "e6aadead9e1191b33566e6e1dcd71768dfff87b2ac13e739bc41237d8f181f24",
+        "bytes": 1740
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue547-descriptor.mjs",
+        "sha256": "e6aadead9e1191b33566e6e1dcd71768dfff87b2ac13e739bc41237d8f181f24",
+        "bytes": 1740
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/issue547-v1.json",
+        "sha256": "cc22f974defaf28304571d8b491600c7d2bda06e38f4dbe1c6b0be07812e6979",
+        "bytes": 1251
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/issue547-v1.json",
+        "sha256": "cc22f974defaf28304571d8b491600c7d2bda06e38f4dbe1c6b0be07812e6979",
+        "bytes": 1251
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/ordered-dom-projection.mjs",
+        "sha256": "a8b1a7c07884b5cdd8eda5470563d98bbd42ce2b8234eeb030991053c03ee401",
+        "bytes": 5044
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/ordered-dom-projection.mjs",
+        "sha256": "a8b1a7c07884b5cdd8eda5470563d98bbd42ce2b8234eeb030991053c03ee401",
+        "bytes": 5044
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/ordered-dom-projection.test.mjs",
+        "sha256": "8629c1d1b128f8ec8e9bcf5a7420d38cb696ad2b9db45b17b51a989591e2f9be",
+        "bytes": 6800
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/ordered-dom-projection.test.mjs",
+        "sha256": "8629c1d1b128f8ec8e9bcf5a7420d38cb696ad2b9db45b17b51a989591e2f9be",
+        "bytes": 6800
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/ordered-plans-collector-core.mjs",
+        "sha256": "0b1fd8e737ef1bddbbb5139a3519250da2c121189d43f03bac4545a8b8022b71",
+        "bytes": 10885
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/ordered-plans-collector-core.mjs",
+        "sha256": "0b1fd8e737ef1bddbbb5139a3519250da2c121189d43f03bac4545a8b8022b71",
+        "bytes": 10885
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+        "sha256": "9ab1428dfbeda1a1513a3fc188dbf96f1f40b022c9e2c8f935f3e8de4c64c6b6",
+        "bytes": 17169
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/ordered-steps-collector-core.mjs",
+        "sha256": "9ab1428dfbeda1a1513a3fc188dbf96f1f40b022c9e2c8f935f3e8de4c64c6b6",
+        "bytes": 17169
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/ordered-steps-collector.test.mjs",
+        "sha256": "66d7257999de2c6c179989a6c5dd04ff64a1301d19d76778354282b40f598ce9",
+        "bytes": 15270
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/ordered-steps-collector.test.mjs",
+        "sha256": "66d7257999de2c6c179989a6c5dd04ff64a1301d19d76778354282b40f598ce9",
+        "bytes": 15270
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/passive-collector-boundary.test.mjs",
+        "sha256": "1cbab788d9dee865304c02d9f78e7848e3912a17c933c857acdeb5765e19004a",
+        "bytes": 4612
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/passive-collector-boundary.test.mjs",
+        "sha256": "1cbab788d9dee865304c02d9f78e7848e3912a17c933c857acdeb5765e19004a",
+        "bytes": 4612
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/passive-collector-core.mjs",
+        "sha256": "d4c7f7067347f99d873e51e6aff0d8339893626fa875938f6158f6e505b85041",
+        "bytes": 13104
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/passive-collector-core.mjs",
+        "sha256": "d4c7f7067347f99d873e51e6aff0d8339893626fa875938f6158f6e505b85041",
+        "bytes": 13104
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/passive-query-context.mjs",
+        "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+        "bytes": 5481
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/passive-query-context.mjs",
+        "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+        "bytes": 5481
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/passive-query-context.test.mjs",
+        "sha256": "67b984ed0d04daf709f20234791514461c639994429e2ee6deeda4968cfe817d",
+        "bytes": 3975
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/passive-query-context.test.mjs",
+        "sha256": "67b984ed0d04daf709f20234791514461c639994429e2ee6deeda4968cfe817d",
+        "bytes": 3975
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/shared-passive-collector.test.mjs",
+        "sha256": "123a656156f469b3ef9775211ba915f602072b8bc4c6cadbabd0ac4d7b77b69b",
+        "bytes": 3511
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/shared-passive-collector.test.mjs",
+        "sha256": "123a656156f469b3ef9775211ba915f602072b8bc4c6cadbabd0ac4d7b77b69b",
+        "bytes": 3511
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/subpackage-item-collector.mjs",
+        "sha256": "d1dcd0b950a252efa9ae12fdc60200761256c512d0128467641b1a19f473674d",
+        "bytes": 314
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/subpackage-item-collector.mjs",
+        "sha256": "d1dcd0b950a252efa9ae12fdc60200761256c512d0128467641b1a19f473674d",
+        "bytes": 314
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/subpackage-item-descriptor.mjs",
+        "sha256": "9e98b2f417cf151d1535a082afd69d0cb80eadce5a9861132f00ee5b3cef3515",
+        "bytes": 1197
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/subpackage-item-descriptor.mjs",
+        "sha256": "9e98b2f417cf151d1535a082afd69d0cb80eadce5a9861132f00ee5b3cef3515",
+        "bytes": 1197
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/subpackage-item-v1.json",
+        "sha256": "8fa0d6e4da2c99ba9ab912f38fb1b77cb1580c36ef56d1335134a168131cbe9b",
+        "bytes": 1473
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/subpackage-item-v1.json",
+        "sha256": "8fa0d6e4da2c99ba9ab912f38fb1b77cb1580c36ef56d1335134a168131cbe9b",
+        "bytes": 1473
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/subpackage-ordered-plans-collector.test.mjs",
+        "sha256": "9369696674f6c6d9ca2c9fe15f6904e10095e1586f8dd7be62601ba871493131",
+        "bytes": 19412
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/subpackage-ordered-plans-collector.test.mjs",
+        "sha256": "9369696674f6c6d9ca2c9fe15f6904e10095e1586f8dd7be62601ba871493131",
+        "bytes": 19412
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/subpackage-user-collector.mjs",
+        "sha256": "47ecb4d67ef0c9ac75a9c326811eef0b4e586cb3f027ea069e801ef41e45449d",
+        "bytes": 314
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/subpackage-user-collector.mjs",
+        "sha256": "47ecb4d67ef0c9ac75a9c326811eef0b4e586cb3f027ea069e801ef41e45449d",
+        "bytes": 314
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/subpackage-user-descriptor.mjs",
+        "sha256": "c0d3f38c20efdc98350563aab3d3825c0500d14c3322863e4a317b72e57aabb4",
+        "bytes": 1182
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/subpackage-user-descriptor.mjs",
+        "sha256": "c0d3f38c20efdc98350563aab3d3825c0500d14c3322863e4a317b72e57aabb4",
+        "bytes": 1182
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/subpackage-user-v1.json",
+        "sha256": "e81a2bc8e305b27b78e8ddda8d18af650f694108659111d114b4616ca78c1ec7",
+        "bytes": 1473
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/subpackage-user-v1.json",
+        "sha256": "e81a2bc8e305b27b78e8ddda8d18af650f694108659111d114b4616ca78c1ec7",
+        "bytes": 1473
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/web-runtime-collector.mjs",
+        "sha256": "470458ba31c9302fe723a40b9521bf33f447023e12328c6a50739098e62d845d",
+        "bytes": 318
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/web-runtime-collector.mjs",
+        "sha256": "470458ba31c9302fe723a40b9521bf33f447023e12328c6a50739098e62d845d",
+        "bytes": 318
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/web-runtime-collector.test.mjs",
+        "sha256": "21efde86d296258804276d725a2bbf7d01fc797eb139d8fedee6d4f0d90a98b4",
+        "bytes": 8368
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/web-runtime-collector.test.mjs",
+        "sha256": "21efde86d296258804276d725a2bbf7d01fc797eb139d8fedee6d4f0d90a98b4",
+        "bytes": 8368
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/web-runtime-descriptor.mjs",
+        "sha256": "16c5fe4528a8e5bf2f96ebe01b5ea0c7348fbee1c450456acb327a791a491867",
+        "bytes": 2475
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/web-runtime-descriptor.mjs",
+        "sha256": "16c5fe4528a8e5bf2f96ebe01b5ea0c7348fbee1c450456acb327a791a491867",
+        "bytes": 2475
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/web-runtime-v1.json",
+        "sha256": "5ba0b8556f0fe938bdf2beba607685349db8b271b8049ef9dbc9065a698273af",
+        "bytes": 1461
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/web-runtime-v1.json",
+        "sha256": "5ba0b8556f0fe938bdf2beba607685349db8b271b8049ef9dbc9065a698273af",
+        "bytes": 1461
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/wxml-transform-artifacts.mjs",
+        "sha256": "84288346d0b86079a9f3e6095082b80e87912b8765420f66c71fc9534d1058d4",
+        "bytes": 2070
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/wxml-transform-artifacts.mjs",
+        "sha256": "84288346d0b86079a9f3e6095082b80e87912b8765420f66c71fc9534d1058d4",
+        "bytes": 2070
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/wxml-transform-artifacts.test.mjs",
+        "sha256": "bc110b4382d95d41f1ba1004f278051ff32a6f03fe814e7df89723899e65896c",
+        "bytes": 2407
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/wxml-transform-artifacts.test.mjs",
+        "sha256": "bc110b4382d95d41f1ba1004f278051ff32a6f03fe814e7df89723899e65896c",
+        "bytes": 2407
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/wxml-transform-collector.mjs",
+        "sha256": "0372f59e2a46d222d38639401573ff7cf85fb0743a74272fe5283eae94345970",
+        "bytes": 12963
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/wxml-transform-collector.mjs",
+        "sha256": "0372f59e2a46d222d38639401573ff7cf85fb0743a74272fe5283eae94345970",
+        "bytes": 12963
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/wxml-transform-collector.test.mjs",
+        "sha256": "7895dfa027a585917a82b0a3f0e07eb321da47a57b9d27aab8c82939dc1a1a9f",
+        "bytes": 21344
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/wxml-transform-collector.test.mjs",
+        "sha256": "7895dfa027a585917a82b0a3f0e07eb321da47a57b9d27aab8c82939dc1a1a9f",
+        "bytes": 21344
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/wxml-transform-descriptor.mjs",
+        "sha256": "732033f1a7066266343f14e6ddff8af62b087ce57b8c1e654f99f1cd37c327aa",
+        "bytes": 1436
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/wxml-transform-descriptor.mjs",
+        "sha256": "732033f1a7066266343f14e6ddff8af62b087ce57b8c1e654f99f1cd37c327aa",
+        "bytes": 1436
+      }
+    },
+    {
+      "source": {
+        "path": "conformance/recipes/wxml-transform-v1.json",
+        "sha256": "d57d62bb8a5f7f02ed309ed0042df1150436d72f0dfd2ae96a73dea4f620994e",
+        "bytes": 849
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/conformance/recipes/wxml-transform-v1.json",
+        "sha256": "d57d62bb8a5f7f02ed309ed0042df1150436d72f0dfd2ae96a73dea4f620994e",
+        "bytes": 849
+      }
+    },
+    {
+      "source": {
+        "path": "docs/conformance/baseline-v1.json",
+        "sha256": "7f1ca9be79bb3436006c8e31cf5074fbf1f449299e01a2c2787ad90714df6f17",
+        "bytes": 497
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/docs/conformance/baseline-v1.json",
+        "sha256": "7f1ca9be79bb3436006c8e31cf5074fbf1f449299e01a2c2787ad90714df6f17",
+        "bytes": 497
+      }
+    },
+    {
+      "source": {
+        "path": "docs/conformance/case-index-v1.json",
+        "sha256": "47053f38473ba3d78fa82c29dc1c9480f4845a8656361c4ecb76065d18527cb1",
+        "bytes": 74989
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/docs/conformance/case-index-v1.json",
+        "sha256": "47053f38473ba3d78fa82c29dc1c9480f4845a8656361c4ecb76065d18527cb1",
+        "bytes": 74989
+      }
+    },
+    {
+      "source": {
+        "path": "docs/conformance/case-index-v1.sha256",
+        "sha256": "d2fb6f7747c1924047823796c52876931a3d1ffcc80261f72574763a9ff5e905",
+        "bytes": 85
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/docs/conformance/case-index-v1.sha256",
+        "sha256": "d2fb6f7747c1924047823796c52876931a3d1ffcc80261f72574763a9ff5e905",
+        "bytes": 85
+      }
+    },
+    {
+      "source": {
+        "path": "package.json",
+        "sha256": "bb0bb3f56ddbe21d12289a70099b01f3d8b301f1c5a45416e278d5ca26fb0b5a",
+        "bytes": 16098
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/package.json",
+        "sha256": "bb0bb3f56ddbe21d12289a70099b01f3d8b301f1c5a45416e278d5ca26fb0b5a",
+        "bytes": 16098
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-attempt-v1.schema.json",
+        "sha256": "ef1f454c2a618bcb5fa27582cbb951d51fb59d7e2908ba4fa0db4793c1db32a1",
+        "bytes": 4438
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-attempt-v1.schema.json",
+        "sha256": "ef1f454c2a618bcb5fa27582cbb951d51fb59d7e2908ba4fa0db4793c1db32a1",
+        "bytes": 4438
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-case-index-v1.schema.json",
+        "sha256": "039a8b63f0e1cfb1df6b61837ca2ba819e5fb74931cc73e368c11a9de100a2cb",
+        "bytes": 2960
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-case-index-v1.schema.json",
+        "sha256": "039a8b63f0e1cfb1df6b61837ca2ba819e5fb74931cc73e368c11a9de100a2cb",
+        "bytes": 2960
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-case-recipes-v1.schema.json",
+        "sha256": "1778a1e1752e6cf2bc4b27fd9f2d26f17ede134a10c0236f9490083dce8f964a",
+        "bytes": 2208
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-case-recipes-v1.schema.json",
+        "sha256": "1778a1e1752e6cf2bc4b27fd9f2d26f17ede134a10c0236f9490083dce8f964a",
+        "bytes": 2208
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-compiler-build-v1.schema.json",
+        "sha256": "04a4e09ecabbf389904db3cae5a769ad6bd94fc908d571025a1d8772c3562f5f",
+        "bytes": 9827
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-compiler-build-v1.schema.json",
+        "sha256": "04a4e09ecabbf389904db3cae5a769ad6bd94fc908d571025a1d8772c3562f5f",
+        "bytes": 9827
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-compiler-use-v1.schema.json",
+        "sha256": "2ddf3bdf2a22667b4d3ef8abdade8a7efbaa24c2d1dd48a2fb4d7c7069aa4f91",
+        "bytes": 5638
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-compiler-use-v1.schema.json",
+        "sha256": "2ddf3bdf2a22667b4d3ef8abdade8a7efbaa24c2d1dd48a2fb4d7c7069aa4f91",
+        "bytes": 5638
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-differential-v1.schema.json",
+        "sha256": "3860e805d96e4dcf197b5353171db62fac5961bb57ecaf6f26c18d07904e2474",
+        "bytes": 4783
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-differential-v1.schema.json",
+        "sha256": "3860e805d96e4dcf197b5353171db62fac5961bb57ecaf6f26c18d07904e2474",
+        "bytes": 4783
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-fixture-build-v1.schema.json",
+        "sha256": "b7919b1d3e163553a77bc871b8ddbbee90165e5053d2af53c624498c572f0e87",
+        "bytes": 3444
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-fixture-build-v1.schema.json",
+        "sha256": "b7919b1d3e163553a77bc871b8ddbbee90165e5053d2af53c624498c572f0e87",
+        "bytes": 3444
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-host-drivers-v1.schema.json",
+        "sha256": "111f1af90e11e9194f73aee45654c39d1555ea0206af7ae6421e93f1a265bb9a",
+        "bytes": 1437
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-host-drivers-v1.schema.json",
+        "sha256": "111f1af90e11e9194f73aee45654c39d1555ea0206af7ae6421e93f1a265bb9a",
+        "bytes": 1437
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-oracle-execution-v1.schema.json",
+        "sha256": "72a282761d4f3fc7f07b31ff54a8d4f068aa679b9cfdef4ddb45306b47f0647e",
+        "bytes": 4485
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-oracle-execution-v1.schema.json",
+        "sha256": "72a282761d4f3fc7f07b31ff54a8d4f068aa679b9cfdef4ddb45306b47f0647e",
+        "bytes": 4485
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-report-v1.schema.json",
+        "sha256": "7b5170a31e325f1de30f3f4ab2962353eccbe0a009b40c3b7f5ef76e3b73953c",
+        "bytes": 1535
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-report-v1.schema.json",
+        "sha256": "7b5170a31e325f1de30f3f4ab2962353eccbe0a009b40c3b7f5ef76e3b73953c",
+        "bytes": 1535
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-runtime-observation-v1.schema.json",
+        "sha256": "375a00f4148234e3fd34c6ad1c63ebe2071d4d49bfce87f3fd84106fcdc701dd",
+        "bytes": 1249
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-runtime-observation-v1.schema.json",
+        "sha256": "375a00f4148234e3fd34c6ad1c63ebe2071d4d49bfce87f3fd84106fcdc701dd",
+        "bytes": 1249
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/conformance-trace-v1.schema.json",
+        "sha256": "63f9a27827cfcaf6ab0314192e77f330dbb3101fa78a2ffc0588aa51c1ce95aa",
+        "bytes": 2484
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/conformance-trace-v1.schema.json",
+        "sha256": "63f9a27827cfcaf6ab0314192e77f330dbb3101fa78a2ffc0588aa51c1ce95aa",
+        "bytes": 2484
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/container-manifest-v1.schema.json",
+        "sha256": "e759cfa331c2231402fc28b294f4237df3a6e85995c64e4eb32259a05d19633a",
+        "bytes": 10356
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/container-manifest-v1.schema.json",
+        "sha256": "e759cfa331c2231402fc28b294f4237df3a6e85995c64e4eb32259a05d19633a",
+        "bytes": 10356
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/container-manifest-v2.schema.json",
+        "sha256": "d865a244742a0dcb991764a66e523d803337e1c7d689d143efbfc35c387cbd5b",
+        "bytes": 15534
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/container-manifest-v2.schema.json",
+        "sha256": "d865a244742a0dcb991764a66e523d803337e1c7d689d143efbfc35c387cbd5b",
+        "bytes": 15534
+      }
+    },
+    {
+      "source": {
+        "path": "schemas/container-manifest-v3.schema.json",
+        "sha256": "b3bd55f2738e4574a57d31f9349e5d28caa5d007f103c117d5ae7cfa60d12f27",
+        "bytes": 16401
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/schemas/container-manifest-v3.schema.json",
+        "sha256": "b3bd55f2738e4574a57d31f9349e5d28caa5d007f103c117d5ae7cfa60d12f27",
+        "bytes": 16401
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-bridge-project.test.mjs",
+        "sha256": "03b0c44f834415d9061387c6a8563532d56eb72878a4f5d953c93e6798abb7ac",
+        "bytes": 13094
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-bridge-project.test.mjs",
+        "sha256": "03b0c44f834415d9061387c6a8563532d56eb72878a4f5d953c93e6798abb7ac",
+        "bytes": 13094
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-build.mjs",
+        "sha256": "ef039f1c434f73253e74b2ee0eb7cfa2bc6c6390f8cc5dedc51696ef5aefc8af",
+        "bytes": 43287
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-build.mjs",
+        "sha256": "ef039f1c434f73253e74b2ee0eb7cfa2bc6c6390f8cc5dedc51696ef5aefc8af",
+        "bytes": 43287
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-build.test.mjs",
+        "sha256": "f52732189a688c23b10b230af5026978723f330be055f5c09d87c3d6ceed559c",
+        "bytes": 16330
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-build.test.mjs",
+        "sha256": "f52732189a688c23b10b230af5026978723f330be055f5c09d87c3d6ceed559c",
+        "bytes": 16330
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-macro-cjs.test.mjs",
+        "sha256": "79d0c67d5d031cde53641d3ed5afdae3869463d551cf0c4aafbe0471bf7699a7",
+        "bytes": 28775
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-macro-cjs.test.mjs",
+        "sha256": "79d0c67d5d031cde53641d3ed5afdae3869463d551cf0c4aafbe0471bf7699a7",
+        "bytes": 28775
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-macro-observer.mjs",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-macro-observer.mjs",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-macro-runtime.test.mjs",
+        "sha256": "246a61f10ac44bce86a26a4dcd6c823eb63d22baa407044d961f4a4f251710ab",
+        "bytes": 8238
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-macro-runtime.test.mjs",
+        "sha256": "246a61f10ac44bce86a26a4dcd6c823eb63d22baa407044d961f4a4f251710ab",
+        "bytes": 8238
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-macro-validator.mjs",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-macro-validator.mjs",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-macro-validator.test.mjs",
+        "sha256": "8363e323844d555ec05a11f3c4bda0e2a0a8200a018e7234c6e519b23720aceb",
+        "bytes": 25170
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-macro-validator.test.mjs",
+        "sha256": "8363e323844d555ec05a11f3c4bda0e2a0a8200a018e7234c6e519b23720aceb",
+        "bytes": 25170
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-observation-v1.json",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-observation-v1.json",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-observation.mjs",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-observation.mjs",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-observation.test.mjs",
+        "sha256": "2600875682a10d220156a5141506d6d5fb848c074f6136fe7fba2767163563cf",
+        "bytes": 20033
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-observation.test.mjs",
+        "sha256": "2600875682a10d220156a5141506d6d5fb848c074f6136fe7fba2767163563cf",
+        "bytes": 20033
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-use-preload.cjs",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-use-preload.cjs",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-use.mjs",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-use.mjs",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-compiler-use.test.mjs",
+        "sha256": "01f2569701c1563653cf2ea3d6a41195f85fbc81940ac65651f44d6f85e74345",
+        "bytes": 27808
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-use.test.mjs",
+        "sha256": "01f2569701c1563653cf2ea3d6a41195f85fbc81940ac65651f44d6f85e74345",
+        "bytes": 27808
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-attempt.mjs",
+        "sha256": "19d97c5045ffdffe60574297a7ad639b652d6ac7ba76fac83cd57d6129a0ec0a",
+        "bytes": 11536
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-attempt.mjs",
+        "sha256": "19d97c5045ffdffe60574297a7ad639b652d6ac7ba76fac83cd57d6129a0ec0a",
+        "bytes": 11536
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-attempt.test.mjs",
+        "sha256": "cdfb6da3a6f2778b3086771f87167fca195dbcc963e43bec5b3a278d65539099",
+        "bytes": 9714
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-attempt.test.mjs",
+        "sha256": "cdfb6da3a6f2778b3086771f87167fca195dbcc963e43bec5b3a278d65539099",
+        "bytes": 9714
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-host.test.mjs",
+        "sha256": "e214a7b3ee633a665d4e02ce8cedd9da6e8bfefae50c1b55266c1313b66ed8a2",
+        "bytes": 5527
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-host.test.mjs",
+        "sha256": "e214a7b3ee633a665d4e02ce8cedd9da6e8bfefae50c1b55266c1313b66ed8a2",
+        "bytes": 5527
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-isolation.mjs",
+        "sha256": "cc05115d3c9b505220bc66e72b76d0f2ab30c164b63bf899c34abc44a1927706",
+        "bytes": 15910
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-isolation.mjs",
+        "sha256": "cc05115d3c9b505220bc66e72b76d0f2ab30c164b63bf899c34abc44a1927706",
+        "bytes": 15910
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-isolation.test.mjs",
+        "sha256": "a6a0fe1515e10d2291030afb69e367be6fc4e46e0d5ab5fb536cc371c79bed7a",
+        "bytes": 30809
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-isolation.test.mjs",
+        "sha256": "a6a0fe1515e10d2291030afb69e367be6fc4e46e0d5ab5fb536cc371c79bed7a",
+        "bytes": 30809
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-profile.test.mjs",
+        "sha256": "f0f9ff5444031eb21c664f3c14225e3bf17b191da70335f366483d4fc388685e",
+        "bytes": 1765
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-profile.test.mjs",
+        "sha256": "f0f9ff5444031eb21c664f3c14225e3bf17b191da70335f366483d4fc388685e",
+        "bytes": 1765
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-runner.mjs",
+        "sha256": "797fe7096fb43d17a07c135c100a30fcc2ad84af53a1e2e21d2abf1da50ff51c",
+        "bytes": 43149
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-runner.mjs",
+        "sha256": "797fe7096fb43d17a07c135c100a30fcc2ad84af53a1e2e21d2abf1da50ff51c",
+        "bytes": 43149
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-devtools-runner.test.mjs",
+        "sha256": "6b0f212b2ce227c27f28489fce376f6f4b6ad7b0b18901818f3a7ae43fe27369",
+        "bytes": 14614
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-devtools-runner.test.mjs",
+        "sha256": "6b0f212b2ce227c27f28489fce376f6f4b6ad7b0b18901818f3a7ae43fe27369",
+        "bytes": 14614
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-evidence.mjs",
+        "sha256": "63cb8c9975b5d71e00c1d2bc5c7ecb9b10bb2904adee316c3a875580918291a7",
+        "bytes": 32203
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-evidence.mjs",
+        "sha256": "63cb8c9975b5d71e00c1d2bc5c7ecb9b10bb2904adee316c3a875580918291a7",
+        "bytes": 32203
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-evidence.test.mjs",
+        "sha256": "c121e04573f3d6b6c24236596f13c4489bcc21e588f92dbc9f37a052eca9af57",
+        "bytes": 37383
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-evidence.test.mjs",
+        "sha256": "c121e04573f3d6b6c24236596f13c4489bcc21e588f92dbc9f37a052eca9af57",
+        "bytes": 37383
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-fixture-build.mjs",
+        "sha256": "44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+        "bytes": 84223
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-fixture-build.mjs",
+        "sha256": "44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+        "bytes": 84223
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-fixture-build.test.mjs",
+        "sha256": "22f7b3786d19d1953452e59cf1d6633e7e337bf20ba8c4074eb59e4f30eaad71",
+        "bytes": 39584
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-fixture-build.test.mjs",
+        "sha256": "22f7b3786d19d1953452e59cf1d6633e7e337bf20ba8c4074eb59e4f30eaad71",
+        "bytes": 39584
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-fixture-packer-preload.mjs",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-fixture-packer-preload.mjs",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-github-producer.mjs",
+        "sha256": "e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+        "bytes": 15918
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-github-producer.mjs",
+        "sha256": "e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+        "bytes": 15918
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-github-producer.test.mjs",
+        "sha256": "defc5d53c790032138357f4536023ea61f4dbbae3129319427cadf5f6e7dec18",
+        "bytes": 37122
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-github-producer.test.mjs",
+        "sha256": "defc5d53c790032138357f4536023ea61f4dbbae3129319427cadf5f6e7dec18",
+        "bytes": 37122
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-index-policy.mjs",
+        "sha256": "5e0d89668233181a3940a48e1019605a20e33e1f625be9bedf5e46952111af0c",
+        "bytes": 948
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-index-policy.mjs",
+        "sha256": "5e0d89668233181a3940a48e1019605a20e33e1f625be9bedf5e46952111af0c",
+        "bytes": 948
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-index-policy.test.mjs",
+        "sha256": "93152290fc81ce9b2b28ce7cb0141eba0685f981f7b4f2a94b690bc1384a70ab",
+        "bytes": 1360
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-index-policy.test.mjs",
+        "sha256": "93152290fc81ce9b2b28ce7cb0141eba0685f981f7b4f2a94b690bc1384a70ab",
+        "bytes": 1360
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-issue1034-producer.mjs",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-issue1034-producer.mjs",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-issue1034-producer.test.mjs",
+        "sha256": "99e03b8e7380c9a78251e1c65a72231ecef09676e4db09df0e64857b2ccd7edd",
+        "bytes": 22279
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-issue1034-producer.test.mjs",
+        "sha256": "99e03b8e7380c9a78251e1c65a72231ecef09676e4db09df0e64857b2ccd7edd",
+        "bytes": 22279
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-matrix-driver.mjs",
+        "sha256": "11576d564494ec8337eac5254ef36c59ab5dc943f06e84ea1503d93e9f2ea1c2",
+        "bytes": 2735
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-matrix-driver.mjs",
+        "sha256": "11576d564494ec8337eac5254ef36c59ab5dc943f06e84ea1503d93e9f2ea1c2",
+        "bytes": 2735
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-matrix-driver.test.mjs",
+        "sha256": "eb599eb1409a95d2433a4c24ea80cdd10fc2624f41222529b9287e459cd03b37",
+        "bytes": 9985
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-matrix-driver.test.mjs",
+        "sha256": "eb599eb1409a95d2433a4c24ea80cdd10fc2624f41222529b9287e459cd03b37",
+        "bytes": 9985
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-matrix-runner.mjs",
+        "sha256": "729c777ab97d9e70418c55b1a17144af247ec7b2cb1acf242c252c4cd63d931f",
+        "bytes": 21679
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-matrix-runner.mjs",
+        "sha256": "729c777ab97d9e70418c55b1a17144af247ec7b2cb1acf242c252c4cd63d931f",
+        "bytes": 21679
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-matrix-runner.test.mjs",
+        "sha256": "f525c90e85f1f7ba88fee01bb4fdc317c96f57d1d57007f3776000c1cc4d69c4",
+        "bytes": 11064
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-matrix-runner.test.mjs",
+        "sha256": "f525c90e85f1f7ba88fee01bb4fdc317c96f57d1d57007f3776000c1cc4d69c4",
+        "bytes": 11064
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-oracle-binding.test.mjs",
+        "sha256": "72a783d8b426a369594f92a8c1dd29b14c949f927ed08277d23767bdd0c6aebe",
+        "bytes": 12350
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-oracle-binding.test.mjs",
+        "sha256": "72a783d8b426a369594f92a8c1dd29b14c949f927ed08277d23767bdd0c6aebe",
+        "bytes": 12350
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-producer-revisions.mjs",
+        "sha256": "fcb61f74064a9125fb07e87e53fd4e6df553134dcd02b9e8601c89d3c9f3fb75",
+        "bytes": 12618
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-producer-revisions.mjs",
+        "sha256": "fcb61f74064a9125fb07e87e53fd4e6df553134dcd02b9e8601c89d3c9f3fb75",
+        "bytes": 12618
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-producer-revisions.test.mjs",
+        "sha256": "c6c87f5653d7ac50bec0e73392326a9e11210f601c3b53d79a6ad5df15c206c3",
+        "bytes": 23745
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-producer-revisions.test.mjs",
+        "sha256": "c6c87f5653d7ac50bec0e73392326a9e11210f601c3b53d79a6ad5df15c206c3",
+        "bytes": 23745
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-recipes.mjs",
+        "sha256": "ce398046adf3792c03b6d29f97bae9b8cafd64d1d92bc93b72333904df1cd963",
+        "bytes": 22109
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-recipes.mjs",
+        "sha256": "ce398046adf3792c03b6d29f97bae9b8cafd64d1d92bc93b72333904df1cd963",
+        "bytes": 22109
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-recipes.test.mjs",
+        "sha256": "b696cdac095ff23f069abcb275d67ab1f8eca6305ee5d0ab2700507a34c1775b",
+        "bytes": 28427
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-recipes.test.mjs",
+        "sha256": "b696cdac095ff23f069abcb275d67ab1f8eca6305ee5d0ab2700507a34c1775b",
+        "bytes": 28427
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-snapshot-transport.mjs",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-snapshot-transport.mjs",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-temporary-project-producer.mjs",
+        "sha256": "304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+        "bytes": 7410
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-temporary-project-producer.mjs",
+        "sha256": "304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+        "bytes": 7410
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-wxml-producer.mjs",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-wxml-producer.mjs",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/conformance-wxml-producer.test.mjs",
+        "sha256": "2aa1234e09f4497e54f3c0e3834c20e54e7210074c1dc8c76fc1588b8b83d853",
+        "bytes": 42918
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-wxml-producer.test.mjs",
+        "sha256": "2aa1234e09f4497e54f3c0e3834c20e54e7210074c1dc8c76fc1588b8b83d853",
+        "bytes": 42918
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/evidence-source.mjs",
+        "sha256": "2b479c0602afa65624fe0905c5ffe1e6dd49cfe372b6ab4974bf47ab10a34391",
+        "bytes": 2455
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/evidence-source.mjs",
+        "sha256": "2b479c0602afa65624fe0905c5ffe1e6dd49cfe372b6ab4974bf47ab10a34391",
+        "bytes": 2455
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/00-source-freeze.json",
+        "sha256": "4ec38f58fa85f04ef6bf9a8e266c2f64b9aa4c240195bec30eee7cdc7eb8d7f4",
+        "bytes": 114366
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/00-source-freeze.json",
+        "sha256": "4ec38f58fa85f04ef6bf9a8e266c2f64b9aa4c240195bec30eee7cdc7eb8d7f4",
+        "bytes": 114366
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/01-validation-reviewed.json",
+        "sha256": "91799a13c065a6d1c0f4daf85dc204f569516b38f571432bf8b90bc965a0ce04",
+        "bytes": 1802
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/01-validation-reviewed.json",
+        "sha256": "91799a13c065a6d1c0f4daf85dc204f569516b38f571432bf8b90bc965a0ce04",
+        "bytes": 1802
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/02-validation.json",
+        "sha256": "545c5c8929579db35327fcb42c988bd3cc02aa207e9b55573314365366614554",
+        "bytes": 218685
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/02-validation.json",
+        "sha256": "545c5c8929579db35327fcb42c988bd3cc02aa207e9b55573314365366614554",
+        "bytes": 218685
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/03-source-archive.json",
+        "sha256": "c687463792f49446107f66db7fb3fc40c85eea10056f49b753ff683e7d80935e",
+        "bytes": 109264
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/03-source-archive.json",
+        "sha256": "c687463792f49446107f66db7fb3fc40c85eea10056f49b753ff683e7d80935e",
+        "bytes": 109264
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/04-evidence-test.log",
+        "sha256": "6bb304ca5d05d932cf60ee84ea72c47debac666ef722699d725b0b3541a3a7ca",
+        "bytes": 50476
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/04-evidence-test.log",
+        "sha256": "6bb304ca5d05d932cf60ee84ea72c47debac666ef722699d725b0b3541a3a7ca",
+        "bytes": 50476
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/05-oracle-full-reader-audit.json",
+        "sha256": "be36802f8244a2869f7682d055bda57652b03aa88eefd311d91272bed1acf963",
+        "bytes": 3659
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/05-oracle-full-reader-audit.json",
+        "sha256": "be36802f8244a2869f7682d055bda57652b03aa88eefd311d91272bed1acf963",
+        "bytes": 3659
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/revision.json",
+        "sha256": "9c7782e3e0eccbb52bff73d49e9ea87877dfa3b4710c768a60acbacf487f6142",
+        "bytes": 7212
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/revision.json",
+        "sha256": "9c7782e3e0eccbb52bff73d49e9ea87877dfa3b4710c768a60acbacf487f6142",
+        "bytes": 7212
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUsePreload.txt",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUsePreload.txt",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUseProducer.txt",
+        "sha256": "44c57411d8a06b203a8141ae4a0fa8911695dbc8be8799a1f9855d134fe80375",
+        "bytes": 38036
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUseProducer.txt",
+        "sha256": "44c57411d8a06b203a8141ae4a0fa8911695dbc8be8799a1f9855d134fe80375",
+        "bytes": 38036
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixtureBuildProducer.txt",
+        "sha256": "23c8b9943164f5057ecf7779d2ceaef5d9bda31f825c67df82ae2fd1ead27590",
+        "bytes": 81489
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixtureBuildProducer.txt",
+        "sha256": "23c8b9943164f5057ecf7779d2ceaef5d9bda31f825c67df82ae2fd1ead27590",
+        "bytes": 81489
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixturePackerPreload.txt",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixturePackerPreload.txt",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/githubProducer.txt",
+        "sha256": "efd84dfaecafca434a64777f8388af34c05389e875dcbb8a948e3bf111e05f68",
+        "bytes": 14299
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/githubProducer.txt",
+        "sha256": "efd84dfaecafca434a64777f8388af34c05389e875dcbb8a948e3bf111e05f68",
+        "bytes": 14299
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroManifest.txt",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroManifest.txt",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroObserver.txt",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroObserver.txt",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroProducer.txt",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroProducer.txt",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroValidator.txt",
+        "sha256": "b9106b81e7d3442b2790cbed727f1b38b9ffe82839da25d8b6f1472c9a3704e2",
+        "bytes": 35757
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroValidator.txt",
+        "sha256": "b9106b81e7d3442b2790cbed727f1b38b9ffe82839da25d8b6f1472c9a3704e2",
+        "bytes": 35757
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/snapshotTransport.txt",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/snapshotTransport.txt",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/wxmlProducer.txt",
+        "sha256": "8f11be2bc714e606f7a6ab76a30e213dccab4351a92e54ea3913239010e35990",
+        "bytes": 7774
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/wxmlProducer.txt",
+        "sha256": "8f11be2bc714e606f7a6ab76a30e213dccab4351a92e54ea3913239010e35990",
+        "bytes": 7774
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/00-source-freeze.json",
+        "sha256": "243e0540d3a68ad15c57fa44aa684efa5ed25aa3db9a0446547514daa068ce92",
+        "bytes": 132755
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/00-source-freeze.json",
+        "sha256": "243e0540d3a68ad15c57fa44aa684efa5ed25aa3db9a0446547514daa068ce92",
+        "bytes": 132755
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/01-integration.json",
+        "sha256": "cc319e1a179fd9ff4256e2521fefcdd938ae54b21134618a2ecca5aaf08b2c98",
+        "bytes": 17549
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/01-integration.json",
+        "sha256": "cc319e1a179fd9ff4256e2521fefcdd938ae54b21134618a2ecca5aaf08b2c98",
+        "bytes": 17549
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/02-completion-summary.json",
+        "sha256": "7e42555c21d167339336723c0da1a635d5077300ffef48b1267088e382bdb9c7",
+        "bytes": 8478
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/02-completion-summary.json",
+        "sha256": "7e42555c21d167339336723c0da1a635d5077300ffef48b1267088e382bdb9c7",
+        "bytes": 8478
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/03-oracle-full-reader-audit.json",
+        "sha256": "17385547fa695b2b6813ae21e1ccb4a2503bcbe3c44c72f5f16dd03063accd20",
+        "bytes": 3658
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/03-oracle-full-reader-audit.json",
+        "sha256": "17385547fa695b2b6813ae21e1ccb4a2503bcbe3c44c72f5f16dd03063accd20",
+        "bytes": 3658
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/04-native-review-1012.json",
+        "sha256": "5b2d1e31d5f6fa8632d617201d28e66243f53aa0152d4e2bef7830923955ed2e",
+        "bytes": 3370
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/04-native-review-1012.json",
+        "sha256": "5b2d1e31d5f6fa8632d617201d28e66243f53aa0152d4e2bef7830923955ed2e",
+        "bytes": 3370
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/05-official-review.json",
+        "sha256": "1fb6d41edab56db5ac499e44253c187706efb205df1d269fe10e812d46267981",
+        "bytes": 2748
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/05-official-review.json",
+        "sha256": "1fb6d41edab56db5ac499e44253c187706efb205df1d269fe10e812d46267981",
+        "bytes": 2748
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/revision.json",
+        "sha256": "310173de6b55c19b1c290b553905fd6a48cddf53cb531ab25c46c874277b93b6",
+        "bytes": 5653
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/revision.json",
+        "sha256": "310173de6b55c19b1c290b553905fd6a48cddf53cb531ab25c46c874277b93b6",
+        "bytes": 5653
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/compilerUsePreload.txt",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/compilerUsePreload.txt",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/compilerUseProducer.txt",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/compilerUseProducer.txt",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/fixtureBuildProducer.txt",
+        "sha256": "a255acd7fd5f7c2de07ed65d1f3a90a2dec472c598c606df58bd68cc537589ee",
+        "bytes": 81634
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/fixtureBuildProducer.txt",
+        "sha256": "a255acd7fd5f7c2de07ed65d1f3a90a2dec472c598c606df58bd68cc537589ee",
+        "bytes": 81634
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/fixturePackerPreload.txt",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/fixturePackerPreload.txt",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/githubProducer.txt",
+        "sha256": "c4f12de0384c5bb76d28ec0bbcd475da5df60c43dad8f0c7f66d1329d0b1e2ff",
+        "bytes": 15050
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/githubProducer.txt",
+        "sha256": "c4f12de0384c5bb76d28ec0bbcd475da5df60c43dad8f0c7f66d1329d0b1e2ff",
+        "bytes": 15050
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroManifest.txt",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroManifest.txt",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroObserver.txt",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroObserver.txt",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroProducer.txt",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroProducer.txt",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroValidator.txt",
+        "sha256": "b9106b81e7d3442b2790cbed727f1b38b9ffe82839da25d8b6f1472c9a3704e2",
+        "bytes": 35757
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/macroValidator.txt",
+        "sha256": "b9106b81e7d3442b2790cbed727f1b38b9ffe82839da25d8b6f1472c9a3704e2",
+        "bytes": 35757
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/snapshotTransport.txt",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/snapshotTransport.txt",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/wxmlProducer.txt",
+        "sha256": "0aef38401c26e19d15cea19ca179c0e4bfe5ccc3ce7d032dd691f2f769baf94c",
+        "bytes": 8045
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/sources/wxmlProducer.txt",
+        "sha256": "0aef38401c26e19d15cea19ca179c0e4bfe5ccc3ce7d032dd691f2f769baf94c",
+        "bytes": 8045
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/00-2026-11-07-sealed-esm-r3-v1-source-freeze.json",
+        "sha256": "86a3aa2720288ce99ebd59c126ae9870746632ca20e20c51494ec80fab7161ff",
+        "bytes": 22699
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/00-2026-11-07-sealed-esm-r3-v1-source-freeze.json",
+        "sha256": "86a3aa2720288ce99ebd59c126ae9870746632ca20e20c51494ec80fab7161ff",
+        "bytes": 22699
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/01-1058-r3-independent-review-v1-report.json",
+        "sha256": "aed6a897fd67e58ef2dd96fc8ceb1fe84909be57c86adf72b191a426d233f7f3",
+        "bytes": 11897
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/01-1058-r3-independent-review-v1-report.json",
+        "sha256": "aed6a897fd67e58ef2dd96fc8ceb1fe84909be57c86adf72b191a426d233f7f3",
+        "bytes": 11897
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/02-1058-r3-independent-review-v1-freeze.json",
+        "sha256": "13e07e66167adec95cfb9fedfc2ee2b08c06ed7dafcdcb0c99d924ec09394072",
+        "bytes": 2107
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/02-1058-r3-independent-review-v1-freeze.json",
+        "sha256": "13e07e66167adec95cfb9fedfc2ee2b08c06ed7dafcdcb0c99d924ec09394072",
+        "bytes": 2107
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/03-1185-r3-independent-review-v1-report.json",
+        "sha256": "42cc650d6965a587e2e7099024c0cea8ab3e08a3ac64abca7de3e74d8ce995e3",
+        "bytes": 12154
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/03-1185-r3-independent-review-v1-report.json",
+        "sha256": "42cc650d6965a587e2e7099024c0cea8ab3e08a3ac64abca7de3e74d8ce995e3",
+        "bytes": 12154
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/04-1185-r3-independent-review-v1-freeze.json",
+        "sha256": "99ed2973d8b117e15ea72f38405d979138db2f1dbc88a4bfc901358645026dc2",
+        "bytes": 1885
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/04-1185-r3-independent-review-v1-freeze.json",
+        "sha256": "99ed2973d8b117e15ea72f38405d979138db2f1dbc88a4bfc901358645026dc2",
+        "bytes": 1885
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/05-sealed-esm-independent-review-v1-report.json",
+        "sha256": "f7cd747be9d6c66df3fdc3140901bdbea15aef0f514bba9977e60c197a7c3797",
+        "bytes": 23338
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/05-sealed-esm-independent-review-v1-report.json",
+        "sha256": "f7cd747be9d6c66df3fdc3140901bdbea15aef0f514bba9977e60c197a7c3797",
+        "bytes": 23338
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/06-sealed-esm-independent-review-v1-freeze.json",
+        "sha256": "1b8191a5f6f975187436fd4715c8b006819bfd80c30f7efaa8cf5a03dc3c6a04",
+        "bytes": 2124
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/06-sealed-esm-independent-review-v1-freeze.json",
+        "sha256": "1b8191a5f6f975187436fd4715c8b006819bfd80c30f7efaa8cf5a03dc3c6a04",
+        "bytes": 2124
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/revision.json",
+        "sha256": "230b4cf2609154e3cab1f7a8374a25b23d22b0b0ff7e3f72c1dfbb0bfe19d225",
+        "bytes": 4994
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/revision.json",
+        "sha256": "230b4cf2609154e3cab1f7a8374a25b23d22b0b0ff7e3f72c1dfbb0bfe19d225",
+        "bytes": 4994
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/compilerUsePreload.txt",
+        "sha256": "39a058635baba1abaee42b404e0aaa004aefb038a071b82da26f739b0d55ec50",
+        "bytes": 16705
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/compilerUsePreload.txt",
+        "sha256": "39a058635baba1abaee42b404e0aaa004aefb038a071b82da26f739b0d55ec50",
+        "bytes": 16705
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/compilerUseProducer.txt",
+        "sha256": "c6ef48c62ca72ce754884ac343a343c8b74272ed60192dcc0fe32642036d2446",
+        "bytes": 38029
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/compilerUseProducer.txt",
+        "sha256": "c6ef48c62ca72ce754884ac343a343c8b74272ed60192dcc0fe32642036d2446",
+        "bytes": 38029
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/fixtureBuildProducer.txt",
+        "sha256": "e1c32bb30e267f1e26229acf80dbf7ba9c3814453c0d05ee24f8f3cf8cdec2cb",
+        "bytes": 52951
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/fixtureBuildProducer.txt",
+        "sha256": "e1c32bb30e267f1e26229acf80dbf7ba9c3814453c0d05ee24f8f3cf8cdec2cb",
+        "bytes": 52951
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/fixturePackerPreload.txt",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/fixturePackerPreload.txt",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroManifest.txt",
+        "sha256": "07f7a6a48ba9539ec42f3e8eccec2845741386b5d8745c1cc669aa3f697d81c2",
+        "bytes": 16131
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroManifest.txt",
+        "sha256": "07f7a6a48ba9539ec42f3e8eccec2845741386b5d8745c1cc669aa3f697d81c2",
+        "bytes": 16131
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroObserver.txt",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroObserver.txt",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroProducer.txt",
+        "sha256": "b1b2e0db856af9b47a932f9398cd556fc40389ddd8131a19a86875562a5db090",
+        "bytes": 11011
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroProducer.txt",
+        "sha256": "b1b2e0db856af9b47a932f9398cd556fc40389ddd8131a19a86875562a5db090",
+        "bytes": 11011
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroValidator.txt",
+        "sha256": "c1295c96796480a102099f5407509acc9cbc8728852bec13d433100b2c890480",
+        "bytes": 25372
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/sources/macroValidator.txt",
+        "sha256": "c1295c96796480a102099f5407509acc9cbc8728852bec13d433100b2c890480",
+        "bytes": 25372
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/modern-view-pack-resources.mjs",
+        "sha256": "341a6f6b7a679408f61933250d9e365ed58d36a0e04a6e5a26774f75b5ef1955",
+        "bytes": 3065
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/modern-view-pack-resources.mjs",
+        "sha256": "341a6f6b7a679408f61933250d9e365ed58d36a0e04a6e5a26774f75b5ef1955",
+        "bytes": 3065
+      }
+    },
+    {
+      "source": {
+        "path": "scripts/pack-execution-evidence.mjs",
+        "sha256": "e2ffe4691d733041566b59512e43d6afb4db9774bd5e5f380d939d715b799601",
+        "bytes": 24457
+      },
+      "copy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/pack-execution-evidence.mjs",
+        "sha256": "e2ffe4691d733041566b59512e43d6afb4db9774bd5e5f380d939d715b799601",
+        "bytes": 24457
+      }
+    }
+  ],
+  "verifiedSourcePairCount": 211,
+  "tuple": [
+    {
+      "key": "compilerUseProducer",
+      "sourcePath": "scripts/conformance-compiler-use.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/compiler-use/objects/sha256/025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-compiler-use.mjs",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-use.mjs",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/compilerUseProducer.txt",
+        "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+        "bytes": 45701
+      }
+    },
+    {
+      "key": "compilerUsePreload",
+      "sourcePath": "scripts/conformance-compiler-use-preload.cjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/compiler-use/objects/sha256/291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-compiler-use-preload.cjs",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-use-preload.cjs",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/compilerUsePreload.txt",
+        "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+        "bytes": 19764
+      }
+    },
+    {
+      "key": "fixtureBuildProducer",
+      "sourcePath": "scripts/conformance-fixture-build.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+        "sha256": "44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+        "bytes": 84223
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-fixture-build.mjs",
+        "sha256": "44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+        "bytes": 84223
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-fixture-build.mjs",
+        "sha256": "44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+        "bytes": 84223
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/fixtureBuildProducer.txt",
+        "sha256": "44a6b3bc07642e8bfa76c92510f01344205116e21ffe52e012b2b202bcd48305",
+        "bytes": 84223
+      }
+    },
+    {
+      "key": "fixturePackerPreload",
+      "sourcePath": "scripts/conformance-fixture-packer-preload.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-fixture-packer-preload.mjs",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-fixture-packer-preload.mjs",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/fixturePackerPreload.txt",
+        "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+        "bytes": 1466
+      }
+    },
+    {
+      "key": "macroProducer",
+      "sourcePath": "scripts/conformance-compiler-observation.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/compiler-inputs/objects/sha256/43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-compiler-observation.mjs",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-observation.mjs",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/macroProducer.txt",
+        "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+        "bytes": 11113
+      }
+    },
+    {
+      "key": "macroManifest",
+      "sourcePath": "scripts/conformance-compiler-observation-v1.json",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/compiler-inputs/objects/sha256/15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-compiler-observation-v1.json",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-observation-v1.json",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/macroManifest.txt",
+        "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+        "bytes": 19533
+      }
+    },
+    {
+      "key": "macroObserver",
+      "sourcePath": "scripts/conformance-compiler-macro-observer.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/compiler-inputs/objects/sha256/d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-compiler-macro-observer.mjs",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-macro-observer.mjs",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/macroObserver.txt",
+        "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+        "bytes": 3868
+      }
+    },
+    {
+      "key": "macroValidator",
+      "sourcePath": "scripts/conformance-compiler-macro-validator.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/compiler-inputs/objects/sha256/7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-compiler-macro-validator.mjs",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-compiler-macro-validator.mjs",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/macroValidator.txt",
+        "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+        "bytes": 36024
+      }
+    },
+    {
+      "key": "githubProducer",
+      "sourcePath": "scripts/conformance-github-producer.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+        "sha256": "e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+        "bytes": 15918
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-github-producer.mjs",
+        "sha256": "e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+        "bytes": 15918
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-github-producer.mjs",
+        "sha256": "e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+        "bytes": 15918
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/githubProducer.txt",
+        "sha256": "e117fad7b554b40fbe9cdffd61030fb46996eb0d4d164bf815cfae6e38120abe",
+        "bytes": 15918
+      }
+    },
+    {
+      "key": "wxmlProducer",
+      "sourcePath": "scripts/conformance-wxml-producer.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-wxml-producer.mjs",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-wxml-producer.mjs",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/wxmlProducer.txt",
+        "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+        "bytes": 1929
+      }
+    },
+    {
+      "key": "snapshotTransport",
+      "sourcePath": "scripts/conformance-snapshot-transport.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-snapshot-transport.mjs",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-snapshot-transport.mjs",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/snapshotTransport.txt",
+        "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+        "bytes": 19321
+      }
+    },
+    {
+      "key": "temporaryProjectProducer",
+      "sourcePath": "scripts/conformance-temporary-project-producer.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+        "sha256": "304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+        "bytes": 7410
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-temporary-project-producer.mjs",
+        "sha256": "304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+        "bytes": 7410
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-temporary-project-producer.mjs",
+        "sha256": "304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+        "bytes": 7410
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/temporaryProjectProducer.txt",
+        "sha256": "304418ab785bc9fbf27917ff53652348ff872d54e0d666ca0446aae875b51d02",
+        "bytes": 7410
+      }
+    },
+    {
+      "key": "issue1034Producer",
+      "sourcePath": "scripts/conformance-issue1034-producer.mjs",
+      "actualCas": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      },
+      "sourceFreeze": {
+        "path": "scripts/conformance-issue1034-producer.mjs",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      },
+      "frozenCopy": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/runner-source/scripts/conformance-issue1034-producer.mjs",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      },
+      "allBytesEqual": true,
+      "archive": {
+        "path": "sources/issue1034Producer.txt",
+        "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+        "bytes": 2396
+      }
+    }
+  ],
+  "execution": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official-execution.json",
+    "sha256": "321a26eccf368dd60caa97735f8fdc9aac66703c2a5a55d5941326270496c240",
+    "bytes": 3191
+  },
+  "compilerUse": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/compiler-use/objects/sha256/e74997f58d9428342cf6d35e632bc68a1dd10a7dca8c04522558482048aea6e7",
+    "sha256": "e74997f58d9428342cf6d35e632bc68a1dd10a7dca8c04522558482048aea6e7",
+    "bytes": 192335
+  },
+  "fixtureBuild": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/bc5342464f214683a8128b03586d4fba2e30b8d5a88d124661fed0945ac26f14",
+    "sha256": "bc5342464f214683a8128b03586d4fba2e30b8d5a88d124661fed0945ac26f14",
+    "bytes": 32393
+  },
+  "rootReview": {
+    "path": "artifacts/conformance-triage-2026-11-07/r5f-root-official-review-v1/review.json",
+    "sha256": "c0611ed7406b22d4ea575bbb8e55542f187ca4d9c114dc8656eb0dd97f9fc100",
+    "bytes": 3281
+  },
+  "completeReaderAudit": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/control/01-1034/oracle-full-reader-audit.json",
+    "sha256": "7610e6f2f5e166793e34201ad6a0683534d339e6a0bfb0308677a1dcc19da185",
+    "bytes": 3691
+  },
+  "archivedJavaScriptExecuted": false,
+  "rootWrites": 0,
+  "oldSealWrites": 0
+}

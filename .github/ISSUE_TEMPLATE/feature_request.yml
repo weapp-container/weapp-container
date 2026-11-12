@@ -1,0 +1,9 @@
+name: Feature request
+description: 提出能力或开发体验改进
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 使用场景、建议行为和约束
+    validations:
+      required: true

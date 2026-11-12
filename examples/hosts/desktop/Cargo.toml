@@ -1,0 +1,20 @@
+[package]
+name = "weapp-desktop-surface-smoke"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[profile.dev]
+debug = 1
+
+[profile.test]
+debug = 1
+
+[dependencies]
+container-host-desktop = { path = "../../../crates/container-host-desktop", features = ["window"] }
+container-render-skia = { path = "../../../crates/container-render-skia" }
+serde_json = "1"
+sha2 = "0.10"
+winit = "0.30"

@@ -1,0 +1,25 @@
+page { background:#fff; color:#102030; font-size:16px; line-height:20px; }
+.sample { position:absolute; display:block; width:144px; background:#e8eef4; }
+.dynamic-raw { left:8px; top:8px; }
+.dynamic-word { left:168px; top:8px; }
+.dynamic-align { left:8px; top:120px; }
+.graphemes { left:168px; top:120px; white-space:pre-wrap; word-break:break-all; }
+.ws-normal { left:8px; top:180px; white-space:normal; }
+.ws-nowrap { left:168px; top:180px; white-space:nowrap; }
+.ws-pre { left:8px; top:260px; white-space:pre; }
+.ws-pre-wrap { left:168px; top:260px; white-space:pre-wrap; }
+.ws-pre-line { left:8px; top:340px; white-space:pre-line; }
+.ws-break-spaces { left:168px; top:340px; white-space:break-spaces; }
+.wb-normal, .wb-break-all, .wb-keep-all { top:420px; width:96px; }
+.wb-normal { left:8px; word-break:normal; }
+.wb-break-all { left:112px; word-break:break-all; }
+.wb-keep-all { left:216px; word-break:keep-all; }
+.align-start, .align-end, .align-left, .align-right, .align-center { top:500px; width:56px; }
+.align-start { left:8px; text-align:start; }
+.align-end { left:70px; text-align:end; }
+.align-left { left:132px; text-align:left; }
+.align-right { left:194px; text-align:right; }
+.align-center { left:256px; text-align:center; }
+.control { position:absolute; top:600px; width:144px; height:32px; font-size:12px; line-height:32px; background:#334155; color:white; }
+.toggle { left:8px; }
+.inspect { left:168px; }

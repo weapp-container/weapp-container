@@ -1,0 +1,995 @@
+{
+  "schemaVersion": 1,
+  "manifestVersion": "1.0",
+  "protocolVersion": "1.0",
+  "supportLevels": [
+    "full",
+    "partial",
+    "unsupported"
+  ],
+  "hosts": [
+    "web",
+    "macos",
+    "windows",
+    "linux",
+    "android",
+    "ios",
+    "harmony"
+  ],
+  "engines": [
+    "quickjs",
+    "v8"
+  ],
+  "notes": [
+    "partial means the bridge contract exists but host behavior still needs conformance evidence",
+    "unsupported APIs must return ERR_UNSUPPORTED_CAPABILITY and must be reported by wx.canIUse",
+    "Host coverage keys are the explicit seven-host release matrix: web, macos, windows, linux, android, ios and harmony; desktop is a simulator surface alias, while miniProgram is an API result object and not a host key.",
+    "v8-native is a feature-gated rusty_v8 provider; the default build rejects V8 explicitly instead of falling back"
+  ],
+  "apis": [
+    {
+      "id": "capability.query",
+      "names": [
+        "wx.canIUse"
+      ],
+      "support": "full",
+      "hostCoverage": {
+        "web": "full",
+        "macos": "full",
+        "windows": "full",
+        "linux": "full",
+        "android": "full",
+        "ios": "full",
+        "harmony": "full"
+      },
+      "engineCoverage": {
+        "quickjs": "full",
+        "v8": "full"
+      },
+      "permission": "none",
+      "difference": "The result is derived from the negotiated manifest and host capability matrix.",
+      "conformance": [
+        "capability-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "lifecycle.app",
+      "names": [
+        "App",
+        "onLaunch",
+        "onShow",
+        "onHide",
+        "wx.onAppShow",
+        "wx.onAppHide",
+        "wx.onError",
+        "wx.onPageNotFound",
+        "wx.nextTick",
+        "getCurrentPages"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Lifecycle ordering and getCurrentPages stack membership are owned by the session state machine; QuickJS/V8 receive live page objects with route/options snapshots, while host callbacks still require conformance traces.",
+      "conformance": [
+        "life-001",
+        "life-002",
+        "page-stack-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "system.info",
+      "names": [
+        "wx.getSystemInfo",
+        "wx.getSystemInfoSync",
+        "wx.getAppBaseInfo",
+        "wx.getDeviceInfo",
+        "wx.getWindowInfo",
+        "wx.getSystemSetting",
+        "wx.getMenuButtonBoundingClientRect",
+        "wx.getExtConfigSync",
+        "wx.getExtConfig",
+        "wx.getLaunchOptionsSync",
+        "wx.getEnterOptionsSync",
+        "wx.getBatteryInfo",
+        "wx.getBatteryInfoSync",
+        "wx.getScreenBrightness",
+        "wx.setScreenBrightness"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "device-info",
+      "difference": "System values are supplied by the selected host provider or deterministic sandbox; unknown platform values are never fabricated. The provider-owned getSystemInfo snapshot is typed and injectable (brand/model/pixel ratio/language/SDK version/status-bar height/orientation/theme/font-size setting), while host geometry, platform, system version and user agent remain tied to the active HostMetadata. Sync and async getSystemInfo share this snapshot and preserve the documented errMsg distinction. getDeviceInfo is backed by a validated typed identity snapshot (brand/model/ABI/CPU/memory/benchmark) and still derives platform/system/pixelRatio from the active host; getWindowInfo projects screen/window dimensions, safe-area geometry and top offsets from the same provider/host snapshots. getBatteryInfoSync mirrors the asynchronous battery fields as a synchronous provider snapshot. getScreenBrightness and setScreenBrightness use a typed provider snapshot/value in the inclusive 0..1 range; native hosts can replace the sandbox brightness state with their platform display service. getSystemSetting returns an explicit provider snapshot for Bluetooth/location/Wi-Fi switches and device orientation. getMenuButtonBoundingClientRect returns host-injected logical CSS-pixel geometry, with the sandbox using an explicit zero rectangle when no native safe-area metrics are available. getExtConfigSync and getExtConfig return a provider-injected extension configuration snapshot, defaulting to an empty object in the sandbox while preserving sync and callback result envelopes.",
+      "conformance": [
+        "api-unsupported-004",
+        "provider-system-001",
+        "provider-system-003",
+        "provider-system-004",
+        "provider-account-001",
+        "provider-ext-config-001",
+        "provider-system-005",
+        "provider-system-006",
+        "provider-system-007",
+        "provider-system-008"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "system.account-info",
+      "names": [
+        "wx.getAccountInfoSync"
+      ],
+      "support": "full",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "full",
+        "v8": "full"
+      },
+      "permission": "none",
+      "difference": "The deterministic SandboxProvider validates and returns the complete synchronous mini-program identity snapshot before module evaluation, and QuickJS/V8 return an independent clone on every call. Native hosts still need to inject and validate their package identity on each surface, so host coverage remains partial until those evidence cases pass.",
+      "conformance": [
+        "provider-account-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "navigation.page-stack",
+      "names": [
+        "wx.navigateTo",
+        "wx.redirectTo",
+        "wx.navigateBack",
+        "wx.reLaunch",
+        "wx.switchTab",
+        "wx.preloadPage",
+        "wx.setNavigationBarTitle"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Page stack, query serialization and per-page navigation-bar title state are portable. Both engine facades settle navigation callbacks and Promises after the shared runtime commits and synchronizes the page stack; handled rejection, same-turn cancellation and bounded continuation have local regression coverage. Native transition animation and title presentation are host-defined; official and seven-host equivalence remain unverified.",
+      "conformance": [
+        "nav-001",
+        "nav-002",
+        "nav-003",
+        "nav-004",
+        "nav-005",
+        "nav-006"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.mini-program-navigation",
+      "names": [
+        "wx.redirectToMiniProgram"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "redirectToMiniProgram validates appId, path, extraData and envVersion before crossing the provider boundary. The deterministic sandbox records the accepted handoff and returns the documented errMsg without launching another app; native hosts can replace the provider with platform navigation and explicit permission policy.",
+      "conformance": [
+        "provider-mini-program-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.permission",
+      "names": [
+        "wx.authorize",
+        "wx.openSetting",
+        "wx.getSetting",
+        "wx.getAppAuthorizeSetting"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "user-granted",
+      "difference": "authorize validates a known scope against the host provider's explicit permission state; getSetting and openSetting return a deterministic authSetting snapshot and, when withSubscriptions is true, a validated subscriptionsSetting snapshot with mainSwitch/itemSettings. getAppAuthorizeSetting exposes host permission status as authorized, denied, or not determined. The sandbox never prompts or silently grants a scope.",
+      "conformance": [
+        "provider-permission-001",
+        "provider-permission-002",
+        "provider-permission-003",
+        "api-unsupported-012"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "data.setData",
+      "names": [
+        "Page.setData",
+        "data.patch.batch"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Patch merging, deletion and batching are implemented in core; WXML diff parity still needs DevTools evidence.",
+      "conformance": [
+        "data-001",
+        "data-002",
+        "data-003"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "view.wxml-wxss",
+      "names": [
+        "WXML",
+        "WXSS",
+        "custom-component",
+        "slot"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Portable IR carries templates, bindings, styles and component relations. WXSS solid borders, content-box/border-box sizing, independent edges, currentColor and rounded inner holes feed shared layout, software/native Skia and CanvasKit. Packaged static PNG/JPEG/WebP images use manifest-authorized shared RGBA8 resources and 14 modes; remote sources, animation, image load/error events and component canIUse discovery remain unsupported. Explicit scrolling viewports translate descendants under a stationary padding-edge clip; legacy scrollOffset-only frames remain metadata. Session retains offsets across layout generations. Route style selection follows App/current-page/component dependencies. Complete scrollable-overflow, containing-block/fixed-position escape, official visual comparison and current native host/GPU coverage remain incomplete. Direct Flex items support bounded i32 order with shared stable solver, paint and hit ordering while selector/document traversal stays unchanged; absolute/fixed siblings paint in ordinal group zero. Typed frames combining anonymous parent text with nonzero effective child order are explicitly rejected pending a shared anonymous-content paint/hit contract. Text flow supports normal/nowrap/pre/pre-wrap/pre-line/break-spaces, normal/break-all/keep-all and LTR start/end/left/right/center through one versioned source-hashed UTF-8-to-glyph and line plan. Rust validates UAX #14 opportunities with extended grapheme boundaries; CanvasKit replays accepted scalar positions and validates source/hash/grapheme/partition/geometry without a separate complete UAX #14 table. Original evaluated text is retained; the existing filter for unbound, wholly whitespace source nodes containing CR/LF outside text ancestors is unchanged. Full shaping, bidi, nested inline formatting, official typography and host font equivalence remain unverified. Opacity composites each complete painted subtree once, including own background/borders/text/images and overlapping descendants; nested groups retain independent boundaries. Group alpha is quantized to RGBA8, with a conservative 32-depth/64 MiB extra-backing admission budget. opacity:0 suppresses pixels while preserving layout, selectors, coordinate input and captured touch contacts. Numeric/percentage opacity is clamped; explicit inherit/initial/unset and invalid-cascade rejection are handled. Full CSS stacking contexts, cross-ancestor z-index, blend/filter/backdrop behavior and official opacity visual equality remain unverified. Typed 2D transforms preserve ordered operations through cascade and inherited-font resolution, then resolve percentage translations against each final border box. Used affine matrices drive native/software/CanvasKit drawing, selectors, scroll geometry and coordinate input. Invalid transform/origin declarations are discarded before cascade; recognized deferred/3D values fail explicitly. Transform inheritance freezes parent font lengths while keeping percentages relative to each child. Non-finite local/world transforms and geometry are rejected before frame publication. Full 3D, transform animations, cross-ancestor stacking contexts and official/host equivalence remain unverified.",
+      "conformance": [
+        "view-001",
+        "view-002",
+        "style-overflow-001",
+        "style-border-001",
+        "view-image-static-001",
+        "style-flex-order-001",
+        "style-text-flow-001",
+        "style-opacity-group-001",
+        "style-transform-2d-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "event.bindings",
+      "names": [
+        "bindtap",
+        "catchtap",
+        "dataset",
+        "capture-bind"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Events cross the bridge in batches; committed-tree hit testing, currentTarget dataset enrichment, capture/bubble ordering and handler propagation control are normalized before host-specific conformance. Native render metadata and managed component event metadata share one JSON-value projection for dataset and mark. Committed selectors, observer datasets and coordinate events retain those values; identified contacts retain their touchstart metadata snapshot across later patches. Literal and legacy frame strings stay strings. Existing IR null/undefined presence conflation, reference identity and fixed-SDK type behavior remain unverified. RenderNode dataset/mark Rust maps now contain Value; old strict string consumers cannot read new nonstring output. See docs/event-metadata.md.",
+      "conformance": [
+        "event-001",
+        "event-002",
+        "event-control-001",
+        "event-metadata-values-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "timer",
+      "names": [
+        "wx.timer",
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Scheduling is delegated to the host clock and must preserve cancellation and teardown semantics.",
+      "conformance": [
+        "timer-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.animation",
+      "names": [
+        "wx.createAnimation",
+        "Animation"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "graphics",
+      "difference": "QuickJS and V8 expose a deterministic, serializable animation action queue with WebAnimation-compatible chaining and export semantics. Host frame playback, transform interpolation and renderer timing remain partial until each host supplies conformance evidence.",
+      "conformance": [
+        "animation-001",
+        "api-unsupported-007"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.storage",
+      "names": [
+        "wx.getStorage",
+        "wx.getStorageSync",
+        "wx.getStorageInfo",
+        "wx.getStorageInfoSync",
+        "wx.setStorage",
+        "wx.setStorageSync",
+        "wx.removeStorage",
+        "wx.removeStorageSync",
+        "wx.clearStorage",
+        "wx.clearStorageSync"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "storage",
+      "difference": "The portable session provides a memory-backed store; hosts may add persistence and must preserve session isolation. QuickJS/V8 getStorageInfo* include the documented getStorageInfo:ok envelope and compute currentSize from UTF-8 JSON pairs of each key and value, matching the mpcore oracle.",
+      "conformance": [
+        "storage-001",
+        "storage-002",
+        "storage-003",
+        "storage-004"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.request",
+      "names": [
+        "wx.request",
+        "wx.uploadFile",
+        "wx.downloadFile",
+        "wx.connectSocket",
+        "wx.socketTask.send",
+        "wx.socketTask.close"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "network",
+      "difference": "Network calls use a host provider with deterministic sandbox responses. request/uploadFile/downloadFile expose a promise-compatible RequestTask/UploadTask/DownloadTask with abort and response-header listeners; request validates url, uploadFile validates url/filePath/name against the in-memory file store, and downloadFile can persist response bytes to filePath. connectSocket returns a provider-backed SocketTask with deterministic OPEN/send/close transitions; native providers replace transport and inbound message delivery. Absolute bridge deadlines, provider cancellation tokens and explicit network permission denial map to stable structured errors.",
+      "conformance": [
+        "api-unsupported-002",
+        "provider-network-001",
+        "provider-network-002",
+        "provider-network-003"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.filesystem",
+      "names": [
+        "wx.getFileSystemManager",
+        "wx.fs.readFileSync",
+        "wx.fs.writeFileSync",
+        "wx.fs.accessSync",
+        "wx.fs.unlinkSync",
+        "wx.fs.readdir",
+        "wx.fs.readdirSync",
+        "wx.saveFile",
+        "wx.removeSavedFile",
+        "wx.getFileInfo",
+        "wx.getSavedFileInfo",
+        "wx.getSavedFileList"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "filesystem",
+      "difference": "Filesystem calls use a host-scoped provider with normalized roots, byte/text encoding and structured errors. wx.getFileSystemManager.readdir/readdirSync return a stable sorted immediate-child listing derived from the provider namespace, including directory prefixes. wx.saveFile copies a validated temp file to an optional normalized destination or a deterministic SHA-256 saved path; getFileInfo returns byte size plus md5/sha1 digest, while getSavedFileInfo/getSavedFileList expose metadata for files created through saveFile. Both the legacy global API and getFileSystemManager.saveFile share the same bridge operation. Sync manager methods use a permission-scoped provider snapshot and emit one batched mutation effect; missing snapshots fail explicitly instead of returning stale data.",
+      "conformance": [
+        "api-unsupported-003",
+        "provider-filesystem-001",
+        "provider-filesystem-003",
+        "provider-filesystem-004"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.selector-query",
+      "names": [
+        "wx.createSelectorQuery",
+        "SelectorQuery"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Selector queries read the most recently committed portable render tree and support id/class/tag, descendant/sibling relationships, selectViewport and scope chaining. Geometry follows the same world transforms and accepted scroll offsets as painting and hits. Batched fields project rect, size, scrollOffset, id, dataset, mark, properties, computedStyle, node and context descriptors; malformed field lists return ERR_INVALID_REQUEST. Official geometry and per-host hit-test parity still require conformance evidence. Dataset and mark fields clone accepted JSON values without parsing legacy string entries; missing/undefined presence semantics and official type equality remain unverified. See docs/event-metadata.md.",
+      "conformance": [
+        "selector-001",
+        "selector-002",
+        "selector-003",
+        "selector-004",
+        "selector-005",
+        "selector-metadata-values-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.canvas",
+      "names": [
+        "wx.createCanvasContext",
+        "wx.canvas.draw",
+        "CanvasContext"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "graphics",
+      "difference": "createCanvasContext batches 2D commands and draw() crosses the bridge once; runtime replays CanvasFrame commands into an addressable canvasId RGBA8 snapshot with reserve history.",
+      "conformance": [
+        "canvas-001",
+        "canvas-002"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.canvas-offscreen",
+      "names": [
+        "wx.createOffscreenCanvas"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "graphics",
+      "difference": "createOffscreenCanvas validates 2d type and bounded dimensions, returns an isolated CanvasFrame surface, and batches draw commands through the renderer. The sandbox provides deterministic CPU RGBA snapshots; toDataURL and native GPU lifetime remain host-dependent.",
+      "conformance": [
+        "offscreen-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.media-camera-location",
+      "names": [
+        "wx.chooseMedia",
+        "wx.createCameraContext",
+        "wx.cameraContext",
+        "wx.getLocation",
+        "wx.startLocationUpdate",
+        "wx.stopLocationUpdate",
+        "wx.scanCode",
+        "wx.chooseImage"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "camera-or-location",
+      "difference": "Media picker, camera context, camera scanning and location calls require explicit provider permissions. wx.chooseMedia/wx.chooseImage validate picker options; wx.createCameraContext validates context lifetime, takePhoto quality and startRecord timeout, then returns a structured unsupported error in the sandbox because no camera path or frame is fabricated; wx.scanCode validates scan type options and returns a complete deterministic empty result in the sandbox; location calls validate type/altitude and return the documented coordinate schema or a structured permission, timeout, cancellation, or validation error.",
+      "conformance": [
+        "api-unsupported-007",
+        "provider-device-001",
+        "provider-device-003",
+        "provider-device-004",
+        "provider-media-008",
+        "api-unsupported-010"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.inner-audio-context",
+      "names": [
+        "wx.createInnerAudioContext",
+        "wx.createAudioContext"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "audio-output",
+      "difference": "createInnerAudioContext returns a stateful context whose source, transport commands, seek position and playback properties cross one batched provider operation. createAudioContext targets an audio component by id and exposes setSrc/play/pause/seek over the same provider boundary. The deterministic sandbox models observable state and validates source/range/destroy transitions but does not decode or output audio; native providers own decoder, focus, route and resource lifetime.",
+      "conformance": [
+        "provider-media-005",
+        "provider-media-006",
+        "api-unsupported-008"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.video-context",
+      "names": [
+        "wx.createVideoContext"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "video-output",
+      "difference": "createVideoContext targets a page video component by id and batches play, pause, stop, seek, playbackRate, danmu, fullscreen and status-bar commands through a provider. The deterministic sandbox models transport/UI state and validates arguments without decoding or rendering video; native providers own decoder, surface, orientation and resource lifetime.",
+      "conformance": [
+        "provider-media-007",
+        "api-unsupported-009"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.auth-payment",
+      "names": [
+        "wx.login",
+        "wx.getUserProfile",
+        "wx.requestPayment",
+        "wx.shareAppMessage",
+        "wx.checkSession",
+        "wx.shareTimeline"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "account-profile-payment-or-share",
+      "difference": "Identity, payment and sharing calls use explicit provider permissions and sandbox responses; wx.login establishes a provider-owned account session and wx.checkSession fails with a stable expiry error until that session exists. wx.getUserProfile requires a non-empty desc consent purpose and returns the documented userInfo fields plus deterministic rawData, signature, encryptedData and iv envelope fields. wx.requestPayment validates non-empty timeStamp, nonceStr, package, paySign and the MD5/HMAC-SHA256/RSA signType enum, then records a typed PaymentRequest without contacting a payment service or claiming user completion. wx.shareAppMessage and wx.shareTimeline validate string/object/array option shapes and record a typed request in the sandbox without opening a share sheet or claiming user completion. Real credentials, consent UI and payment/share surfaces remain host-specific.",
+      "conformance": [
+        "api-unsupported-008",
+        "provider-auth-001",
+        "provider-auth-002",
+        "provider-auth-003",
+        "provider-share-001",
+        "provider-share-002",
+        "provider-payment-001"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.clipboard-device",
+      "names": [
+        "wx.setClipboardData",
+        "wx.getClipboardData",
+        "wx.setKeepScreenOn",
+        "wx.getNetworkType",
+        "wx.vibrateShort",
+        "wx.vibrateLong",
+        "wx.onNetworkStatusChange"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "device-or-clipboard",
+      "difference": "Clipboard and device calls are routed through the host provider with deterministic sandbox state and explicit permission errors. The sandbox keeps a typed network enum (wifi/5g/4g/3g/2g/unknown/none), validates keepScreenOn and vibration options, records vibration effects for native hosts, and returns isConnected with networkType. wx.onNetworkStatusChange uses a typed host transition hook; callbacks run in one engine batch and are removed deterministically with offNetworkStatusChange.",
+      "conformance": [
+        "api-unsupported-009",
+        "provider-device-002",
+        "provider-device-005"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.ui-feedback",
+      "names": [
+        "wx.showToast",
+        "wx.hideToast",
+        "wx.showLoading",
+        "wx.hideLoading",
+        "wx.showModal",
+        "wx.showActionSheet",
+        "wx.pageScrollTo",
+        "wx.setNavigationBarColor"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "ui",
+      "difference": "The provider records toast/loading/dialog/action-sheet and navigation-bar state with deterministic result shapes. pageScrollTo is Session-owned and moves a live page's committed frame, with selector/offsetTop, clamping, cancellation/deadline checks and lifecycle callbacks. Positive duration explicitly returns ERR_UNSUPPORTED_CAPABILITY; absent committed frame returns ERR_RENDER. The standalone sandbox provider cannot pretend to scroll. Animation timing and native overlay/user-action timing remain unverified.",
+      "conformance": [
+        "ui-001",
+        "ui-002"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "wx.intersection-observer",
+      "names": [
+        "wx.createIntersectionObserver",
+        "IntersectionObserver"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "graphics",
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0",
+      "difference": "Session owns persistent batched subscriptions over scoped committed render-tree world AABBs, with thresholds/initialRatio, observeAll, multiple reference regions and native ancestor-path clipping. Accepted scrolling frames update geometry and measurements. Registration ACK is not a measurement; successful commits deliver changes. Disconnect/unload/detach release subscriptions. Standalone SandboxProvider explicitly returns unsupported. Exact threshold equality, initial zero-area behavior, rotated native scroll clips, official DevTools and per-host GPU/device parity remain unverified.",
+      "conformance": [
+        "observer-intersection-001",
+        "observer-intersection-002",
+        "observer-intersection-003"
+      ]
+    },
+    {
+      "id": "wx.media-query-observer",
+      "names": [
+        "wx.createMediaQueryObserver",
+        "MediaQueryObserver"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "graphics",
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0",
+      "difference": "Session owns persistent subscriptions using public width/height/orientation descriptors over host logical viewport, or the first committed frame viewport when host size is absent. Registration ACK is not a measurement; committed measurement and actual host resize deliver initial/changed matches with deduplication. Disconnect/unload/detach release subscriptions. Standalone SandboxProvider explicitly returns unsupported. Square orientation follows an auxiliary baseline and awaits fixed DevTools validation; official, GPU and device parity remain unverified.",
+      "conformance": [
+        "observer-media-001",
+        "observer-media-002"
+      ]
+    },
+    {
+      "id": "component.selection",
+      "names": [
+        "Page.selectComponent",
+        "Page.selectAllComponents",
+        "Component.selectComponent",
+        "Component.selectAllComponents",
+        "Component.selectOwnerComponent"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Managed declaration ownership returns live same-page component instances for ID/class, child, descendant and union selectors; first native match resolves to null. Cross-component >>>, tag/attribute patterns and targets with export functions fail explicitly. Direct Page-child owner behavior is an auxiliary compatibility candidate awaiting fixed-SDK oracle; named-slot reordering uses local render traversal and is not proven equivalent. No host or official parity is claimed.",
+      "conformance": [
+        "component-selection-001",
+        "component-selection-002",
+        "component-selection-003",
+        "component-selection-004"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "component.relations",
+      "names": [
+        "Component.relations",
+        "Component.getRelationNodes",
+        "Component.hasBehavior"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Managed relations use composed component ancestry separately from declaration ownership and return live same-page occurrences; hasBehavior checks registered behavior identity. The saved fixed-SDK oracle covers only ancestor/descendant relations through projected slot content and attached/linked/ready/detached/unlinked ordering. Parent/child relations and behavior identity/targets have local contract coverage only. A declared linkChanged function is explicitly rejected with ERR_UNSUPPORTED_CAPABILITY until View supplies physical move identities; array compaction is not treated as a move. Broader relation semantics, native hosts and device parity remain unproven; local tests do not promote official conformance.",
+      "conformance": [
+        "component-relations-001",
+        "component-relations-002",
+        "component-relations-003"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "component.events",
+      "names": [
+        "Component.triggerEvent"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "web": "partial",
+        "macos": "partial",
+        "windows": "partial",
+        "linux": "partial",
+        "android": "partial",
+        "ios": "partial",
+        "harmony": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "none",
+      "difference": "Managed component custom events dispatch synchronously inside the selected JS engine using one versioned page event graph. Local coverage includes target/bubble/capture/composed/catch, declaration-owner callbacks and detail identity. The fixed-SDK oracle proves only listener alias priority and hyphen/underscore names; option, lifecycle, native host and device parity remain unproven. Legacy components without managed event metadata fail explicitly.",
+      "conformance": [
+        "component-event-001",
+        "component-event-002",
+        "component-event-003"
+      ],
+      "minimumManifestVersion": "1.0",
+      "minimumProtocolVersion": "1.0"
+    }
+  ]
+}

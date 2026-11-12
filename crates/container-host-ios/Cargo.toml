@@ -1,0 +1,36 @@
+[package]
+name = "container-host-ios"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "iOS static-library host adapter boundary"
+
+[lib]
+crate-type = ["rlib", "staticlib"]
+
+[features]
+default = ["stub"]
+stub = []
+ios = []
+metal = ["skia-gpu-metal"]
+skia-backend = ["container-render-skia/skia-backend", "container-runtime/skia-backend"]
+skia-gpu-metal = [
+    "container-render-skia/skia-gpu-metal",
+    "container-runtime/skia-gpu-metal",
+    "container-host-common/skia-gpu-metal",
+]
+v8-native = ["container-runtime/v8-native"]
+quickjs-native = ["container-runtime/quickjs-native"]
+quickjs-native-ios = ["container-runtime/quickjs-native-ios"]
+
+[dependencies]
+container-render-skia = { path = "../container-render-skia" }
+container-ir = { path = "../container-ir" }
+container-core = { path = "../container-core" }
+container-bridge = { path = "../container-bridge" }
+serde_json = { workspace = true }
+container-host-common = { path = "../container-host-common" }
+container-runtime = { path = "../container-runtime" }
+

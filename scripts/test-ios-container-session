@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+out=$(mktemp -d "${TMPDIR:-/tmp}/weapp-ios-session-tests.XXXXXX")
+trap 'rm -rf "$out"' EXIT INT TERM
+swiftc -parse-as-library \
+  "$root/examples/hosts/ios/Sources/WeappContainerHost/PortablePack.swift" \
+  "$root/examples/hosts/ios/Sources/WeappContainerHost/ContainerSession.swift" \
+  "$root/examples/hosts/ios/Tests/ContainerSessionTests.swift" \
+  -o "$out/session-tests"
+"$out/session-tests" "$root/examples/hosts/ios/Sources/WeappContainerSmoke/Resources/portable-pack"

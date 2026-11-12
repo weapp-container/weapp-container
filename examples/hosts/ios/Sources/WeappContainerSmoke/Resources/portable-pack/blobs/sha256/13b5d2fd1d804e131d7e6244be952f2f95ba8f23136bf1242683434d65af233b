@@ -1,0 +1,18 @@
+//#region examples/apps/reference-app/pages/home/index.js
+Page({
+	data: {
+		count: 0,
+		message: "Loaded by the Weapp Container",
+		componentConfig: {
+			label: "组件独立状态",
+			step: 1
+		}
+	},
+	onLoad(query) {
+		this.setData({ message: query?.message || this.data.message });
+	},
+	onTap() {
+		this.setData({ count: this.data.count + 1 });
+	}
+});
+//#endregion

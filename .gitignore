@@ -1,0 +1,55 @@
+/target/
+examples/apps/**/target/
+examples/apps/**/.weapp-vite/
+examples/apps/**/tsconfig.json
+/node_modules/
+/tools/container-manifest/node_modules/
+/.turbo/
+/.cache/
+/.playwright-cli/
+.weapp-container/
+*.log
+.DS_Store
+dist/
+artifacts/
+benchmarks/results/
+examples/hosts/**/.build/
+examples/hosts/**/target/
+examples/hosts/**/build/
+examples/hosts/**/.cxx/
+examples/hosts/**/.gradle/
+examples/hosts/**/.hvigor/
+examples/hosts/**/hvigor/
+examples/hosts/**/local.properties
+examples/hosts/harmony/entry/build-profile.json5
+
+# The Harmony sample needs these DevEco project descriptors for a clean HAP
+# build. Keep generated Hvigor state and build outputs ignored.
+!examples/hosts/harmony/hvigor/
+!examples/hosts/harmony/hvigor/hvigor-config.json5
+!examples/hosts/harmony/entry/build-profile.json5
+
+# Reviewed portable formatting packages are source inputs, including dist and nested dependencies.
+!conformance/recipes/template-format-dependencies/**/
+!conformance/recipes/template-format-dependencies/**
+
+# Reviewed producer provenance is an immutable fixture input, including logs.
+!scripts/fixtures/reviewed-producers/**/provenance/*.log
+
+# Local build state, credentials and private signing material.
+.gradle/
+.hvigor/
+local.properties
+.env
+.env.*
+!.env.example
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.mobileprovision
+# Historical validation output belongs in private archives, outside source Git.
+docs/**/evidence/
+docs/*-evidence/
+docs/sdk-migration/
+examples/hosts/conformance-web/projection-build.json

@@ -1,0 +1,23 @@
+<view id="screen" class="screen">
+  <scroll-view id="a" class="scroller a" scroll-x scroll-y scroll-left="{{leftA}}" scroll-top="{{topA}}" bindscroll="onScrollA" bindtouchmove="onNormalMove">
+    <view class="content content-a">
+      <view id="target-a" class="target target-a" data-owner="a" bindtap="onTargetTap"></view>
+    </view>
+  </scroll-view>
+  <scroll-view id="b" class="scroller b" scroll-x scroll-y scroll-left="{{leftB}}" scroll-top="{{topB}}" bindscroll="onScrollB">
+    <view class="content content-b">
+      <view id="target-b" class="target target-b" data-owner="b" bindtap="onTargetTap"></view>
+    </view>
+  </scroll-view>
+  <view id="inspect" class="control inspect" bindtap="onInspect">Inspect</view>
+  <view id="set-offsets" class="control set-offsets" bindtap="onSetOffsets">Offsets</view>
+  <view id="page-scroll" class="control page-scroll" bindtap="onPageScrollCommand">Page</view>
+  <view id="observe" class="control observe" bindtap="onObserve">Observe</view>
+  <view id="patch" class="control patch" bindtap="onUnrelatedPatch">Patch</view>
+  <view id="navigate" class="control navigate" bindtap="onNavigate">Next</view>
+  <view id="relaunch" class="control relaunch" bindtap="onRelaunch">Reset</view>
+  <view id="page-target" class="page-target" data-owner="page" bindtap="onTargetTap"></view>
+  <scroll-view id="c" class="scroller c" scroll-x scroll-y catchtouchmove="onCatchMove">
+    <view class="content content-c"></view>
+  </scroll-view>
+</view>

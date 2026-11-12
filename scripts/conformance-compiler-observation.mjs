@@ -1,0 +1,171 @@
+/** Exact, insertion-only observations of the pinned compiler outputs. The
+ * original compiler artifacts remain separate from the observed consumer. */
+import { createHash } from 'node:crypto'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
+import { CJS_MACRO_PROFILES, CORE_TRANSFORM_MACRO_VALIDATION_PROFILE, validateMacroEvents } from './conformance-compiler-macro-validator.mjs'
+import { reviewedMacroObservation } from './conformance-producer-revisions.mjs'
+import { parseStaticCliInvocation, staticFixtureInputClosure, TEMPLATE_STATIC_CLI_PROFILE } from './conformance-static-cli-profile.mjs'
+import { verifyTemplateSourceMembers } from './conformance-fixture-project.mjs'
+
+const MODULE = fileURLToPath(import.meta.url)
+const MANIFEST = fileURLToPath(new URL('./conformance-compiler-observation-v1.json', import.meta.url))
+const OBSERVER = fileURLToPath(new URL('./conformance-compiler-macro-observer.mjs', import.meta.url))
+const VALIDATOR = fileURLToPath(new URL('./conformance-compiler-macro-validator.mjs', import.meta.url))
+const PROFILE_INPUTS = ['conformance-static-cli-profile.mjs', 'conformance-fixture-project.mjs']
+const profileInputs = () => PROFILE_INPUTS.map(name => ({ path: `scripts/${name}`, bytes: readFileSync(new URL(`./${name}`, import.meta.url)) }))
+export const MACRO_OBSERVATION_PROFILE = CORE_TRANSFORM_MACRO_VALIDATION_PROFILE
+const hash = data => createHash('sha256').update(data).digest('hex')
+const same = (left, right) => JSON.stringify(left) === JSON.stringify(right)
+const ensure = (condition, message) => { if (!condition) throw new Error(message) }
+const reviewed = () => JSON.parse(readFileSync(MANIFEST))
+
+function insertions(original, target) {
+  ensure(hash(original) === target.originalSha256 && original.length === target.originalBytes,
+    `Macro observation original output differs: ${target.path}`)
+  const text = original.toString('utf8')
+  ensure(Buffer.from(text).equals(original), 'Macro observation output is not exact UTF-8')
+  let patched = text
+  const ordered = target.insertions.map((item, index) => ({ ...item, index }))
+    .sort((left, right) => right.offset - left.offset || right.index - left.index)
+  for (const item of ordered) {
+    ensure(Number.isSafeInteger(item.offset) && item.offset >= 0 && item.offset <= text.length
+      && typeof item.code === 'string' && item.code.length, 'Macro observation insertion is malformed')
+    patched = patched.slice(0, item.offset) + item.code + patched.slice(item.offset)
+  }
+  const bytes = Buffer.from(patched)
+  ensure(hash(bytes) === target.patchedSha256 && bytes.length === target.patchedBytes,
+    `Macro observation rebuilt output differs: ${target.path}`)
+  return bytes
+}
+
+export function prepareCompilerMacroObservation({ context, put, load }) {
+  const manifest = reviewed(), members = new Map(context.members.map(member => [member.path, member]))
+  ensure(manifest.profile === MACRO_OBSERVATION_PROFILE && Array.isArray(manifest.targets)
+    && manifest.targets.length === 4 && new Set(manifest.targets.map(target => target.path)).size === 4,
+  'Unsupported fixed macro observation manifest')
+  const transforms = []
+  for (const target of manifest.targets) {
+    const member = members.get(target.path)
+    ensure(member?.origin === 'output' && member.sha256 === target.originalSha256 && member.bytes === target.originalBytes,
+      `Macro observation target is not the actual fresh build output: ${target.path}`)
+    const original = load(member.artifact), patchedBytes = insertions(original, target)
+    ensure(readFileSync(join(context.checkout, target.path)).equals(original), 'Macro observation physical original differs')
+    const patched = put(patchedBytes)
+    writeFileSync(join(context.checkout, target.path), patchedBytes)
+    transforms.push({ path: target.path, original: member.artifact, patched })
+    members.set(target.path, { ...member, origin: 'observed-output', originalSha256: member.sha256,
+      sha256: patched.sha256, bytes: patched.bytes, artifact: patched })
+  }
+  return { members: [...members.values()].sort((left, right) => left.path.localeCompare(right.path)),
+    observation: { profile: MACRO_OBSERVATION_PROFILE, producer: put(readFileSync(MODULE)),
+      manifest: put(readFileSync(MANIFEST)), observer: put(readFileSync(OBSERVER)),
+      validator: put(readFileSync(VALIDATOR)), profileInputs: profileInputs().map(item => ({ path: item.path, artifact: put(item.bytes) })), transforms } }
+}
+
+export function inspectCompilerMacroObservation({ observation, members, load }) {
+  const transformed = new Map(members)
+  if (!observation) return transformed
+  const revision = reviewedMacroObservation(observation, load)
+  const manifest = revision.manifest
+  ensure(manifest.profile === observation.profile && manifest.targets.length === 4
+    && observation.transforms?.length === manifest.targets.length, 'Compiler macro observation transform closure differs')
+  for (let index = 0; index < manifest.targets.length; index++) {
+    const target = manifest.targets[index], transform = observation.transforms[index], member = members.get(target.path)
+    ensure(transform.path === target.path && member?.origin === 'output' && same(transform.original, member.artifact),
+      'Compiler macro observation replaces an unbound output')
+    const patched = insertions(load(transform.original), target)
+    ensure(load(transform.patched).equals(patched), 'Compiler macro observation patch differs from exact insertions')
+    transformed.set(target.path, { ...member, origin: 'observed-output', originalSha256: member.sha256,
+      sha256: transform.patched.sha256, bytes: transform.patched.bytes, artifact: transform.patched })
+  }
+  return transformed
+}
+
+export function inspectCompilerMacroLoads({ events, observation, checkout, members, sourceMembers, load }) {
+  if (!observation) return new Set()
+  const macro = events.filter(event => event.kind === 'macro'), loads = events.filter(event => event.kind === 'load')
+  if (observation) ensure(events.every((event, index) => event.eventSeq === index + 1),
+    'Compiler macro loader log is incomplete or out of order')
+  const start = events[0]
+  const directCLI = start.argv?.[1] === join(checkout, 'packages/weapp-vite/bin/weapp-vite.js') && start.argv[2] === 'build'
+  if (observation && directCLI) ensure(events.at(-1)?.kind === 'end' && events.at(-1).observerFailed === false
+    && events.at(-1).exitCode === 0 && events.filter(event => event.kind === 'end').length === 1,
+  'Compiler macro observer has no complete successful terminal witness')
+  if (!macro.length && !loads.some(event => event.classification === 'unbound')) return new Set()
+  ensure(observation, 'Compiler dynamic modules lack reviewed macro observations')
+  // Only a direct static CLI may establish a generated ESM execution. Other
+  // trusted worker/bridge profiles still run under their existing loader rules.
+  const invocation = parseStaticCliInvocation({ args: start.argv?.slice(1), cliPath: join(checkout, 'packages/weapp-vite/bin/weapp-vite.js'),
+    cwd: start.cwd, checkout, caseId: start.caseId, caseSourcePath: start.caseSourcePath, sourceSha256: start.sourceSha256 })
+  ensure(start.isMainThread === true && start.threadId === 0 && start.execArgv?.length === 0 && invocation,
+    'Compiler macro dynamic execution is not the reviewed static CLI profile')
+  ensure(start.fixtureInputClosure, 'Compiler macro execution lacks original fixture input closure')
+  const fixture = JSON.parse(load(start.fixtureInputClosure))
+  ensure(fixture.projectPath === start.argv[3] && Array.isArray(fixture.sourceBefore)
+    && same(fixture, staticFixtureInputClosure(invocation, fixture.sourceBefore)),
+    'Compiler macro fixture input closure belongs to another project')
+  if (invocation.profile === TEMPLATE_STATIC_CLI_PROFILE) {
+    // The source fixture was observed after the per-case SDK/config patches.
+    // Its authority is the validated guarded consumer closure. Keep `members`
+    // separate: native/dependency provenance below still uses the original
+    // fresh compiler-build closure and cannot acquire patch authority.
+    ensure(sourceMembers instanceof Map, 'Compiler template source input lacks its validated consumer member closure')
+    verifyTemplateSourceMembers({ profile: invocation, sourceBefore: fixture.sourceBefore,
+      members: [...sourceMembers.values()], checkout, load })
+  }
+  const sourceSnapshots = new Map()
+  for (const item of fixture.sourceBefore) {
+    if (item.kind !== 'file') continue
+    ensure(typeof item.path === 'string' && !item.path.startsWith('/') && !item.path.split('/').includes('..'),
+      'Compiler macro source input path escapes fixture')
+    const bytes = load(item.artifact), path = join(fixture.projectPath, item.path)
+    ensure(!sourceSnapshots.has(path), 'Compiler macro source input is duplicated')
+    sourceSnapshots.set(path, { sha256: hash(bytes), bytes: bytes.length, source: bytes.toString('utf8'), artifact: item.artifact })
+  }
+  let witnessToken = 1, registrations = 0
+  let hookChainClosed = start.hookWitness === 'terminal-rearm-registerHooks-v1'
+    && events[1]?.kind === 'hook-ready' && events[1].witnessToken === witnessToken
+    && !events.some(event => ['observer-failure', 'non-file-load', 'hook-registration-failed'].includes(event.kind))
+  for (let index = 2; index < events.length; index++) {
+    const event = events[index]
+    if (event.kind === 'hook-registration') {
+      const rearmed = events[++index]
+      hookChainClosed &&= event.api === 'registerHooks' && event.reentrant === false
+        && event.registrationId === ++registrations && rearmed?.kind === 'hook-rearmed'
+        && rearmed.registrationId === event.registrationId && rearmed.witnessToken === ++witnessToken
+    } else if (event.kind === 'hook-rearmed' || event.kind === 'hook-ready') hookChainClosed = false
+    else if (event.kind === 'load') hookChainClosed &&= event.witnessToken === witnessToken
+      && (event.boundary === 'process.dlopen' ? event.nativeFileStable === true && event.format === 'addon' : event.terminalResult === true)
+    else if (event.kind === 'resolve' || event.kind === 'builtin-load' || event.kind === 'end') hookChainClosed &&= event.witnessToken === witnessToken
+  }
+  if (CJS_MACRO_PROFILES.includes(observation.profile)) hookChainClosed &&= start.cjsCompileWitness === 'captured-node-cjs-compile-v1'
+  ensure(hookChainClosed, 'Compiler macro execution has an open hook chain or failed terminal observation')
+  const hydrated = macro.map(event => {
+    const payload = JSON.parse(load(event.payload))
+    if (payload.fileObservation?.artifact) {
+      const physical = load(payload.fileObservation.artifact)
+      ensure(hash(physical) === payload.fileObservation.sha256 && physical.length === payload.fileObservation.bytes,
+        'Compiler macro output physical bytes differ')
+    }
+    return { ...payload, runId: event.runId, pid: event.pid, threadId: event.threadId,
+      at: event.at, eventSeq: event.eventSeq }
+  })
+  for (const event of loads.filter(event => event.classification === 'unbound')) {
+    ensure((event.format === 'module' || CJS_MACRO_PROFILES.includes(observation.profile)
+      && event.format === 'commonjs' && event.boundary === 'Module.prototype._compile') && event.sourceArtifact && event.loadedSourceArtifact
+      && hash(load(event.sourceArtifact)) === event.sha256
+      && load(event.sourceArtifact).length === event.bytes
+      && hash(load(event.loadedSourceArtifact)) === event.loadedSourceSha256,
+    'Compiler generated module lacks actual original and loaded bytes')
+  }
+  const result = validateMacroEvents(hydrated, { loads, checkout, sourceSnapshots, members,
+    transforms: observation.transforms, validatedTransforms: true, hookChainClosed, macroProfile: observation.profile,
+    projectPath: fixture.projectPath, cliCwd: start.cwd, resolves: events.filter(event => event.kind === 'resolve') })
+  ensure(Array.isArray(result.errors) && !result.errors.length, result.errors?.join('\n') || 'Compiler macro witness failed')
+  ensure(Array.isArray(result.admittedLoads) && new Set(result.admittedLoads).size === result.admittedLoads.length
+    && result.admittedLoads.every(event => loads.includes(event) && event.classification === 'unbound'),
+  'Compiler macro witness admitted an unrelated or duplicated load')
+  return new Set(result.admittedLoads)
+}

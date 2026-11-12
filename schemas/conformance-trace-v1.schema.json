@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-trace-v1.schema.json",
+  "title": "Weapp Container normalized conformance trace v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "caseId", "oracle", "run", "events"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "caseId": { "type": "string", "pattern": "^ide-[a-z0-9][a-z0-9-]*$" },
+    "oracle": { "enum": ["wechat-devtools", "mpcore", "weapp-vite-web", "container"] },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "host", "engine", "protocolVersion", "manifestVersion"],
+      "properties": {
+        "status": { "enum": ["passed", "failed", "blocked", "unknown"] },
+        "host": { "enum": ["web", "macos", "windows", "linux", "android", "ios", "harmony", "devtools", "headless"] },
+        "engine": { "enum": ["quickjs", "v8", "mpcore", "wechat", "unknown"] },
+        "protocolVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+        "manifestVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "endedAt": { "type": "string", "format": "date-time" },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "environment": { "type": "object" }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["seq", "kind", "op", "payload"],
+        "properties": {
+          "seq": { "type": "integer", "minimum": 0 },
+          "atNs": { "type": "integer", "minimum": 0 },
+          "kind": { "enum": ["lifecycle", "api", "bridge", "render", "layout", "event", "network", "storage", "permission", "diagnostic", "error", "resource"] },
+          "phase": { "enum": ["begin", "end", "instant", "cancel"] },
+          "op": { "type": "string", "minLength": 1 },
+          "requestId": { "type": "string" },
+          "payload": {}
+        }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "passed"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "passed": { "type": "boolean" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "kind": "wechat-devtools-case-execution",
+  "status": "passed",
+  "provider": "wechat-devtools",
+  "caseId": "ide-issue-1034-auto-routes-runtime",
+  "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "baseline": {
+    "id": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+    "devtoolsVersion": "2.02.2609250",
+    "baseLibraryVersion": "3.17.3",
+    "protocolVersion": "1.0",
+    "manifestVersion": "1.0"
+  },
+  "sourceUnchanged": true,
+  "sourceBefore": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+  "sourceAfter": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+  "manifestIntegrity": "9b30530e9f9e69af74a4080cb6db56bc9a8ac1674f464b0a126a3a5dec369b3f",
+  "traceSha256": "9ebaf87cdef5bb7bc511e78c9400872a798084a9726794a03d1fda3eaaef2051",
+  "observedDevtoolsVersion": "2.02.2609250",
+  "observedBaseLibraryVersion": "3.17.3",
+  "run": {
+    "exitCode": 0,
+    "pid": 52020,
+    "startedAt": "2026-11-07T04:48:49.279Z",
+    "endedAt": "2026-11-07T04:50:35.084Z"
+  },
+  "resources": {
+    "owner": "conformance-44099",
+    "leaseAcquired": true,
+    "leaseReleased": true,
+    "ownedResourcesReleased": true,
+    "borrowedResourcesPreserved": true
+  },
+  "log": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/official.log",
+    "sha256": "d2c783be4377def3fa3e30de17750dcfcdd96aaf66e1e19faab58e056b7eb270",
+    "bytes": 3659
+  },
+  "selection": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/selection.json",
+    "sha256": "83c4196869b37ae23b1757f6f873dede6639ca3f3589740c5a178d4f0db45b5d",
+    "bytes": 654
+  },
+  "runtimeObservation": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/runtime-observation.json",
+    "sha256": "2dc7f3b2bc0a9ba32dbff02b335c3c74fa10564933eed965825321498bcba41a",
+    "bytes": 563
+  },
+  "compilerBuild": {
+    "path": "artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/compiler-build.json",
+    "sha256": "9a90ace29f5cb55e6dd11081b4de986b24008960f92851145808332db99a93ad",
+    "bytes": 10459037
+  },
+  "compilerUse": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/compiler-use/objects/sha256/e74997f58d9428342cf6d35e632bc68a1dd10a7dca8c04522558482048aea6e7",
+    "sha256": "e74997f58d9428342cf6d35e632bc68a1dd10a7dca8c04522558482048aea6e7",
+    "bytes": 192335
+  },
+  "fixtureBuild": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/fixture-build/objects/sha256/bc5342464f214683a8128b03586d4fba2e30b8d5a88d124661fed0945ac26f14",
+    "sha256": "bc5342464f214683a8128b03586d4fba2e30b8d5a88d124661fed0945ac26f14",
+    "bytes": 32393
+  },
+  "suiteReport": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/vitest.json",
+    "sha256": "fceed0ef7e0f6e78ad2647fc37b0295011a24139caeac8c0b701f92743d70799",
+    "bytes": 2913
+  }
+}

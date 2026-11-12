@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "kind": "wechat-devtools-rerun",
+  "status": "passed",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "invocation": [
+    "/home/developer/.nvm/versions/node/v24.22.1/bin/node",
+    "/home/developer/Projects/github/weapp-container/scripts/conformance-devtools-runner.mjs",
+    "--case",
+    "ide-issue-1034-auto-routes-runtime",
+    "--compiler-build",
+    "artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/compiler-build.json",
+    "--recipes",
+    "conformance/recipes/issue1034-v1.json",
+    "--cli",
+    "/Applications/wechatwebdevtools.app/Contents/MacOS/cli",
+    "--borrow-selected-host",
+    "--keep-checkout",
+    "--out",
+    "artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034"
+  ],
+  "sourceCommit": "0f921a3a4cf273aa2486b8ccedce5e9dac5b7247",
+  "startedAt": "2026-11-07T04:47:09.756Z",
+  "cases": [
+    {
+      "schemaVersion": 1,
+      "kind": "wechat-devtools-case-attempt",
+      "caseId": "ide-issue-1034-auto-routes-runtime",
+      "status": "passed",
+      "provider": "wechat-devtools",
+      "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+      "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+      "source": {
+        "path": "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+        "sha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+        "before": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c",
+        "after": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c"
+      },
+      "run": {
+        "startedAt": "2026-11-07T04:48:49.279Z",
+        "endedAt": "2026-11-07T04:50:35.084Z",
+        "exitCode": 0,
+        "command": [
+          "caffeinate",
+          "-dimsu",
+          "--",
+          "/home/developer/.nvm/versions/node/v24.22.1/bin/node",
+          "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/checkout/node_modules/vitest/vitest.mjs",
+          "run",
+          "--no-cache",
+          "--no-fsModuleCache",
+          "--configLoader",
+          "runner",
+          "-c",
+          "./e2e/vitest.e2e.devtools.config.ts",
+          "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+          "--reporter=default",
+          "--reporter=json",
+          "--reporter=./e2e/scripts/domAcceptanceReport/reporter.ts",
+          "--outputFile.json=/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/ide-issue-1034-auto-routes-runtime/vitest.json",
+          "--hookTimeout=180000",
+          "--testTimeout=300000"
+        ],
+        "pid": 52020
+      },
+      "runtimeObservations": [
+        {
+          "recordedAt": "2026-11-07T04:49:44.740Z",
+          "projectPath": "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/checkout/.tmp/e2e-ide-bridge-projects/93d8813a016a6bf0",
+          "installationId": "cfb4b996ecf67c6b9043748163f6c783950d1e56a1935be50652b3b443e477a6",
+          "tool": {
+            "version": "2.02.2609250",
+            "SDKVersion": "3.17.3"
+          },
+          "system": {
+            "SDKVersion": "3.17.3",
+            "platform": "devtools"
+          }
+        }
+      ],
+      "resources": {
+        "owner": "conformance-44099",
+        "machineLeaseAcquired": true,
+        "machineLeaseReleased": true,
+        "hostLeaseAcquired": true,
+        "hostLeaseReleased": true,
+        "ownedResourcesReleased": true,
+        "borrowedResourcesPreserved": true
+      },
+      "failures": []
+    }
+  ],
+  "resources": {
+    "owner": "conformance-44099",
+    "machineLeaseAcquired": true,
+    "machineLeaseReleased": true,
+    "hostLeaseAcquired": true,
+    "hostLeaseReleased": true,
+    "ownedResourcesReleased": true,
+    "borrowedResourcesPreserved": true
+  },
+  "boundary": "Diagnostic official attempts only. Does not promote reviewed case status or replace official normalized trace/execution receipts.",
+  "selection": {
+    "selectedVersion": "2.02.2609250",
+    "acceptedVersion": "2.02.2609250",
+    "packageVersion": "2.02.2609250",
+    "baseLibraryVersion": "3.17.3",
+    "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+    "installationId": "cfb4b996ecf67c6b9043748163f6c783950d1e56a1935be50652b3b443e477a6",
+    "queriedAt": "2026-11-07T04:48:48.777Z",
+    "source": "https://devtools.wxqcloud.qq.com.cn/WechatWebDev/nightly/versions/config.json",
+    "officialVersionMatches": true,
+    "officialVersion": "2.02.2609250",
+    "selectedChannel": "stable",
+    "versionPolicy": "selected-version-opt-in",
+    "cliPath": "/Applications/wechatwebdevtools.app/Contents/MacOS/cli"
+  },
+  "hostBefore": {
+    "state": "selected",
+    "identities": [
+      {
+        "pid": 97351,
+        "started": "Sat Nov 7 01:00:58 2026",
+        "executable": "/Applications/wechatwebdevtools.app/Contents/MacOS/Electron"
+      }
+    ]
+  },
+  "profilePreparation": {
+    "directory": "/home/developer/Library/Application Support/微信开发者工具/00000000000000000000000000000000/Default",
+    "created": false,
+    "accountDataCopied": false,
+    "existingFilesPreserved": true
+  },
+  "prerequisite": {
+    "command": [
+      "/Applications/wechatwebdevtools.app/Contents/MacOS/cli",
+      "islogin"
+    ],
+    "recordedAt": "2026-11-07T04:48:49.205Z",
+    "pid": 50955,
+    "exitCode": 0,
+    "signal": null,
+    "log": "prerequisite.log",
+    "assertionsExecuted": false,
+    "status": "passed",
+    "login": true
+  },
+  "borrowedHostChecks": [
+    {
+      "at": "2026-11-07T04:48:49.205Z",
+      "phase": "before-case",
+      "caseId": "ide-issue-1034-auto-routes-runtime",
+      "snapshot": {
+        "state": "selected",
+        "identities": [
+          {
+            "pid": 97351,
+            "started": "Sat Nov 7 01:00:58 2026",
+            "executable": "/Applications/wechatwebdevtools.app/Contents/MacOS/Electron"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-11-07T04:50:35.006Z",
+      "phase": "after-case",
+      "caseId": "ide-issue-1034-auto-routes-runtime",
+      "snapshot": {
+        "state": "selected",
+        "identities": [
+          {
+            "pid": 97351,
+            "started": "Sat Nov 7 01:00:58 2026",
+            "executable": "/Applications/wechatwebdevtools.app/Contents/MacOS/Electron"
+          }
+        ]
+      }
+    }
+  ],
+  "projectRecords": [
+    {
+      "schemaVersion": 1,
+      "id": "64eb6006-a3c7-4252-9b79-934195af09b2",
+      "generation": "64eb6006-a3c7-4252-9b79-934195af09b2",
+      "journalPath": "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/journals/task-scope-6MYOqR/children/task-scope-vRXTaK/children/task-scope-LVyZvo",
+      "ownerToken": "c16a1e72-00c0-4d6c-b4a4-c7f16ae50b2b",
+      "ownerPid": 54462,
+      "target": {
+        "cliPath": "/Applications/wechatwebdevtools.app/Contents/MacOS/cli",
+        "installationId": "cfb4b996ecf67c6b9043748163f6c783950d1e56a1935be50652b3b443e477a6",
+        "appPath": "/Applications/wechatwebdevtools.app/Contents/Resources/app.asar",
+        "profileDir": "/home/developer/Library/Application Support/微信开发者工具/00000000000000000000000000000000",
+        "version": "2.02.2609250",
+        "channel": "stable"
+      },
+      "projectPath": "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5f-v1/01-1034/checkout/.tmp/e2e-ide-bridge-projects/93d8813a016a6bf0",
+      "state": "released",
+      "openedProjectWindow": true,
+      "port": 49169,
+      "host": {
+        "pid": 54600,
+        "executable": "/Applications/wechatwebdevtools.app/Contents/Frameworks/wechatwebdevtools Helper.app/Contents/MacOS/wechatwebdevtools Helper",
+        "started": "Sat Nov 7 12:49:36 2026"
+      },
+      "createdAt": "2026-11-07T04:49:35.970Z",
+      "updatedAt": "2026-11-07T04:49:53.620Z",
+      "closeAcknowledgedAt": "2026-11-07T04:49:47.387Z",
+      "windowClose": {
+        "protocol": "wechat-devtools-window-close-trace-v1",
+        "profileDir": "/home/developer/Library/Application Support/微信开发者工具/00000000000000000000000000000000",
+        "productVersion": "2.02.2609250",
+        "capturedAt": "2026-11-07T04:49:46.905Z",
+        "mainHost": {
+          "pid": 97351,
+          "executable": "/Applications/wechatwebdevtools.app/Contents/MacOS/Electron",
+          "started": "Sat Nov 7 01:00:58 2026"
+        },
+        "dispatchedAt": "2026-11-07T04:49:47.228Z",
+        "cursors": [
+          {
+            "name": "2026-11-07-06-51-13-505.log",
+            "identity": "16777229:841214649",
+            "offset": 2297896,
+            "anchor": "1a0f88bc366ed093e63ed78b35fce86569a05503515cf1e749857b3edcdfcc1a",
+            "skipPartialLine": false
+          }
+        ],
+        "calls": [
+          {
+            "fileIdentity": "16777229:841214649",
+            "winId": "s83",
+            "browserWindowId": 86,
+            "calledAt": "2026-11-07T04:49:50.387Z"
+          }
+        ],
+        "window": {
+          "fileIdentity": "16777229:841214649",
+          "winId": "s83",
+          "browserWindowId": 86,
+          "calledAt": "2026-11-07T04:49:50.387Z",
+          "runtimeId": "0",
+          "requestedAt": "2026-11-07T04:49:50.491Z",
+          "nativeClosedAt": "2026-11-07T04:49:53.495Z",
+          "webContentsDestroyedAt": "2026-11-07T04:49:53.515Z"
+        }
+      },
+      "releasedReason": "project-closed"
+    }
+  ],
+  "hostAfter": {
+    "state": "selected",
+    "identities": [
+      {
+        "pid": 97351,
+        "started": "Sat Nov 7 01:00:58 2026",
+        "executable": "/Applications/wechatwebdevtools.app/Contents/MacOS/Electron"
+      }
+    ]
+  },
+  "endedAt": "2026-11-07T04:50:35.163Z"
+}

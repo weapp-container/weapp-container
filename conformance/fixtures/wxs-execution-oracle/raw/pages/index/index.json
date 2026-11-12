@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "probe-shell": "../../components/probe-shell/index",
+    "probe-no-slot": "../../components/probe-no-slot/index"
+  }
+}

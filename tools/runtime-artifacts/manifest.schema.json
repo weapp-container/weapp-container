@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/weapp-container/sdk-contract/runtime-artifacts.schema.json",
+  "title": "Pinned authorized Weapp Container runtime artifacts",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runtimeVersion",
+    "abiVersion",
+    "source",
+    "artifacts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "runtimeVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?$"
+    },
+    "abiVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "releaseTag"
+      ],
+      "properties": {
+        "repository": {
+          "enum": [
+            "weapp-container/weapp-container",
+            "weapp-container/runtime-artifacts"
+          ]
+        },
+        "releaseTag": {
+          "type": "string",
+          "pattern": "^runtime-v\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?$"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "component",
+          "platform",
+          "arch",
+          "fileName",
+          "size",
+          "sha256"
+        ],
+        "properties": {
+          "component": {
+            "enum": [
+              "runtime",
+              "android-sdk",
+              "ios-sdk",
+              "desktop-sdk"
+            ]
+          },
+          "platform": {
+            "enum": [
+              "android",
+              "ios",
+              "macos",
+              "windows",
+              "linux"
+            ]
+          },
+          "arch": {
+            "enum": [
+              "arm64-v8a",
+              "x86_64",
+              "arm64-device",
+              "arm64-simulator",
+              "x86_64-simulator",
+              "arm64",
+              "universal"
+            ]
+          },
+          "architectures": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "fileName": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,180}\\.tar\\.gz$"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8589934592
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "arch": {
+                  "const": "universal"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "architectures"
+              ],
+              "properties": {
+                "architectures": {
+                  "minItems": 2
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$comment": "The loader additionally enforces exact requested version/ABI, releaseTag equality to runtime-v+version, component/platform and platform/architecture combinations, and unique target/file identities.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "repository": {
+                "const": "weapp-container/runtime-artifacts"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "runtimeVersion": {
+            "enum": [
+              "0.1.0-preview.2",
+              "0.1.0-preview.3",
+              "0.1.0-preview.4",
+              "0.1.0-preview.5",
+              "0.1.0-preview.5.1",
+              "0.1.0-preview.5.2",
+              "0.1.0-preview.5.3",
+              "0.1.0-preview.5.5",
+              "0.1.0-preview.6.0"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

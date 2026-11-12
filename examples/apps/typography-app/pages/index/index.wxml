@@ -1,0 +1,7 @@
+<view id="number-parent" class="number" style="font-size:{{size}}px"><text id="number-child">number {{size}}</text></view>
+<view id="percent-parent" class="percent" style="font-size:{{size}}px"><text id="percent-child">percent {{size}}</text></view>
+<text id="multiline" class="multiline">{{multiline}}</text>
+<text id="zero-line" class="zero-line">zero line</text>
+<text id="zero-font" class="zero-font">invisible</text>
+<view id="resize-text" class="control resize" bindtap="onResizeText">resize text {{taps}}</view>
+<view id="inspect" class="control inspect" bindtap="onInspect">inspect</view>

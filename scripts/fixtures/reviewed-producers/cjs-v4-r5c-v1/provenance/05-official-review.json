@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-r5c-partial-official-batch-review",
+  "startedAt": "2026-11-07T03:03:28.295Z",
+  "endedAt": "2026-11-07T03:04:36.135Z",
+  "index": {
+    "path": "docs/conformance/case-index-v1.json",
+    "sha256": "d8cc01de2485a8baa29bad6558529086ea778f17f2a0cc031aedb3f8330510fb",
+    "bytes": 72735
+  },
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/source-freeze.json",
+    "sha256": "243e0540d3a68ad15c57fa44aa684efa5ed25aa3db9a0446547514daa068ce92",
+    "bytes": 132755
+  },
+  "cases": [
+    {
+      "caseId": "ide-github-issues-runtime-issue1012",
+      "completion": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/completion-summary.json",
+        "sha256": "7e42555c21d167339336723c0da1a635d5077300ffef48b1267088e382bdb9c7",
+        "bytes": 8478
+      },
+      "runnerFullReader": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/oracle-full-reader-audit.json",
+        "sha256": "17385547fa695b2b6813ae21e1ccb4a2503bcbe3c44c72f5f16dd03063accd20",
+        "bytes": 3658
+      },
+      "actualAttempt": {
+        "status": "passed",
+        "errors": [],
+        "diagnosticOnly": true
+      },
+      "officialStatus": "passed",
+      "indexPromoted": false,
+      "formalPairs": 0,
+      "production": {
+        "status": "passed"
+      },
+      "registry": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/execution-recipes.json",
+        "sha256": "2978731daa6083c952557485baf67cb82cc4b28e7e65b44aa4785d334a75b8fd",
+        "bytes": 18410
+      },
+      "oracle": {
+        "trace": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-trace.json",
+          "sha256": "b6b5912f512817204b3218203c02f99828113ab06cb4a82a72228473bb2b24a1",
+          "bytes": 2556
+        },
+        "execution": {
+          "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-execution.json",
+          "sha256": "11a9149b5dbbaa009e452fd4bbaa66d3938dae53c46d44215bb8fa8d3c628aa8",
+          "bytes": 3197
+        }
+      },
+      "events": 4,
+      "assertions": 1,
+      "observedDevtoolsVersion": "2.02.2609250",
+      "observedBaseLibraryVersion": "3.17.3"
+    }
+  ],
+  "plannedCases": 8,
+  "reviewedCompletedCases": 1,
+  "sourceInputsVerified": 172,
+  "sourceUnchanged": true,
+  "officialPassed": 1,
+  "indexPromoted": false,
+  "formalPairs": 0,
+  "boundary": "Actual official originals and complete current production receipt readers only. Index changes and native comparisons require a separate reviewed step."
+}

@@ -1,0 +1,228 @@
+name: modern-view
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Browser checks, release performance, or both
+        type: choice
+        default: browser
+        options: [browser, performance, full]
+
+run-name: modern-view / ${{ inputs.suite }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.suite }}
+  cancel-in-progress: ${{ inputs.suite == 'browser' }}
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  development-browser:
+    name: Modern example and dual-engine headless browser
+    if: ${{ inputs.suite == 'browser' || inputs.suite == 'full' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      HUSKY: '0'
+      # The scripts also pass headless:true and record it in their reports.
+      PLAYWRIGHT_MCP_HEADLESS: 'true'
+      RUSTY_V8_MIRROR_FALLBACK: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          # Satisfies the pinned vendor's ^24.11.0 engine declaration.
+          node-version: 24.18.0
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Install locked container tooling and check example types
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm modern:view:typecheck
+          node scripts/verify-submodule.mjs
+      - name: Select the package manager declared by the fixed vendor
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: vendor/weapp-vite/package.json
+      - name: Cache vendor package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: vendor/weapp-vite
+      - name: Prepare the fixed upstream compiler
+        # Same locked install/build:pkgs preparation as simulator.md and
+        # scripts/build-weapp-vite-platforms.mjs; no upstream test mutation.
+        run: |
+          pnpm --dir vendor/weapp-vite install --frozen-lockfile
+          pnpm --dir vendor/weapp-vite run build:pkgs
+          node scripts/verify-submodule.mjs
+          git -C vendor/weapp-vite diff --exit-code
+      - name: Install the vendor-pinned headless Chromium and system libraries
+        run: pnpm --dir vendor/weapp-vite exec playwright install --with-deps chromium
+      - name: Install native raster build dependencies and Latin fonts
+        # The software fallback paints boxes/images but not page glyphs. Keep
+        # the real text/changed-pixels assertions on Skia CPU raster instead.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build python3 pkg-config libfontconfig1-dev libfreetype6-dev fonts-dejavu-core
+          fc-match sans-serif
+      - name: Preserve real weapp output and a separately compiled modern pack
+        run: |
+          node vendor/weapp-vite/packages/weapp-vite/bin/weapp-vite.js build \
+            "$GITHUB_WORKSPACE/examples/apps/modern-view-app" -p weapp \
+            --outDir "$GITHUB_WORKSPACE/artifacts/modern-view-example/raw"
+          node tools/container-manifest/bin/container-pack.mjs \
+            artifacts/modern-view-example/raw --project examples/apps/modern-view-app \
+            --out artifacts/modern-view-example/portable \
+            --compiler-commit "$(git -C vendor/weapp-vite rev-parse HEAD)"
+          node vendor/weapp-vite/packages/weapp-vite/bin/weapp-vite.js build \
+            "$GITHUB_WORKSPACE/examples/apps/reference-app" -p weapp \
+            --outDir "$GITHUB_WORKSPACE/artifacts/dom-reference-example/raw"
+          node tools/container-manifest/bin/container-pack.mjs \
+            artifacts/dom-reference-example/raw --project examples/apps/reference-app \
+            --out artifacts/dom-reference-example/portable \
+            --compiler-commit "$(git -C vendor/weapp-vite rev-parse HEAD)"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - name: Build one native simulator containing both engines
+        id: build
+        env:
+          SKIA_NINJA_COMMAND: /usr/bin/ninja
+        run: cargo build -p container-simulator --no-default-features --features quickjs-native,v8-native,skia-raster --locked
+      - name: Build the owner-thread DOM protocol example with both native engines
+        id: build-dom
+        run: cargo build -p container-host-common --example dom-protocol --features container-runtime/quickjs-native,container-runtime/v8-native --locked
+      - name: QuickJS portable packs through actual browser DOM
+        run: |
+          node scripts/dom-runtime-browser-smoke.mjs --driver target/debug/examples/dom-protocol --pack artifacts/dom-reference-example/portable --engine quickjs --out artifacts/dom-runtime-browser/reference-quickjs
+          node scripts/dom-runtime-browser-smoke.mjs --driver target/debug/examples/dom-protocol --pack artifacts/modern-view-example/portable --engine quickjs --out artifacts/dom-runtime-browser/modern-quickjs
+      - name: V8 portable packs through actual browser DOM
+        if: ${{ !cancelled() && steps.build-dom.outcome == 'success' }}
+        run: |
+          node scripts/dom-runtime-browser-smoke.mjs --driver target/debug/examples/dom-protocol --pack artifacts/dom-reference-example/portable --engine v8 --out artifacts/dom-runtime-browser/reference-v8
+          node scripts/dom-runtime-browser-smoke.mjs --driver target/debug/examples/dom-protocol --pack artifacts/modern-view-example/portable --engine v8 --out artifacts/dom-runtime-browser/modern-v8
+      - name: QuickJS reference development supervisor through WebView
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/simulator-dom-browser-smoke.mjs --binary target/debug/weapp-simulator --engine quickjs --scenario reference --timeout 240000 --out artifacts/dom-development-browser/reference-quickjs
+      - name: QuickJS modern development supervisor through WebView
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/simulator-dom-browser-smoke.mjs --binary target/debug/weapp-simulator --engine quickjs --scenario modern --timeout 240000 --out artifacts/dom-development-browser/modern-quickjs
+      - name: V8 reference development supervisor through WebView
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/simulator-dom-browser-smoke.mjs --binary target/debug/weapp-simulator --engine v8 --scenario reference --timeout 240000 --out artifacts/dom-development-browser/reference-v8
+      - name: V8 modern development supervisor through WebView
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/simulator-dom-browser-smoke.mjs --binary target/debug/weapp-simulator --engine v8 --scenario modern --timeout 240000 --out artifacts/dom-development-browser/modern-v8
+      - name: QuickJS DOM media observation through the development supervisor
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/simulator-dom-media-browser-smoke.mjs --binary target/debug/weapp-simulator --engine quickjs --timeout 240000 --out artifacts/dom-media-browser/quickjs
+      - name: V8 DOM media observation through the development supervisor
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/simulator-dom-media-browser-smoke.mjs --binary target/debug/weapp-simulator --engine v8 --timeout 240000 --out artifacts/dom-media-browser/v8
+      - name: Prepare hash-pinned CanvasKit and font assets for mixed pages
+        id: renderer-assets
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          mkdir -p artifacts/renderer-inputs
+          npm pack canvaskit-wasm@0.42.0 --pack-destination artifacts/renderer-inputs
+          tar -xzf artifacts/renderer-inputs/canvaskit-wasm-0.42.0.tgz -C artifacts/renderer-inputs
+          curl --fail --location --retry 3 'https://raw.githubusercontent.com/google/fonts/a85815a42757630ce188fdad368c2dfc444d4773/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf' --output artifacts/renderer-inputs/font.ttf
+          curl --fail --location --retry 3 'https://raw.githubusercontent.com/google/fonts/a85815a42757630ce188fdad368c2dfc444d4773/ofl/notosanssc/OFL.txt' --output artifacts/renderer-inputs/OFL.txt
+          node scripts/prepare-canvaskit-dev.mjs --canvaskit-dir artifacts/renderer-inputs/package --font-file artifacts/renderer-inputs/font.ttf --font-license-file artifacts/renderer-inputs/OFL.txt --out-dir artifacts/dual-renderer-assets
+      - name: QuickJS real development pages switch between DOM and CanvasKit
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.renderer-assets.outcome == 'success' }}
+        run: node scripts/simulator-mixed-renderer-browser-smoke.mjs --binary target/debug/weapp-simulator --renderer-assets artifacts/dual-renderer-assets --engine quickjs --timeout 240000 --out artifacts/mixed-development-browser/quickjs
+      - name: V8 real development pages switch between DOM and CanvasKit
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.renderer-assets.outcome == 'success' }}
+        run: node scripts/simulator-mixed-renderer-browser-smoke.mjs --binary target/debug/weapp-simulator --renderer-assets artifacts/dual-renderer-assets --engine v8 --timeout 240000 --out artifacts/mixed-development-browser/v8
+      - name: Real watcher reload and owned preparation cleanup
+        run: |
+          node scripts/modern-view-watch-smoke.mjs --simulator-bin target/debug/weapp-simulator --engine quickjs --out artifacts/modern-view-watch/quickjs.json
+          node scripts/modern-view-watch-smoke.mjs --simulator-bin target/debug/weapp-simulator --engine v8 --out artifacts/modern-view-watch/v8.json
+          node scripts/modern-view-watch-smoke.mjs --simulator-bin target/debug/weapp-simulator --engine quickjs --project-local-output --out artifacts/modern-view-watch/quickjs-project-local.json
+      - name: QuickJS modern source reload, source maps and recovery
+        run: node scripts/modern-view-browser-smoke.mjs --simulator-bin target/debug/weapp-simulator --engine quickjs --out artifacts/modern-view-browser/quickjs.json
+      - name: V8 modern source reload, source maps and recovery
+        # Still exercise V8 after a QuickJS smoke failure. A failed build is
+        # never replaced by another engine or a software JS implementation.
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/modern-view-browser-smoke.mjs --simulator-bin target/debug/weapp-simulator --engine v8 --out artifacts/modern-view-browser/v8.json
+      - name: Preserve raw output, portable blobs and browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: modern-view-development-browser
+          if-no-files-found: error
+          path: |
+            artifacts/modern-view-example
+            artifacts/modern-view-browser
+            artifacts/modern-view-watch
+            artifacts/dom-reference-example
+            artifacts/dom-runtime-browser
+            artifacts/dom-development-browser
+            artifacts/dom-media-browser
+            artifacts/mixed-development-browser
+
+  relative-performance:
+    name: Modern View release relative performance
+    # Hosted-runner timings are a visible manual diagnostic, not a noisy PR
+    # release gate. The invoked command still fails on either >5% regression.
+    if: ${{ inputs.suite == 'performance' || inputs.suite == 'full' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      HUSKY: '0'
+      RUSTY_V8_MIRROR_FALLBACK: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+          # modern-view-perf reads the explicitly pinned historical bootstrap
+          # through git show; a shallow checkout cannot reproduce that input.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Install the pinned public compiler dependencies
+        run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - name: Run release batches serially on both native engines
+        # No continue-on-error or prebuilt/debug binary override. The script
+        # verifies report profile/identity and returns nonzero above 1.05.
+        run: node scripts/modern-view-perf.mjs --profile release --samples 1000 --out-dir artifacts/modern-view-performance
+      - name: Preserve successful and failed measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 30
+          name: modern-view-release-relative-performance
+          if-no-files-found: error
+          path: artifacts/modern-view-performance

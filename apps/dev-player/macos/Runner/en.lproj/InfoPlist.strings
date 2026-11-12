@@ -1,0 +1,2 @@
+"NSCameraUsageDescription" = "Scan a one-time development server pairing QR code. You can also paste its connection link.";
+"NSLocalNetworkUsageDescription" = "Connect to your development computer to run and update your mini-program locally.";

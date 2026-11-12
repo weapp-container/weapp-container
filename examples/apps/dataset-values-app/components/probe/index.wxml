@@ -1,0 +1,11 @@
+<view id="component-parent" class="component-probe" data-meta="{{object}}" mark:ancestor="{{object}}" mark:override="{{object}}" style="position:relative;width:140px;height:64px" bindtap="onParent">
+  <view id="component-target" class="component-probe" data-number="{{number}}" data-yes="{{yes}}" data-no="{{no}}" data-nil="{{nil}}" data-text="{{text}}"
+      data-object="{{object}}" data-array="{{array}}" data-user-id="{{object}}"
+      data-literal-number="42" data-literal-false="false" data-literal-null="null"
+      data-literal-json='{"k":1}' data-empty="" data-mixed="v={{number}}"
+      mark:number="{{number}}" mark:yes="{{yes}}" mark:no="{{no}}" mark:nil="{{nil}}" mark:text="{{text}}"
+      mark:object="{{object}}" mark:array="{{array}}" mark:user-id="{{object}}"
+      mark:literal-number="42" mark:literal-false="false" mark:literal-null="null"
+      mark:literal-json='{"k":1}' mark:empty="" mark:mixed="v={{number}}" mark:override="{{array}}" mark-source="raw" style="width:140px;height:64px;background:#8866bb" bindtap="onTarget" />
+</view>
+<view id="component-inspect" style="position:absolute;left:160px;top:0px;width:140px;height:64px;background:#667788" bindtap="onInspect" />

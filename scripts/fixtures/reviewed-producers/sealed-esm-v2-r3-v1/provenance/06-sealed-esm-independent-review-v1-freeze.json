@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-review-freeze",
+  "members": [
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/README.md",
+      "sha256": "c312b3aad828c65b0599f1065fff68936e9baae4d57969fd44d907f58a11e98e",
+      "bytes": 1742
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/report.json",
+      "sha256": "f7cd747be9d6c66df3fdc3140901bdbea15aef0f514bba9977e60c197a7c3797",
+      "bytes": 23338
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/docs/conformance/compiler-build.md",
+      "sha256": "9ffb76af4309dbdb39f4c2027162446b4205a2fa80fcb57636c91fdd1938c6f8",
+      "bytes": 12467
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-observation.mjs",
+      "sha256": "b1b2e0db856af9b47a932f9398cd556fc40389ddd8131a19a86875562a5db090",
+      "bytes": 11011
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-observation.test.mjs",
+      "sha256": "2600875682a10d220156a5141506d6d5fb848c074f6136fe7fba2767163563cf",
+      "bytes": 20033
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-use-preload.cjs",
+      "sha256": "39a058635baba1abaee42b404e0aaa004aefb038a071b82da26f739b0d55ec50",
+      "bytes": 16705
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-use.mjs",
+      "sha256": "c6ef48c62ca72ce754884ac343a343c8b74272ed60192dcc0fe32642036d2446",
+      "bytes": 38029
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/sealed-esm-independent-review-v1/reviewed-sources/scripts/conformance-compiler-use.test.mjs",
+      "sha256": "1a3e0e9e173f2743db7a4311aaa4134bff9d8461b528a47d3a65c6efb106ceeb",
+      "bytes": 26356
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/container-ir",
+  "crates/container-core",
+  "crates/container-bridge",
+  "crates/container-render-skia",
+  "crates/container-engine-quickjs",
+  "crates/container-engine-v8",
+  "crates/container-host-common",
+  "crates/container-host-web",
+  "crates/container-host-desktop",
+  "crates/container-host-android",
+  "crates/container-host-ios",
+  "crates/container-host-harmony",
+  "crates/container-runtime",
+  "crates/container-simulator",
+  "crates/container-sdk",
+  "crates/container-sdk-ffi",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+repository = "https://github.com/weapp-container/weapp-container"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive", "rc"] }
+serde_json = { version = "1", features = ["float_roundtrip"] }
+thiserror = "1"
+ctrlc = { version = "3.5", features = ["termination"] }
+sha2 = "0.10"
+md-5 = "0.10"
+sha1 = "0.10"
+
+# Keep line information for backtraces without retaining full variable/type
+# debug data in every test executable. Local incremental compilation stays on;
+# disposable CI runners disable it with CARGO_INCREMENTAL=0.
+[profile.dev]
+debug = 1
+
+[profile.test]
+debug = 1
+
+# Keep the C interpreter stack bounded in debug WASM builds. QuickJS at -O0
+# exhausts the browser host stack while loading normal bundled page modules.
+[profile.dev.package.rquickjs-sys]
+opt-level = 2

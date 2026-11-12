@@ -1,0 +1,43 @@
+[package]
+name = "weapp-conformance-desktop"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+resolver = "2"
+
+[features]
+default = []
+accepted-frame-observation = ["conformance-observation"]
+accepted-frame-node-input = ["accepted-frame-observation"]
+quickjs-native = ["container-runtime/quickjs-native"]
+v8-native = ["container-runtime/v8-native"]
+conformance-exception-channel = ["conformance-observation"]
+conformance-observation = ["container-runtime/conformance-observation", "dep:libc"]
+
+[profile.dev]
+debug = 1
+
+[profile.test]
+debug = 1
+
+[dependencies]
+container-bridge = { path = "../../../crates/container-bridge" }
+container-core = { path = "../../../crates/container-core" }
+container-host-common = { path = "../../../crates/container-host-common" }
+container-ir = { path = "../../../crates/container-ir" }
+container-render-skia = { path = "../../../crates/container-render-skia" }
+container-runtime = { path = "../../../crates/container-runtime" }
+serde_json = { version = "1", features = ["float_roundtrip"] }
+ctrlc = { version = "3.5", features = ["termination"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+container-host-desktop = { path = "../../../crates/container-host-desktop", default-features = false, features = ["metal-window"] }
+winit = "0.30"
+libc = { version = "=0.2.191", optional = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+container-host-desktop = { path = "../../../crates/container-host-desktop", default-features = false, features = ["window"] }
+winit = "0.30"
+libc = { version = "=0.2.191", optional = true }

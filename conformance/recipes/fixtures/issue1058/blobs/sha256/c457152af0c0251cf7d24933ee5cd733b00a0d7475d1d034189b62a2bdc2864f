@@ -1,0 +1,1 @@
+{"nodes":[{"attrs":{},"bindings":[],"children":[{"bindings":["label"],"kind":"text","value":"{{label}}"}],"kind":"element","tag":"view"}],"version":1}

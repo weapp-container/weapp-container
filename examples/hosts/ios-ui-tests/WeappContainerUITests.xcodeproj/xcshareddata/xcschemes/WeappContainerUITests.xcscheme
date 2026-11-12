@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme LastUpgradeVersion="1600" version="1.3">
+  <BuildAction parallelizeBuildables="NO" buildImplicitDependencies="YES">
+    <BuildActionEntries>
+      <BuildActionEntry buildForTesting="YES" buildForRunning="NO" buildForProfiling="NO" buildForArchiving="NO" buildForAnalyzing="NO">
+        <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="A00000000000000000000009" BuildableName="WeappContainerUITests.xctest" BlueprintName="WeappContainerUITests" ReferencedContainer="container:WeappContainerUITests.xcodeproj"/>
+      </BuildActionEntry>
+    </BuildActionEntries>
+  </BuildAction>
+  <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.IDEFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="NO">
+    <Testables>
+      <TestableReference skipped="NO" parallelizable="NO">
+        <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="A00000000000000000000009" BuildableName="WeappContainerUITests.xctest" BlueprintName="WeappContainerUITests" ReferencedContainer="container:WeappContainerUITests.xcodeproj"/>
+      </TestableReference>
+    </Testables>
+  </TestAction>
+</Scheme>

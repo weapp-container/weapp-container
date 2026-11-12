@@ -1,0 +1,8 @@
+{
+  "string": [
+    { "name": "module_desc", "value": "Weapp Container" },
+    { "name": "EntryAbility_desc", "value": "Weapp Container host" },
+    { "name": "EntryAbility_label", "value": "Weapp Container" },
+    { "name": "device_permission_reason", "value": "用于您在小程序中明确发起的设备操作，可在系统设置中撤销。" }
+  ]
+}

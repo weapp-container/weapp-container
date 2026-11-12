@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-r5c-1012-real-native-review",
+  "recordedAt": "2026-11-07T02:53:30.289727+00:00",
+  "status": "equal-both-engines",
+  "sourceSummary": {
+    "path": "artifacts/conformance-desktop/r5c-priority-diagnostic-v1/1012-summary.json",
+    "sha256": "c08aebd2553232f56ca44e954787fdd8ae3a3101ef8adcc5791671bb44a7a2b6",
+    "bytes": 7121
+  },
+  "officialTrace": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-trace.json",
+    "sha256": "b6b5912f512817204b3218203c02f99828113ab06cb4a82a72228473bb2b24a1",
+    "bytes": 2556
+  },
+  "officialExecution": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-execution.json",
+    "sha256": "11a9149b5dbbaa009e452fd4bbaa66d3938dae53c46d44215bb8fa8d3c628aa8",
+    "bytes": 3197
+  },
+  "checks": {
+    "quickjs": {
+      "eventsEqual": 4,
+      "assertionsEqual": 1,
+      "actualEngine": "quickjs",
+      "actualTarget": {
+        "host": "macos",
+        "id": "macos:68517:WindowId(515787538432)",
+        "kind": "native-window",
+        "pid": 68517,
+        "windowId": "WindowId(515787538432)"
+      },
+      "metalSurfaceVerified": true,
+      "cleanupVerified": true,
+      "trace": {
+        "path": "artifacts/conformance-desktop/r5c-priority-diagnostic-v1/1012-quickjs/trace.json",
+        "sha256": "c4ccb45d249d5d848da4b7578caa048707e62d3ccc0cefa431a434c4129195af",
+        "bytes": 3294
+      },
+      "nativeSession": {
+        "path": "artifacts/conformance-desktop/r5c-priority-diagnostic-v1/1012-quickjs/native-session.json",
+        "sha256": "8f758b7b20a2c01131b0489191f9482d836135226c71ccbc5345ca9d012a86e7",
+        "bytes": 105788832
+      },
+      "command": {
+        "path": "artifacts/conformance-desktop/r5c-priority-diagnostic-v1/control/1012-quickjs/command.json",
+        "sha256": "b27846e3fdfd856fb56fced193c1af34cc34b1aa08147867e2918f6a3cfe530d",
+        "bytes": 1846
+      }
+    },
+    "v8": {
+      "eventsEqual": 4,
+      "assertionsEqual": 1,
+      "actualEngine": "v8",
+      "actualTarget": {
+        "host": "macos",
+        "id": "macos:72936:WindowId(508271591424)",
+        "kind": "native-window",
+        "pid": 72936,
+        "windowId": "WindowId(508271591424)"
+      },
+      "metalSurfaceVerified": true,
+      "cleanupVerified": true,
+      "trace": {
+        "path": "artifacts/conformance-desktop/r5c-priority-diagnostic-v1/1012-v8/trace.json",
+        "sha256": "bcc52550524dac3219f300cd0f3e124cd374018f818b2c8794a9c84e733939e5",
+        "bytes": 3274
+      },
+      "nativeSession": {
+        "path": "artifacts/conformance-desktop/r5c-priority-diagnostic-v1/1012-v8/native-session.json",
+        "sha256": "3007012e16c45173651e940bad4005ed0383359450b267c63610fd07ecbbe255",
+        "bytes": 105788302
+      },
+      "command": {
+        "path": "artifacts/conformance-desktop/r5c-priority-diagnostic-v1/control/1012-v8/command.json",
+        "sha256": "26574087fe8ed12cec0964891c9b1e031734bdafa47776e9dd85d79e4a8c04dc",
+        "bytes": 1815
+      }
+    }
+  },
+  "comparison": "All seq/kind/op/payload and assertions, ignoring only atNs. Native startup engine/window/Metal and cleanup bind actual trace/session.",
+  "formalPairs": 0,
+  "diagnosticOnly": true,
+  "indexPromoted": false
+}

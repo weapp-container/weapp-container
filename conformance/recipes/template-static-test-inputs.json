@@ -1,0 +1,32 @@
+{
+  "scope": "Test payloads copied read-only from old v1 compiler diagnostic. No new producer/original/native admission.",
+  "files": [
+    {
+      "path": "app.json",
+      "source": "{\n  \"pages\": [\n    \"pages/index/index\"\n  ],\n  \"window\": {\n    \"navigationBarTitleText\": \"多平台模板\",\n    \"navigationBarBackgroundColor\": \"#ffffff\",\n    \"navigationBarTextStyle\": \"black\",\n    \"backgroundColor\": \"#f4f6f8\"\n  },\n  \"sitemapLocation\": \"sitemap.json\"\n}",
+      "originalDiagnosticArtifact": {
+        "path": "artifacts/conformance-triage-2026-11-07/template-producer-compiler-diagnostic-r1/fixture-observer/objects/sha256/3186813ea8024d3ef8adc7a6bb4fe78acfdc3bbe3ea1af627cf6d23daa15ede6",
+        "sha256": "3186813ea8024d3ef8adc7a6bb4fe78acfdc3bbe3ea1af627cf6d23daa15ede6",
+        "bytes": 268
+      }
+    },
+    {
+      "path": "app.wxss",
+      "source": "page {\n  min-height: 100%;\n  color: #17212b;\n  background: #f4f6f8;\n}",
+      "originalDiagnosticArtifact": {
+        "path": "artifacts/conformance-triage-2026-11-07/template-producer-compiler-diagnostic-r1/fixture-observer/objects/sha256/4cf4dccac3cd2bc461c163610779eaa2614d9ee2d2575538c9398e6cf1062135",
+        "sha256": "4cf4dccac3cd2bc461c163610779eaa2614d9ee2d2575538c9398e6cf1062135",
+        "bytes": 69
+      }
+    },
+    {
+      "path": "pages/index/index.wxml",
+      "source": "<wxs module=\"platformTools\" src=\"./platform.wxs\" />\n\n<view class=\"page-shell\">\n  <view class=\"page-heading\">\n    <view class=\"page-heading__eyebrow\">weapp-vite</view>\n    <view class=\"page-heading__title\">原生多平台 + Web</view>\n    <view class=\"page-heading__description\">一次维护，按目标平台独立构建和验收。</view>\n  </view>\n\n  <view id=\"platform-marker\" class=\"runtime-marker\">MP_PLATFORM={{platformTools.label(platform)}}</view>\n  <view id=\"runtime-status\" class=\"runtime-status\">status={{status}}</view>\n\n  <PlatformCard id=\"platform-card-host\" platform=\"{{platform}}\" />\n\n  <view class=\"counter-panel\">\n    <view class=\"counter-panel__label\">跨端交互检查</view>\n    <view id=\"counter-value\" class=\"counter-panel__value\">{{count}}</view>\n    <button id=\"increment-button\" class=\"counter-panel__button\" bind:tap=\"increment\">\n      增加计数\n    </button>\n  </view>\n</view>\n",
+      "originalDiagnosticArtifact": {
+        "path": "artifacts/conformance-triage-2026-11-07/template-producer-compiler-diagnostic-r1/fixture-observer/objects/sha256/a19c018d02172458f38d4f47fba34d99d8ef4e22a74323b0fa6a6a7a321154cc",
+        "sha256": "a19c018d02172458f38d4f47fba34d99d8ef4e22a74323b0fa6a6a7a321154cc",
+        "bytes": 909
+      }
+    }
+  ]
+}

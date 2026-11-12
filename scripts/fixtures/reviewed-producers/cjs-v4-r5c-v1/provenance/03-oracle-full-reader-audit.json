@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "kind": "fresh-r5c-official-full-production-oracle-review",
+  "startedAt": "2026-11-07T02:45:20.221Z",
+  "endedAt": "2026-11-07T02:46:30.621Z",
+  "caseId": "ide-github-issues-runtime-issue1012",
+  "indexedStatus": "blocked",
+  "run": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/run.json",
+    "sha256": "028a5dd4b28ce48ecf0e51825faf970202f3d6a00ac7113b46ff0e116a1b3144",
+    "bytes": 9916
+  },
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/source-freeze.json",
+    "sha256": "243e0540d3a68ad15c57fa44aa684efa5ed25aa3db9a0446547514daa068ce92",
+    "bytes": 132755
+  },
+  "index": {
+    "path": "docs/conformance/case-index-v1.json",
+    "sha256": "d8cc01de2485a8baa29bad6558529086ea778f17f2a0cc031aedb3f8330510fb",
+    "bytes": 72735
+  },
+  "attemptInspection": {
+    "status": "passed",
+    "errors": [],
+    "diagnosticOnly": true
+  },
+  "result": {
+    "status": "passed"
+  },
+  "registry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/execution-recipes.json",
+    "sha256": "2978731daa6083c952557485baf67cb82cc4b28e7e65b44aa4785d334a75b8fd",
+    "bytes": 18410
+  },
+  "candidateEntry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/candidate-entry.json",
+    "sha256": "3eb236cccb417a5455069f1703968d7746c7bc66f95f125e33ade2187b112893",
+    "bytes": 35128
+  },
+  "candidateReviewedItem": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/candidate-reviewed-item.json",
+    "sha256": "0c44e1f6ec99a597b6f9aae32a3ccb60259df99cff38094a3bdc2006227945dc",
+    "bytes": 2852
+  },
+  "summary": {
+    "trace": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-trace.json",
+      "sha256": "b6b5912f512817204b3218203c02f99828113ab06cb4a82a72228473bb2b24a1",
+      "bytes": 2556
+    },
+    "execution": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-execution.json",
+      "sha256": "11a9149b5dbbaa009e452fd4bbaa66d3938dae53c46d44215bb8fa8d3c628aa8",
+      "bytes": 3197
+    },
+    "compilerUse": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/compiler-use/objects/sha256/4a3ac3ee413a48bfeda78165c4d6f6c6695bda89e0240dde6eed65ddf06835fb",
+      "sha256": "4a3ac3ee413a48bfeda78165c4d6f6c6695bda89e0240dde6eed65ddf06835fb",
+      "bytes": 180306
+    },
+    "fixtureBuild": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/fixture-build/objects/sha256/923d31c7afc298133053273c7b97eb52ed3958ae91ac5ac2e935ccbe3a99f791",
+      "sha256": "923d31c7afc298133053273c7b97eb52ed3958ae91ac5ac2e935ccbe3a99f791",
+      "bytes": 49962
+    },
+    "events": 4,
+    "assertions": [
+      {
+        "id": "e2e app: github-issues / issue #1012 keeps JavaScript this ownership across compiled template expressions",
+        "passed": true
+      }
+    ],
+    "observedDevtoolsVersion": "2.02.2609250",
+    "observedBaseLibraryVersion": "3.17.3"
+  },
+  "sourceInputsReverified": 172,
+  "sourceUnchanged": true,
+  "rootIndexUnchanged": true,
+  "indexPromoted": false,
+  "formalPairs": 0,
+  "boundary": "Candidate item is an artifact-only review proposal. Root index, old receipts, original assertions and official source remain unchanged. Complete current production oracle reader verifies actual build/consumer/fixture/SDK/cleanup receipts. No differential pair is implied."
+}

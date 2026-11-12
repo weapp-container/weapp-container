@@ -1,0 +1,1 @@
+{"data":{"rows":[{"id":"a","label":"A","visible":true},{"id":"b","label":"B","visible":false},{"id":"c","label":"C","visible":true}],"title":"fixture"},"documentId":"pages/index/index.wxml","expectedText":"page:fixture|card:fixture|include:fixture|leaf:fixture|{{notData}}|0=A:1;2=C:2;|safe|isolated"}

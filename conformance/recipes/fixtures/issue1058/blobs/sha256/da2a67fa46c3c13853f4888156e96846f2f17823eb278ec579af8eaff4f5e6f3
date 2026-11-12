@@ -1,0 +1,90 @@
+const require_common = require("./wevu-runtime.js");
+//#region packages-runtime/wevu/dist/runtime/register/inline.mjs
+function i$1(e, t) {
+	let r = require_common.v(e, `wvEventDetail`, t);
+	return r === !0 || r === 1 || r === `1` || r === `true`;
+}
+function a(e, t) {
+	if (!i$1(t, e)) return e;
+	if (e && typeof e == `object` && `detail` in e) return e.detail;
+}
+function o(t, n) {
+	if (!n) return;
+	let r = n.split(`.`).filter(Boolean), i = require_common.s(t) ? t.value : t;
+	for (let t of r) {
+		if (require_common.s(i) && (i = i.value), i == null) return;
+		i = i[t];
+	}
+	return require_common.s(i) ? i.value : i;
+}
+function s(e) {
+	return e;
+}
+function c(e, i, c, l) {
+	let u = c?.currentTarget?.dataset ?? c?.target?.dataset ?? {}, d = a(c, u), f = require_common.v(u, `wvInlineId`, c);
+	if (typeof f == `string` && f && l) {
+		let t = l[f];
+		if (t && typeof t.fn == `function`) {
+			let n = {}, i = Array.isArray(t.keys) ? t.keys : [];
+			for (let e = 0; e < i.length; e += 1) {
+				let t = i[e];
+				n[t] = u?.[`wvS${e}`];
+			}
+			let a = Array.isArray(t.indexKeys) ? t.indexKeys : [];
+			for (let e = 0; e < a.length; e += 1) {
+				let t = a[e], i = require_common.y(u?.[`wvI${e}`]);
+				i !== void 0 && (n[t] = i);
+			}
+			let c = Array.isArray(t.scopeResolvers) ? t.scopeResolvers : [];
+			for (let t = 0; t < i.length; t += 1) {
+				let r = i[t], a = c[t];
+				try {
+					let t;
+					if (typeof a == `function`) t = a(e, n, d);
+					else if (a && typeof a == `object` && a.type === `for-item`) {
+						let r = n[a.indexKey];
+						t = o(e, a.path)?.[r];
+					} else continue;
+					t !== void 0 && (n[r] = s(t));
+				} catch {}
+			}
+			let l = t.fn(e, n, d);
+			return typeof l == `function` ? l.call(e, d) : l;
+		}
+	}
+	let p = require_common.v(u, `wvHandler`, c), m = typeof i == `string` && i ? i : typeof p == `string` ? p : void 0;
+	if (!m) return;
+	let h = require_common.v(u, `wvArgs`, c), g = [];
+	if (Array.isArray(h)) g = h;
+	else if (typeof h == `string`) try {
+		g = JSON.parse(h);
+	} catch {
+		try {
+			g = JSON.parse(require_common._(h));
+		} catch {
+			g = [];
+		}
+	}
+	Array.isArray(g) || (g = []);
+	let _$1 = g.map((e) => e === `$event` ? d : e), v$1 = e?.[m];
+	if (typeof v$1 == `function`) return v$1.apply(e, _$1);
+}
+//#endregion
+//#region packages-runtime/wevu/dist/runtime/features/inlineEvents.mjs
+var r = {
+	handler(e) {
+		let r = this.__wevu, i = r?.proxy ?? this, a = r?.methods?.[require_common.WEVU_INLINE_MAP_KEY];
+		return c(i, void 0, e, a && typeof a == `object` && !Array.isArray(a) ? a : void 0);
+	},
+	run: c
+};
+function i() {
+	require_common.i(`inlineEvents`, r);
+}
+//#endregion
+Object.defineProperty(exports, "i", {
+	enumerable: true,
+	get: function() {
+		return i;
+	}
+});

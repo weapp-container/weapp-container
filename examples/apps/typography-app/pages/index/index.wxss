@@ -1,0 +1,10 @@
+page { background-color: #fff; color: #102030; }
+.number { position:absolute; left:8px; top:8px; width:120px; line-height:1.5; }
+.percent { position:absolute; left:140px; top:8px; width:120px; line-height:150%; }
+.number text, .percent text { font-size:50%; }
+.multiline { white-space:pre-line; position:absolute; left:8px; top:80px; width:60px; font-size:10px; line-height:12px; }
+.zero-line { position:absolute; left:8px; top:140px; font-size:20px; line-height:0; color:#0759b0; }
+.zero-font { position:absolute; left:8px; top:175px; font-size:0; line-height:0; }
+.control { position:absolute; left:8px; width:160px; height:28px; font-size:12px; line-height:28px; background-color:#e0e8f0; }
+.resize { top:200px; }
+.inspect { top:235px; }

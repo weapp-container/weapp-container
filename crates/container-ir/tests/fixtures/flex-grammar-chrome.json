@@ -1,0 +1,569 @@
+{
+  "schemaVersion": 1,
+  "boundary": "Auxiliary Chrome CSS geometry/grammar; native view display is mapped explicitly to block. Not official WeChat, container execution, GPU, devices or font-outline equivalence.",
+  "recordedAt": "2026-10-21",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+  "sourceSha256": "8848e8763cae8362a1b1fd04a39aa747d78f547f323757f957d80db7a27b9dca",
+  "cases": [
+    {
+      "property": "display",
+      "value": "block",
+      "accepted": true
+    },
+    {
+      "property": "display",
+      "value": "flex",
+      "accepted": true
+    },
+    {
+      "property": "display",
+      "value": "inline-flex",
+      "accepted": true
+    },
+    {
+      "property": "display",
+      "value": "inline",
+      "accepted": true
+    },
+    {
+      "property": "display",
+      "value": "grid",
+      "accepted": true
+    },
+    {
+      "property": "display",
+      "value": "none",
+      "accepted": true
+    },
+    {
+      "property": "display",
+      "value": "garbage",
+      "accepted": false
+    },
+    {
+      "property": "flex",
+      "value": "none",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "auto",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "initial",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "1",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "2",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "1 1 0%",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "0 1 auto",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "1 10px",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "1 2 20%",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "1 2 3",
+      "accepted": false
+    },
+    {
+      "property": "flex",
+      "value": "-1",
+      "accepted": false
+    },
+    {
+      "property": "flex",
+      "value": "1 -1 0",
+      "accepted": false
+    },
+    {
+      "property": "flex",
+      "value": "1 1 -2px",
+      "accepted": false
+    },
+    {
+      "property": "flex",
+      "value": "1 1 calc(1px + 2px)",
+      "accepted": true
+    },
+    {
+      "property": "flex",
+      "value": "var(--flex)",
+      "accepted": true
+    },
+    {
+      "property": "flex-grow",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "flex-grow",
+      "value": "1",
+      "accepted": true
+    },
+    {
+      "property": "flex-grow",
+      "value": "1e2",
+      "accepted": true
+    },
+    {
+      "property": "flex-grow",
+      "value": ".5",
+      "accepted": true
+    },
+    {
+      "property": "flex-grow",
+      "value": "-1",
+      "accepted": false
+    },
+    {
+      "property": "flex-grow",
+      "value": "1px",
+      "accepted": false
+    },
+    {
+      "property": "flex-grow",
+      "value": "calc(1 + 2)",
+      "accepted": true
+    },
+    {
+      "property": "flex-grow",
+      "value": "var(--grow)",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "0%",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "auto",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "content",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "max-content",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "min-content",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "10px",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "50%",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "-1px",
+      "accepted": false
+    },
+    {
+      "property": "flex-basis",
+      "value": "calc(50% - 2px)",
+      "accepted": true
+    },
+    {
+      "property": "flex-basis",
+      "value": "var(--basis)",
+      "accepted": true
+    },
+    {
+      "property": "flex-wrap",
+      "value": "nowrap",
+      "accepted": true
+    },
+    {
+      "property": "flex-wrap",
+      "value": "wrap",
+      "accepted": true
+    },
+    {
+      "property": "flex-wrap",
+      "value": "wrap-reverse",
+      "accepted": true
+    },
+    {
+      "property": "flex-wrap",
+      "value": "inherit",
+      "accepted": true
+    },
+    {
+      "property": "flex-wrap",
+      "value": "bogus",
+      "accepted": false
+    },
+    {
+      "property": "justify-content",
+      "value": "normal",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "flex-start",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "start",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "end",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "center",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "space-between",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "space-around",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "space-evenly",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "safe center",
+      "accepted": true
+    },
+    {
+      "property": "justify-content",
+      "value": "baseline",
+      "accepted": false
+    },
+    {
+      "property": "justify-content",
+      "value": "stretch",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "normal",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "stretch",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "flex-start",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "start",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "end",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "center",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "baseline",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "first baseline",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "safe center",
+      "accepted": true
+    },
+    {
+      "property": "align-items",
+      "value": "space-between",
+      "accepted": false
+    },
+    {
+      "property": "align-content",
+      "value": "normal",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "stretch",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "start",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "end",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "center",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "space-between",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "space-around",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "space-evenly",
+      "accepted": true
+    },
+    {
+      "property": "align-content",
+      "value": "baseline",
+      "accepted": true
+    },
+    {
+      "property": "align-self",
+      "value": "auto",
+      "accepted": true
+    },
+    {
+      "property": "align-self",
+      "value": "normal",
+      "accepted": true
+    },
+    {
+      "property": "align-self",
+      "value": "stretch",
+      "accepted": true
+    },
+    {
+      "property": "align-self",
+      "value": "center",
+      "accepted": true
+    },
+    {
+      "property": "align-self",
+      "value": "baseline",
+      "accepted": true
+    },
+    {
+      "property": "align-self",
+      "value": "safe center",
+      "accepted": true
+    },
+    {
+      "property": "gap",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "gap",
+      "value": "10px",
+      "accepted": true
+    },
+    {
+      "property": "gap",
+      "value": "10px 20px",
+      "accepted": true
+    },
+    {
+      "property": "gap",
+      "value": "10%",
+      "accepted": true
+    },
+    {
+      "property": "gap",
+      "value": "normal",
+      "accepted": true
+    },
+    {
+      "property": "gap",
+      "value": "-1px",
+      "accepted": false
+    },
+    {
+      "property": "gap",
+      "value": "10px -1px",
+      "accepted": false
+    },
+    {
+      "property": "gap",
+      "value": "calc(1px + 2px)",
+      "accepted": true
+    },
+    {
+      "property": "gap",
+      "value": "var(--gap)",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "auto",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "50%",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "-1px",
+      "accepted": false
+    },
+    {
+      "property": "width",
+      "value": "10px",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "max-content",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "min-content",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "fit-content",
+      "accepted": true
+    },
+    {
+      "property": "width",
+      "value": "calc(50% - 1px)",
+      "accepted": true
+    },
+    {
+      "property": "min-width",
+      "value": "auto",
+      "accepted": true
+    },
+    {
+      "property": "min-width",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "min-width",
+      "value": "50%",
+      "accepted": true
+    },
+    {
+      "property": "min-width",
+      "value": "-1px",
+      "accepted": false
+    },
+    {
+      "property": "min-width",
+      "value": "min-content",
+      "accepted": true
+    },
+    {
+      "property": "min-width",
+      "value": "none",
+      "accepted": false
+    },
+    {
+      "property": "max-width",
+      "value": "none",
+      "accepted": true
+    },
+    {
+      "property": "max-width",
+      "value": "0",
+      "accepted": true
+    },
+    {
+      "property": "max-width",
+      "value": "50%",
+      "accepted": true
+    },
+    {
+      "property": "max-width",
+      "value": "-1px",
+      "accepted": false
+    },
+    {
+      "property": "max-width",
+      "value": "max-content",
+      "accepted": true
+    },
+    {
+      "property": "max-width",
+      "value": "auto",
+      "accepted": false
+    }
+  ]
+}

@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "kind": "r10-stopped-official-batch-summary",
+  "recordedAt": "2026-11-07T13:01:35.676668+00:00",
+  "status": "stopped-shared-macro-source-consumer-binding-provenance",
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/source-freeze.json",
+    "sha256": "243bc82a783fe898289bb7e14ab9e83aec6094b4270d09d910f5fc9068edb531",
+    "bytes": 32835814
+  },
+  "executionRelease": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/execution-release.json",
+    "sha256": "b8558078e4c8bc95d4b7c9826fcb523950a6f9380c464c89dac8981cc387f02d",
+    "bytes": 1667
+  },
+  "sourceInputsAndFullCopiesVerified": 3598,
+  "runnerInputFilesVerified": 566,
+  "compilerRetainedReferencesVerified": 106772,
+  "attemptedCases": 2,
+  "fullOfficialOraclesPassed": 1,
+  "originalOfficialTestsPassed": 5,
+  "runnerBlockedCases": 1,
+  "cases": [
+    {
+      "key": "sfc",
+      "caseId": "ide-template-weapp-vite-multi-platform-sfc-template",
+      "status": "passed",
+      "run": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/01-sfc/run.json",
+        "sha256": "c58afe24f57987d196248f92099458d02769d3bc899569cfd444032311444af3",
+        "bytes": 10040
+      },
+      "review": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/control/01-sfc/independent-official-review.json",
+        "sha256": "6e64aefc9876bee4c67e029dfbea4c0ab0073f1bb2ff92095c6fa34c6c9f4575",
+        "bytes": 4481
+      },
+      "fullProductionOracleAudit": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/control/01-sfc/oracle-full-reader-audit.json",
+        "sha256": "ff824bd5d8dad879d24b6b49f6d23dbe63ed1d91e38905ebc515c72354b299ab",
+        "bytes": 3724
+      },
+      "tests": {
+        "numTotalTests": 1,
+        "numPassedTests": 1,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numRuntimeErrorTestSuites": null,
+        "success": true
+      },
+      "events": 4,
+      "failures": [],
+      "actualRuntime": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/01-sfc/ide-template-weapp-vite-multi-platform-sfc-template/sessions/runtime-0001.json",
+        "sha256": "1db989f42506145f4495de81f3b786dd81e554f39d48b3acec53a700f9686af7",
+        "bytes": 562
+      },
+      "persistedAutomatorSession": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/01-sfc/ide-template-weapp-vite-multi-platform-sfc-template/sessions/session-0000.json",
+        "sha256": "b0a4b1a3081dbbb6b3750b359b64d698af3048f7fe2e6dc82c173c16da2c0d59",
+        "bytes": 779
+      }
+    },
+    {
+      "key": "web-runtime",
+      "caseId": "ide-github-issues-runtime-web-runtime",
+      "status": "blocked",
+      "run": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/02-web-runtime/run.json",
+        "sha256": "8c6bf42b4e6e12f56e3d3cb5697a0c400b49c559123615d54b2a672e5146d654",
+        "bytes": 10266
+      },
+      "review": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/control/02-web-runtime/independent-official-review.json",
+        "sha256": "0ecbcae8827370c77b1141a169f18e6235926633ca5fe5508a970dac5c2d6213",
+        "bytes": 4789
+      },
+      "fullProductionOracleAudit": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/control/02-web-runtime/oracle-full-reader-audit.json",
+        "sha256": "e2e5cf0e0b53c368452989c120dd010ced0c1fe84ffc820a43488810adf9b8c2",
+        "bytes": 1493
+      },
+      "tests": {
+        "numTotalTests": 4,
+        "numPassedTests": 4,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numRuntimeErrorTestSuites": null,
+        "success": true
+      },
+      "events": null,
+      "failures": [
+        {
+          "status": "blocked",
+          "domain": "runner",
+          "code": "CONFORMANCE_RUNNER_BLOCKED",
+          "stage": "runner",
+          "message": "Fresh compiler consumption was not verified: Macro original source differs from the CLI input closure"
+        }
+      ],
+      "actualRuntime": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/02-web-runtime/ide-github-issues-runtime-web-runtime/sessions/runtime-0001.json",
+        "sha256": "0f65a6e515461d41e1a1c395306efce159f368ba4282a62ba97abab2f2be0406",
+        "bytes": 570
+      },
+      "persistedAutomatorSession": {
+        "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/02-web-runtime/ide-github-issues-runtime-web-runtime/sessions/session-0000.json",
+        "sha256": "00d4433b27474f68eb837408755fd47e3200ccf9ae6476011c0670ca3ce6984e",
+        "bytes": 795
+      }
+    }
+  ],
+  "unexecutedCases": [
+    {
+      "key": "issue547",
+      "outputName": "03-issue547",
+      "caseId": "ide-github-issues-runtime-issue547",
+      "recipe": "conformance/recipes/issue547-v1.json",
+      "indexedStatusBefore": "unknown"
+    },
+    {
+      "key": "issue289",
+      "outputName": "04-issue289",
+      "caseId": "ide-github-issues-runtime-issue289",
+      "recipe": "conformance/recipes/issue289-v1.json",
+      "indexedStatusBefore": "unknown"
+    },
+    {
+      "key": "import-meta",
+      "outputName": "05-import-meta",
+      "caseId": "ide-github-issues-runtime-import-meta",
+      "recipe": "conformance/recipes/import-meta-v1.json",
+      "indexedStatusBefore": "unknown"
+    },
+    {
+      "key": "issue1182",
+      "outputName": "06-issue1182",
+      "caseId": "ide-issue-1182-production-mount-runtime",
+      "recipe": "conformance/recipes/issue1182-v1.json",
+      "indexedStatusBefore": "unknown"
+    },
+    {
+      "key": "issue297-302",
+      "outputName": "07-issue297-302",
+      "caseId": "ide-github-issues-runtime-issue297-302",
+      "recipe": "conformance/recipes/issue297-302-v1.json",
+      "indexedStatusBefore": "unknown"
+    },
+    {
+      "key": "issue1008",
+      "outputName": "08-issue1008",
+      "caseId": "ide-github-issues-runtime-issue1008",
+      "recipe": "conformance/recipes/issue1008-v1.json",
+      "indexedStatusBefore": "unknown"
+    }
+  ],
+  "sharedStop": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/batch-stopped.json",
+    "sha256": "5b4fc8d28ac4ec3c2bc455aa9bc57b34c874e11b3f5a07bc91c11a8ce3f914fd",
+    "bytes": 859
+  },
+  "firstFailureBoundary": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/web-runtime-first-failure-boundary.json",
+    "sha256": "54689deb1e6589818b4b5927aeb5a16b1b64d21effa920fb13f419b856852969",
+    "bytes": 2215
+  },
+  "ownedProcesses": [
+    {
+      "case": "sfc",
+      "pid": 35355,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "sfc",
+      "pid": 35356,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "sfc",
+      "pid": 46933,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "sfc",
+      "pid": 50199,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "sfc",
+      "pid": 52404,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "sfc",
+      "pid": 52612,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "sfc",
+      "pid": 52770,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "sfc",
+      "pid": 52937,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 1793,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 1882,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 82097,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 82099,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 95173,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 96769,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 98664,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "web-runtime",
+      "pid": 99273,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "allOwnedPidsAbsent": true,
+  "machineLeaseAbsent": true,
+  "runtimeLocksEmpty": true,
+  "borrowedHost": {
+    "pid": 97351,
+    "exitCode": 0,
+    "stdout": "97351 Sat Nov  7 01:00:58 2026     /Applications/wechatwebdevtools.app/Contents/MacOS/Electron\n",
+    "stderr": ""
+  },
+  "borrowedHostPreserved": true,
+  "allProjectsReleased": true,
+  "sourceIndexDocsUnchanged": true,
+  "retryOldOutputAllowed": false,
+  "nativeScenariosExecuted": 0,
+  "webDiagnosticScenariosExecuted": 0,
+  "formalPairs": 0,
+  "denominatorCases": 172,
+  "denominatorPairs": 2408,
+  "indexPromoted": false,
+  "uiLaneIdle": true,
+  "sourceWriteFreezeReleased": false,
+  "freezeReleaseConditions": [
+    "Root independently verifies stopped seal and cleanup.",
+    "Root records explicit release addendum before any source/index/docs mutation.",
+    "All successor cases use a new source freeze and fresh output; this output cannot be retried."
+  ]
+}

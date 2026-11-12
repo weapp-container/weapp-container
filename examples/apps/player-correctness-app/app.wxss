@@ -1,0 +1,10 @@
+page { background: #eef2f6; color: #101828; font-size: 14px; }
+.page { padding: 8px 12px; }
+.heading { font-size: 18px; font-weight: bold; height: 24px; }
+.status { font-size: 12px; height: 24px; }
+.controls { display: flex; flex-wrap: wrap; }
+.p0-control { box-sizing: border-box; width: 48%; height: 32px; margin: 2px 1%; padding: 0; font-size: 12px; line-height: 32px; background: #ffffff; border: 1px solid #9ea9b7; border-radius: 4px; text-align: center; }
+.danger { color: #b42318; }
+.probe { font-size: 11px; height: 16px; }
+.scroller { height: 220px; background: #ffffff; margin-top: 8px; }
+.row { height: 44px; padding: 4px 8px; border-bottom: 1px solid #d0d5dd; }

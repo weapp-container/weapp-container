@@ -1,0 +1,19 @@
+<view class="page">
+  <text class="title">使用宿主账号</text>
+  <text class="notice">本页面使用本地参考渠道，不发生真实扣款。</text>
+  <text class="status">{{identityText}}</text>
+  <button bindtap="login" disabled="{{busy}}">登录当前小程序</button>
+  <button bindtap="profile" disabled="{{busy}}">授权公开资料</button>
+  <button open-type="getPhoneNumber" bindgetphonenumber="phone" disabled="{{busy}}">授权手机号</button>
+  <text>{{profileText}}</text>
+  <text>{{phoneText}}</text>
+  <view class="order">
+    <text>参考商品 · ¥0.01</text>
+    <button bindtap="createOrder" disabled="{{busy}}">创建订单</button>
+    <button bindtap="payOrder" disabled="{{busy || !orderId}}">支付当前订单</button>
+    <button bindtap="queryOrder" disabled="{{busy || !orderId}}">查询最终状态</button>
+    <text class="status">{{orderText}}</text>
+  </view>
+  <button bindtap="logout" disabled="{{busy}}">退出此小程序</button>
+  <text class="message">{{message}}</text>
+</view>

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-runtime-observation-v1.schema.json",
+  "title": "Weapp Container official runtime baseline observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "status", "recordedAt", "installationId", "projectPath", "tool", "system"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "const": "wechat-devtools-runtime-baseline" },
+    "status": { "const": "passed" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "installationId": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "projectPath": { "type": "string", "minLength": 1 },
+    "tool": {
+      "type": "object", "additionalProperties": false, "required": ["version", "SDKVersion"],
+      "properties": { "version": { "type": "string", "minLength": 1 }, "SDKVersion": { "type": "string", "minLength": 1 } }
+    },
+    "system": {
+      "type": "object", "additionalProperties": false, "required": ["SDKVersion", "platform"],
+      "properties": { "SDKVersion": { "type": "string", "minLength": 1 }, "platform": { "type": "string", "minLength": 1 } }
+    }
+  }
+}

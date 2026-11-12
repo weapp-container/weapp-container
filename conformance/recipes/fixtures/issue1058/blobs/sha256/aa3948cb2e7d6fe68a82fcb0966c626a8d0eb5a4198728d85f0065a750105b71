@@ -1,0 +1,43 @@
+const require_common = require("../../weapp-vendors/wevu-runtime.js");
+//#region .tmp/e2e-projects/issue-1058-XrHwqz/src/pages/home/index.vue
+require("../../weapp-vendors/wevu-runtime2.js").i();
+var __wevuOptions = {
+	data() {
+		return { count: 0 };
+	},
+	allowNullPropInput: true,
+	__wevu_isPage: true,
+	setup(__props, { expose }) {
+		expose();
+		return { count: require_common.l(0) };
+	},
+	"__wevuBindingManifest": Object.freeze({
+		version: 1,
+		sourceFile: "src/pages/home/index.vue",
+		bindings: [
+			{
+				id: "b0",
+				outputPath: "count"
+			},
+			{
+				id: "b1",
+				outputPath: "count"
+			},
+			{
+				id: "b2",
+				outputPath: "count"
+			},
+			{
+				id: "b3",
+				outputPath: "count"
+			}
+		]
+	}),
+	methods: { __weapp_vite_inline_map: { "i0": {
+		keys: [],
+		fn: (_ctx, _scope, _event) => _ctx.count.value++
+	} } }
+};
+require_common.N(__wevuOptions);
+//#endregion
+module.exports = __wevuOptions;

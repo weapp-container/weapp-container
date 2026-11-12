@@ -1,0 +1,95 @@
+{
+  "kind": "root-independent-r9-official-case-review-v1",
+  "passed": true,
+  "recordedAt": "2026-11-07T11:21:41.704Z",
+  "caseId": "ide-github-issues-runtime-subpackage-item",
+  "key": "item",
+  "oracle": {
+    "status": "passed"
+  },
+  "run": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/01-item/run.json",
+    "sha256": "5ff3484b3bd392e467b8bcc176faae3c22a4adf9d3bf64e8ccf7deb278828bad",
+    "bytes": 9958
+  },
+  "execution": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/01-item/ide-github-issues-runtime-subpackage-item/official-execution.json",
+    "sha256": "ab526c3d510fc7d085948b924443ffe725e3ed7c72c6243ce0fd9dec926c00a9",
+    "bytes": 3227
+  },
+  "trace": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/01-item/ide-github-issues-runtime-subpackage-item/official-trace.json",
+    "sha256": "c3374702bd6e5651e2c87279c3f05a66ec1607297031f6f4d8192f626e518a64",
+    "bytes": 2766
+  },
+  "entry": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/control/01-item/candidate-entry.json",
+    "sha256": "1800239676b682dea1fcd2d0103bef061dd30eaaf6aa58dfd691e900d7961009",
+    "bytes": 55970
+  },
+  "proposedItem": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/control/01-item/candidate-reviewed-item.json",
+    "sha256": "71be9cfcc5f39da991d58f00c06f26783ddbf7b28dd0e85e86ea4b84e297eb46",
+    "bytes": 1438
+  },
+  "runnerIndependentReview": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/control/01-item/independent-official-review.json",
+    "sha256": "5e9e61b91d3c1009268812a897fe35c378b1ee0301722e6c43287801aab01356",
+    "bytes": 4471
+  },
+  "artifactInventory": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r9-v2/01-item/artifacts.json",
+    "sha256": "3722c2e4e568442cada3883031ec4625e0de38aed29203c345f50c96506b183f",
+    "bytes": 1586311
+  },
+  "artifactHashesVerified": 5216,
+  "sourceInputsStable": 3465,
+  "ownedPidsCurrentlyAbsent": [
+    {
+      "pid": 76447,
+      "absent": true
+    },
+    {
+      "pid": 76448,
+      "absent": true
+    },
+    {
+      "pid": 87353,
+      "absent": true
+    },
+    {
+      "pid": 88657,
+      "absent": true
+    },
+    {
+      "pid": 91503,
+      "absent": true
+    },
+    {
+      "pid": 92053,
+      "absent": true
+    },
+    {
+      "pid": 92962,
+      "absent": true
+    },
+    {
+      "pid": 93488,
+      "absent": true
+    }
+  ],
+  "borrowedHostUnchanged": true,
+  "caseAssertions": [
+    {
+      "id": "e2e app: github-issues / item subpackage issue #317: loads duplicated shared chunks with localized runtime",
+      "passed": true
+    },
+    {
+      "id": "e2e app: github-issues / item subpackage issue #340: loads cross-subpackage source imports in item/login-required",
+      "passed": true
+    }
+  ],
+  "indexPromoted": false,
+  "formalPairs": 0,
+  "boundary": "Original-case official evidence independently read by complete production oracle. Current batch may hold a later machine lease; earlier cleanup is independently recorded. No native differential pair is inferred."
+}

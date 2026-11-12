@@ -1,0 +1,1 @@
+Page({data:{capsule:'',error:''},onLoad(){this.measure();},onResize(){this.measure();},measure(){try{this.setData({capsule:JSON.stringify(wx.getMenuButtonBoundingClientRect())});}catch(e){this.setData({error:String(e.message||e)});}},back(){wx.navigateBack();}});

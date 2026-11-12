@@ -1,0 +1,26 @@
+<image id="scale" class="tile col0 row0" src="/assets/grid.png" mode="scaleToFill"/>
+<image id="fit" class="tile col1 row0" src="/assets/grid.png" mode="aspectFit"/>
+<image id="fill" class="tile col2 row0" src="/assets/grid.png" mode="aspectFill"/>
+<image id="width" class="tile col3 row0" src="/assets/grid.png" mode="widthFix"/>
+<image id="height" class="tile col0 row1" src="/assets/grid.png" mode="heightFix"/>
+<image id="top" class="tile col1 row1" src="/assets/grid.png" mode="top"/>
+<image id="bottom" class="tile col2 row1" src="/assets/grid.png" mode="bottom"/>
+<image id="center" class="tile col3 row1" src="/assets/grid.png" mode="center"/>
+<image id="left" class="tile col0 row2" src="/assets/grid.png" mode="left"/>
+<image id="right" class="tile col1 row2" src="/assets/grid.png" mode="right"/>
+<image id="top-left" class="tile col2 row2" src="/assets/grid.png" mode="top left"/>
+<image id="top-right" class="tile col3 row2" src="/assets/grid.png" mode="top right"/>
+<image id="bottom-left" class="tile col0 row3" src="/assets/grid.png" mode="bottom left"/>
+<image id="bottom-right" class="tile col1 row3" src="/assets/grid.png" mode="bottom right"/>
+<image id="dynamic" class="dynamic" src="{{src}}" mode="scaleToFill" data-case="dynamic" bindtap="onImage"/>
+<image hidden src="/assets/alpha.png"/>
+<image id="width-ratio" class="width-ratio" src="../../assets/grid.png" mode="widthFix"/>
+<image id="height-ratio" class="height-ratio" src="/assets/grid.png" mode="heightFix"/>
+<view class="percent-parent"><image id="percent-ratio" style="width:50%;" src="/assets/grid.png" mode="widthFix"/></view>
+<picture-tile class="component"/>
+<image id="default" class="default" src="/assets/grid.png"/>
+<image id="empty" class="empty"/>
+<view id="swap" class="control swap" bindtap="onSwap">swap</view>
+<view id="unsupported" class="control unsupported" bindtap="onUnsupported">unsupported source</view>
+<view id="recover" class="control recover" bindtap="onRecover">recover</view>
+<view id="inspect" class="control inspect" bindtap="onInspect">inspect</view>

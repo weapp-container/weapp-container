@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "suite": "weapp-vite-e2e-ide",
+  "compiler": {
+    "name": "weapp-vite",
+    "commit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+    "platform": "weapp"
+  },
+  "devtoolsVersion": "2.02.2609250",
+  "baseLibraryVersion": "3.17.3",
+  "protocolVersion": "1.0",
+  "manifestVersion": "1.0",
+  "sourceCount": 172,
+  "hosts": ["web", "macos", "windows", "linux", "android", "ios", "harmony"],
+  "engines": ["quickjs", "v8"]
+}

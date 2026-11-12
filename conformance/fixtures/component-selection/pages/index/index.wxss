@@ -1,0 +1,1 @@
+page { padding: 12px; } probe-leaf, probe-parent, probe-exporter, probe-nested-exporter, probe-plain-exporter { display: block; }

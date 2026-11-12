@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-github-issues-runtime-issue1009",
+      "sourceSha256": "7aab6c9ec6c09f610bd8c13ae834dd63d96f906d40b2a5f86448a1f114bf56e9",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/issue1009-collector.mjs",
+        "sha256": "bc7d89a1937437afe13a6ab1921ac1e073ded39c89e85d85ad30b5e38e3b09bf",
+        "bytes": 970
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/issue1009-descriptor.mjs",
+          "sha256": "2e8fc8114e8844fb5cd744139a97fad58abad4c8f85e4bb51761bfc0fffd52c3",
+          "bytes": 5701
+        },
+        {
+          "path": "conformance/recipes/issue1009-source-policy.mjs",
+          "sha256": "512383399830d6589e7cf957ca1ac88f100feb52e7f9fad6dc9e5a540fb465e8",
+          "bytes": 670
+        },
+        {
+          "path": "conformance/recipes/issue1009-source-assertions.mjs",
+          "sha256": "8a861192b505bf5c200154b6b08260683b6560d5bdea868faf50a39de2985d7e",
+          "bytes": 3511
+        },
+        {
+          "path": "conformance/recipes/source-poll-observer.mjs",
+          "sha256": "ee5e20679f26081d2bca44f84cf17ab4f4d4af0cda26f556c2ca900d6847fc48",
+          "bytes": 979
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    }
+  ]
+}

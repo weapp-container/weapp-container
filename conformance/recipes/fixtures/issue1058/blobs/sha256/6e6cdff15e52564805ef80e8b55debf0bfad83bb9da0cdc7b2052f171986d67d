@@ -1,0 +1,29 @@
+const require_common = require("../../weapp-vendors/wevu-runtime.js");
+//#region .tmp/e2e-projects/issue-1058-XrHwqz/src/components/CaseCard/index.vue
+var CaseCard_default = {
+	allowNullPropInput: true,
+	__wevu_isPage: false,
+	props: { label: {
+		type: String,
+		required: true
+	} },
+	setup(__props, { expose }) {
+		expose();
+		return {};
+	},
+	__wevuPropsDerivedKeys: ["label"],
+	"__wevuBindingManifest": Object.freeze({
+		version: 1,
+		sourceFile: "src/components/CaseCard/index.vue",
+		bindings: [{
+			id: "b0",
+			outputPath: "label"
+		}]
+	})
+};
+//#endregion
+//#region weapp-vite:logical-entry:component:%2FUsers%2Ficebreaker%2FProjects%2Fgithub%2Fweapp-container%2Fartifacts%2Fconformance-compiler-build%2F2026-11-07-fresh-pinned-v4%2Fcheckout%2F.tmp%2Fe2e-projects%2Fissue-1058-XrHwqz%2Fsrc%2Fcomponents%2FCaseCard%2Findex.vue:module.js
+require_common.N(CaseCard_default);
+var weapp_vite_logical_entry_component__2FUsers_2Ficebreaker_2FProjects_2Fgithub_2Fweapp_container_2Fartifacts_2Fconformance_compiler_build_2F2026_11_07_fresh_pinned_v4_2Fcheckout_2F_tmp_2Fe2e_projects_2Fissue_1058_XrHwqz_2Fsrc_2Fcomponents_2FCaseCard_2Findex_vue_module_default = CaseCard_default;
+//#endregion
+module.exports = weapp_vite_logical_entry_component__2FUsers_2Ficebreaker_2FProjects_2Fgithub_2Fweapp_container_2Fartifacts_2Fconformance_compiler_build_2F2026_11_07_fresh_pinned_v4_2Fcheckout_2F_tmp_2Fe2e_projects_2Fissue_1058_XrHwqz_2Fsrc_2Fcomponents_2FCaseCard_2Findex_vue_module_default;

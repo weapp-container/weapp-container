@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "kind": "reviewed-producer-revision",
+  "id": "cjs-v4-r6-v2-reviewed-v1",
+  "profile": "pinned-json-macro-esm-cjs-v4-runtime-input",
+  "caseScopes": [
+    {
+      "caseId": "ide-github-issues-runtime-issue1014",
+      "sourceSha256": "332a6673e36403659dc83eb634177e239400e748e2d346b50c7569f17e552bc8",
+      "caseSourcePath": "e2e/ide/github-issues.runtime.issue1014.test.ts",
+      "snapshotProfile": "github-static-snapshot-v1"
+    },
+    {
+      "caseId": "ide-github-issues-runtime-issue1013",
+      "sourceSha256": "dd214fe8af937331788f4b491b51c9fd0816fe45614c28e3f9a192c29781cb35",
+      "caseSourcePath": "e2e/ide/github-issues.runtime.issue1013.test.ts",
+      "snapshotProfile": "github-static-snapshot-v1"
+    }
+  ],
+  "sources": {
+    "compilerUseProducer": {
+      "path": "sources/compilerUseProducer.txt",
+      "sha256": "a8bae116e8e02eece200171ab1452c987d5b0c612ee4a8786dec389208edab38",
+      "bytes": 46298
+    },
+    "compilerUsePreload": {
+      "path": "sources/compilerUsePreload.txt",
+      "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+      "bytes": 19764
+    },
+    "fixtureBuildProducer": {
+      "path": "sources/fixtureBuildProducer.txt",
+      "sha256": "8d6d446b83189568b9b7764223d8842e469a4c3e8d4448984c620234f77fac5b",
+      "bytes": 92236
+    },
+    "fixturePackerPreload": {
+      "path": "sources/fixturePackerPreload.txt",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    "macroProducer": {
+      "path": "sources/macroProducer.txt",
+      "sha256": "b04cabcf91d63c83c66448049d7ad8808e504701c7fc8648162234af02885284",
+      "bytes": 11991
+    },
+    "macroManifest": {
+      "path": "sources/macroManifest.txt",
+      "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+      "bytes": 19533
+    },
+    "macroObserver": {
+      "path": "sources/macroObserver.txt",
+      "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+      "bytes": 3868
+    },
+    "macroValidator": {
+      "path": "sources/macroValidator.txt",
+      "sha256": "7d11e8f96194c70be74e5c9d1028e0389f42e40254d24356a6e2fe9a8568d48f",
+      "bytes": 36024
+    },
+    "githubProducer": {
+      "path": "sources/githubProducer.txt",
+      "sha256": "3a7ed4ddaa66d08898a8b29f190f6b5018d8ee67afd09bedabb5423870f9c789",
+      "bytes": 15988
+    },
+    "wxmlProducer": {
+      "path": "sources/wxmlProducer.txt",
+      "sha256": "d997542e6349d25cded98964b22cb2f6b742313e84f1a4c9379e98d96e6f4910",
+      "bytes": 1929
+    },
+    "snapshotTransport": {
+      "path": "sources/snapshotTransport.txt",
+      "sha256": "3443dbddb5213e1b6c7acd05f767765449998f02cf658f4aef9fa9f2a263603e",
+      "bytes": 19889
+    },
+    "temporaryProjectProducer": {
+      "path": "sources/temporaryProjectProducer.txt",
+      "sha256": "f6fd1b3f723180f4fd274409cdc53562804705ca00345dd78246239dd9dde35a",
+      "bytes": 7468
+    },
+    "issue1034Producer": {
+      "path": "sources/issue1034Producer.txt",
+      "sha256": "3ae2bf8dd239d6823c4bb30fc423abfd11de91559e66b8d9227b81eab58e7214",
+      "bytes": 2396
+    },
+    "staticCliProfile": {
+      "path": "sources/staticCliProfile.txt",
+      "sha256": "b461e1e19968c4c506655ac244dab12d74f811ec814b1555c8eafb15fe9110dc",
+      "bytes": 2401
+    },
+    "fixtureProject": {
+      "path": "sources/fixtureProject.txt",
+      "sha256": "c31e46d5ebc31fe22e7167180ad48685f1c868665ff9848f477bd3d8dc924d8a",
+      "bytes": 15533
+    }
+  },
+  "snapshotModules": [
+    {
+      "key": "githubProducer",
+      "path": "scripts/conformance-github-producer.mjs"
+    },
+    {
+      "key": "wxmlProducer",
+      "path": "scripts/conformance-wxml-producer.mjs"
+    },
+    {
+      "key": "snapshotTransport",
+      "path": "scripts/conformance-snapshot-transport.mjs"
+    },
+    {
+      "key": "temporaryProjectProducer",
+      "path": "scripts/conformance-temporary-project-producer.mjs"
+    },
+    {
+      "key": "issue1034Producer",
+      "path": "scripts/conformance-issue1034-producer.mjs"
+    }
+  ],
+  "staticProfileModules": [
+    {
+      "key": "staticCliProfile",
+      "path": "scripts/conformance-static-cli-profile.mjs"
+    },
+    {
+      "key": "fixtureProject",
+      "path": "scripts/conformance-fixture-project.mjs"
+    }
+  ],
+  "provenance": [
+    {
+      "copy": "provenance/verified-source-tuple.json",
+      "sha256": "f060d2a2f913f29985c047045c54a189ce90fb5b98cd7854c98f66c97aefcdf9",
+      "bytes": 29087
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+App({ trace: [], events: [] })

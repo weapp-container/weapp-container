@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "case-card": "/components/CaseCard/index"
+  }
+}

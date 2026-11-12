@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "repository": "weapp-container/weapp-container",
+  "inputs": {
+    "linux-e1c37697": {
+      "platform": "linux",
+      "target": "x86_64-unknown-linux-gnu",
+      "nativeLayout": "verified-runtime-archive",
+      "runId": 42033575941,
+      "artifactId": 13418592986,
+      "artifactName": "showcase-native-linux-42033575941-1",
+      "size": 146661347,
+      "sha256": "5d681154c720ca4fed1c2d8d2a8ae75159ac28552eb2f978a29fffcaf9e541b5",
+      "sourceCommit": "e1c3769727c892e6f8b1692d22edeb9d41a5f15f",
+      "distributionProfile": "restricted-showcase",
+      "policySha256": "cd3a5e4b093c91b7bf903025cb1fbbe4acce3b809be60947eec81825456ac3f4",
+      "review": "Original native release, real C/C++ consumer and archive producer passed. Preserve the original producer receipt and binaries; derive a new static archive by removing member DWARF only, verify every linkable section/symbol/relocation is unchanged, retain explicit post-processing provenance, and rebuild the SDK consumer without recompiling native code."
+    },
+    "windows-98d7e613": {
+      "platform": "windows",
+      "target": "x86_64-pc-windows-msvc",
+      "nativeLayout": "complete-native-output",
+      "runId": 42037026086,
+      "artifactId": 13420648063,
+      "artifactName": "showcase-native-windows-42037026086-1",
+      "size": 72801609,
+      "sha256": "b33a2f1cbf739a75c2377032b8019f26da6f1860555cdbc05b77e7f156656d65",
+      "sourceCommit": "98d7e6139a684270a615d1571de078287fa087ba",
+      "distributionProfile": "restricted-showcase",
+      "policySha256": "cd3a5e4b093c91b7bf903025cb1fbbe4acce3b809be60947eec81825456ac3f4",
+      "review": "Native producer and embedded policy/font verification succeeded; SDK consumer failed before CMake because notice paths were serialized with Windows separators. Preserve native receipt, complete compiled notice bytes, original inventory and collector/source provenance. Verify every notice hash, migrate only path separators to POSIX, and record the transformation separately."
+    }
+  }
+}

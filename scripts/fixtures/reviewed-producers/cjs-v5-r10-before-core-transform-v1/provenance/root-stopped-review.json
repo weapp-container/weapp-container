@@ -1,0 +1,44 @@
+{
+  "kind": "root-independent-r10-stopped-batch-review-v1",
+  "passed": true,
+  "recordedAt": "2026-11-07T13:03:37.120298+00:00",
+  "seal": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/stopped-seal-manifest.json",
+    "sha256": "46ab77e862579d45f1db8de4c7804e7a91df1d8f37a123f02a4d9152ffffd620",
+    "bytes": 2498887
+  },
+  "summary": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v5-r10-v2/stopped-batch-summary.json",
+    "sha256": "67d1c384d4def45ac60540dcebb7b2642ba4d4a401d5c34cc6d780a09b020764",
+    "bytes": 9753
+  },
+  "uniqueReferencesVerified": 118377,
+  "sourceInputsAndCopiesVerified": 3598,
+  "compilerReferencesVerified": 106772,
+  "ownedPidsAbsent": [
+    35355,
+    35356,
+    46933,
+    50199,
+    52404,
+    52612,
+    52770,
+    52937,
+    1793,
+    1882,
+    82097,
+    82099,
+    95173,
+    96769,
+    98664,
+    99273
+  ],
+  "borrowedHostPreserved": true,
+  "vendorClean": true,
+  "officialPassed": 1,
+  "runnerBlocked": 1,
+  "unexecuted": 6,
+  "formalPairs": 0,
+  "sourceFreezeReleased": true,
+  "boundary": "Frozen execution inputs, exact retained evidence, case results and cleanup independently verified. Prior SFC full oracle independently accepted; Web runtime remains blocked. Root source/index/docs writes may resume; successor official execution requires a fresh freeze and output."
+}

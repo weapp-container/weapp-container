@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "baseline": "dev-player-chrome-preview4",
+  "note": "Host execution cases; Rust/widget/compile evidence is auxiliary and does not imply a platform case passed. Existing Player/near-parity frozen gates remain unchanged.",
+  "cases": [
+    {
+      "id": "C001",
+      "description": "Preview fills available content area without Player bars, fixed ratio or margins",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C002",
+      "description": "System bars, cutouts and safe area remain correctly observed",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C003",
+      "description": "Normal navigation title and back are driven by runtime page stack",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C004",
+      "description": "Custom navigation overlays a usable measured capsule",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C005",
+      "description": "Dynamic title/color and empty title restore with each page instance",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C006",
+      "description": "Configured system tabBar uses runtime switchTab and correct selection",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C007",
+      "description": "More/tools/logs/performance/error indicators do not change content geometry",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C008",
+      "description": "Tools occlusion suspends preview input/present without false app lifecycle or timer freeze",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C009",
+      "description": "Close releases native instance; reopen creates fresh memory and keeps storage/connection/cache",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C010",
+      "description": "Close during download, geometry wait and candidate activation does not leak or reopen",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C011",
+      "description": "Updates while closed or covered are verified without starting hidden sessions",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C012",
+      "description": "Startup, build and GPU errors preserve reachable capsule/project recovery",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C013",
+      "description": "Rotation/resize update real capsule geometry and content-local hit coordinates",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C014",
+      "description": "DPR, accessibility text scaling and long titles remain usable",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C015",
+      "description": "System back/Escape handles menu, page stack and root exit",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C016",
+      "description": "Native child preview has actual native chrome and hides below Flutter tools",
+      "platforms": [
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C017",
+      "description": "Safe hot updates preserve page state, timers and host geometry",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C018",
+      "description": "Invalid pack/startup failure retains accepted pack and navigation state",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C019",
+      "description": "Late geometry/session/page/presentation receipts cannot authorize stale input",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    },
+    {
+      "id": "C020",
+      "description": "Repeated enter/close and exit retire native surfaces, candidates and runtime resources",
+      "platforms": [
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "linux"
+      ]
+    }
+  ]
+}

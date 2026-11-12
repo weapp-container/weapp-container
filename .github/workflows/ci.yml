@@ -1,0 +1,597 @@
+name: container-ci
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Checks to run (full always includes every original platform)
+        type: choice
+        default: quick
+        options: [quick, rust, engines, upstream, native, performance, full]
+      rust_os:
+        description: Rust platform (only used by scope=rust)
+        type: choice
+        default: linux
+        options: [linux, macos, windows, all]
+      skia_os:
+        description: Skia platform (only used by scope=native)
+        type: choice
+        default: linux
+        options: [linux, macos, all]
+
+run-name: container-ci / ${{ inputs.scope }} / rust=${{ inputs.rust_os }} / skia=${{ inputs.skia_os }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.scope }}-${{ inputs.rust_os }}-${{ inputs.skia_os }}
+  cancel-in-progress: ${{ inputs.scope != 'full' && inputs.scope != 'performance' }}
+
+permissions:
+  contents: read
+
+env:
+  # Runners retain dependency downloads, not incremental compilation state.
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  near-parity-audit:
+    name: Near-parity evidence audit
+    if: ${{ inputs.scope == 'quick' || inputs.scope == 'full' }}
+    # This is an evidence audit, rather than a release claim.  The command
+    # deliberately exits non-zero while any required case, host/engine pair,
+    # mobile GPU report, performance report, or ledger entry is incomplete.
+    # Keep the step's outcome visible and upload its JSON so missing/blocked/
+    # unknown evidence can never be mistaken for a passing skeleton build.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          # The audit verifies ancestor source revisions across evidence-only
+          # archival commits; shallow history cannot prove that relationship.
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate evidence source and mobile execution boundaries
+        run: node --test scripts/evidence-source.test.mjs scripts/mobile-module-evidence.test.mjs scripts/pack-execution-evidence.test.mjs scripts/conformance-evidence.test.mjs
+      - name: Validate frozen dual-renderer scope without claiming release readiness
+        run: |
+          node --test scripts/check-dual-renderer-gates.test.mjs scripts/check-dual-renderer-source-binding.test.mjs
+          node scripts/check-dual-renderer-gates.mjs --validate-only
+      - name: Run near-parity gate audit
+        id: audit
+        continue-on-error: true
+        run: node scripts/check-near-parity-gates.mjs --out artifacts/near-parity-gates.json
+      - name: Preserve audit status in the job log
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs'
+          const report = JSON.parse(readFileSync('artifacts/near-parity-gates.json', 'utf8'))
+          const state = report.status || 'incomplete'
+          const message = `near-parity evidence audit: ${state}; releaseReady=${Boolean(report.releaseReady)}`
+          if (state === 'passed' && report.releaseReady === true) {
+            console.log(message)
+          } else {
+            console.log(`::warning title=Near-parity evidence incomplete::${message}`)
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          retention-days: 7
+          name: near-parity-gates
+          if-no-files-found: error
+          path: artifacts/near-parity-gates.json
+
+  manifest:
+    name: Manifest packer and fixture
+    if: ${{ contains(fromJSON('["quick","engines","performance","full"]'), inputs.scope) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify public product names and development toolchain boundaries
+        run: |
+          node --test scripts/check-product-naming.test.mjs scripts/check-toolchain.test.mjs
+          node scripts/check-product-naming.mjs
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Install container tooling
+        run: pnpm install --frozen-lockfile
+      - name: Verify pinned submodule
+        run: node scripts/verify-submodule.mjs
+      - name: Verify API inventory golden
+        run: node scripts/verify-api-inventory.mjs
+      - name: Validate host API inventory and cached evidence tamper boundaries
+        run: node --test scripts/cpp-api-inventory.test.mjs scripts/core-api-inventory.test.mjs scripts/host-api-matrix.test.mjs scripts/host-api-matrix-io.test.mjs
+      - name: Verify conformance case index golden
+        run: pnpm conformance:verify
+      - name: Test manifest golden and WXML contracts
+        run: pnpm container:manifest:test
+      - name: Typecheck the modern View example independently from transpilation
+        run: pnpm modern:view:typecheck
+      - name: Validate modern View transport and host resource closure
+        run: node --test crates/container-core/tests/modern_view.test.mjs scripts/modern-view-host-pack.test.mjs
+      - name: Validate shared AppService API owner context in both engine bootstraps
+        run: pnpm runtime:api-owner:test
+      - name: Validate WXS observation fixture without launching DevTools
+        run: node --test scripts/wxs-execution-oracle.test.mjs
+      - name: Validate iOS pack sync, evidence and owned resource cleanup
+        run: node --test scripts/sync-ios-portable-pack.test.mjs scripts/validate-ios-app-evidence.test.mjs scripts/ios-app-resource-cleanup.test.mjs scripts/ios-app-execution-evidence.test.mjs
+      - name: Validate official iOS UI-test contracts and task resource ownership
+        run: node --test scripts/ios-ui-test-*.test.mjs
+      - name: Validate simulator ownership, input and Web scheduling boundaries
+        run: node --test scripts/simulator-dev-harness.test.mjs scripts/surface-input.test.mjs scripts/web-timer-clock.test.mjs scripts/simulator-reconnect-client.test.mjs scripts/simulator-snapshot-client.test.mjs scripts/simulator-presentation-client.test.mjs scripts/simulator-scroll-metrics.test.mjs scripts/simulator-scroll-driver.test.mjs scripts/simulator-presentation-controls-smoke.test.mjs scripts/simulator-inspector-client.test.mjs scripts/simulator-embed-client.test.mjs
+      - name: Validate Android and Harmony portable executable resource closure
+        run: node --test scripts/sync-android-portable-pack.test.mjs scripts/sync-harmony-pack.test.mjs
+      - name: Validate Android owned input and resource lifecycle harness
+        run: pnpm host:android:app:test
+      - name: Validate Harmony live session and native argument contracts
+        run: pnpm host:harmony:live:test
+      - name: Validate Harmony owned App interaction and font build contracts
+        run: |
+          pnpm host:harmony:app:test
+          node --test scripts/build-native-hosts.test.mjs scripts/lib/harmony-skia-build.test.mjs
+      - name: Validate native cache selection and retained performance executables
+        run: node --test scripts/sdk-native-build.test.mjs scripts/perf-matrix.test.mjs
+      - name: Validate Web frame presenter and overflow smoke ownership contracts
+        run: pnpm host:web-wasm:test
+      - name: Validate Worker owner and transport contracts
+        run: pnpm host:web-worker:test
+      - name: Validate dual-renderer presentation and dependency contracts
+        run: |
+          node --test scripts/prepare-canvaskit-dev.test.mjs scripts/remote-canvaskit.test.mjs scripts/simulator-canvaskit-browser-smoke.test.mjs
+          pnpm host:webview:test
+      - name: Pack reference fixture
+        run: pnpm container:pack -- fixtures/reference-app --out artifacts/reference --compiler-commit "$(git -C vendor/weapp-vite rev-parse HEAD)"
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: reference-container-manifest
+          path: artifacts/reference
+
+  engine-conformance:
+    name: QuickJS/V8 engine conformance
+    if: ${{ inputs.scope == 'engines' || inputs.scope == 'full' }}
+    needs: manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Install container tooling
+        run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - name: Download reference portable pack
+        uses: actions/download-artifact@v4
+        with:
+          name: reference-container-manifest
+          path: artifacts/reference
+      - name: Run native QuickJS and V8 conformance
+        env:
+          # Keep V8 acquisition explicit. If rusty_v8 cannot be built, this
+          # job fails instead of silently comparing QuickJS with a fallback.
+          RUSTY_V8_MIRROR_FALLBACK: '1'
+        run: pnpm engine:conformance -- --pack artifacts/reference --out artifacts/engine-conformance.json
+      - name: Build shared dual-engine boundary runner
+        run: cargo build -p container-simulator --no-default-features --features quickjs-native,v8-native --locked
+      - name: Verify module, style, layout, pixel and input boundaries
+        run: pnpm runtime:boundary:smoke -- --simulator-bin target/debug/weapp-simulator --out artifacts/style-module-boundary.json
+      - name: Verify parsed WXS graphs on both native engines
+        run: node scripts/wxs-graph-smoke.mjs --simulator-bin target/debug/weapp-simulator --out artifacts/wxs-graph.json
+      - name: Verify compiled WXS and WXML dialect on both native engines
+        run: pnpm runtime:wxs-dialect:smoke -- --simulator-bin target/debug/weapp-simulator --out artifacts/wxs-dialect.json
+      - name: Verify synchronous component events on both native engines
+        run: pnpm runtime:component-events:smoke -- --simulator-bin target/debug/weapp-simulator --out artifacts/component-custom-events.json
+      - name: Verify live component relations on both native engines
+        run: pnpm runtime:component-relations:smoke -- --simulator-bin target/debug/weapp-simulator --out artifacts/component-relations.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          retention-days: 7
+          name: engine-conformance
+          if-no-files-found: error
+          path: |
+            artifacts/engine-conformance.json
+            artifacts/style-module-boundary.json
+            artifacts/wxs-graph.json
+            artifacts/wxs-dialect.json
+            artifacts/component-custom-events.json
+            artifacts/component-relations.json
+
+  weapp-vite-matrix:
+    name: weapp-vite platform build matrix
+    if: ${{ inputs.scope == 'upstream' || inputs.scope == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Select the package manager declared by the fixed vendor
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: vendor/weapp-vite/package.json
+      - name: Cache vendor package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: vendor/weapp-vite
+      - name: Verify pinned submodule
+        run: node scripts/verify-submodule.mjs
+      - name: Run serial platform matrix
+        run: pnpm run weapp-vite:matrix:run
+      - name: Upload matrix evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: weapp-vite-platform-matrix
+          if-no-files-found: warn
+          path: artifacts/weapp-vite-matrix.json
+
+  mpcore-conformance:
+    name: mpcore headless conformance
+    if: ${{ inputs.scope == 'upstream' || inputs.scope == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Select the package manager declared by the fixed vendor
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: vendor/weapp-vite/package.json
+      - name: Cache vendor package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: vendor/weapp-vite
+      - name: Verify pinned submodule
+        run: node scripts/verify-submodule.mjs
+      - name: Run serial mpcore conformance
+        run: pnpm run mpcore:conformance:run
+      - name: Upload mpcore evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: mpcore-conformance
+          if-no-files-found: warn
+          path: artifacts/mpcore-conformance.json
+
+  rust:
+    name: Rust (${{ matrix.os }})
+    if: ${{ inputs.scope == 'rust' || inputs.scope == 'full' }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON((inputs.scope == 'full' || inputs.rust_os == 'all') && '["ubuntu-latest","macos-latest","windows-latest"]' || inputs.rust_os == 'macos' && '["macos-latest"]' || inputs.rust_os == 'windows' && '["windows-latest"]' || '["ubuntu-latest"]') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Install container tooling for simulator pack subprocesses
+        run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - name: Toolchain report
+        run: node scripts/check-toolchain.mjs --json
+      - name: Format check
+        run: cargo fmt --all -- --check
+      - name: Check workspace
+        run: cargo check --workspace --all-targets
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test --workspace
+      - name: Simulator snapshot client boundaries
+        run: node --test scripts/simulator-snapshot-client.test.mjs scripts/simulator-watch.test.mjs scripts/simulator-source-credit-close.test.mjs scripts/simulator-source-credit-terminal.test.mjs scripts/simulator-source-credit-watch.test.mjs scripts/simulator-dev-harness.test.mjs scripts/simulator-dev-assertions.test.mjs scripts/simulator-embed-client.test.mjs scripts/simulator-inspector-client.test.mjs scripts/simulator-reconnect-client.test.mjs scripts/simulator-presentation-client.test.mjs scripts/simulator-scroll-metrics.test.mjs scripts/simulator-scroll-driver.test.mjs scripts/simulator-presentation-controls-smoke.test.mjs scripts/simulator-sse-proxy.test.mjs scripts/simulator-reference-fixture.test.mjs scripts/style-module-boundary-smoke.test.mjs scripts/component-custom-events-smoke.test.mjs scripts/component-relations-smoke.test.mjs scripts/simulator-cli-harness.test.mjs
+      - name: Test iOS portable pack loader without a device
+        if: runner.os == 'macOS'
+        run: bash scripts/test-ios-portable-pack
+      - name: Test iOS session input, timers and lifecycle without a device
+        if: runner.os == 'macOS'
+        run: bash scripts/test-ios-container-session
+      - name: Check iOS Swift host library and C ABI imports
+        if: runner.os == 'macOS'
+        # Building the library target checks the integration without linking
+        # the smoke executable or claiming iOS/GPU runtime conformance.
+        run: swift build --package-path examples/hosts/ios --target WeappContainerHost
+      - name: Simulator desktop CLI and input diagnostic tests
+        # These tests bind an ephemeral loopback surface without opening a window.
+        run: cargo test -p container-simulator --features desktop-window --bin weapp-simulator --locked
+      - name: Host feature smoke
+        if: runner.os != 'Windows'
+        run: bash scripts/host-feature-smoke.sh
+      - name: Host feature smoke (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: bash scripts/host-feature-smoke.sh
+
+  v8-native:
+    name: Native V8 provider
+    if: ${{ inputs.scope == 'engines' || inputs.scope == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - name: Install container tooling for simulator pack subprocesses
+        run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - name: Run pinned native QuickJS and V8 conformance
+        env:
+          # The upstream release is the default source. A configured mirror
+          # can override this in an organization-level workflow environment.
+          RUSTY_V8_MIRROR_FALLBACK: '1'
+        run: cargo test -p container-engine-quickjs -p container-engine-v8 --no-default-features --features quickjs-native,v8-native --locked
+      - name: Run shared runtime, transforms, opacity groups and development reload conformance on both engines
+        env:
+          # CPU/software accepted frames and input contracts only. This export
+          # is not a native Skia/GPU, official DevTools or device receipt.
+          WEAPP_CONTAINER_OPACITY_EVIDENCE_DIR: ${{ github.workspace }}/artifacts/group-opacity-runtime
+          WEAPP_CONTAINER_TRANSFORM_EVIDENCE_DIR: ${{ github.workspace }}/artifacts/transform-runtime
+        run: cargo test -p container-runtime -p container-simulator --no-default-features --features quickjs-native,v8-native --locked
+      - name: Preserve dual-engine opacity runtime contract artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: group-opacity-runtime-contract
+          if-no-files-found: error
+          path: artifacts/group-opacity-runtime
+      - name: Preserve dual-engine transform runtime contract artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: transform-runtime-contract
+          if-no-files-found: error
+          path: artifacts/transform-runtime
+      - name: Check native V8 warnings
+        run: cargo clippy -p container-engine-v8 --no-default-features --features v8-native --all-targets -- -D warnings
+      - name: Check host provider forwarding
+        run: |
+          cargo test -p container-host-web --no-default-features --features quickjs-native
+          cargo test -p container-host-web --no-default-features --features v8-native
+
+  protocol-baseline:
+    name: Protocol performance baseline
+    if: ${{ inputs.scope == 'performance' || inputs.scope == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run baseline
+        run: node scripts/perf-baseline.mjs --out perf-baseline.json
+      - name: Enforce protocol thresholds
+        run: node scripts/check-performance-report.mjs perf-baseline.json
+      - name: Validate host measurement merging and failure exit codes
+        run: node --test scripts/perf-simulator-host.test.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: 30
+          name: protocol-performance-baseline
+          path: perf-baseline.json
+
+  simulator-performance-matrix:
+    name: Simulator host performance matrix
+    if: ${{ inputs.scope == 'performance' || inputs.scope == 'full' }}
+    needs: manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+      - name: Cache root package downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - name: Download reference portable pack
+        uses: actions/download-artifact@v4
+        with:
+          name: reference-container-manifest
+          path: artifacts/reference
+      - name: Run simulator-backed host matrix
+        run: pnpm perf:matrix -- --pack artifacts/reference --iterations 20 --allow-incomplete --out-dir artifacts/performance-matrix
+      - name: Upload simulator matrix evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 30
+          name: simulator-performance-matrix
+          if-no-files-found: error
+          path: artifacts/performance-matrix
+
+  native-skia:
+    name: Skia raster renderer and GPU evidence boundary
+    if: ${{ inputs.scope == 'native' || inputs.scope == 'full' }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON((inputs.scope == 'full' || inputs.skia_os == 'all') && '["ubuntu-latest","macos-latest"]' || inputs.skia_os == 'macos' && '["macos-latest"]' || '["ubuntu-latest"]') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install source-build fallback tools (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build python3
+      - name: Install source-build fallback tools (macOS)
+        if: runner.os == 'macOS'
+        run: brew list ninja >/dev/null 2>&1 || brew install ninja
+      - name: Check native Skia backend
+        shell: bash
+        run: |
+          ninja_path="$(command -v ninja || true)"
+          if [ -n "$ninja_path" ]; then export SKIA_NINJA_COMMAND="$ninja_path"; fi
+          cargo check -p container-render-skia --features skia-backend
+      - name: Run native surface pixel smoke
+        shell: bash
+        run: |
+          cargo test -p container-render-skia --features skia-backend
+          cargo test -p container-host-desktop --features window,skia-backend
+      - name: Run Skia renderer performance probe
+        run: node scripts/perf-native-render.mjs --iterations 30 --out artifacts/native-performance-report.json
+      - name: Validate blocking renderer report
+        run: node scripts/check-performance-report.mjs artifacts/native-performance-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: 30
+          name: native-skia-${{ matrix.os }}
+          path: artifacts/native-performance-report.json
+
+  mobile-toolchain:
+    name: Mobile toolchain visibility
+    if: ${{ inputs.scope == 'native' || inputs.scope == 'full' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,aarch64-apple-ios-sim,aarch64-unknown-linux-ohos
+      - name: Cache Rust dependency downloads
+        uses: ./.github/actions/cache-downloads
+        with:
+          cargo: 'true'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Report optional SDK state
+        run: node scripts/check-toolchain.mjs --json
+      - name: Explicitly compile mobile skeletons
+        run: |
+          cargo check -p container-host-android --features android --target aarch64-linux-android
+          cargo check -p container-host-ios --features ios --target aarch64-apple-ios-sim
+          cargo check -p container-host-harmony --features harmony --target aarch64-unknown-linux-ohos
+      - name: Validate native app integration skeletons
+        run: node scripts/build-native-hosts.mjs --check --out artifacts/native-hosts.json
+      - name: Validate mobile GPU probe evidence parser
+        run: node --test scripts/mobile-gpu-probe.test.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: native-host-integration
+          path: artifacts/native-hosts.json
+      - name: Validation boundary
+        run: echo "Skeleton compilation does not claim Android, iOS or Harmony emulator/device conformance."

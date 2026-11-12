@@ -1,0 +1,23 @@
+# 随机值与私有错误监听的实现范围
+
+固定口径为微信基础库3.17.3、miniprogram-api-typings@5.2.3、1265 API×七端=8855单元。本批候选基于6f9b66e3，在已交付5ea63a0d上合入。最终精确产品为`2c9aeb1d9352da1f9bb79893ee848360170f777a`，完整冻结与Web产物凭据见文末；以下保留原始开发验证时间线与实现范围。
+
+wx.getRandomValues由Session持有，调用getrandom的操作系统CSPRNG；wasm构建使用Web Crypto后端。guest、可配置provider和对象的toJSON不能提供随机字节。长度只接受0..1048576整数；JavaScript facade按普通属性读取一次保留结构化选项，callback调用返回void，无callback时返回Promise，结果为真正ArrayBuffer。回调异常仍执行complete并进入私有错误报告通道；内部已投递fail的Promise拒绝被消费。两条runtime入口共享manifest/host准入、取消、截止时间和终止检查；熵源失败不返回已分配的缓冲区。
+
+本批同时修复能力发布与调用准入分叉：effective_capability_with_provider统一计算，整张能力表复用一次provider inventory快照。原有manifest/runtime/已注册host键、route/error能力上限、alias、identity/account门禁保留。等价结论限于同一稳定快照中的已发布键，不能据此推断任意canIUse字符串。可配置provider不能接管或禁用运行时熵源，manifest和可信host policy仍可拒绝调用。
+
+wx.onError/offError使用共享lexical私有hub。普通host registry不能覆盖这对函数或借counterpart取得它们的权限；native持有reporter与终止入口，guest篡改诊断alias不改变持有者。on/off各自准入，保留旧on-only manifest语义；offError按确切函数删除或无参清空，返回void，投递期间按snapshot处理增删。可信on撤销清空订阅，终止后清理且不能用旧函数重新注册；off撤销不借机抹除仍获准on的列表。
+
+完成范围只覆盖offError的解除订阅。onError仍缺固定ListenerError payload投影、完整未捕获异常来源、App.onError派发及own-data-only stack规范化，继续记Partial；UserCryptoManager.getRandomValues仍为独立host能力。本批不从RNG或offError的完成推断这些缺口已补齐。
+
+最初组合候选的隔离真实native验证使用macOS的QuickJS/V8及现有编译缓存，默认heap/deadline/turn预算未提高。RNG Session6项涵盖callback/Promise与0、1、16、65535、65536、65537、1048576字节，通过真实CSPRNG→wire→ArrayBuffer；另有错误hub10项、组合2项、policy3项、RNG unit3项、route10项、storage11项。turn-budget实际36通过/1忽略；host-service实际47通过/2忽略，两个巨大稀疏文件案例仍未执行。原始两个fixture失败、宏展开造成的计数guard不匹配和隐式Homebrew工具链WASM目标缺失均保留，不能重标为通过。最初v1至v2修复只给两个新增Rust fixture填合法元数据/manifest能力，并增加一条显式selector断言，生产实现及旧测试不变。
+
+完整8855单元矩阵逐格比较已通过：只改变RNG七格missing→available、offError七格partial→available。三个API的owner由host改为runtime；21个完整cell对象改变，8834个不变，全部status/coverage不变。当前源码available1455（16.43%）、partial1000、requiresHostService86、missing6314，距7084差5629；228项组合Node清点/矩阵/IO/错误/RNG测试通过且无忽略。最终冻结、Web producer/direct/Worker构建、归档、安装及字节检查尚待填写。没有新增浏览器、公共SDK安装执行、其他操作系统设备、微信oracle或商户验收；accepted继续为0，父完整验收目标保持暂停且未完成。
+
+首轮精确产品8460cc46完整执行42阶段和前后绑定，受跟踪输入与工具字节保持不变。保留格式失败、旧QuickJS三个错误报告回归，以及生成矩阵中offError旧Partial预期造成的inventory/host-services失败。后续修复明确分离两个入口：普通hub投影仍只读自身数据；API callback专用兼容诊断保留旧getter/coercion/queue及可失败语义，私有监听的snapshot、generation和终止复核不从诊断队列取得权限。兼容诊断失败先允许私有投递，再由既有callback caller保留unreportable兜底，不能跳过complete或Promise收尾。标准Error名称只从bootstrap捕获的原型身份补充，不读取guest原型getter。
+
+新增12项Node负对照在8460原实现上均失败，修复后相关73项通过。原有Rust断言、默认预算和原始候选seals保持不变；独立审查另追加两项真实QuickJS turn-budget case，分别覆盖Proxy getPrototypeOf无限trap和API callback旧诊断message无限getter。该watchdog fixture只支持QuickJS，V8仍按原合同拒绝该执行策略，不能把这两项写成V8中断证明。生成矩阵测试按真实序列化省略missing字段断言；开发时错误期待空数组的239/240失败原样保留。
+
+修复后的定向验证已完成：原三个错误回归在真实QuickJS/V8各通过，共6实例；runtime RNG/error/combined为18通过；新增两项纳入后，QuickJS turn-budget为38通过/1原有忽略。组合Node为240/240，生成矩阵和完整8855单元差异检查通过。最终完整冻结及Web交付仍以随后精确产品凭据为准，各组有重叠，不累计为唯一测试数。
+
+最终产品`2c9aeb1d`的42阶段和前后完整绑定、新Web producer/direct与Worker release/严格归档/空目录安装及独立字节验证全部通过；1631个gzip载荷复制后的raw/gzip hash复核通过。完整逐命令结果、原失败与实际验证边界见[本批证据](../archived-evidence.md)。此前“尚待填写”描述属于当时执行状态，最终交付以此精确产品凭据为准。SDK/gitlink未改且七项远端可达，未增加任何accepted；阶段goal仍active。

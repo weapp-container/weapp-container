@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-integrated-validation-review",
+  "status": "passed",
+  "reviewedAt": "2026-11-07T01:20:24.516454+00:00",
+  "validation": {
+    "path": "artifacts/conformance-triage-2026-11-07/integrated-r5b-v1/validation.json",
+    "sha256": "545c5c8929579db35327fcb42c988bd3cc02aa207e9b55573314365366614554",
+    "bytes": 218685
+  },
+  "log": {
+    "path": "artifacts/conformance-triage-2026-11-07/integrated-r5b-v1/evidence-test.log",
+    "sha256": "6bb304ca5d05d932cf60ee84ea72c47debac666ef722699d725b0b3541a3a7ca",
+    "bytes": 50476
+  },
+  "sourceArchive": {
+    "path": "artifacts/conformance-triage-2026-11-07/integrated-r5b-v1/source-archive.json",
+    "sha256": "c687463792f49446107f66db7fb3fc40c85eea10056f49b753ff683e7d80935e",
+    "bytes": 109264
+  },
+  "sourceCount": 606,
+  "sourceUnchangedAndCurrent": true,
+  "tests": {
+    "tests": 439,
+    "suites": 0,
+    "pass": 439,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "formalCaseAdmission": false,
+  "officialExecution": "not started; exact r5b source freeze pending",
+  "integrations": [
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/wxml-snapshot-integrated-v3.1/integration.json",
+      "sha256": "3f6653d1d348f878aafb13ca24980c44072489ffaaf60c9a1c0975c094d963b8",
+      "bytes": 5324
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/subpackage-ordered-plans-integrated-v1/integration.json",
+      "sha256": "2cd9d4904eea5853004bc6b3a1fa72fa3b2555b55b84333865ee31b74fbe69ea",
+      "bytes": 2644
+    },
+    {
+      "path": "artifacts/conformance-triage-2026-11-07/reviewed-producer-registry-integrated-v1/integration.json",
+      "sha256": "e6f2dddf3088ce8949d456911033b09b175f99b0ee35056bca681e5623d47b33",
+      "bytes": 6987
+    }
+  ]
+}

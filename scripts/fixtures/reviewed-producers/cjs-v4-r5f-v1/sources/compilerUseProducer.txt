@@ -1,0 +1,603 @@
+import { prepareCompilerMacroObservation, inspectCompilerMacroObservation, inspectCompilerMacroLoads } from './conformance-compiler-observation.mjs'
+import { reviewedCompilerProducer } from './conformance-producer-revisions.mjs'
+import { execFileSync } from 'node:child_process'
+import { createHash, randomUUID } from 'node:crypto'
+import { chmodSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, statSync, symlinkSync, writeFileSync } from 'node:fs'
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { archiveCompilerBuildBytes, COMPILER_BUILD_PROFILE, inspectCompilerBuildEvidence } from './conformance-compiler-build.mjs'
+
+const MODULE = fileURLToPath(import.meta.url)
+const PRELOAD = fileURLToPath(new URL('./conformance-compiler-use-preload.cjs', import.meta.url))
+const SEALED_ESM_LOAD_POLICY = 'sealed-esm-v1'
+const buildCaches = new WeakMap()
+const bridgeProjectWitnesses = new WeakMap()
+const hash = value => createHash('sha256').update(value).digest('hex')
+const canonical = value => JSON.stringify(value)
+const ensure = (ok, message) => { if (!ok) throw new Error(message) }
+const within = (root, file) => file === root || file.startsWith(root + sep)
+const slash = value => value.split(sep).join('/')
+function canonicalNewPath(path) {
+  let ancestor = resolve(path)
+  const tail = []
+  while (!existsSync(ancestor)) { tail.unshift(basename(ancestor)); ancestor = dirname(ancestor) }
+  return resolve(realpathSync(ancestor), ...tail)
+}
+function safe(path) {
+  ensure(typeof path === 'string' && path && !isAbsolute(path) && !path.includes('\\') && !path.includes('\0')
+    && path.split('/').every(part => part && part !== '.' && part !== '..'), 'Unsafe compiler consumer path')
+  return path
+}
+function artifactReader(root, loadArtifact, references = new Map()) {
+  return (ref, label = 'consumer') => {
+    safe(ref?.path)
+    let bytes
+    if (loadArtifact) bytes = Buffer.from(loadArtifact(ref, label, false))
+    else {
+      const target = resolve(root, ref.path)
+      ensure(within(realpathSync(root), realpathSync(target)) && lstatSync(target).isFile() && !lstatSync(target).isSymbolicLink(), 'Compiler consumer artifact escapes evidence root')
+      bytes = readFileSync(target)
+    }
+    ensure(bytes.length === ref.bytes && hash(bytes) === ref.sha256, 'Compiler consumer artifact hash/size differs')
+    ensure(!references.has(ref.path) || canonical(references.get(ref.path)) === canonical(ref), 'Conflicting compiler consumer artifact identities')
+    references.set(ref.path, ref)
+    return bytes
+  }
+}
+export function compilerUseMemberClosure(build, load) {
+  const members = new Map()
+  const add = item => { safe(item.path); ensure(!members.has(item.path), 'Compiler consumer closure overlaps'); members.set(item.path, item) }
+  for (const file of build.source.files) {
+    const bytes = load(file.artifact)
+    if (file.mode === '120000') add({ path: file.path, kind: 'source-link', target: bytes.toString('utf8') })
+    else {
+      const transform = (build.source.checkoutTransforms ?? []).find(item => item.path === file.path)
+      const physical = transform ? Buffer.from(bytes.toString('utf8').replace(/(?<!\r)\n/g, '\r\n')) : bytes
+      ensure(!transform || transform.kind === 'git-text-crlf' && hash(physical) === transform.sha256 && physical.length === transform.bytes, 'Unsupported compiler checkout transform')
+      add({ path: file.path, kind: 'file', sha256: hash(physical), bytes: physical.length, origin: 'source', artifact: file.artifact, mode: file.mode, executable: file.mode === '100755', transform: !!transform })
+    }
+  }
+  const inventory = JSON.parse(load(build.dependencies.inventory))
+  for (const item of inventory.entries) {
+    if (item.kind === 'link') add({ path: item.path, kind: 'link', target: item.target })
+    else add({ path: item.path, kind: 'file', sha256: item.artifact.sha256, bytes: item.artifact.bytes, origin: 'dependency', artifact: item.artifact, executable: item.executable === true })
+  }
+  for (const item of build.outputs) add({ path: item.path, kind: 'file', sha256: item.artifact.sha256, bytes: item.artifact.bytes, origin: 'output', executable: item.executable === true, artifact: item.artifact })
+  return [...members.values()].sort((a, b) => a.path.localeCompare(b.path))
+}
+const closure = compilerUseMemberClosure
+
+/** Evaluation-scoped opaque cache. Only this module's complete successful
+ * validation can populate it; callers cannot supply a passed status object.
+ * Keep the artifact loader immutable for the duration of one gate evaluation. */
+export function createCompilerUseBuildCache() {
+  const token = Object.freeze({})
+  buildCaches.set(token, [])
+  return token
+}
+function linkTarget(checkout, item) {
+  const target = item.kind === 'link' ? join(checkout, safe(item.target)) : resolve(dirname(join(checkout, item.path)), item.target)
+  ensure(within(checkout, target), 'Compiler consumer symlink escapes owned checkout')
+  return target
+}
+function patchAllowed(path) {
+  return ['e2e/utils/automator.ts', 'e2e/utils/conformanceEvidence.mjs', 'e2e/vitest.e2e.ide.setup.ts', 'e2e/ide/github-issues.runtime.shared.ts',
+    'e2e/utils/recoverableSession.ts', 'e2e/utils/domAcceptance/index.ts'].includes(path)
+    || /(?:^|\/)project\.(?:private\.)?config\.json$/.test(path)
+}
+function publicMembers(members) { return members.map(({ artifact, transform, mode, ...item }) => item) }
+
+/** Classify an observed bridge project; path shape is not an ownership proof.
+ * The completed consumer supplies an opaque witness which the full fixture
+ * reader must close against its actual build/snapshot/runtime/cleanup chain. */
+export function inspectCompilerBridgeProject(start, { checkout }) {
+  const fail = message => `Compiler consumer extra unreviewed preload/loader: Automator bridge project ${message}`
+  let payload
+  try { payload = JSON.parse(start.argv[2]) } catch { throw new Error(fail('startup payload is malformed JSON')) }
+  ensure(payload && typeof payload === 'object' && !Array.isArray(payload), fail('startup payload is not an object'))
+  const path = payload.projectPath
+  ensure(typeof path === 'string' && isAbsolute(path) && resolve(path) === path && !path.includes('\\') && !path.includes('\0'),
+    fail('project path is not canonical and absolute'))
+  let mode
+  if (dirname(path) === join(checkout, '.tmp/e2e-projects') && basename(path)) mode = 'direct-project'
+  else if (dirname(path) === join(checkout, '.tmp/e2e-ide-bridge-projects') && /^[0-9a-f]{16}$/.test(basename(path))) mode = 'owned-snapshot'
+  ensure(mode, fail('project is neither the reviewed direct project nor an owned-snapshot address'))
+  ensure(!payload.projectConfig?.libVersion || payload.projectConfig.libVersion === '3.17.3', fail('payload SDK differs from the fixed baseline'))
+  const observed = start.bridgeProject
+  ensure(observed?.projectPath === path && observed.configFile === join(path, 'project.config.json'), fail('config observation names another project or file'))
+  ensure(typeof observed.configSource === 'string' && observed.sha256 === hash(Buffer.from(observed.configSource))
+    && observed.bytes === Buffer.byteLength(observed.configSource), fail('observed config hash/size differs'))
+  let config
+  try { config = JSON.parse(observed.configSource) } catch { throw new Error(fail('observed config is malformed JSON')) }
+  ensure(config && typeof config === 'object' && !Array.isArray(config) && typeof config.appid === 'string' && config.appid,
+    fail('observed config has no app identity'))
+  return Object.freeze({ mode, projectPath: path, configFile: observed.configFile, configSource: observed.configSource,
+    sha256: observed.sha256, bytes: observed.bytes, cliPath: payload.cliPath,
+    runId: start.runId, caseId: start.caseId, sourceSha256: start.sourceSha256, caseSourcePath: start.caseSourcePath,
+    pid: start.pid, ppid: start.ppid, threadId: start.threadId, at: start.at })
+}
+
+/** Pure diagnostic matching, after the caller validates the complete fixture.
+ * This helper grants no admission; only the opaque consumer witness below is
+ * accepted by the production fixture boundary. Failed/retried starts remain
+ * observations and never become selected semantic passes. */
+export function matchCompilerBridgeProjects({ projects, use, checkpoint, summary, load }) {
+  const fail = message => `Compiler consumer bridge/fixture binding: ${message}`
+  const same = (left, right) => canonical(left) === canonical(right)
+  ensure(Array.isArray(projects) && checkpoint.runId === use.ownerId && checkpoint.caseId === use.caseId
+    && checkpoint.sourceSha256 === use.sourceSha256 && checkpoint.caseSourcePath === use.caseSourcePath
+    && same(checkpoint.compilerBuild, use.compilerBuild) && same(checkpoint.consumerGuard, use.before), fail('checkpoint belongs to another consumer/source'))
+  const runtime = JSON.parse(load(checkpoint.runtimeObservation)), build = checkpoint.build
+  const finals = summary.producerFinal ?? []
+  ensure(Array.isArray(finals), fail('snapshot final ledger is missing'))
+  const transactions = finals.map(item => ({ reference: item.transaction, value: JSON.parse(load(item.transaction)), cleanup: JSON.parse(load(item.cleanup)) }))
+  const seen = new Set(), coverage = []
+  for (const project of projects) {
+    ensure(project.runId === use.ownerId && project.caseId === use.caseId && project.sourceSha256 === use.sourceSha256
+      && project.caseSourcePath === use.caseSourcePath && project.threadId === 0 && Number.isSafeInteger(project.pid)
+      && Date.parse(project.at) >= Date.parse(use.startedAt) && Date.parse(project.at) <= Date.parse(use.endedAt), fail('startup belongs to another consumer/source/interval'))
+    const key = `${project.pid}/${project.threadId}`
+    ensure(!seen.has(key), fail('bridge process/thread startup is duplicated')); seen.add(key)
+    let transactionReference
+    if (project.mode === 'owned-snapshot') {
+      ensure(checkpoint.producerTransaction, fail('snapshot startup has no snapshot fixture transaction'))
+      const owners = transactions.filter(item => item.value.runtimeProjectPath === project.projectPath)
+      ensure(owners.length === 1, fail('snapshot startup has no unique captured/finalized transaction owner'))
+      const { value: transaction, reference, cleanup } = owners[0]
+      const config = transaction.snapshotFiles?.filter(item => item.path === 'project.config.json') ?? []
+      ensure(same(transaction.observer, checkpoint.observer) && project.ppid === transaction.observer?.pid
+        && transaction.buildPid === build.pid && transaction.sourceRoot === build.projectPath && transaction.generatedRoot === build.outputRoot,
+      fail('snapshot startup is detached from its actual source/build/observer'))
+      ensure(project.cliPath === transaction.cliPath && config.length === 1 && config[0].kind === 'file'
+        && config[0].artifact.sha256 === project.sha256 && config[0].artifact.bytes === project.bytes
+        && Buffer.from(load(config[0].artifact)).equals(Buffer.from(project.configSource)), fail('snapshot startup config/CLI differs from the captured actual snapshot'))
+      ensure(Date.parse(project.at) >= Date.parse(transaction.capturedAt) && Date.parse(project.at) <= Date.parse(cleanup.removedAt)
+        && cleanup.projectAbsent === true && cleanup.runtimeProjectPath === project.projectPath
+        && same(cleanup.transaction, reference) && same(cleanup.observer, transaction.observer), fail('snapshot startup has no same-owner cleanup interval'))
+      transactionReference = reference
+    } else {
+      ensure(project.mode === 'direct-project' && !checkpoint.producerTransaction && project.projectPath === build.projectPath
+        && project.ppid === checkpoint.observer?.pid, fail('direct startup differs from the actual compiled project/observer'))
+      ensure(build.projectConfig?.sha256 === project.sha256 && build.projectConfig.bytes === project.bytes
+        && Buffer.from(load(build.projectConfig)).equals(Buffer.from(project.configSource)), fail('direct startup config differs from the actual compiled config'))
+    }
+    coverage.push(Object.freeze({ mode: project.mode, pid: project.pid, threadId: project.threadId, projectPath: project.projectPath,
+      ...(transactionReference ? { transaction: structuredClone(transactionReference) } : {}), selected: project.projectPath === runtime.projectPath }))
+  }
+  if (checkpoint.producerTransaction) ensure(coverage.some(item => item.selected && item.mode === 'owned-snapshot'
+    && same(item.transaction, checkpoint.producerTransaction)
+    && Date.parse(projects.find(project => project.pid === item.pid).at) <= Date.parse(runtime.recordedAt)),
+  fail('selected SDK runtime has no observed bridge startup for its exact snapshot transaction'))
+  else ensure(!coverage.some(item => item.mode === 'owned-snapshot'), fail('direct fixture cannot consume snapshot startups'))
+  return Object.freeze(coverage)
+}
+
+/** Close only the internal output of a complete successful consumer audit.
+ * Call after full checkpoint, producer ledger/final and SDK runtime validation. */
+export function verifyCompilerBridgeProjects({ witness, use, ...fixture }) {
+  const held = bridgeProjectWitnesses.get(witness)
+  ensure(held && held.use === use, 'Compiler consumer bridge witness is not the opaque output of this actual consumer audit')
+  return matchCompilerBridgeProjects({ ...fixture, use, projects: held.projects })
+}
+
+// Two reviewed Node startup contexts, not a general package/loader allowlist.
+// Package identity comes from the successful build's installed dependency
+// closure; each process/thread must additionally resolve AND load the exact
+// loader after our synchronous NODE_OPTIONS witness has started.
+export function inspectExtraLoader(events, { checkout, members, load }) {
+  const start = events[0], args = start.execArgv
+  ensure(Array.isArray(args) && args.every(arg => typeof arg === 'string'), 'Compiler consumer child execArgv is malformed')
+  const extra = []
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]
+    if (/^-r|^--(?:(?:experimental-)?loader|import|require)(?:=|$)/.test(arg)) {
+      ensure(['--require', '--import'].includes(arg) && typeof args[i + 1] === 'string', 'Compiler consumer child selected an extra unreviewed preload/loader')
+      extra.push([arg, args[++i]])
+    }
+  }
+  if (!extra.length) return
+  const fail = message => `Compiler consumer extra unreviewed preload/loader: ${message}`
+  ensure(extra.length === 1 && Array.isArray(start.argv) && start.cwd === checkout, fail('startup context differs'))
+  const [flag, specifier] = extra[0]
+  const packageAt = (path, name, version) => {
+    const member = members.get(path)
+    ensure(member?.origin === 'dependency' && member.artifact, fail('package is outside installed build closure'))
+    const value = JSON.parse(load(member.artifact))
+    ensure(value.name === name && value.version === version, fail('package/version differs'))
+    return value
+  }
+  const witnessed = (specifier, path, parentURL) => {
+    const member = members.get(path), file = join(checkout, path), url = pathToFileURL(file).href
+    ensure(member?.origin === 'dependency', fail('loader is outside installed build closure'))
+    const resolved = events.findIndex(event => event.kind === 'resolve' && event.specifier === specifier && event.url === url
+      && (parentURL === undefined || event.parentURL === parentURL))
+    ensure(resolved > 0 && events.some((event, index) => index > resolved && event.kind === 'load'
+      && event.path === path && event.file === file && event.classification === 'bound'
+      && event.sha256 === member.sha256 && event.bytes === member.bytes && event.loadedSourceSha256 === member.sha256), fail('actual resolve/load witness is missing or transformed'))
+  }
+  if (flag === '--require') {
+    const path = slash(relative(checkout, specifier))
+    const match = /^(node_modules\/\.pnpm\/vitest@5\.0\.4(?:_[^/]+)?\/node_modules\/vitest)\/suppress-warnings\.cjs$/.exec(path)
+    const workerPath = match && `${match[1]}/dist/workers/threads.js`
+    const worker = members.get(workerPath)
+    // During synchronous Worker preloads Node has not assigned argv[1] yet.
+    // Validate the actual later worker entry load and its completed argv too.
+    ensure(match && specifier === join(checkout, path) && start.isMainThread === false && start.threadId > 0
+      && (start.argv.length === 1 || start.argv.length === 2 && start.argv[1] === join(checkout, workerPath))
+      && worker?.origin === 'dependency'
+      && events.some(event => event.kind === 'load' && event.path === workerPath && event.file === join(checkout, workerPath)
+        && event.loadedSourceSha256 === worker.sha256 && event.argv?.length === 2 && event.argv[1] === event.file), fail('not the reviewed Vitest worker'))
+    packageAt(`${match[1]}/package.json`, 'vitest', '5.0.4')
+    witnessed(specifier, path)
+    return
+  }
+  ensure(flag === '--import' && specifier === 'tsx' && canonical(args) === canonical(['--import', 'tsx'])
+    && start.isMainThread === true && start.threadId === 0 && start.argv.length === 3
+    && start.argv[1] === join(checkout, 'e2e/utils/automator.cli-bridge.ts')
+    && members.get('e2e/utils/automator.cli-bridge.ts')?.origin === 'source', fail('not the reviewed Automator bridge'))
+  const project = inspectCompilerBridgeProject(start, { checkout })
+  const packagePath = 'node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/package.json'
+  const pkg = packageAt(packagePath, 'tsx', '4.23.15')
+  ensure(pkg.exports?.['.'] === './dist/loader.mjs', fail('tsx package export differs'))
+  witnessed('tsx', 'node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/loader.mjs', pathToFileURL(checkout + sep).href)
+  ensure(events.some(event => event.kind === 'load' && event.path === 'e2e/utils/automator.cli-bridge.ts' && event.classification === 'bound'), fail('bridge source was not loaded'))
+  return project
+}
+function validatePhysical(context, members) {
+  const { checkout } = context
+  for (const item of members) {
+    const file = join(checkout, item.path), info = lstatSync(file)
+    if (item.kind === 'file') ensure(info.isFile() && !info.isSymbolicLink() && within(checkout, realpathSync(file))
+      && info.size === item.bytes && hash(readFileSync(file)) === item.sha256
+      && (process.platform === 'win32' || Boolean(info.mode & 0o111) === Boolean(item.executable)), `Compiler consumer bytes or executable mode changed: ${item.path}`)
+    else {
+      ensure(info.isSymbolicLink() && resolve(dirname(file), readlinkSync(file)) === linkTarget(checkout, item)
+        && within(checkout, realpathSync(file)), `Compiler consumer link changed: ${item.path}`)
+    }
+  }
+  // Exact output and dependency namespaces: an added retained chunk or a new
+  // package cannot silently extend the archived execution closure.
+  const guardedRoots = [...new Set(members.filter(item => item.origin === 'dependency' || item.kind === 'link').map(item => {
+    const parts = item.path.split('/'), at = parts.indexOf('node_modules')
+    return at < 0 ? null : parts.slice(0, at + 1).join('/')
+  }).filter(Boolean).concat(context.outputDirectories))]
+  const expected = new Set(members.map(item => item.path))
+  const walk = path => {
+    for (const entry of readdirSync(join(checkout, path), { withFileTypes: true })) {
+      const member = `${path}/${entry.name}`
+      if (entry.isDirectory()) walk(member)
+      else ensure(expected.has(member), `Unarchived compiler consumer member: ${member}`)
+    }
+  }
+  for (const path of guardedRoots) if (existsSync(join(checkout, path))) walk(path)
+  return { ownerId: context.ownerId, checkout, members: publicMembers(members) }
+}
+
+/** Materialize archived source/install/output bytes, never retained vendor dist.
+ * sourceRepo supplies Git metadata only; every physical source is checked
+ * against the archive before any executable inputs are accepted. */
+export async function materializeCompilerUse({ root, directory, checkout, compilerBuild, expectedCommit, expectedProfile = COMPILER_BUILD_PROFILE, sourceRepo, observeMacros = false }) {
+  const requestedRoot = resolve(root), physicalRoot = realpathSync(root)
+  directory = resolve(physicalRoot, relative(requestedRoot, resolve(directory)))
+  checkout = resolve(physicalRoot, relative(requestedRoot, resolve(checkout)))
+  root = physicalRoot
+  ensure(within(root, directory) && directory !== root && within(root, checkout) && checkout !== root
+    && !within(checkout, directory) && !within(directory, checkout) && !existsSync(checkout), 'Compiler consumer requires fresh separate owned paths')
+  mkdirSync(directory, { recursive: true }); mkdirSync(dirname(checkout), { recursive: true })
+  ensure(within(root, realpathSync(directory)) && within(root, realpathSync(dirname(checkout))), 'Compiler consumer directory escapes root')
+  const checked = inspectCompilerBuildEvidence({ root, reference: compilerBuild, expectedCommit, expectedProfile })
+  ensure(!checked.errors.length, checked.errors.join('\n'))
+  const build = checked.attestation, load = artifactReader(root), members = closure(build, load)
+  if (sourceRepo) {
+    execFileSync('git', ['clone', '--quiet', '--shared', '--no-checkout', realpathSync(sourceRepo), checkout])
+    execFileSync('git', ['checkout', '--quiet', '--detach', expectedCommit], { cwd: checkout })
+    for (const item of members.filter(item => item.origin === 'source' || item.kind === 'source-link')) validatePhysical({ checkout, outputDirectories: [] }, [item])
+  } else mkdirSync(checkout)
+  for (const item of members.filter(item => item.kind === 'file')) {
+    const file = join(checkout, item.path)
+    mkdirSync(dirname(file), { recursive: true })
+    if (item.origin === 'source' && sourceRepo) continue
+    let bytes = load(item.artifact)
+    if (item.transform) bytes = Buffer.from(bytes.toString('utf8').replace(/(?<!\r)\n/g, '\r\n'))
+    writeFileSync(file, bytes, { flag: 'wx' })
+    if (item.mode === '100755' || item.executable) chmodSync(file, 0o755)
+  }
+  for (const item of members.filter(item => item.kind !== 'file')) {
+    if (item.kind === 'source-link' && sourceRepo) continue
+    const file = join(checkout, item.path)
+    mkdirSync(dirname(file), { recursive: true })
+    symlinkSync(relative(dirname(file), linkTarget(checkout, item)), file)
+  }
+  const before = JSON.parse(load(build.build.before))
+  const context = { root, directory, checkout: realpathSync(checkout), ownerId: randomUUID(), compilerBuild, expectedCommit, expectedProfile,
+    members, outputDirectories: before.absentOutputs, state: 'materialized' }
+  validatePhysical(context, members)
+  if (observeMacros) {
+    ensure(expectedProfile === COMPILER_BUILD_PROFILE, 'Macro observation requires the exact pinned compiler profile')
+    const observed = prepareCompilerMacroObservation({ context, load,
+      put: bytes => archiveCompilerBuildBytes({ root, directory, bytes }) })
+    context.members = observed.members
+    context.macroObservation = observed.observation
+    validatePhysical(context, context.members)
+  }
+  return context
+}
+
+/** Reuse the owned immutable compiler tree, with a fresh case evidence owner.
+ * Every fork still performs its own full before/after validation. Callers must
+ * serialize cases sharing this checkout. */
+export function forkCompilerUse({ context, directory }) {
+  ensure(context.state === 'materialized', 'Compiler consumer fork requires the materialized template')
+  directory = canonicalNewPath(directory)
+  ensure(within(context.root, directory) && !within(context.checkout, directory) && !existsSync(directory), 'Compiler consumer fork requires a fresh evidence directory outside checkout')
+  mkdirSync(directory, { recursive: true })
+  ensure(within(context.root, realpathSync(directory)), 'Compiler consumer fork directory escapes root')
+  return { ...context, directory: realpathSync(directory), ownerId: randomUUID(), state: 'materialized' }
+}
+
+/** Seal after explicit runner instrumentation, before the actual child starts.
+ * Only archived e2e/project configuration patches are admitted; compiler,
+ * output and dependency changes are always rejected. */
+export async function sealCompilerUse({ context, caseId, sourceSha256, caseSourcePath, patches = [], allowedModuleRoots = [] }) {
+  ensure(context.state === 'materialized', 'Compiler consumer was already sealed')
+  ensure(typeof caseId === 'string' && /^[0-9a-f]{64}$/.test(sourceSha256), 'Compiler consumer case binding is missing')
+  const put = bytes => archiveCompilerBuildBytes({ root: context.root, directory: context.directory, bytes })
+  const members = new Map(context.members.map(item => [item.path, item])), patchRecords = []
+  safe(caseSourcePath)
+  ensure(members.get(caseSourcePath)?.origin === 'source' && members.get(caseSourcePath)?.sha256 === sourceSha256, 'Compiler consumer indexed case source differs from fresh source archive')
+  ensure(new Set(patches).size === patches.length, 'Duplicate compiler consumer patch')
+  for (const path of patches) {
+    safe(path)
+    ensure(patchAllowed(path) && path !== caseSourcePath && (!members.has(path) || members.get(path).origin === 'source'), 'Compiler consumer patch targets protected source/output/dependency')
+    const file = join(context.checkout, path)
+    ensure(lstatSync(file).isFile() && !lstatSync(file).isSymbolicLink() && within(context.checkout, realpathSync(file)), 'Compiler consumer patch escapes checkout')
+    const bytes = readFileSync(file), artifact = put(bytes)
+    patchRecords.push({ path, artifact, executable: Boolean(lstatSync(file).mode & 0o111) })
+    members.set(path, { path, kind: 'file', sha256: artifact.sha256, bytes: artifact.bytes, origin: 'patch', executable: Boolean(lstatSync(file).mode & 0o111) })
+  }
+  const sealed = [...members.values()].sort((a, b) => a.path.localeCompare(b.path))
+  const before = put(JSON.stringify(validatePhysical(context, sealed)))
+  const preload = put(readFileSync(PRELOAD)), preloadPath = join(context.directory, 'compiler-use-preload.cjs')
+  writeFileSync(preloadPath, readFileSync(PRELOAD), { flag: 'wx' })
+  const logDirectory = join(context.directory, 'loader-logs'); mkdirSync(logDirectory)
+  const roots = allowedModuleRoots.map(path => realpathSync(path))
+  ensure(roots.every(path => within(context.root, path) && !within(context.checkout, path) && basename(path) === 'runner-inputs'), 'Allowed compiler runner root is not an archived runner-inputs directory')
+  const runnerFiles = []
+  const snapshotRunner = directory => {
+    for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const file = join(directory, entry.name)
+      if (entry.isDirectory()) snapshotRunner(file)
+      else {
+        ensure(entry.isFile(), 'Runner consumer input is a symlink or special file')
+        const artifact = put(readFileSync(file))
+        runnerFiles.push({ file, sha256: artifact.sha256, bytes: artifact.bytes, artifact })
+      }
+    }
+  }
+  roots.forEach(snapshotRunner)
+  let macroObservationConfig
+  if (context.macroObservation) {
+    const observerPath = join(context.directory, 'compiler-macro-observer.mjs')
+    writeFileSync(observerPath, artifactReader(context.root)(context.macroObservation.observer), { flag: 'wx' })
+    macroObservationConfig = { profile: context.macroObservation.profile, observerPath, observer: context.macroObservation.observer }
+    context.macroObserverPath = observerPath
+  }
+  const configPath = join(context.directory, 'compiler-use-config.json')
+  const nodeOptions = `--require=${JSON.stringify(preloadPath)}`
+  const config = { runId: context.ownerId, caseId, sourceSha256, caseSourcePath, checkout: context.checkout, logDirectory,
+    evidenceRoot: context.root, membersReference: before, allowedModuleRoots: roots,
+    runnerFiles: runnerFiles.map(({ artifact, ...item }) => item), ...(macroObservationConfig
+      ? { macroObservation: macroObservationConfig, outputLoadPolicy: SEALED_ESM_LOAD_POLICY } : {}) }
+  writeFileSync(configPath, JSON.stringify(config), { flag: 'wx' })
+  Object.assign(context, { state: 'sealed', members: sealed, before, patches: patchRecords, caseId, sourceSha256,
+    caseSourcePath, allowedModuleRoots: roots, runnerFiles, preload, preloadPath, configPath, config: put(JSON.stringify(config)),
+    nodeOptions, logDirectory, startedAt: new Date().toISOString(), producer: put(readFileSync(MODULE)) })
+  return { context, environment: { NODE_OPTIONS: nodeOptions, NODE_PATH: '', WEAPP_CONTAINER_COMPILER_USE_CONFIG: configPath } }
+}
+
+export async function finishCompilerUse({ context, processResult }) {
+  ensure(context.state === 'sealed', 'Compiler consumer is not awaiting completion')
+  const put = bytes => archiveCompilerBuildBytes({ root: context.root, directory: context.directory, bytes })
+  const attestation = { schemaVersion: 1, kind: 'weapp-container.compiler-use', status: 'failed', ownerId: context.ownerId,
+    compilerBuild: context.compilerBuild, caseId: context.caseId, sourceSha256: context.sourceSha256, caseSourcePath: context.caseSourcePath,
+    checkout: context.checkout, patches: context.patches, before: context.before, preload: context.preload, producer: context.producer,
+    config: context.config, nodeOptions: context.nodeOptions, allowedModuleRoots: context.allowedModuleRoots, runnerFiles: context.runnerFiles,
+    startedAt: context.startedAt, endedAt: new Date().toISOString(), process: processResult, logs: [],
+    ...(context.macroObservation ? { macroObservation: context.macroObservation } : {}) }
+  try {
+    ensure(hash(readFileSync(context.preloadPath)) === context.preload.sha256 && hash(readFileSync(context.configPath)) === context.config.sha256, 'Compiler consumer preload/config changed')
+    for (const item of context.runnerFiles) ensure(lstatSync(item.file).isFile() && !lstatSync(item.file).isSymbolicLink()
+      && hash(readFileSync(item.file)) === item.sha256 && readFileSync(item.file).length === item.bytes, 'Compiler consumer runner input changed')
+    if (context.macroObservation) ensure(readFileSync(context.macroObserverPath).equals(artifactReader(context.root)(context.macroObservation.observer)),
+      'Compiler macro observer helper changed')
+    attestation.after = put(JSON.stringify(validatePhysical(context, context.members)))
+    for (const name of readdirSync(context.logDirectory).sort()) {
+      ensure(/^\d+-\d+\.jsonl$/.test(name) && lstatSync(join(context.logDirectory, name)).isFile() && !lstatSync(join(context.logDirectory, name)).isSymbolicLink(), 'Unowned compiler loader log')
+      attestation.logs.push(put(readFileSync(join(context.logDirectory, name))))
+    }
+    attestation.status = 'used'
+    const provisional = put(JSON.stringify(attestation))
+    const inspected = inspectCompilerUseEvidence({ root: context.root, reference: provisional, compilerBuild: context.compilerBuild,
+      expectedCommit: context.expectedCommit, expectedProfile: context.expectedProfile, caseId: context.caseId, sourceSha256: context.sourceSha256 })
+    ensure(!inspected.errors.length, inspected.errors.join('\n'))
+  } catch (error) { attestation.status = 'failed'; attestation.failure = error.message }
+  context.state = 'finished'
+  const reference = put(JSON.stringify(attestation, null, 2) + '\n')
+  return { reference, attestation }
+}
+
+/** Offline producer-to-consumer binding. A valid independent fresh build plus
+ * a retained executable tree, or a successful child with no compiler load,
+ * cannot satisfy this receipt. Local reviewed recorder execution is trusted;
+ * this is provenance, not a signature or a JavaScript security sandbox. */
+export function inspectCompilerUseEvidence({ root, reference, compilerBuild, expectedCommit, caseId, sourceSha256,
+  expectedProfile = COMPILER_BUILD_PROFILE, loadArtifact, compilerBuildCache }) {
+  const errors = [], references = new Map(), load = artifactReader(root, loadArtifact, references)
+  let attestation, validatedMembers, reviewedProducerRevision, bridgeProjectWitness
+  try {
+    const key = canonical({ root: resolve(root), compilerBuild, expectedCommit, expectedProfile })
+    ensure(!compilerBuildCache || buildCaches.has(compilerBuildCache), 'Compiler consumer build cache is not an opaque validated cache')
+    const entries = compilerBuildCache && buildCaches.get(compilerBuildCache)
+    let cached = entries?.find(item => item.key === key && item.loader === loadArtifact)
+    if (!cached) {
+      const checked = inspectCompilerBuildEvidence({ root, reference: compilerBuild, expectedCommit, expectedProfile, loadArtifact: load })
+      ensure(!checked.errors.length, checked.errors.join('\n'))
+      const members = closure(checked.attestation, load)
+      cached = { key, loader: loadArtifact, checked, members, memberMap: new Map(members.map(item => [item.path, item])),
+        patches: new Map(), guards: new Map(), references: [...references.values()] }
+      entries?.push(cached)
+    } else for (const ref of cached.references) references.set(ref.path, ref)
+    const checked = cached.checked
+    ensure(!checked.errors.length, checked.errors.join('\n'))
+    attestation = JSON.parse(load(reference))
+    const a = attestation, build = checked.attestation
+    ensure(a.schemaVersion === 1 && a.kind === 'weapp-container.compiler-use' && a.status === 'used', 'Compiler consumer is missing, failed or unsupported')
+    ensure(canonical(a.compilerBuild) === canonical(compilerBuild) && a.caseId === caseId && a.sourceSha256 === sourceSha256, 'Compiler consumer build/case differs')
+    reviewedProducerRevision = reviewedCompilerProducer(a, load)
+    ensure(typeof a.ownerId === 'string' && /^[0-9a-f-]{36}$/.test(a.ownerId) && isAbsolute(a.checkout), 'Compiler consumer owned checkout is missing')
+    const start = Date.parse(a.startedAt), end = Date.parse(a.endedAt)
+    ensure(Number.isFinite(start) && Number.isFinite(end) && end >= start && a.process?.exitCode === 0 && !a.process.signal && !a.process.timedOut
+      && Number.isSafeInteger(a.process.pid) && a.process.pid > 0, 'Compiler consumer process did not finish successfully or lacks its actual pid')
+    safe(a.caseSourcePath)
+    ensure(cached.memberMap.get(a.caseSourcePath)?.origin === 'source' && cached.memberMap.get(a.caseSourcePath)?.sha256 === sourceSha256, 'Compiler consumer indexed case source differs from fresh source archive')
+    ensure(Array.isArray(a.patches), 'Compiler consumer patches are missing')
+    const patched = new Set()
+    for (const patch of a.patches) {
+      safe(patch.path)
+      ensure(patchAllowed(patch.path) && patch.path !== a.caseSourcePath && !patched.has(patch.path)
+        && (!cached.memberMap.has(patch.path) || cached.memberMap.get(patch.path).origin === 'source'), 'Compiler consumer patch targets protected source/output/dependency')
+      patched.add(patch.path)
+    }
+    // The cache belongs to this one opaque audit. Recheck case-specific patch
+    // policy above even when the exact shared patch closure was seen before.
+    // Register all cached references again for the caller's final stability
+    // guard; local stat identities additionally reject postvalidation edits.
+    const captureStability = refs => refs.map(ref => {
+      const file = resolve(root, ref.path)
+      if (!existsSync(file)) return { ref, file: null }
+      const physical = realpathSync(file), info = statSync(file)
+      return { ref, file, physical, dev: info.dev, ino: info.ino, size: info.size, mtimeMs: info.mtimeMs, ctimeMs: info.ctimeMs }
+    })
+    const reuse = entries => {
+      for (const item of entries) {
+        if (item.file) {
+          const info = statSync(item.file)
+          ensure(!lstatSync(item.file).isSymbolicLink() && realpathSync(item.file) === item.physical && info.dev === item.dev
+            && info.ino === item.ino && info.size === item.size && info.mtimeMs === item.mtimeMs && info.ctimeMs === item.ctimeMs,
+          'Cached compiler consumer artifact changed during this audit')
+        }
+        references.set(item.ref.path, item.ref)
+      }
+    }
+    const observedMembers = inspectCompilerMacroObservation({ observation: a.macroObservation, members: cached.memberMap, load })
+    const patchKey = canonical({ patches: a.patches, macroObservation: a.macroObservation })
+    let patchClosure = cached.patches.get(patchKey)
+    if (!patchClosure) {
+      const members = new Map(observedMembers)
+      for (const patch of a.patches) {
+        load(patch.artifact)
+        members.set(patch.path, { path: patch.path, kind: 'file', sha256: patch.artifact.sha256, bytes: patch.artifact.bytes, origin: 'patch', executable: patch.executable === true })
+      }
+      const expected = Object.freeze(publicMembers([...members.values()].sort((a, b) => a.path.localeCompare(b.path))).map(Object.freeze))
+      patchClosure = { expected, canonical: canonical(expected), files: new Map(expected.filter(item => item.kind === 'file').map(item => [item.path, item])),
+        stability: captureStability(a.patches.map(item => item.artifact)) }
+      cached.patches.set(patchKey, patchClosure)
+    } else reuse(patchClosure.stability)
+    validatedMembers = patchClosure.expected
+    const guardKey = canonical({ patchKey, before: a.before, after: a.after, ownerId: a.ownerId, checkout: a.checkout })
+    let guard = cached.guards.get(guardKey)
+    if (!guard) {
+      const before = JSON.parse(load(a.before))
+      const after = canonical(a.before) === canonical(a.after) ? before : JSON.parse(load(a.after))
+      ensure((before === after || canonical(before) === canonical(after)) && before.ownerId === a.ownerId && before.checkout === a.checkout
+        && canonical(before.members) === patchClosure.canonical, 'Compiler consumer before/after closure differs from fresh build')
+      guard = { stability: captureStability([a.before, a.after]) }
+      cached.guards.set(guardKey, guard)
+    } else reuse(guard.stability)
+    const config = JSON.parse(load(a.config))
+    ensure(Array.isArray(a.allowedModuleRoots) && a.allowedModuleRoots.every(path => isAbsolute(path) && basename(path) === 'runner-inputs')
+      && Array.isArray(a.runnerFiles) && new Set(a.runnerFiles.map(item => item.file)).size === a.runnerFiles.length, 'Compiler consumer runner input closure is malformed')
+    for (const item of a.runnerFiles) {
+      ensure(a.allowedModuleRoots.some(root => within(root, item.file)) && item.sha256 === item.artifact.sha256 && item.bytes === item.artifact.bytes, 'Compiler consumer runner input escapes its archive')
+      load(item.artifact)
+    }
+    const runners = new Map(a.runnerFiles.map(item => [item.file, item]))
+    ensure(config.runId === a.ownerId && config.caseId === a.caseId && config.sourceSha256 === a.sourceSha256 && config.caseSourcePath === a.caseSourcePath
+      && config.checkout === a.checkout && isAbsolute(config.evidenceRoot) && canonical(config.membersReference) === canonical(a.before)
+      && canonical(config.allowedModuleRoots) === canonical(a.allowedModuleRoots)
+      && canonical(config.runnerFiles) === canonical(a.runnerFiles.map(({ artifact, ...item }) => item)), 'Compiler consumer loader configuration differs')
+    ensure(Array.isArray(a.logs) && a.logs.length && isAbsolute(config.logDirectory)
+      && a.nodeOptions === `--require=${JSON.stringify(join(dirname(config.logDirectory), 'compiler-use-preload.cjs'))}`,
+    'Compiler consumer loader logs/options are missing or select another preload path')
+    if (a.macroObservation) ensure(canonical(config.macroObservation) === canonical({ profile: a.macroObservation.profile,
+      observerPath: join(dirname(config.logDirectory), 'compiler-macro-observer.mjs'), observer: a.macroObservation.observer }),
+    'Compiler macro observation loader config differs')
+    else ensure(!config.macroObservation, 'Compiler macro observer was not declared in the receipt')
+    ensure(config.outputLoadPolicy === undefined || config.outputLoadPolicy === SEALED_ESM_LOAD_POLICY && a.macroObservation,
+      'Compiler consumer selected an unsupported sealed output load policy')
+    const expectedFiles = patchClosure.files
+    const compilerEntries = expectedProfile === COMPILER_BUILD_PROFILE
+      ? ['packages/weapp-vite/dist/cli.mjs', 'packages/weapp-vite/dist/index.mjs'] : build.build.requiredOutputs
+    let actualCompilerLoads = 0
+    const allLogs = a.logs.map(reference => load(reference).toString('utf8').trim().split('\n').map(line => JSON.parse(line)))
+    const parents = new Map(allLogs.map(events => [events[0]?.pid, events[0]?.ppid]))
+    const descendant = pid => {
+      const seen = new Set()
+      while (pid !== a.process.pid && !seen.has(pid) && parents.has(pid)) { seen.add(pid); pid = parents.get(pid) }
+      return pid === a.process.pid
+    }
+    const bridgeProjects = []
+    for (const events of allLogs) {
+      ensure(events[0]?.kind === 'start' && events[0].preloadSha256 === a.preload.sha256 && events[0].nodeOptions === a.nodeOptions, 'Compiler consumer loader was not started with the reviewed preload')
+      ensure(events[0].outputLoadPolicy === config.outputLoadPolicy, 'Compiler consumer startup output load policy differs')
+      const bridgeProject = inspectExtraLoader(events, { checkout: a.checkout, members: cached.memberMap, load })
+      ensure(descendant(events[0].pid), 'Compiler consumer loader is unrelated to the actual case child')
+      const macroLoads = inspectCompilerMacroLoads({ events, observation: a.macroObservation, checkout: a.checkout,
+        members: cached.memberMap, load })
+      for (const event of events) {
+        ensure(event.runId === a.ownerId && event.caseId === a.caseId && event.sourceSha256 === a.sourceSha256 && event.caseSourcePath === a.caseSourcePath
+          && Number.isSafeInteger(event.pid) && Number.isSafeInteger(event.threadId)
+          && event.pid === events[0].pid && event.threadId === events[0].threadId
+          && Date.parse(event.at) >= start && Date.parse(event.at) <= end, 'Compiler consumer loader event belongs to another run/time/process')
+        ensure(['start', 'resolve', 'load', ...(a.macroObservation ? ['macro', 'hook-ready', 'hook-registration', 'hook-rearmed', 'builtin-load', 'non-file-load', 'end'] : [])].includes(event.kind), 'Compiler consumer loader reported a violation')
+        if (event.kind !== 'load') continue
+        const member = event.path && expectedFiles.get(event.path)
+        if (config.outputLoadPolicy && ['output', 'observed-output'].includes(member?.origin) && event.path.endsWith('.mjs'))
+          ensure(event.outputLoadPolicy === config.outputLoadPolicy, 'Compiler consumer sealed ESM load lacks its actual policy witness')
+        if (event.outputLoadPolicy !== undefined) ensure(config.outputLoadPolicy === SEALED_ESM_LOAD_POLICY
+          && event.outputLoadPolicy === config.outputLoadPolicy && event.classification === 'bound'
+          && ['output', 'observed-output'].includes(member?.origin)
+          && event.path.endsWith('.mjs') && event.url === pathToFileURL(event.file).href
+          && event.contextFormat === 'module' && canonical(event.importAttributes) === '{}'
+          && event.format === 'module' && event.terminalResult === true,
+        'Compiler consumer raw ESM load is outside its sealed output policy')
+        if (event.classification === 'unbound') {
+          ensure(macroLoads.has(event), `Compiler consumer loaded an unbound module: ${event.file}`)
+          continue
+        }
+        if (event.classification === 'observation-helper') {
+          ensure(a.macroObservation && event.file === config.macroObservation.observerPath
+            && event.sha256 === a.macroObservation.observer.sha256 && event.bytes === a.macroObservation.observer.bytes
+            && event.loadedSourceSha256 === event.sha256 && event.format === 'module',
+          'Compiler macro helper was not the exact archived ESM')
+          continue
+        }
+        if (event.classification === 'bound') ensure(member && event.file === join(a.checkout, event.path)
+          && event.sha256 === member.sha256 && event.bytes === member.bytes, 'Compiler consumer loaded different archived bytes')
+        else ensure(event.classification === 'runner' && runners.get(event.file)?.sha256 === event.sha256 && runners.get(event.file)?.bytes === event.bytes, 'Compiler consumer module is not an allowed runner input')
+        if (event.loadedSourceArtifact) ensure(hash(load(event.loadedSourceArtifact)) === event.loadedSourceSha256,
+          'Compiler consumer returned source artifact differs from its actual load')
+        if (['output', 'observed-output'].includes(member?.origin)) ensure(event.loadedSourceSha256 === event.sha256, `Compiler consumer output was transformed: ${event.path}`)
+        if (compilerEntries.includes(event.path)) {
+          ensure(member?.origin === 'output' && event.loadedSourceSha256 === event.sha256, `Compiler consumer entry was transformed or not a fresh output: ${event.path}`)
+          actualCompilerLoads++
+        }
+      }
+      if (bridgeProject) bridgeProjects.push(bridgeProject)
+    }
+    ensure(actualCompilerLoads > 0, 'Compiler consumer never actually loaded a fresh compiler entry; transformed/inferred execution is blocked')
+    bridgeProjectWitness = Object.freeze({})
+    bridgeProjectWitnesses.set(bridgeProjectWitness, { use: a, projects: Object.freeze(bridgeProjects) })
+  } catch (error) { errors.push(error.message) }
+  return { errors, attestation, validatedMembers, reviewedProducerRevision, bridgeProjectWitness, artifactReferences: [...references.values()] }
+}

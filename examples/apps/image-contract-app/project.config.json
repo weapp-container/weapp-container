@@ -1,0 +1,9 @@
+{
+  "appid": "touristappid",
+  "projectname": "weapp-container-images",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "libVersion": "3.17.3",
+  "setting": { "urlCheck": false, "es6": true }
+}

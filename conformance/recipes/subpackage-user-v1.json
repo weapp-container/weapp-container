@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-github-issues-runtime-subpackage-user",
+      "sourceSha256": "b5504ae1432588556f30993d93ae2dccfbd0f27876457106afb0a91914cf48de",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/subpackage-user-collector.mjs",
+        "sha256": "47ecb4d67ef0c9ac75a9c326811eef0b4e586cb3f027ea069e801ef41e45449d",
+        "bytes": 314
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/subpackage-user-descriptor.mjs",
+          "sha256": "c0d3f38c20efdc98350563aab3d3825c0500d14c3322863e4a317b72e57aabb4",
+          "bytes": 1182
+        },
+        {
+          "path": "conformance/recipes/ordered-plans-collector-core.mjs",
+          "sha256": "0b1fd8e737ef1bddbbb5139a3519250da2c121189d43f03bac4545a8b8022b71",
+          "bytes": 10885
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/ordered-dom-projection.mjs",
+          "sha256": "a8b1a7c07884b5cdd8eda5470563d98bbd42ce2b8234eeb030991053c03ee401",
+          "bytes": 5044
+        }
+      ]
+    }
+  ]
+}

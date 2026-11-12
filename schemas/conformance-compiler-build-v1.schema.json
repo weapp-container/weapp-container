@@ -1,0 +1,415 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weapp-container.dev/schemas/conformance-compiler-build-v1.schema.json",
+  "title": "Fresh compiler build and archived Git/dependency/output provenance",
+  "description": "Integrity receipt from the owned detached build executor. Source tree, commands, guards, dependencies and outputs are checked offline by conformance-compiler-build.mjs; retained dist diagnostics cannot satisfy it. This is not a cryptographic signature or a hermetic-build claim.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "profile",
+    "status",
+    "producer",
+    "source",
+    "build"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "kind": {
+      "const": "weapp-container.compiler-build"
+    },
+    "profile": {
+      "enum": [
+        "weapp-vite-core-v1",
+        "compiler-fixture-v1"
+      ]
+    },
+    "status": {
+      "enum": [
+        "built",
+        "failed"
+      ]
+    },
+    "producer": {
+      "type": "object",
+      "required": [
+        "name",
+        "artifact"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "conformance-compiler-build.mjs"
+        },
+        "artifact": {
+          "$ref": "#/$defs/artifact"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "commit",
+        "tree",
+        "commitObject",
+        "trees",
+        "files",
+        "checkoutTransforms"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "tree": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "commitObject": {
+          "$ref": "#/$defs/artifact"
+        },
+        "trees": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "oid",
+              "artifact"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "oid": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              },
+              "artifact": {
+                "$ref": "#/$defs/artifact"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "mode",
+              "oid",
+              "artifact"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "mode": {
+                "enum": [
+                  "100644",
+                  "100755",
+                  "120000"
+                ]
+              },
+              "oid": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              },
+              "artifact": {
+                "$ref": "#/$defs/artifact"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "checkoutTransforms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "kind",
+              "sha256",
+              "bytes"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "const": "git-text-crlf"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "required": [
+        "ownerId",
+        "detached",
+        "checkout",
+        "commands",
+        "environment"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detached": {
+          "const": true
+        },
+        "checkout": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ownerId",
+              "phase",
+              "argv",
+              "cwd",
+              "startedAt",
+              "finishedAt",
+              "exitCode",
+              "signal",
+              "stdout",
+              "stderr",
+              "execution"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "ownerId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "phase": {
+                "enum": [
+                  "install",
+                  "build"
+                ]
+              },
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 2
+              },
+              "cwd": {
+                "const": "."
+              },
+              "startedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "finishedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "exitCode": {},
+              "signal": {},
+              "stdout": {
+                "$ref": "#/$defs/artifact"
+              },
+              "stderr": {
+                "$ref": "#/$defs/artifact"
+              },
+              "execution": {
+                "$ref": "#/$defs/artifact"
+              }
+            }
+          },
+          "minItems": 0
+        },
+        "environment": {
+          "type": "object",
+          "required": [
+            "NODE_OPTIONS",
+            "NODE_PATH",
+            "TURBO_FORCE"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "NODE_OPTIONS": {
+              "const": ""
+            },
+            "NODE_PATH": {
+              "const": ""
+            },
+            "TURBO_FORCE": {
+              "const": "true"
+            }
+          }
+        },
+        "before": {
+          "$ref": "#/$defs/artifact"
+        },
+        "after": {
+          "$ref": "#/$defs/artifact"
+        },
+        "requiredOutputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "required": [
+        "packageManager",
+        "packageManagerVersion",
+        "lock",
+        "inventory",
+        "resolutions"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "packageManager": {
+          "type": "string",
+          "minLength": 1
+        },
+        "packageManagerVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lock": {
+          "type": "object",
+          "required": [
+            "path",
+            "artifact"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "artifact": {
+              "$ref": "#/$defs/artifact"
+            }
+          }
+        },
+        "inventory": {
+          "$ref": "#/$defs/artifact"
+        },
+        "resolutions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "from",
+              "specifier",
+              "range",
+              "packageJson"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "from": {
+                "type": "string",
+                "minLength": 1
+              },
+              "specifier": {
+                "type": "string",
+                "minLength": 1
+              },
+              "range": {
+                "type": "string",
+                "minLength": 1
+              },
+              "packageJson": {},
+              "version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "missing": {
+                "type": "boolean"
+              }
+            }
+          },
+          "minItems": 0
+        }
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "artifact"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "failure": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

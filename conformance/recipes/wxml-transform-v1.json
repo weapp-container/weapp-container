@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-wxml-transform-runtime",
+      "sourceSha256": "697e7f72f545f1c8df358930c5ecca297d8888bb16f0cf01a4bc88084392d4a2",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/wxml-transform-collector.mjs",
+        "sha256": "0372f59e2a46d222d38639401573ff7cf85fb0743a74272fe5283eae94345970",
+        "bytes": 12963
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/wxml-transform-descriptor.mjs",
+          "sha256": "732033f1a7066266343f14e6ddff8af62b087ce57b8c1e654f99f1cd37c327aa",
+          "bytes": 1436
+        }
+      ]
+    }
+  ]
+}

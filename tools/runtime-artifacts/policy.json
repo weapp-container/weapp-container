@@ -1,0 +1,8 @@
+{
+  "repository": "weapp-container/weapp-container",
+  "runtimeVersion": "0.1.0-preview.6.0",
+  "abiVersion": 1,
+  "contractVersion": "0.1.0-preview.5.7",
+  "headerSha256": "2a4761c0650c72ccd8d0a791fb66ee48888e1ce182ba99f0c92673a2c44a8e9b",
+  "contractLicenseSha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+}

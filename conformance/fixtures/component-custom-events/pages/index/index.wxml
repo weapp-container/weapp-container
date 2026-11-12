@@ -1,0 +1,27 @@
+<view id="page-root">
+  <probe id="bare" bindprobe="bare" />
+  <probe id="colon" bind:probe="colon" />
+  <probe id="both" bindprobe="bare" bind:probe="colon" />
+  <probe id="reverse" bind:probe="colon" bindprobe="bare" />
+  <probe id="hyphen-bare" bindprobe-hyphen="bare" />
+  <probe id="hyphen-colon" bind:probe-hyphen="colon" />
+  <probe id="hyphen-both" bindprobe-hyphen="bare" bind:probe-hyphen="colon" />
+  <probe id="under-bare" bindprobe_under="bare" />
+  <probe id="under-colon" bind:probe_under="colon" />
+  <probe id="under-both" bindprobe_under="bare" bind:probe_under="colon" />
+  <view id="local-root" capture-bind:signal="capture" bind:signal="bubble">
+    <probe id="local" bind:signal="direct" />
+  </view>
+  <view id="catch-root" capture-bind:signal="capture" bind:signal="bubble">
+    <probe id="caught" catch:signal="caught" />
+  </view>
+  <view id="capture-root" capture-bind:signal="capture" bind:signal="bubble">
+    <view id="capture-stop" capture-catch:signal="caught">
+      <probe id="capture-caught" bind:signal="direct" />
+    </view>
+  </view>
+  <view id="outer" bind:signal="bubble">
+    <boundary id="boundary" bind:signal="direct" />
+  </view>
+  <text id="result" data-ready="{{ready}}">{{ready}}</text>
+</view>

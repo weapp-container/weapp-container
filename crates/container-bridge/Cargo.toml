@@ -1,0 +1,12 @@
+[package]
+name = "container-bridge"
+version = "0.1.0"
+edition = "2021"
+description = "Version-negotiated batch bridge protocol for Weapp Container"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+container-core = { path = "../container-core" }
+container-ir = { path = "../container-ir" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

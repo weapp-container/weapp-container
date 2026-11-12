@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-attempt-v1.schema.json",
+  "title": "Weapp Container official case diagnostic attempt v1",
+  "description": "Diagnostic record only. This kind cannot replace a passed conformance-oracle-execution receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "caseId", "status", "provider", "baselineId", "compilerCommit", "source", "run", "runtimeObservations", "resources", "failures"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "const": "wechat-devtools-case-attempt" },
+    "caseId": { "type": "string", "pattern": "^ide-[a-z0-9][a-z0-9-]*$" },
+    "status": { "enum": ["passed", "failed", "blocked"] },
+    "provider": { "const": "wechat-devtools" },
+    "baselineId": { "type": "string", "minLength": 1 },
+    "compilerCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "source": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "before", "after"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^e2e/ide/[^\\\\]+\\.test\\.(ts|tsx|js|jsx|mts|mjs)$" },
+        "sha256": { "$ref": "#/$defs/hash" }, "before": { "$ref": "#/$defs/hash" }, "after": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "run": {
+      "type": "object", "additionalProperties": false, "required": ["startedAt", "endedAt", "exitCode"],
+      "properties": {
+        "startedAt": { "type": "string", "format": "date-time" }, "endedAt": { "type": "string", "format": "date-time" },
+        "exitCode": { "type": "integer", "minimum": 0 }, "command": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "pid": { "type": "integer", "minimum": 1 },
+        "signal": { "type": "string", "pattern": "^SIG[A-Z0-9]+$" },
+        "timedOut": { "type": "boolean" }, "assertionsExecuted": { "type": "boolean" }
+      }
+    },
+    "runtimeObservations": { "type": "array", "items": { "$ref": "#/$defs/runtime" } },
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["owner", "machineLeaseAcquired", "machineLeaseReleased", "hostLeaseAcquired", "hostLeaseReleased", "ownedResourcesReleased", "borrowedResourcesPreserved"],
+      "properties": {
+        "owner": { "type": "string", "minLength": 1 }, "machineLeaseAcquired": { "type": "boolean" }, "machineLeaseReleased": { "type": "boolean" },
+        "hostLeaseAcquired": { "type": "boolean" }, "hostLeaseReleased": { "type": "boolean" },
+        "ownedResourcesReleased": { "type": "boolean" }, "borrowedResourcesPreserved": { "type": "boolean" }
+      }
+    },
+    "failures": { "type": "array", "items": { "$ref": "#/$defs/failure" } },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "runtime": {
+      "type": "object", "additionalProperties": false, "required": ["recordedAt", "tool", "system"],
+      "properties": {
+        "recordedAt": { "type": "string", "format": "date-time" }, "projectPath": { "type": "string", "minLength": 1 },
+        "installationId": { "$ref": "#/$defs/hash" },
+        "tool": { "type": "object", "additionalProperties": false, "required": ["version", "SDKVersion"], "properties": { "version": { "type": "string", "minLength": 1 }, "SDKVersion": { "type": "string", "minLength": 1 } } },
+        "system": { "type": "object", "additionalProperties": false, "required": ["SDKVersion", "platform"], "properties": { "SDKVersion": { "type": "string", "minLength": 1 }, "platform": {} } }
+      }
+    },
+    "failure": {
+      "type": "object", "additionalProperties": false, "required": ["status", "domain", "code", "stage", "message"],
+      "properties": {
+        "status": { "enum": ["failed", "blocked"] }, "domain": { "enum": ["runner", "official-runtime", "container-runtime"] },
+        "code": { "type": "string", "minLength": 1 }, "stage": { "type": "string", "minLength": 1 }, "message": { "type": "string", "minLength": 1 }
+      }
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"],
+      "properties": { "path": { "type": "string", "minLength": 1 }, "sha256": { "$ref": "#/$defs/hash" }, "bytes": { "type": "integer", "minimum": 0 } }
+    }
+  }
+}

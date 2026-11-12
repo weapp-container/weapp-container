@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-differential-v1.schema.json",
+  "title": "Weapp Container full conformance differential evidence v1",
+  "description": "Recorded bytes for the fixed pinned-source 172-case, seven-host, dual-engine matrix. Schema validation alone is insufficient: conformance-evidence.mjs checks the exact case/pair sets, baseline, source/build identity, resource closure and normalized event differences.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "suite",
+    "generatedAt",
+    "indexSha256",
+    "sourceCommit",
+    "baseline",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "kind": {
+      "const": "weapp-container-differential"
+    },
+    "suite": {
+      "const": "weapp-vite-e2e-ide"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "indexSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "baseline": {
+      "$ref": "#/$defs/baseline"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "devtoolsVersion",
+        "baseLibraryVersion",
+        "protocolVersion",
+        "manifestVersion"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "devtoolsVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseLibraryVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "protocolVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifestVersion": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "caseId",
+        "sourceSha256",
+        "fixture",
+        "resources",
+        "oracle",
+        "containers"
+      ],
+      "properties": {
+        "caseId": {
+          "type": "string",
+          "pattern": "^ide-[a-z0-9][a-z0-9-]*$"
+        },
+        "sourceSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "fixture": {
+          "type": "object",
+          "description": "Validated with inspectExecutionFixture, including the manifest schema, integrity root and module/view relationships. resources must contain the exact referenced blob closure."
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/artifact"
+          }
+        },
+        "oracle": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "trace",
+            "execution"
+          ],
+          "properties": {
+            "trace": {
+              "$ref": "#/$defs/artifact"
+            },
+            "execution": {
+              "$ref": "#/$defs/artifact",
+              "description": "Hash-addressed JSON conforming to conformance-oracle-execution-v1.schema.json, linked by the reviewed case index."
+            }
+          }
+        },
+        "containers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "trace",
+              "execution",
+              "artifact"
+            ],
+            "properties": {
+              "trace": {
+                "$ref": "#/$defs/artifact"
+              },
+              "artifact": {
+                "$ref": "#/$defs/artifact"
+              },
+              "execution": {
+                "type": "object",
+                "description": "Validated by inspectPackExecutionReceipt plus a conformance binding: caseId, sourceSha256, traceSha256 and baselineId. Each exact host/engine pair must appear once; extra, duplicate or missing pairs fail."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+page { background-color:#fff; }
+.tile { position:absolute; width:40px; height:40px; background-color:#eee; }
+.col0 { left:10px; } .col1 { left:60px; } .col2 { left:110px; } .col3 { left:160px; }
+.row0 { top:10px; } .row1 { top:60px; } .row2 { top:110px; } .row3 { top:160px; }
+.dynamic { position:absolute; left:220px; top:10px; width:80px; height:60px; }
+.width-ratio { position:absolute; left:220px; top:100px; width:100px; }
+.height-ratio { position:absolute; left:220px; top:190px; height:30px; }
+.percent-parent { position:absolute; left:220px; top:240px; width:100px; height:50px; }
+.component { position:absolute; left:10px; top:230px; width:40px; height:40px; }
+.default { position:absolute; left:1000px; top:0; opacity:0; }
+.empty { position:absolute; left:1000px; top:0; opacity:0; }
+.control { position:absolute; top:340px; width:70px; height:30px; background-color:#dde4ea; font-size:8px; }
+.swap { left:10px; } .unsupported { left:90px; } .recover { left:170px; } .inspect { left:250px; }

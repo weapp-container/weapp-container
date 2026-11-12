@@ -1,0 +1,36 @@
+[package]
+name = "container-engine-quickjs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Optional QuickJS adapter boundary for the container runtime"
+
+[features]
+default = ["stub"]
+stub = []
+conformance-observation = ["container-core/conformance-observation"]
+quickjs-native = ["dep:rquickjs"]
+# Android triples have no bundled rquickjs-sys bindings. Require the NDK
+# sysroot and bindgen explicitly instead of using a desktop ABI layout.
+quickjs-native-android = ["quickjs-native", "rquickjs/bindgen"]
+# rquickjs-sys ships bundled bindings for desktop targets but not Apple
+# simulator/device triples. Keep this opt-in so iOS builds explicitly choose
+# bindgen instead of silently using a host binding layout.
+quickjs-native-ios = ["quickjs-native", "rquickjs/bindgen"]
+# OpenHarmony has no bundled rquickjs bindings. Keep this target-specific
+# bindgen opt-in explicit so an incomplete OHOS SDK fails during compilation
+# instead of silently using a host binding layout.
+quickjs-native-harmony = ["quickjs-native", "rquickjs/bindgen"]
+
+view-batch-diagnostics = ["container-core/view-batch-diagnostics"]
+android-view-atrace = ["view-batch-diagnostics", "container-core/android-view-atrace"]
+
+[dependencies]
+container-core = { path = "../container-core" }
+serde_json = { workspace = true, features = ["unbounded_depth"] }
+rquickjs = { version = "0.14.0", default-features = false, features = ["std", "loader", "macro"], optional = true }
+
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+web-time = "1.1.0"

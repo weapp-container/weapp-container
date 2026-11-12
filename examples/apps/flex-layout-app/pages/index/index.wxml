@@ -1,0 +1,13 @@
+<view class="case row"><view id="row-a" class="small red"/><view id="row-b" class="small blue"/></view>
+<view class="case grow"><view id="grow-a" class="green" style="flex:1 1 0%"/><view id="grow-b" class="blue" style="flex:2 1 0%"/></view>
+<view class="case shrink"><view id="shrink-a" class="shrink-item red"/><view id="shrink-b" class="shrink-item blue"/></view>
+<view id="wrap" class="case wrap" style="width:{{wrapWidth}}px"><view id="wrap-a" class="wrap-item red"/><view id="wrap-b" class="wrap-item green"/><view id="wrap-c" class="wrap-item blue"/></view>
+<view class="case align"><view id="align-a" class="small red"/><view id="align-b" class="small blue"/></view>
+<view id="percent" class="case percent"><view id="percent-child" class="percent-child green"><view id="percent-grandchild" class="percent-grandchild blue"/></view></view>
+<view class="case positioned"><view id="absolute" class="absolute red"/><view id="fixed" class="fixed blue" bindtap="onFixed"/></view>
+<view class="case text-case"><view id="text-a" class="text-item">{{label}}</view><view id="text-b" class="text-item">{{label}}</view></view>
+<view class="case minmax"><view id="max-item" class="max-item red"/><view id="min-item" class="min-item green"/></view>
+<view id="toggle" class="control toggle" bindtap="onToggle">wrap width {{wrapWidth}} ({{taps}})</view>
+<view id="inspect" class="control inspect" bindtap="onInspect">inspect geometry</view>
+<view id="scroll" class="control scroll" bindtap="onScroll">scroll page 100px</view>
+<view class="extent"/>

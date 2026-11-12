@@ -1,0 +1,53 @@
+# Worker DOM scheduler adapter (candidate contract)
+
+`WorkerDomAdapter` implements the seven asynchronous presentation-scheduler hooks over an already loaded browser Worker. It uses the actual `WorkerBridgeTransport`, `DomSessionClient`, and the strict `DomViewPresenter` transaction path. It does not create a JavaScript runtime, evaluate templates locally, synthesize runtime replies, or close its borrowed Worker. This finite adapter is not connected to the product entry in this patch.
+
+## Ownership and construction
+
+The constructor requires `rpc` and the real completed `loadResult`. Load must negotiate the exact ordered-observation contract `1.0`, select `browser-view`, advertise QuickJS, and identify the same worker epoch/session and verified pack-index SHA-256. The portable route/style graph is copied as bounded frozen plain data. Renderer replacement and a mismatched pack owner are explicit failures.
+
+The adapter owns an idle DOM presenter and its callback wiring. In addition to the exact strict release contract `1.0`, a Worker presenter must expose `inputGuardContract()` returning exactly `{ version: "1.0", synchronous: true, durable: true }`. The adapter validates this capability before creating its transport or wiring client callbacks; missing, asynchronous, non-durable or unknown contracts fail with `ERR_PROTOCOL_VERSION`. This is a separate Worker capability: the generic `DomSessionClient` strict release `1.0`, legacy full-present and explicit legacy split APIs do not require it. Passing the optional `confirmAsync(..., { inputGuard })` argument alone does not negotiate support.
+
+The durable contract means that the synchronous boolean guard remains attached to a confirmed entry, is checked before and after activation, and participates in every later event and geometry ingress. Guard failure freezes permission; it does not retract a real ACK or settle a resource barrier. It covers ordinary owner retirement during predecessor cleanup and reentrant activation hooks.
+
+By default it owns one bridge over a scoped observed RPC wrapper; that wrapper processes each original ordered observation before the corresponding inner bridge result. The host must forward unsolicited Worker events promptly to `adapter.receiveEvent(message)`. This ingress does not wait for a presentation, grant input, or ACK event receipts; `WorkerRpcClient` alone owns its event-credit receipt ledger.
+
+For an enclosing `WorkerWebSession`, pass its unique pre-created `bridge`. The bridge must use the same supplied `rpc` object and match session/epoch. The supplied RPC must be the owner's observation-aware wrapper: successful results, error details, and late replies must deliver the original ordered observation before bridge inner correlation. The owner forwards original observations to `adapter.receiveObservation`, then passes each unsolicited batch to that single `bridge.receiveBatch` exactly once. Do not also call `adapter.receiveEvent` in this shared-owner path. Repeated forwarding of the same original sequence is a no-op; no receiver renumbers arrival order. To deliver effects once, the owner should use its own batch callback and leave adapter `onBatch` unset.
+
+In borrowed-bridge mode `DomSessionClient` receives a non-owning facade. Closing the adapter drains its candidate/presenter/object URLs but does not disconnect, reconnect or dispose that shared bridge. The owner must close in this order: scheduler (which awaits every adapter flight/release), adapter, shared bridge, then RPC. The adapter never invokes `rpc.close`, `Worker.terminate`, a global shutdown, or unrelated resource cleanup.
+
+`onObservation` and `onBatch` must be synchronous. Awaiting a presentation from the Worker event callback would hold event credits and can deadlock the actual effect that completes presentation. Diagnostic callback failures cannot authorize input or resource release. The standalone event ingress freezes and reports a failure rather than throwing it into the borrowed RPC's event callback.
+
+In standalone mode, an outer error can retain a real native batch under `details.batch`, `details.committedResult`, or nested `originalDetails`. The adapter consumes the original outer observation first, freezes input, and sends each retained batch once to `onBatch` as an effect/evidence notice. These error notices do **not** call the bridge's `receiveBatch`: a successful retained inner final cannot turn the public operation's outer failure into success. The original error is still thrown, and late error finals cannot revive retired requests or input. If observation validation or a notice callback fails, the original error remains with cleanup failures attached. Borrowed-bridge error notices remain the enclosing owner's sole responsibility, avoiding duplicate effect delivery. A Worker `fault` event retains its genuine nested `payload.error.code` and `payload.error.message`.
+
+Fault diagnostic text is preserved exactly rather than receiving `DomViewError`'s local message prefix. The original observation is still processed first; a validation or observation-callback failure is attached to the genuine fault as cleanup evidence and cannot erase it. Fault handling remains an input freeze and never sends a batch to bridge correlation. Later healthy observations do not clear the adapter's faulted state or authorize the old input surface.
+
+## Scheduler methods
+
+| Method | Boundary |
+| --- | --- |
+| `prepareTemplate(demand, context)` | Captures immutable owner/page/viewport/hard lifetime, then calls actual strict `client.prepareTemplate` with generated-page resources. Returns only the actual preparation's frozen consumed-input proof. |
+| `preparePaint(demand, accepted, context)` | Explicitly rejects `ERR_UNSUPPORTED_CAPABILITY`. No retained DOM paint publication is negotiated; it cannot reevaluate View as a fallback. |
+| `present(candidate, context)` | Requires the exact opaque owned handle and matching normalized proof. Returns acknowledged status only after actual runtime permit, DOM swap, exact runtime final ACK, and strict asynchronous presenter confirmation. |
+| `release(candidate, context)` | Stable exact-candidate Promise. Even malformed caller context cleans known resources before rejecting. Uses actual client acknowledgement and strict release result, never scheduler `committed:false` as rollback permission. |
+| `freezeInput(reason)` | Synchronously disables the client's accepted input and presenter listeners. It grants no acknowledgement. |
+| `cancelOwnedWork(reason)` | Stable Promise, claimed before reentrant callbacks. Aborts owned attempts, freezes input, and performs a real reserved-control-lane `view.retire`. |
+| `dispose()` / `close()` | One stable Promise. Waits cancellation and strict client/presenter disposal, then checks all owned resource leases. Does not close the borrowed Worker or borrowed bridge. |
+
+Every preparation must contain `scheduling.version: "1.0"`, an exact publication key, and non-null generated-page `consumedInput`. Page, route and viewport must match the demand, and the actual consumed template revision must be at least the captured demand revision. The proof is never reconstructed from `documentRevision`, the latest observation, an HTTP/Worker receipt, a queued response, or ACK-time state. Missing preparation facts require failure and cleanup.
+
+A newer soft observation can advance desired template state while a genuine preparation is in flight. The candidate retains its original consumed revision, allowing the scheduler to coalesce a successor. `DomSessionClient` authority uses the hard `surfaceGeneration`, **not** the observation sequence. Page/viewport/lifecycle/backend replacement invalidates the old hard key and freezes its input. The result of a strict presenter confirmation, including `inputEnabled:false`, remains authoritative. If authority is invalidated after the exact runtime ACK (including from the ready-state callback), strict `presentPrepared` returns that real final with input disabled and retains accepted resources until their actual last use. Invalidation before ACK still rejects, aborts the exact unacknowledged key and drains its candidate/resource cleanup; these two boundaries are covered separately.
+
+## Resource last use
+
+Resources are requested by their full actual DOM presentation key and SHA-256 through the real Worker `resource` operation. The adapter verifies the returned full key, hash, attached ArrayBuffer length and locally computed SHA-256 before creating a blob URL. The existing DOM profile supports PNG, JPEG, WebP and GIF images; unsupported resource kinds remain explicit failures. This patch does not introduce font decoding, an HTTP fallback or an unbounded shared resource cache.
+
+Each resource is limited to 16 MiB, with aggregate defaults of 64 MiB and 1024 live leases (configuration may reduce these limits). Budget is reserved before the request. Every accepted URL has one stable release Promise and is revoked at most once. The original strict presenter owns its decoder/population/disposer last use; the adapter does not revoke accepted URLs immediately on scheduler release or force-release them at a cleanup deadline. A late cancellation after URL creation releases that exact URL before rejection. A failed revocation retains the lease, bytes and failure; a pending strict drain or remaining lease prevents successful close.
+
+`view.retire` is a genuine ordered native control barrier after already entered WASM work. It does not claim to interrupt currently executing synchronous WASM, stop the borrowed Worker's business timers or unload its pack. The enclosing owner is responsible for eventual Worker shutdown. Exact-key `view.abort` cleanup remains available until bridge/RPC close.
+
+## Scope and validation
+
+The accompanying test draft composes actual RPC, bridge, client and presenter code around an explicit fake Worker/native responder and fake DOM candidate. It covers proof timing, false/queued acknowledgements, observation ordering, hard invalidation, exact handles, resource hashes/budgets, asynchronous last use, revocation failure and borrowed ownership. These are contract unit tests only.
+
+No tests, JavaScript execution, builds, browser sessions or device checks were run by the candidate author. The root agent owns integration, test execution and resulting evidence. Product entry wiring, real WASM pack loading, real isolated DOM documents, browser GPU, worker timers under load, seven host adapters, and performance/near-parity acceptance remain separate gates. The intentional absence of paint-only negotiation must remain visible.

@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "kind": "r5c-complete-reviewed-root-integration",
+  "status": "integrated-awaiting-full-suite-and-new-native-builds",
+  "recordedAt": "2026-11-07T02:11:11.683075+00:00",
+  "composition": {
+    "path": "artifacts/conformance-triage-2026-11-07/subpackage-oracle-closure-composed-v3/composition.json",
+    "sha256": "99d5c5a3b62113a9f5af6a81f4cb829e05bca2eee6e72c8d0b19b2f99048f923",
+    "bytes": 26251
+  },
+  "mergedGitHubTests": {
+    "path": "artifacts/conformance-triage-2026-11-07/subpackage-oracle-closure-composed-v3/merged-github-tests.json",
+    "sha256": "4f522e3ee104df6a60ad87afef1e367e3c1e8ece1eaf33ee098dbfcbe570a4e6",
+    "bytes": 790
+  },
+  "compatibilityReview": {
+    "path": "artifacts/conformance-triage-2026-11-07/producer-closure-r5b-independent-v1/review.json",
+    "sha256": "0b80780e3e840c364cefa52b287193aadcab22e0c5ff1293ffbde7073e4b456d",
+    "bytes": 2060
+  },
+  "bridgeHandoff": {
+    "path": "artifacts/conformance-triage-2026-11-07/compiler-bridge-project-witness-v1/handoff.json",
+    "sha256": "4419cc7baca80f9cfa4dde0636dfa4a6d85c48c8072f96a4df67b75345239299",
+    "bytes": 6547
+  },
+  "bridgeReview": {
+    "path": "artifacts/conformance-triage-2026-11-07/compiler-bridge-project-independent-v1/review.json",
+    "sha256": "8a7b86d5b3c705f536ee340b838453746a184db65ec9bf740396b94d7ad380f7",
+    "bytes": 2831
+  },
+  "preimages": [
+    {
+      "target": "docs/conformance/reviewed-producer-revisions.md",
+      "before": {
+        "path": "docs/conformance/reviewed-producer-revisions.md",
+        "sha256": "6b580f92594c336f6cf5c999c46e7139a14757f03de6146f078e1bb990b24296",
+        "bytes": 3435
+      }
+    },
+    {
+      "target": "examples/hosts/conformance-desktop/driver-registry.mjs",
+      "before": {
+        "path": "examples/hosts/conformance-desktop/driver-registry.mjs",
+        "sha256": "4b2a1809082ad962262eb1acef30ac73d38d5ed00426bdf858dc5bff9fd75f9c",
+        "bytes": 1937
+      }
+    },
+    {
+      "target": "examples/hosts/conformance-desktop/driver.mjs",
+      "before": {
+        "path": "examples/hosts/conformance-desktop/driver.mjs",
+        "sha256": "5f819444c2e0c0faefffc99336039a9c7447eb0cc5edbb9810b451ef65c8a60c",
+        "bytes": 12134
+      }
+    },
+    {
+      "target": "examples/hosts/conformance-desktop/replay.mjs",
+      "before": {
+        "path": "examples/hosts/conformance-desktop/replay.mjs",
+        "sha256": "c3c57947ab02a4ca4668b36e6f5e163fa0cd9951fa34763a8739406c4560be68",
+        "bytes": 19174
+      }
+    },
+    {
+      "target": "examples/hosts/conformance-desktop/replay.test.mjs",
+      "before": {
+        "path": "examples/hosts/conformance-desktop/replay.test.mjs",
+        "sha256": "5a29e2872d937a319b378a2378ae2d34819b668329a9fb506663ceb83080927b",
+        "bytes": 19863
+      }
+    },
+    {
+      "target": "examples/hosts/conformance-desktop/subpackage-native.test.mjs",
+      "before": null
+    },
+    {
+      "target": "examples/hosts/conformance-desktop/subpackage-replay.mjs",
+      "before": null
+    },
+    {
+      "target": "examples/hosts/conformance-desktop/subpackage-static.mjs",
+      "before": null
+    },
+    {
+      "target": "package.json",
+      "before": {
+        "path": "package.json",
+        "sha256": "e2821d1638329cbcb99bd02a475b0586181b2d740096933bdc7434bcf7b6cb81",
+        "bytes": 15311
+      }
+    },
+    {
+      "target": "scripts/conformance-bridge-project.test.mjs",
+      "before": null
+    },
+    {
+      "target": "scripts/conformance-compiler-use.mjs",
+      "before": {
+        "path": "scripts/conformance-compiler-use.mjs",
+        "sha256": "44c57411d8a06b203a8141ae4a0fa8911695dbc8be8799a1f9855d134fe80375",
+        "bytes": 38036
+      }
+    },
+    {
+      "target": "scripts/conformance-compiler-use.test.mjs",
+      "before": {
+        "path": "scripts/conformance-compiler-use.test.mjs",
+        "sha256": "1a3e0e9e173f2743db7a4311aaa4134bff9d8461b528a47d3a65c6efb106ceeb",
+        "bytes": 26356
+      }
+    },
+    {
+      "target": "scripts/conformance-fixture-build.mjs",
+      "before": {
+        "path": "scripts/conformance-fixture-build.mjs",
+        "sha256": "23c8b9943164f5057ecf7779d2ceaef5d9bda31f825c67df82ae2fd1ead27590",
+        "bytes": 81489
+      }
+    },
+    {
+      "target": "scripts/conformance-github-producer.mjs",
+      "before": {
+        "path": "scripts/conformance-github-producer.mjs",
+        "sha256": "efd84dfaecafca434a64777f8388af34c05389e875dcbb8a948e3bf111e05f68",
+        "bytes": 14299
+      }
+    },
+    {
+      "target": "scripts/conformance-github-producer.test.mjs",
+      "before": {
+        "path": "scripts/conformance-github-producer.test.mjs",
+        "sha256": "e5789abe50049a264ce08363cc1ee76b9641362d8f641ec8398cc9f8ff0dcc4a",
+        "bytes": 27943
+      }
+    },
+    {
+      "target": "scripts/conformance-matrix-runner.mjs",
+      "before": {
+        "path": "scripts/conformance-matrix-runner.mjs",
+        "sha256": "3bb7ca6b40363f6583c1b384f61951948fd8c591c60a418617b45cbdbc1b0067",
+        "bytes": 18860
+      }
+    },
+    {
+      "target": "scripts/conformance-oracle-binding.test.mjs",
+      "before": null
+    },
+    {
+      "target": "scripts/conformance-producer-revisions.mjs",
+      "before": {
+        "path": "scripts/conformance-producer-revisions.mjs",
+        "sha256": "50eb69581178825ae9aaa11951aeb856b2b4e93eaba4d60247e3a7080ae6a697",
+        "bytes": 8788
+      }
+    },
+    {
+      "target": "scripts/conformance-producer-revisions.test.mjs",
+      "before": {
+        "path": "scripts/conformance-producer-revisions.test.mjs",
+        "sha256": "488b10f29c6a8469abd01d6340dc1fe49c99eede5ffff97e3aa1c7011735c789",
+        "bytes": 11014
+      }
+    },
+    {
+      "target": "scripts/conformance-wxml-producer.mjs",
+      "before": {
+        "path": "scripts/conformance-wxml-producer.mjs",
+        "sha256": "8f11be2bc714e606f7a6ab76a30e213dccab4351a92e54ea3913239010e35990",
+        "bytes": 7774
+      }
+    },
+    {
+      "target": "scripts/conformance-wxml-producer.test.mjs",
+      "before": {
+        "path": "scripts/conformance-wxml-producer.test.mjs",
+        "sha256": "38d96dbef0e3dd552dd2b7ebfe19908416ba68aa11e9063f7433aa24065c86af",
+        "bytes": 40834
+      }
+    },
+    {
+      "target": "scripts/fixtures/conformance-reviewed-producers.mjs",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/00-source-freeze.json",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/01-validation-reviewed.json",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/02-validation.json",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/03-source-archive.json",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/04-evidence-test.log",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/05-oracle-full-reader-audit.json",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/revision.json",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUsePreload.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUseProducer.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixtureBuildProducer.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixturePackerPreload.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/githubProducer.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroManifest.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroObserver.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroProducer.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroValidator.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/snapshotTransport.txt",
+      "before": null
+    },
+    {
+      "target": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/wxmlProducer.txt",
+      "before": null
+    }
+  ],
+  "postimages": [
+    {
+      "path": "docs/conformance/reviewed-producer-revisions.md",
+      "sha256": "7b4d0637b98dfbad78f5e8fb65b07d4b1c2c0e368b356841b0978c53269874ba",
+      "bytes": 4191
+    },
+    {
+      "path": "examples/hosts/conformance-desktop/driver-registry.mjs",
+      "sha256": "f4e46f059446d59d7b86dc678540f846fb838a6831708ffcdaadc870d52f4d3d",
+      "bytes": 1991
+    },
+    {
+      "path": "examples/hosts/conformance-desktop/driver.mjs",
+      "sha256": "fe89dd81dbd7dbbdb315182d5b73777f74eb85cea2f54109a725f7645ea8ba5b",
+      "bytes": 13174
+    },
+    {
+      "path": "examples/hosts/conformance-desktop/replay.mjs",
+      "sha256": "1a299251d002d494bc12f1603c5c39d42aafa78b6b93a4a16e6a31591a9864f5",
+      "bytes": 21478
+    },
+    {
+      "path": "examples/hosts/conformance-desktop/replay.test.mjs",
+      "sha256": "a90feaff515bf23bd57a8345e3eea5b76801e83c38f84e2917499fffcc571cab",
+      "bytes": 20192
+    },
+    {
+      "path": "examples/hosts/conformance-desktop/subpackage-native.test.mjs",
+      "sha256": "a7b0fe61fe4d79bca053e9f7072c2113ab1b7a53a495fae2f6d9d00e4af0bad8",
+      "bytes": 17072
+    },
+    {
+      "path": "examples/hosts/conformance-desktop/subpackage-replay.mjs",
+      "sha256": "3dcd89823a3fbd3a31ed4c9548a1523797c3bb7ba78b273c86da82e9266db5ef",
+      "bytes": 4794
+    },
+    {
+      "path": "examples/hosts/conformance-desktop/subpackage-static.mjs",
+      "sha256": "3cf9259b5f2861c5d7ba48f0a814d47d440a59afb7231685f77b86f340c05d2d",
+      "bytes": 10749
+    },
+    {
+      "path": "package.json",
+      "sha256": "390b87e447d4efeb5d7dac2b4e14cef666df2bfb62f77973a947a350265842b1",
+      "bytes": 15622
+    },
+    {
+      "path": "scripts/conformance-bridge-project.test.mjs",
+      "sha256": "03b0c44f834415d9061387c6a8563532d56eb72878a4f5d953c93e6798abb7ac",
+      "bytes": 13094
+    },
+    {
+      "path": "scripts/conformance-compiler-use.mjs",
+      "sha256": "025d3610580c467c85b7e507263fc2e6de6d2de952b1d078e988569bcea0157d",
+      "bytes": 45701
+    },
+    {
+      "path": "scripts/conformance-compiler-use.test.mjs",
+      "sha256": "01f2569701c1563653cf2ea3d6a41195f85fbc81940ac65651f44d6f85e74345",
+      "bytes": 27808
+    },
+    {
+      "path": "scripts/conformance-fixture-build.mjs",
+      "sha256": "a255acd7fd5f7c2de07ed65d1f3a90a2dec472c598c606df58bd68cc537589ee",
+      "bytes": 81634
+    },
+    {
+      "path": "scripts/conformance-github-producer.mjs",
+      "sha256": "c4f12de0384c5bb76d28ec0bbcd475da5df60c43dad8f0c7f66d1329d0b1e2ff",
+      "bytes": 15050
+    },
+    {
+      "path": "scripts/conformance-github-producer.test.mjs",
+      "sha256": "4ba039b4652f24f2f66990ece3ce45f82ad57923c3d57d7854334f5a83b50666",
+      "bytes": 34418
+    },
+    {
+      "path": "scripts/conformance-matrix-runner.mjs",
+      "sha256": "5621f4f1b2080beecdea953b13547d9b6ae4fd6fa47f0858bb70d48d61937439",
+      "bytes": 21575
+    },
+    {
+      "path": "scripts/conformance-oracle-binding.test.mjs",
+      "sha256": "72a783d8b426a369594f92a8c1dd29b14c949f927ed08277d23767bdd0c6aebe",
+      "bytes": 12350
+    },
+    {
+      "path": "scripts/conformance-producer-revisions.mjs",
+      "sha256": "6623e281338166a534a93a4defe553f055a5d3e249d2b91883de45bef76324a5",
+      "bytes": 11859
+    },
+    {
+      "path": "scripts/conformance-producer-revisions.test.mjs",
+      "sha256": "fe93ffa2253324fd263f7ef1eb9bb86df45a02832c422f96a4b03abd78d1ff4b",
+      "bytes": 17586
+    },
+    {
+      "path": "scripts/conformance-wxml-producer.mjs",
+      "sha256": "0aef38401c26e19d15cea19ca179c0e4bfe5ccc3ce7d032dd691f2f769baf94c",
+      "bytes": 8045
+    },
+    {
+      "path": "scripts/conformance-wxml-producer.test.mjs",
+      "sha256": "2aa1234e09f4497e54f3c0e3834c20e54e7210074c1dc8c76fc1588b8b83d853",
+      "bytes": 42918
+    },
+    {
+      "path": "scripts/fixtures/conformance-reviewed-producers.mjs",
+      "sha256": "4a033c7c6acd365c6c7e0fd655ec4db313c7a9b02bd0dd6e4bf1b770983914e2",
+      "bytes": 2297
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/00-source-freeze.json",
+      "sha256": "4ec38f58fa85f04ef6bf9a8e266c2f64b9aa4c240195bec30eee7cdc7eb8d7f4",
+      "bytes": 114366
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/01-validation-reviewed.json",
+      "sha256": "91799a13c065a6d1c0f4daf85dc204f569516b38f571432bf8b90bc965a0ce04",
+      "bytes": 1802
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/02-validation.json",
+      "sha256": "545c5c8929579db35327fcb42c988bd3cc02aa207e9b55573314365366614554",
+      "bytes": 218685
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/03-source-archive.json",
+      "sha256": "c687463792f49446107f66db7fb3fc40c85eea10056f49b753ff683e7d80935e",
+      "bytes": 109264
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/04-evidence-test.log",
+      "sha256": "6bb304ca5d05d932cf60ee84ea72c47debac666ef722699d725b0b3541a3a7ca",
+      "bytes": 50476
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/05-oracle-full-reader-audit.json",
+      "sha256": "be36802f8244a2869f7682d055bda57652b03aa88eefd311d91272bed1acf963",
+      "bytes": 3659
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/revision.json",
+      "sha256": "9c7782e3e0eccbb52bff73d49e9ea87877dfa3b4710c768a60acbacf487f6142",
+      "bytes": 7212
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUsePreload.txt",
+      "sha256": "291426c81574b6c5522f29dd1c8b12807c531a232ffd4fa0813a207a6b10c3ed",
+      "bytes": 19764
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/compilerUseProducer.txt",
+      "sha256": "44c57411d8a06b203a8141ae4a0fa8911695dbc8be8799a1f9855d134fe80375",
+      "bytes": 38036
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixtureBuildProducer.txt",
+      "sha256": "23c8b9943164f5057ecf7779d2ceaef5d9bda31f825c67df82ae2fd1ead27590",
+      "bytes": 81489
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/fixturePackerPreload.txt",
+      "sha256": "22855551d0bd448f39bce5733a8eb6ae124fc2a9d2e6fdbb9d8a17ba0379e24d",
+      "bytes": 1466
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/githubProducer.txt",
+      "sha256": "efd84dfaecafca434a64777f8388af34c05389e875dcbb8a948e3bf111e05f68",
+      "bytes": 14299
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroManifest.txt",
+      "sha256": "15e4eaea4ada025bafb111159a673aeb18436d6ba95ab2d814fa9cc4149552f0",
+      "bytes": 19533
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroObserver.txt",
+      "sha256": "d35dc2b968764bfbcefaaf5fad2e460dded1b6d1537905c8373688a6d81dbe89",
+      "bytes": 3868
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroProducer.txt",
+      "sha256": "43bbeca36bf8682db94985b925f0522d1f601b4dcc5632ce8c34c9e248472555",
+      "bytes": 11113
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/macroValidator.txt",
+      "sha256": "b9106b81e7d3442b2790cbed727f1b38b9ffe82839da25d8b6f1472c9a3704e2",
+      "bytes": 35757
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/snapshotTransport.txt",
+      "sha256": "00379609a17f7eb90874027234f3f761ccf03e92785156e87f649359f566ea59",
+      "bytes": 19321
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/sources/wxmlProducer.txt",
+      "sha256": "8f11be2bc714e606f7a6ab76a30e213dccab4351a92e54ea3913239010e35990",
+      "bytes": 7774
+    }
+  ],
+  "testEntriesAdded": [
+    "scripts/conformance-bridge-project.test.mjs",
+    "scripts/conformance-oracle-binding.test.mjs",
+    "examples/hosts/conformance-desktop/driver.test.mjs",
+    "examples/hosts/conformance-desktop/replay1014.test.mjs",
+    "examples/hosts/conformance-desktop/replay1034.test.mjs",
+    "examples/hosts/conformance-desktop/subpackage-native.test.mjs"
+  ],
+  "existingTestListPreserved": true,
+  "indexBefore": {
+    "path": "docs/conformance/case-index-v1.json",
+    "sha256": "d8cc01de2485a8baa29bad6558529086ea778f17f2a0cc031aedb3f8330510fb",
+    "bytes": 72735
+  },
+  "indexAfter": {
+    "path": "docs/conformance/case-index-v1.json",
+    "sha256": "d8cc01de2485a8baa29bad6558529086ea778f17f2a0cc031aedb3f8330510fb",
+    "bytes": 72735
+  },
+  "officialExecutions": 0,
+  "formalPairs": 0,
+  "nativeSourceChanged": true,
+  "requiresFreshNativeSourceAndBothEngineBuilds": true,
+  "oldReceiptWrites": 0,
+  "sdkWrites": 0,
+  "vendorWrites": 0
+}

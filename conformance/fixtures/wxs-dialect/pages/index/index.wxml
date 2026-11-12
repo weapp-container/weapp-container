@@ -1,0 +1,21 @@
+<wxs module="external" src="../../view/dialect.wxs"/>
+<wxs module="inline">
+var key = 'con' + 'structor';
+module.exports = {
+  read: function () {
+    var source = [3, 5];
+    return source.map(function (value) { return value + 1; })[key]
+      + '|' + ({ constructor: 'Inline' })[key];
+  }
+};
+</wxs>
+<view
+  id="probe"
+  data-constructors="{{external.constructors()}}"
+  data-arrays="{{external.arrays()}}"
+  data-computed="{{external.computed()}}"
+  data-own="{{external.own()}}"
+  data-forin="{{external.forIn()}}"
+  data-global="{{values.constructor + '|' + text.constructor + '|' + count.constructor + '|' + flag.constructor + '|' + object.constructor}}"
+  data-inline="{{inline.read()}}"
+>WXS constructor and native Array behavior probe</view>

@@ -1,0 +1,16 @@
+{
+  "description": "Weapp Container typed 2D transform interaction fixture",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "appid": "touristappid",
+  "libVersion": "3.17.3",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "postcss": false,
+    "enhance": true,
+    "ignoreUploadUnusedFiles": true
+  },
+  "packOptions": { "ignore": [], "include": [] }
+}

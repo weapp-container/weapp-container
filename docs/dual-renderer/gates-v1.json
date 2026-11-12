@@ -1,0 +1,5347 @@
+{
+  "schemaVersion": 1,
+  "goal": "seven-host-dual-renderer",
+  "baselineCommit": "c7d0dc6f595cd2d2c0ae2f7cd781c56a6cc6dab9",
+  "gates": [
+    {
+      "id": "baseline.regressions",
+      "evidenceKind": "test",
+      "checks": [
+        "frozen-inventory",
+        "rust-fmt",
+        "rust-clippy",
+        "rust-workspace",
+        "manifest",
+        "node-regressions",
+        "submodule-pin",
+        "six-platform-builds"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "baseline.devtools",
+      "evidenceKind": "wechat-devtools",
+      "checks": [
+        "fixed-ide-library",
+        "serial-lease",
+        "normalized-trace",
+        "oracle-differential"
+      ],
+      "caseScope": "official-regressions",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "architecture.page-selection",
+      "evidenceKind": "test",
+      "checks": [
+        "app-default",
+        "page-override",
+        "skyline-compat-profile",
+        "mixed-page-navigation",
+        "unsupported-renderer-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "architecture.session-ownership",
+      "evidenceKind": "test",
+      "checks": [
+        "one-appservice",
+        "batch-bridge",
+        "deadline-cancel",
+        "atomic-frame-publication",
+        "hot-reload",
+        "surface-loss-recovery",
+        "explicit-software-mode"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "delivery.reproducible",
+      "evidenceKind": "build",
+      "checks": [
+        "pinned-dependencies",
+        "submodule-pin",
+        "private-repository-build",
+        "embedding-examples",
+        "default-branch-pushed",
+        "tag-source-match"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.build",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.pack-execution",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.conformance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.presentation",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.local-rendering",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.component.input-textarea",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.component.video",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.component.camera",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.component.map",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.component.composition",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.surface",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.quickjs.performance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.build",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.pack-execution",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.conformance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.presentation",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.local-rendering",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.component.input-textarea",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.component.video",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.component.camera",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.component.map",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.component.composition",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.surface",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.skia.v8.performance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.build",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.pack-execution",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.conformance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.presentation",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.local-rendering",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.component.input-textarea",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.component.video",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.component.camera",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.component.map",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.component.composition",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.surface",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.quickjs.performance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.build",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.pack-execution",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.conformance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.presentation",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.local-rendering",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.component.input-textarea",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.component.video",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.component.camera",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.component.map",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.component.composition",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.surface",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.remote.webview.v8.performance",
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.build",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.pack-execution",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.conformance",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.presentation",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.local-rendering",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.component.input-textarea",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.component.video",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.component.camera",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.component.map",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.component.composition",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.surface",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.quickjs.performance",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.skia.v8.engine-availability",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.build",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.pack-execution",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.conformance",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.presentation",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.local-rendering",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.component.input-textarea",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.component.video",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.component.camera",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.component.map",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.component.composition",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.surface",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.quickjs.performance",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-browser",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "web.browser.webview.v8.engine-availability",
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.build",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.pack-execution",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.conformance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.presentation",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.local-rendering",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.component.input-textarea",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.component.video",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.component.camera",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.component.map",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.component.composition",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.surface",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.quickjs.performance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.build",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.pack-execution",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.conformance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.presentation",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.local-rendering",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.component.input-textarea",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.component.video",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.component.camera",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.component.map",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.component.composition",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.surface",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.skia.v8.performance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.build",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.pack-execution",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.conformance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.presentation",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.local-rendering",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.component.input-textarea",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.component.video",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.component.camera",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.component.map",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.component.composition",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.surface",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.quickjs.performance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.build",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.pack-execution",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.conformance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.presentation",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.local-rendering",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.component.input-textarea",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.component.video",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.component.camera",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.component.map",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.component.composition",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.surface",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "macos.native.webview.v8.performance",
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.build",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.pack-execution",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.conformance",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.presentation",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.local-rendering",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.component.input-textarea",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.component.video",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.component.camera",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.component.map",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.component.composition",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.surface",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.quickjs.performance",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.skia.v8.engine-availability",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.build",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.pack-execution",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.conformance",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.presentation",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.local-rendering",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.component.input-textarea",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.component.video",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.component.camera",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.component.map",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.component.composition",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.surface",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.quickjs.performance",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "windows.native.webview.v8.engine-availability",
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.build",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.pack-execution",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.conformance",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.presentation",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.local-rendering",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.component.input-textarea",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.component.video",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.component.camera",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.component.map",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.component.composition",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.surface",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.quickjs.performance",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.skia.v8.engine-availability",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.build",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.pack-execution",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.conformance",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.presentation",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.local-rendering",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.component.input-textarea",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.component.video",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.component.camera",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.component.map",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.component.composition",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.surface",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.quickjs.performance",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": false,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "linux.native.webview.v8.engine-availability",
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.build",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.pack-execution",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.conformance",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.presentation",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.local-rendering",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.component.input-textarea",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.component.video",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.component.camera",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.component.map",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.component.composition",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.surface",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.quickjs.performance",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.skia.v8.engine-availability",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.build",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.pack-execution",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.conformance",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.presentation",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.local-rendering",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.component.input-textarea",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.component.video",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.component.camera",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.component.map",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.component.composition",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.surface",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.quickjs.performance",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "android.native.webview.v8.engine-availability",
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.build",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.pack-execution",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.conformance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.presentation",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.local-rendering",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.component.input-textarea",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.component.video",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.component.camera",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.component.map",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.component.composition",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.surface",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.quickjs.performance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.build",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.pack-execution",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.conformance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.presentation",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.local-rendering",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.component.input-textarea",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.component.video",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.component.camera",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.component.map",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.component.composition",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.surface",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.skia.v8.performance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.build",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.pack-execution",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.conformance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.presentation",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.local-rendering",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.component.input-textarea",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.component.video",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.component.camera",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.component.map",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.component.composition",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.surface",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.quickjs.performance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.build",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.pack-execution",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.conformance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.presentation",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.local-rendering",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.component.input-textarea",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.component.video",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.component.camera",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.component.map",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.component.composition",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.surface",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "ios.native.webview.v8.performance",
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.build",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.pack-execution",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.conformance",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.presentation",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.local-rendering",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.component.input-textarea",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.component.video",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.component.camera",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.component.map",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.component.composition",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.surface",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.quickjs.performance",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": true,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.skia.v8.engine-availability",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.build",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "build",
+      "checks": [
+        "locked-build",
+        "engine-identity",
+        "renderer-identity"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.pack-execution",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "real-weapp-vite-pack",
+        "manifest-integrity",
+        "module-execution",
+        "first-presented-frame"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.conformance",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "wxml-wxss",
+        "wxs-modern-view",
+        "component-slot-behavior",
+        "lifecycle-navigation",
+        "setData-events",
+        "error-timeout-cancel"
+      ],
+      "caseScope": "supported-contracts",
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.presentation",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "logical-physical-size",
+        "density-without-view-reevaluation",
+        "input-coordinates",
+        "resize",
+        "hot-reload",
+        "stale-frame-rejection",
+        "resource-release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.local-rendering",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "no-per-frame-rgba-transport",
+        "no-unrequested-cpu-raster-readback",
+        "batched-scene-commit",
+        "resource-cache",
+        "snapshot-on-demand"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.component.input-textarea",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "text-editing",
+        "chinese-ime",
+        "selection",
+        "focus",
+        "keyboard",
+        "events",
+        "basic-accessibility"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.component.video",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "play-pause",
+        "seek",
+        "mute",
+        "loop",
+        "fullscreen",
+        "events",
+        "release"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.component.camera",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "permission",
+        "preview",
+        "photo",
+        "recording",
+        "background-resume",
+        "no-device-error"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.component.map",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "maplibre",
+        "offline-style-data",
+        "gestures",
+        "markers",
+        "polylines",
+        "polygons",
+        "events",
+        "explicit-gcj-wgs-conversion"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.component.composition",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "size",
+        "clip",
+        "transform",
+        "z-order",
+        "occlusion",
+        "hit-testing",
+        "destroy"
+      ],
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.surface",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "native-surface",
+        "presented-frame-identity",
+        "context-loss",
+        "background-resume",
+        "teardown"
+      ],
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.quickjs.performance",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "quickjs",
+      "evidenceKind": "actual-native",
+      "checks": [
+        "release-build",
+        "reference-workload",
+        "independent-input-clock",
+        "environment-recorded",
+        "raw-samples"
+      ],
+      "performance": true,
+      "hardwareRequired": false,
+      "physicalDeviceRequired": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    },
+    {
+      "id": "harmony.native.webview.v8.engine-availability",
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "engine": "v8",
+      "evidenceKind": "test",
+      "checks": [
+        "explicit-engine-selection",
+        "no-silent-fallback"
+      ],
+      "availabilityContract": true,
+      "status": "unknown",
+      "reason": "No evidence for this new acceptance gate has been recorded.",
+      "evidence": null
+    }
+  ]
+}

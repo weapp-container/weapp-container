@@ -1,0 +1,2598 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "c7d0dc6f595cd2d2c0ae2f7cd781c56a6cc6dab9",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "devtoolsVersion": "2.02.2608080",
+  "baseLibraryVersion": "3.17.3",
+  "sourceCount": 172,
+  "conformanceCaseIds": [
+    "ide-agent-acceptance",
+    "ide-app-lifecycle",
+    "ide-app-prelude-native-runtime",
+    "ide-app-shell-presence-hmr-runtime",
+    "ide-app-vue-hmr-alias-runtime",
+    "ide-auto-routes-define-app-json-runtime",
+    "ide-automator-bridge-wrapper-hmr-runtime",
+    "ide-automator-concurrent-sessions-runtime",
+    "ide-body-blob-runtime",
+    "ide-chunk-modes-runtime-duplicate",
+    "ide-chunk-modes-runtime-extras",
+    "ide-chunk-modes-runtime-hoist",
+    "ide-devtools-cli-workflow-runtime",
+    "ide-devtools-shared-host-runtime",
+    "ide-forward-console-demo-runtime",
+    "ide-github-issues-runtime-aggregate",
+    "ide-github-issues-runtime-app-shell",
+    "ide-github-issues-runtime-component-instance-apis",
+    "ide-github-issues-runtime-feature1087",
+    "ide-github-issues-runtime-import-meta",
+    "ide-github-issues-runtime-issue1008",
+    "ide-github-issues-runtime-issue1009",
+    "ide-github-issues-runtime-issue1010",
+    "ide-github-issues-runtime-issue1011",
+    "ide-github-issues-runtime-issue1012",
+    "ide-github-issues-runtime-issue1013",
+    "ide-github-issues-runtime-issue1014",
+    "ide-github-issues-runtime-issue1015",
+    "ide-github-issues-runtime-issue1035",
+    "ide-github-issues-runtime-issue1049",
+    "ide-github-issues-runtime-issue1138",
+    "ide-github-issues-runtime-issue289",
+    "ide-github-issues-runtime-issue297-302",
+    "ide-github-issues-runtime-issue448-formdata-upload",
+    "ide-github-issues-runtime-issue466",
+    "ide-github-issues-runtime-issue547",
+    "ide-github-issues-runtime-issue553-555",
+    "ide-github-issues-runtime-issue554",
+    "ide-github-issues-runtime-issue558",
+    "ide-github-issues-runtime-issue564",
+    "ide-github-issues-runtime-issue581",
+    "ide-github-issues-runtime-issue615",
+    "ide-github-issues-runtime-issue621",
+    "ide-github-issues-runtime-issue627",
+    "ide-github-issues-runtime-issue642",
+    "ide-github-issues-runtime-issue642-bug7-default",
+    "ide-github-issues-runtime-issue642-bug7-performance",
+    "ide-github-issues-runtime-issue642-bug8",
+    "ide-github-issues-runtime-issue705",
+    "ide-github-issues-runtime-issue706",
+    "ide-github-issues-runtime-issue779",
+    "ide-github-issues-runtime-issue826",
+    "ide-github-issues-runtime-issue829",
+    "ide-github-issues-runtime-issue852",
+    "ide-github-issues-runtime-issue868",
+    "ide-github-issues-runtime-issue911",
+    "ide-github-issues-runtime-issue930",
+    "ide-github-issues-runtime-issue941",
+    "ide-github-issues-runtime-lifecycle",
+    "ide-github-issues-runtime-miniprogram-computed",
+    "ide-github-issues-runtime-props",
+    "ide-github-issues-runtime-require-async",
+    "ide-github-issues-runtime-slot-fallback",
+    "ide-github-issues-runtime-slot-fallback-compiler-off",
+    "ide-github-issues-runtime-subpackage-item",
+    "ide-github-issues-runtime-subpackage-user",
+    "ide-github-issues-runtime-web-runtime",
+    "ide-hmr-auto-classic-runtime",
+    "ide-index",
+    "ide-issue-1015-css-hmr-runtime",
+    "ide-issue-1029-auto-routes-runtime",
+    "ide-issue-1034-auto-routes-hmr-runtime",
+    "ide-issue-1034-auto-routes-runtime",
+    "ide-issue-1058-template-tags-runtime",
+    "ide-issue-1065-provider-runtime",
+    "ide-issue-1072-json-context-runtime",
+    "ide-issue-1074-doctor-runtime",
+    "ide-issue-1081-tailwind-batch-runtime",
+    "ide-issue-1081-tailwind-snapshot-runtime",
+    "ide-issue-1081-transaction-runtime",
+    "ide-issue-1082-confirmation-runtime",
+    "ide-issue-1126-1128",
+    "ide-issue-1134-native-batch-runtime",
+    "ide-issue-1134-native-topology-runtime",
+    "ide-issue-1140-mode-cache-runtime",
+    "ide-issue-1172",
+    "ide-issue-1174-native-slot-opt-in",
+    "ide-issue-1182-production-mount-runtime",
+    "ide-issue-1185-sibling-entry-runtime",
+    "ide-issue-1234-automator-runtime",
+    "ide-issue-340-hoist-runtime",
+    "ide-issue-963-plugin-es6-runtime",
+    "ide-issue-969-launch-runtime",
+    "ide-issue-997-rebuild-runtime",
+    "ide-issue-998-tailwind-runtime",
+    "ide-layout-power-demo-message-runtime",
+    "ide-layout-power-demo-runtime-vendor-hmr",
+    "ide-lib-host-runtime",
+    "ide-lifecycle-compare",
+    "ide-mcp-runtime-tools-runtime",
+    "ide-platform-host-runtime",
+    "ide-plugin-demo-runtime",
+    "ide-react-runtime-spike-runtime",
+    "ide-request-clients-real-native-runtime",
+    "ide-request-clients-real-runtime",
+    "ide-runtimeerrors",
+    "ide-script-setup-external-src-runtime",
+    "ide-shared-styles-runtime",
+    "ide-shared-taro-hmr-runtime",
+    "ide-stateful-hmr-runtime",
+    "ide-stream-capability-runtime",
+    "ide-subpackage-shared-strategy-complex-runtime",
+    "ide-swan-runtime-optional",
+    "ide-tdesign-dialog-import-runtime",
+    "ide-tdesign-miniprogram-starter-retail-runtime",
+    "ide-template-dev-open-all-runtime",
+    "ide-template-multi-platform-sfc-swan-optional",
+    "ide-template-multi-platform-swan-optional",
+    "ide-template-retail-checkout-runtime",
+    "ide-template-tailwindcss-dev-open-multi-runtime",
+    "ide-template-tailwindcss-tdesign-hmr-runtime",
+    "ide-template-weapp-vite-multi-platform-sfc-template",
+    "ide-template-weapp-vite-multi-platform-template",
+    "ide-template-weapp-vite-tailwindcss-tdesign-template",
+    "ide-template-weapp-vite-tailwindcss-template",
+    "ide-template-weapp-vite-tailwindcss-vant-template",
+    "ide-template-weapp-vite-template",
+    "ide-template-weapp-vite-wevu-tailwindcss-tdesign-retail-template",
+    "ide-template-weapp-vite-wevu-tailwindcss-tdesign-retail-template-feedback-runtime",
+    "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template",
+    "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-class-style-binding",
+    "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-form",
+    "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-layout-feedback-dialog",
+    "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-runtime-errors",
+    "ide-template-weapp-vite-wevu-template",
+    "ide-template-weapp-vite-wevu-template-dynamic-bindings",
+    "ide-template-weapp-vite-wevu-template-layouts-runtime",
+    "ide-template-wevu-features-app",
+    "ide-template-wevu-tailwindcss-tdesign-hmr-runtime",
+    "ide-uview-plus-compat-runtime",
+    "ide-vite-native-ts-worker-runtime",
+    "ide-vite-plugin-npm-runtime",
+    "ide-vite-plugin-runtime",
+    "ide-vue-mini-issue151-wevu-runtime",
+    "ide-wevu-composition-api-weapp",
+    "ide-wevu-comprehensive-runtime",
+    "ide-wevu-features-runtime-behavior",
+    "ide-wevu-features-runtime-router",
+    "ide-wevu-features-runtime-subpath",
+    "ide-wevu-initial-style-runtime",
+    "ide-wevu-json-render-runtime",
+    "ide-wevu-jsx-tsx-hmr-runtime",
+    "ide-wevu-jsx-tsx-runtime",
+    "ide-wevu-query-runtime",
+    "ide-wevu-router-hmr-runtime",
+    "ide-wevu-runtime-class-computed-weapp",
+    "ide-wevu-runtime-core-hmr",
+    "ide-wevu-runtime-demo-request-globals-weapp",
+    "ide-wevu-runtime-demo-vue-query-weapp",
+    "ide-wevu-runtime-function-props-weapp",
+    "ide-wevu-runtime-inline-object-reactivity-weapp",
+    "ide-wevu-runtime-layout-shared-template-wxs-hmr",
+    "ide-wevu-runtime-pruning",
+    "ide-wevu-runtime-shared-template-wxs-hmr",
+    "ide-wevu-runtime-weapp",
+    "ide-wevu-subpackage-placement-runtime",
+    "ide-wevu-vue-demo-script-setup-emit-runtime",
+    "ide-wevu-watch",
+    "ide-worker-host-runtime",
+    "ide-wot-ui-compat-runtime",
+    "ide-wxml-transform-runtime",
+    "ide-wxml-transform-watch-runtime"
+  ],
+  "officialCaseBaseline": [
+    {
+      "id": "ide-agent-acceptance",
+      "status": "unknown",
+      "source": "e2e/ide/agent-acceptance.test.ts",
+      "sourceSha256": "a6767bf735c2ab3cba9c291a99dd945ad8b6d210ef1bed15fbadeab9fa6935c9"
+    },
+    {
+      "id": "ide-app-lifecycle",
+      "status": "passed",
+      "source": "e2e/ide/app-lifecycle.test.ts",
+      "sourceSha256": "9fafa7916eed71e63b9550d072d605a6bfed94f6c310b04a6b1fc46270cda1f3"
+    },
+    {
+      "id": "ide-app-prelude-native-runtime",
+      "status": "passed",
+      "source": "e2e/ide/app-prelude-native.runtime.test.ts",
+      "sourceSha256": "1fb40f454c44e99d2e3b5e87b745b7c15c509d3ee052175265d95213f5a27635"
+    },
+    {
+      "id": "ide-app-shell-presence-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/app-shell-presence.hmr.runtime.test.ts",
+      "sourceSha256": "92feaadc613a02a72e35a30eb9f9799090ce99b3192821a0e0f7901fbf5a7f47"
+    },
+    {
+      "id": "ide-app-vue-hmr-alias-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/app-vue-hmr-alias.runtime.test.ts",
+      "sourceSha256": "d9446e55461ca7a65adbf4c8cf6c127e55af893e0f9624b540e708c065d43107"
+    },
+    {
+      "id": "ide-auto-routes-define-app-json-runtime",
+      "status": "passed",
+      "source": "e2e/ide/auto-routes-define-app-json.runtime.test.ts",
+      "sourceSha256": "8e9c1f96a04be027f3630da98be68e19a5cdd94a13e1f55bbcf93f158daab983"
+    },
+    {
+      "id": "ide-automator-bridge-wrapper-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/automator-bridge-wrapper-hmr.runtime.test.ts",
+      "sourceSha256": "5414c22751638d0a6827d17466d2fa5e82e4fe8dbe58459f5a17a5b9b28330dc"
+    },
+    {
+      "id": "ide-automator-concurrent-sessions-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/automator-concurrent-sessions.runtime.test.ts",
+      "sourceSha256": "43823b76df6fc863e686f4067d33472726da22e155279330148484f23fd5f2b1"
+    },
+    {
+      "id": "ide-body-blob-runtime",
+      "status": "passed",
+      "source": "e2e/ide/body-blob.runtime.test.ts",
+      "sourceSha256": "01704b747ba8de3222db11cafe3a3f97964d0d454ec3fd454604e8a1e466e08d"
+    },
+    {
+      "id": "ide-chunk-modes-runtime-duplicate",
+      "status": "unknown",
+      "source": "e2e/ide/chunk-modes.runtime.duplicate.test.ts",
+      "sourceSha256": "b76f38ee9dfe9d6c51fb7ad0d64333a7f4024cf9a164bfffa1cc9ca1e19c407a"
+    },
+    {
+      "id": "ide-chunk-modes-runtime-extras",
+      "status": "unknown",
+      "source": "e2e/ide/chunk-modes.runtime.extras.test.ts",
+      "sourceSha256": "276e5f11afd64763af8e93855c2fbe9dbacd982253624089d9c7d26d1a55af34"
+    },
+    {
+      "id": "ide-chunk-modes-runtime-hoist",
+      "status": "unknown",
+      "source": "e2e/ide/chunk-modes.runtime.hoist.test.ts",
+      "sourceSha256": "8f51473c97300dd63a3f20cd91405d9cea321915a37bc6840031b6dce6fa9132"
+    },
+    {
+      "id": "ide-devtools-cli-workflow-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/devtools-cli-workflow.runtime.test.ts",
+      "sourceSha256": "d68bc216c8dfb98036700ba64cf9545a1c5afabd49a63212a9717bde80f9230e"
+    },
+    {
+      "id": "ide-devtools-shared-host-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/devtools-shared-host.runtime.test.ts",
+      "sourceSha256": "064725d4efd799f725b3bd9915313e7efb3a2144142a524ef2ac52ad3105882e"
+    },
+    {
+      "id": "ide-forward-console-demo-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/forward-console-demo.runtime.test.ts",
+      "sourceSha256": "c724f2e53e65cca474e924c6a986673ef8458d115a77d5cf40e5f5090e251a79"
+    },
+    {
+      "id": "ide-github-issues-runtime-aggregate",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.aggregate.test.ts",
+      "sourceSha256": "13c697a2cd1a455fcf5d9da4ee7ef88d0610ffb91246cc8a688b69266cbcdd57"
+    },
+    {
+      "id": "ide-github-issues-runtime-app-shell",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.app-shell.test.ts",
+      "sourceSha256": "b5ef842d3287722c8068823d4044f293cf26dd1f96aa13e841044515ddfe52c2"
+    },
+    {
+      "id": "ide-github-issues-runtime-component-instance-apis",
+      "status": "passed",
+      "source": "e2e/ide/github-issues.runtime.component-instance-apis.test.ts",
+      "sourceSha256": "24d2599d5d248e9ac6646cf0c4734a1fb4adf053d8fa550fc928e8056c13c2f1"
+    },
+    {
+      "id": "ide-github-issues-runtime-feature1087",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.feature1087.test.ts",
+      "sourceSha256": "2a4a51042db06d9e1463bf0a4088219be85c347630a1a154fb8df3a44863c619"
+    },
+    {
+      "id": "ide-github-issues-runtime-import-meta",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.import-meta.test.ts",
+      "sourceSha256": "87bf4d6ff17686b0b10dcdfd19d21292aa2a5de1f049ad209cbfee98c0cb2c09"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1008",
+      "status": "blocked",
+      "source": "e2e/ide/github-issues.runtime.issue1008.test.ts",
+      "sourceSha256": "28b80e5be581f5b825ef1be7c998b1db14a8566581d8528d11697cf03a786e47"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1009",
+      "status": "blocked",
+      "source": "e2e/ide/github-issues.runtime.issue1009.test.ts",
+      "sourceSha256": "7aab6c9ec6c09f610bd8c13ae834dd63d96f906d40b2a5f86448a1f114bf56e9"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1010",
+      "status": "blocked",
+      "source": "e2e/ide/github-issues.runtime.issue1010.test.ts",
+      "sourceSha256": "6aba43f1cb2df94034638f474aab115e055e04b262c4367cd063e9979ee6bc8a"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1011",
+      "status": "blocked",
+      "source": "e2e/ide/github-issues.runtime.issue1011.test.ts",
+      "sourceSha256": "d7dacedd9dc11c244ec49ef22491829d1b316d2f1ad8b72f574be6408c55fdfa"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1012",
+      "status": "blocked",
+      "source": "e2e/ide/github-issues.runtime.issue1012.test.ts",
+      "sourceSha256": "c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1013",
+      "status": "passed",
+      "source": "e2e/ide/github-issues.runtime.issue1013.test.ts",
+      "sourceSha256": "dd214fe8af937331788f4b491b51c9fd0816fe45614c28e3f9a192c29781cb35"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1014",
+      "status": "passed",
+      "source": "e2e/ide/github-issues.runtime.issue1014.test.ts",
+      "sourceSha256": "332a6673e36403659dc83eb634177e239400e748e2d346b50c7569f17e552bc8"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1015",
+      "status": "passed",
+      "source": "e2e/ide/github-issues.runtime.issue1015.test.ts",
+      "sourceSha256": "ee8d8d9e040e4d583d5fb7cf8a320eb1e45e882b71335fee59bcd302d07c95c2"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1035",
+      "status": "failed",
+      "source": "e2e/ide/github-issues.runtime.issue1035.test.ts",
+      "sourceSha256": "75bc19f56dc6ba5406fae602dc5421736d552bf7fae5016c45df22f22b218dc9"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1049",
+      "status": "failed",
+      "source": "e2e/ide/github-issues.runtime.issue1049.test.ts",
+      "sourceSha256": "05a1f1adaec221d8dd9e50310461ec59045e98238b8210d9ccd42eaf3c7a34ef"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue1138",
+      "status": "passed",
+      "source": "e2e/ide/github-issues.runtime.issue1138.test.ts",
+      "sourceSha256": "015b2e02c01edd733e558214be46b690f0d80a2814295c6a2a0aeeca4a606843"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue289",
+      "status": "passed",
+      "source": "e2e/ide/github-issues.runtime.issue289.test.ts",
+      "sourceSha256": "eebdc8af20fa9f95c145520fd26914788bebfc46208adb2362797ac711c34c53"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue297-302",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue297-302.test.ts",
+      "sourceSha256": "aee42467cd56a31d550bc4e345c6691b3651d47b12efcdf860945854227fc2a6"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue448-formdata-upload",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue448-formdata-upload.test.ts",
+      "sourceSha256": "4e130738539f4a0a5637aad4ac91de112cc64d7f018afd9aaf2a2e51f430cf97"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue466",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue466.test.ts",
+      "sourceSha256": "435be178185f70e97390a805eec6548d7cd349ce78c551845a9575bf2ef79f71"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue547",
+      "status": "passed",
+      "source": "e2e/ide/github-issues.runtime.issue547.test.ts",
+      "sourceSha256": "46bd53dda261261a5a9cd5e1e3fc89e07a8fd7660e0fcbbe3e8bdd73499f3f11"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue553-555",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue553-555.test.ts",
+      "sourceSha256": "e8a73de9bedd446ea9e33dca4818a6d27e2e60597d53709760e0c076319fbc9f"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue554",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue554.test.ts",
+      "sourceSha256": "c5a5a2d7e17ecf9f38d300b1eff7ecb4ddb5f4ba438a0ba67e9eed50f5834f0c"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue558",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue558.test.ts",
+      "sourceSha256": "d562fd5fb79ad887af83bc35a09b0af57a9b93372df6ec2e05b3dea0df4a070e"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue564",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue564.test.ts",
+      "sourceSha256": "28c6b910caa484df86bf2c06f62fa08b02d5d54225d5b18bd3090a5ac32b8477"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue581",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue581.test.ts",
+      "sourceSha256": "f23b8836525935f0b38228e9a185b92349a37d4da9a6216813a0fbf1a8ad6775"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue615",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue615.test.ts",
+      "sourceSha256": "9321cbe11cfbd62dbe2040af24ef7e05b43de0af14961c145f07ae993aee10f8"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue621",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue621.test.ts",
+      "sourceSha256": "267981fa12170d969b320f9e21c7377c7b09131ddc927bdbf318dc4b709eb3c6"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue627",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue627.test.ts",
+      "sourceSha256": "5c3c20707de01151ec1e8197073c9e421d26fe1533460043b9bc89a7c6750437"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue642.test.ts",
+      "sourceSha256": "beb05c7e5f794f179dd9636754800bbb0ad2c2514b84a508e915a6c818dc061b"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642-bug7-default",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue642-bug7-default.test.ts",
+      "sourceSha256": "0c2664385588aa4cd19db8798ad07539672da0961a2068c6ac4f45f2f5485fe7"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642-bug7-performance",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue642-bug7-performance.test.ts",
+      "sourceSha256": "942571b0c91ebb2df0c76e73d2ef1643dcbd28543cb00dfd2787f070fd4c4496"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue642-bug8",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue642-bug8.test.ts",
+      "sourceSha256": "7daebcdb47d09f0dcd437a2921c52bb9f7fff918843209be001d8eabbdeed92b"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue705",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue705.test.ts",
+      "sourceSha256": "b0ae2acf26f34d243fabd798fcd82fc0726091b6f3291840b67b714d9149807c"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue706",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue706.test.ts",
+      "sourceSha256": "99915410e3c1f22495fe1e30de60dcc279bf1b19913fea5b01e3cc9a18d09bfe"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue779",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue779.test.ts",
+      "sourceSha256": "24f95829ab5d501921d301d0bd2bc02fcf5bb72ef1198c7b9e79947aaafc0fa4"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue826",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue826.test.ts",
+      "sourceSha256": "060480ba6f466ae292552a78de6dc45c15e3699aa881356659f1fe3bbe88d099"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue829",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue829.test.ts",
+      "sourceSha256": "423d4e8bb45898635563c9345360e0b2926bd92ba341f6c6d37002418eabd835"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue852",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue852.test.ts",
+      "sourceSha256": "b5f0e950c0f728876e804daac2cae1d0089b8c07a86e73cc0b5f77191f56d5db"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue868",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue868.test.ts",
+      "sourceSha256": "b47df7bc0f17736d1c063b0524ef1e65156c87f0a8f7603b898358a871019370"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue911",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue911.test.ts",
+      "sourceSha256": "715025cde76ca7d2b980fbc6d75db6f3b13890c299ea003bc038281e5e2268af"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue930",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue930.test.ts",
+      "sourceSha256": "8a09a1610fdbff26dc07be441497bddd5b4697590ec237f18e91871b61fbfa97"
+    },
+    {
+      "id": "ide-github-issues-runtime-issue941",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.issue941.test.ts",
+      "sourceSha256": "8789b12749c7c6e96a6a8e96bb70b058dddeffca771c83b1952eb2159ffb3405"
+    },
+    {
+      "id": "ide-github-issues-runtime-lifecycle",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.lifecycle.test.ts",
+      "sourceSha256": "dbd67628f0aceda02d650fd4929d070faf3148fd9ba92a263d0f7bbd53613cf4"
+    },
+    {
+      "id": "ide-github-issues-runtime-miniprogram-computed",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.miniprogram-computed.test.ts",
+      "sourceSha256": "38a21de2b0bf6d209e350051f7b1ef30e46048698af0e90b3b63d87a553df2e7"
+    },
+    {
+      "id": "ide-github-issues-runtime-props",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.props.test.ts",
+      "sourceSha256": "3d506e826ef00e2f3f34bb25a87bcdc01d7a6ac5d4f5bbdbbbdbb75a709805e8"
+    },
+    {
+      "id": "ide-github-issues-runtime-require-async",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.require-async.test.ts",
+      "sourceSha256": "bda6470b447acd6a72d1f3c5488d61c1feb469ec25b9949b8c037f13d24383d2"
+    },
+    {
+      "id": "ide-github-issues-runtime-slot-fallback",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.slot-fallback.test.ts",
+      "sourceSha256": "d1940383fbb268fea9ff996211883554415916f6e86c10e1b706175e416781a6"
+    },
+    {
+      "id": "ide-github-issues-runtime-slot-fallback-compiler-off",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.slot-fallback-compiler-off.test.ts",
+      "sourceSha256": "93c0a980ff61cd102ab4339c0e84ea673e3d88ee4a88da51492ec433a39a68c0"
+    },
+    {
+      "id": "ide-github-issues-runtime-subpackage-item",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.subpackage-item.test.ts",
+      "sourceSha256": "2fad80fcbe8cb7d00cc87091ae7fce34a954650e8446ccbf374dcb164c129e13"
+    },
+    {
+      "id": "ide-github-issues-runtime-subpackage-user",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.subpackage-user.test.ts",
+      "sourceSha256": "b5504ae1432588556f30993d93ae2dccfbd0f27876457106afb0a91914cf48de"
+    },
+    {
+      "id": "ide-github-issues-runtime-web-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/github-issues.runtime.web-runtime.test.ts",
+      "sourceSha256": "2cf0345a293123b3be37f091663b77ee2aab1dd7c6d062512a5e6b45242cfb36"
+    },
+    {
+      "id": "ide-hmr-auto-classic-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/hmr-auto-classic.runtime.test.ts",
+      "sourceSha256": "0e26f05df65fc88427a808d2959c4e8b686e6047ce49fb050d8fb0caeb1646f3"
+    },
+    {
+      "id": "ide-index",
+      "status": "blocked",
+      "source": "e2e/ide/index.test.ts",
+      "sourceSha256": "a70f76359813c0fe5c13e77b2c430622cf26aeb4f04d218bd81367738ba690b9"
+    },
+    {
+      "id": "ide-issue-1015-css-hmr-runtime",
+      "status": "blocked",
+      "source": "e2e/ide/issue-1015-css-hmr.runtime.test.ts",
+      "sourceSha256": "ea56b28a4f778bb784e1745b1b6b9ec44e1e2d6d8daa99e03489668beba0bbbf"
+    },
+    {
+      "id": "ide-issue-1029-auto-routes-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-1029-auto-routes.runtime.test.ts",
+      "sourceSha256": "c0cbff284ff60648be3922394474c5cfad02a1dc9b1667fb0bd8a963a4ef8eaf"
+    },
+    {
+      "id": "ide-issue-1034-auto-routes-hmr-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-1034-auto-routes-hmr.runtime.test.ts",
+      "sourceSha256": "89a2e1c1e983755a5fa7d137f22a2cbe3a844fb7d09c45fc768bd7ad9200eb60"
+    },
+    {
+      "id": "ide-issue-1034-auto-routes-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-1034-auto-routes.runtime.test.ts",
+      "sourceSha256": "7af17235a588c76b5cf8cf5f8659b35a7b806ba421ba67e59e5146b2b41f1a4c"
+    },
+    {
+      "id": "ide-issue-1058-template-tags-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-1058-template-tags.runtime.test.ts",
+      "sourceSha256": "00adf03eed85511cd47f33867ed6e1dc897ade9c043671ff6f05a361feb180ea"
+    },
+    {
+      "id": "ide-issue-1065-provider-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1065-provider.runtime.test.ts",
+      "sourceSha256": "f7302c1655cc02eb0b58bd305994b0d5a62ed661c4322a84b9d49366e8ef2387"
+    },
+    {
+      "id": "ide-issue-1072-json-context-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1072-json-context.runtime.test.ts",
+      "sourceSha256": "12ea7f6371de370e35eeabc069996a4206dcf1c047d8e5510b6dfe23f46521e0"
+    },
+    {
+      "id": "ide-issue-1074-doctor-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1074-doctor.runtime.test.ts",
+      "sourceSha256": "59b57da2816ed038303befacb4bd2fcd4bca98041b345901076aa520115fddd5"
+    },
+    {
+      "id": "ide-issue-1081-tailwind-batch-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1081-tailwind-batch.runtime.test.ts",
+      "sourceSha256": "ed91eaa2240e20a2933ea06d4af702114926a244a3d23d9bfa8bf612e00b8f56"
+    },
+    {
+      "id": "ide-issue-1081-tailwind-snapshot-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1081-tailwind-snapshot.runtime.test.ts",
+      "sourceSha256": "111b0581e37d574f610d98965430b3c69d6f2f8aa1dfa1f2dcd327a54d97e770"
+    },
+    {
+      "id": "ide-issue-1081-transaction-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1081-transaction.runtime.test.ts",
+      "sourceSha256": "55b91828b685593ac7dbb767bcde054547020b1c458dd0fe85d5fca958341b83"
+    },
+    {
+      "id": "ide-issue-1082-confirmation-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-1082-confirmation.runtime.test.ts",
+      "sourceSha256": "372985c7db5f0ccfb49df364a762cc41e6e091b5fdb85f1711201e8cc1213f36"
+    },
+    {
+      "id": "ide-issue-1126-1128",
+      "status": "unknown",
+      "source": "e2e/ide/issue-1126-1128.test.ts",
+      "sourceSha256": "64f8b59464f1c3e9136ea97ee8b96c1b253a2e6aef3862f4293c57ef159f3f97"
+    },
+    {
+      "id": "ide-issue-1134-native-batch-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1134-native-batch.runtime.test.ts",
+      "sourceSha256": "2c0227090bacbeaa0adad1fe3850cb69475c0fc6392a00bed823bd05098cd377"
+    },
+    {
+      "id": "ide-issue-1134-native-topology-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/issue-1134-native-topology.runtime.test.ts",
+      "sourceSha256": "bf35213fc2a1b1f2a0343bfb86c080fbc27477bc0a6b55d459025356b31edf7c"
+    },
+    {
+      "id": "ide-issue-1140-mode-cache-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/issue-1140-mode-cache.runtime.test.ts",
+      "sourceSha256": "92f7cdc4ba0cfe041d874e8daa52ab607b36a163d862157811b835000b009850"
+    },
+    {
+      "id": "ide-issue-1172",
+      "status": "blocked",
+      "source": "e2e/ide/issue-1172.test.ts",
+      "sourceSha256": "ac66f783c207546278b17eed27f40fe33b487e6c0d85b98a4b5947cfda3882a7"
+    },
+    {
+      "id": "ide-issue-1174-native-slot-opt-in",
+      "status": "passed",
+      "source": "e2e/ide/issue-1174.native-slot-opt-in.test.ts",
+      "sourceSha256": "37c2332c56cb7cb55a8e8fde9c02cfc4c63fc23c3c423f55f41946845cf06f06"
+    },
+    {
+      "id": "ide-issue-1182-production-mount-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-1182-production-mount.runtime.test.ts",
+      "sourceSha256": "618a54f29892015fa49dd32b960179d90ee19c02a452883b4ca6f892e58e65d7"
+    },
+    {
+      "id": "ide-issue-1185-sibling-entry-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-1185-sibling-entry.runtime.test.ts",
+      "sourceSha256": "dbb715c07236a1226d8523624715608f951670d1a1ce9775497a108f86e8373f"
+    },
+    {
+      "id": "ide-issue-1234-automator-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-1234-automator.runtime.test.ts",
+      "sourceSha256": "3a26d472f638b6226f7b0436640efc5c8fa1fe5f914d68a7c057ea511a8cd6e8"
+    },
+    {
+      "id": "ide-issue-340-hoist-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-340-hoist.runtime.test.ts",
+      "sourceSha256": "be11ae8a0779e4fdf9a915c4bff48e6cca7ac23bd0c327dbbb1191f1390a54b8"
+    },
+    {
+      "id": "ide-issue-963-plugin-es6-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-963-plugin-es6.runtime.test.ts",
+      "sourceSha256": "f78ef216dbad077b8efdadd4b295e8eb146799dfbcf22cca6a1261884cdf94ff"
+    },
+    {
+      "id": "ide-issue-969-launch-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-969-launch.runtime.test.ts",
+      "sourceSha256": "c3bb836cbedc126054c8db2b84f4efc99cc95628822e3953e0c3dad18853ea9b"
+    },
+    {
+      "id": "ide-issue-997-rebuild-runtime",
+      "status": "passed",
+      "source": "e2e/ide/issue-997-rebuild.runtime.test.ts",
+      "sourceSha256": "17b8fedc359f6803bfec9054acc3b2d8b890636ae3ad7972210efbf7ccdd8db5"
+    },
+    {
+      "id": "ide-issue-998-tailwind-runtime",
+      "status": "failed",
+      "source": "e2e/ide/issue-998-tailwind.runtime.test.ts",
+      "sourceSha256": "203e7f827f9890a2cf169ff7604b5f18bc7b1a46122b4e82e85dca8c3e51907f"
+    },
+    {
+      "id": "ide-layout-power-demo-message-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/layout-power-demo-message.runtime.test.ts",
+      "sourceSha256": "cfd54ae6c004d655ced88f63ffd4ea3b47a1439cc2543a690e12f1b904fa155d"
+    },
+    {
+      "id": "ide-layout-power-demo-runtime-vendor-hmr",
+      "status": "unknown",
+      "source": "e2e/ide/layout-power-demo.runtime-vendor-hmr.test.ts",
+      "sourceSha256": "acb1483f02a3f8bd92343af76a7bdbb9601d63fb7f7c104a7e4dbabc1eadc1ba"
+    },
+    {
+      "id": "ide-lib-host-runtime",
+      "status": "failed",
+      "source": "e2e/ide/lib-host.runtime.test.ts",
+      "sourceSha256": "de77323634ab06aae56f31c806f02aeb052b9dd6080cc48bb32eef1da92556bb"
+    },
+    {
+      "id": "ide-lifecycle-compare",
+      "status": "passed",
+      "source": "e2e/ide/lifecycle-compare.test.ts",
+      "sourceSha256": "6fbc3be480acd8813786800574e2c780b5e6d50d311df809613a67075def079e"
+    },
+    {
+      "id": "ide-mcp-runtime-tools-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/mcp-runtime-tools.runtime.test.ts",
+      "sourceSha256": "bdce6e46c3c7ee7bb271fcedd90cb05e17f22b59a56df2a1491dee67af399336"
+    },
+    {
+      "id": "ide-platform-host-runtime",
+      "status": "passed",
+      "source": "e2e/ide/platform-host.runtime.test.ts",
+      "sourceSha256": "f8ed2e849e3aa1648d8a4f8a7bb5528b58b7345d3a968cd60ea8cf9e3c57d970"
+    },
+    {
+      "id": "ide-plugin-demo-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/plugin-demo.runtime.test.ts",
+      "sourceSha256": "8103a506e28b087cf434942de58845e77be5eb54b6a2d0dfa2f00ead859650e2"
+    },
+    {
+      "id": "ide-react-runtime-spike-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/react-runtime-spike.runtime.test.ts",
+      "sourceSha256": "f900d3e6599db231c53b0cef357f489f25f94cfdaa2d8ab4541c6f8642008aef"
+    },
+    {
+      "id": "ide-request-clients-real-native-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/request-clients-real-native.runtime.test.ts",
+      "sourceSha256": "64b4ecee21f4d61fed053746e48dcddb2ab9283d43e64d43557b89d5bcf76afc"
+    },
+    {
+      "id": "ide-request-clients-real-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/request-clients-real.runtime.test.ts",
+      "sourceSha256": "970acc919e83de01945d80bc3be230fe2c37f4bcaad73ca1d915764eb4b67111"
+    },
+    {
+      "id": "ide-runtimeerrors",
+      "status": "unknown",
+      "source": "e2e/ide/runtimeErrors.test.ts",
+      "sourceSha256": "fb769a8b5b966135e7db599d360bea461cfe162b8b09ff7cd20d056c90f61d11"
+    },
+    {
+      "id": "ide-script-setup-external-src-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/script-setup-external-src.runtime.test.ts",
+      "sourceSha256": "7a69ddf05dc8359bb629a1eb600b3c1a46aa00bc7f938497dbf11f37fd5c660b"
+    },
+    {
+      "id": "ide-shared-styles-runtime",
+      "status": "blocked",
+      "source": "e2e/ide/shared-styles.runtime.test.ts",
+      "sourceSha256": "a9c1b5417b6b5d905c07d3e259135947729726fbe90f95ee6b14327cc9c1d0dc"
+    },
+    {
+      "id": "ide-shared-taro-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/shared-taro-hmr.runtime.test.ts",
+      "sourceSha256": "04185d177dba70f5e112160af50fcc040b7a3dd70a038ff2cd7d780e4f52ce8b"
+    },
+    {
+      "id": "ide-stateful-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/stateful-hmr.runtime.test.ts",
+      "sourceSha256": "1d741c3f7e97c5f15c1eb8b4139028e533c7c4c8ff494e7c522b6346b263c320"
+    },
+    {
+      "id": "ide-stream-capability-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/stream-capability.runtime.test.ts",
+      "sourceSha256": "01ff48516cec2de9ecf0ebbfabeda0771ca499629618b4264419a6c16b8a01f1"
+    },
+    {
+      "id": "ide-subpackage-shared-strategy-complex-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/subpackage-shared-strategy-complex.runtime.test.ts",
+      "sourceSha256": "4008fe05619d9190e68516d087a3c1ed29578631e3911de640f9b0d0d7c07585"
+    },
+    {
+      "id": "ide-swan-runtime-optional",
+      "status": "unknown",
+      "source": "e2e/ide/swan-runtime.optional.test.ts",
+      "sourceSha256": "8e2c4e3e5c32f71f5df2aa25295836f1a2859fd4a30fc6a81a53aca0fde41279"
+    },
+    {
+      "id": "ide-tdesign-dialog-import-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/tdesign-dialog-import.runtime.test.ts",
+      "sourceSha256": "321addabccfcdae258ca0beabf294c7481ddbebfc8987bac1d4d7c8d39c67bdf"
+    },
+    {
+      "id": "ide-tdesign-miniprogram-starter-retail-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/tdesign-miniprogram-starter-retail.runtime.test.ts",
+      "sourceSha256": "02db82992ac365172c556e5139358dbed3974e98d50cf53a38807ccf1c06f44e"
+    },
+    {
+      "id": "ide-template-dev-open-all-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/template-dev-open-all.runtime.test.ts",
+      "sourceSha256": "07cc3ad0717e892b09c599dc066ae8c9761aa4400c073826031ba43fcf35e58a"
+    },
+    {
+      "id": "ide-template-multi-platform-sfc-swan-optional",
+      "status": "unknown",
+      "source": "e2e/ide/template-multi-platform-sfc.swan.optional.test.ts",
+      "sourceSha256": "b570eaeebb27a7668766308f882a37b0874dfb5c647e953cc33856b0b1a6c237"
+    },
+    {
+      "id": "ide-template-multi-platform-swan-optional",
+      "status": "unknown",
+      "source": "e2e/ide/template-multi-platform.swan.optional.test.ts",
+      "sourceSha256": "0fa4b2fd693209de7baa15a6a0f2c68f5be736d646064eaf7fe557aa6be0d190"
+    },
+    {
+      "id": "ide-template-retail-checkout-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/template-retail-checkout.runtime.test.ts",
+      "sourceSha256": "1f331e8f65d84e7144ce28c56845ad5baac6631b9f97de87ccbc08516cbd5817"
+    },
+    {
+      "id": "ide-template-tailwindcss-dev-open-multi-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/template-tailwindcss-dev-open-multi.runtime.test.ts",
+      "sourceSha256": "ec7c7021fefc18d4dcad13dd28a02f8953a311a4bb0ace4b8b9690b3a5cdced5"
+    },
+    {
+      "id": "ide-template-tailwindcss-tdesign-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/template-tailwindcss-tdesign-hmr.runtime.test.ts",
+      "sourceSha256": "4d68734c662133b789f2787b0fe21e17f041c5bea56c8fd891903923cbe16a13"
+    },
+    {
+      "id": "ide-template-weapp-vite-multi-platform-sfc-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-multi-platform-sfc-template.test.ts",
+      "sourceSha256": "41dbc3838ad1a3b7ab6d6d7cd03df7690586d2d0623ca84214cbac2fcec51a8b"
+    },
+    {
+      "id": "ide-template-weapp-vite-multi-platform-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-multi-platform-template.test.ts",
+      "sourceSha256": "5968eea1626e824c54b73555a0d655059e20e2fe87e3fff0908ca9e119da32e7"
+    },
+    {
+      "id": "ide-template-weapp-vite-tailwindcss-tdesign-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-tailwindcss-tdesign-template.test.ts",
+      "sourceSha256": "a3e54f3233ab2e52ffeb1ee08322632bb33cf9355e420e836c48e8c163698ecb"
+    },
+    {
+      "id": "ide-template-weapp-vite-tailwindcss-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-tailwindcss-template.test.ts",
+      "sourceSha256": "422f045bdb5e482ba057e3645c79df56f9addad29a88c603d00e862e485e35a7"
+    },
+    {
+      "id": "ide-template-weapp-vite-tailwindcss-vant-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-tailwindcss-vant-template.test.ts",
+      "sourceSha256": "9087fce709a9b08037a8fd4ea4ed4ac78d095efcacae31beaf5aa75e625c654a"
+    },
+    {
+      "id": "ide-template-weapp-vite-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-template.test.ts",
+      "sourceSha256": "73b0d7c0cfea2e161f3ad30c1bff24c097736d42f3da18745ddd3327a72e2431"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-retail-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-retail-template.test.ts",
+      "sourceSha256": "9c09108a04df2d5082ed34cfc5c2d1ee0467b448c4ef9f1d7934bce860c60333"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-retail-template-feedback-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-retail-template.feedback-runtime.test.ts",
+      "sourceSha256": "1dd6d2f1017b824460c7185fc218344a179851b01bbbc0a65215390c4f666026"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.test.ts",
+      "sourceSha256": "ad2fd61655106a0305b4e7ef65e6e46362779b9fb70a4d25281600a85191ac76"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-class-style-binding",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.class-style-binding.test.ts",
+      "sourceSha256": "56fbd815701dac3cadbb7d25e39da427bd939bd8921efa61fd93fe61b9b4a7af"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-form",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.form.test.ts",
+      "sourceSha256": "2e95a6a4ed6668955f06105339a17358d2eea7cda0134e0f0e937f7c47662580"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-layout-feedback-dialog",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.layout-feedback-dialog.test.ts",
+      "sourceSha256": "0521e1460136791e6b436a250cf2eef14928746922418df488444bf246c4eff7"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-tailwindcss-tdesign-template-runtime-errors",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-tailwindcss-tdesign-template.runtime-errors.test.ts",
+      "sourceSha256": "74938a238e9f779ca163b7a920556f3eacf6eb979a497afafe1bca43061190db"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-template",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-template.test.ts",
+      "sourceSha256": "5c7bd12f1c2daeadbc04637ab5cfd0956051cb163c6aa1c2eabdd03357ef5a14"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-template-dynamic-bindings",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-template.dynamic-bindings.test.ts",
+      "sourceSha256": "40216165221e3b11e82acb221ba82c1d7520d374d1601f96ff2cee4db5ae0a2c"
+    },
+    {
+      "id": "ide-template-weapp-vite-wevu-template-layouts-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/template-weapp-vite-wevu-template.layouts.runtime.test.ts",
+      "sourceSha256": "54973bdcafe8f2fac188f650ca0ecf0e106b2ff965bf0722b3ac58d35354259d"
+    },
+    {
+      "id": "ide-template-wevu-features-app",
+      "status": "unknown",
+      "source": "e2e/ide/template-wevu-features-app.test.ts",
+      "sourceSha256": "7c4bb383dc37836820edbb9ba3aa4be4f1a8d739644d37fd6325ffd13224cdc7"
+    },
+    {
+      "id": "ide-template-wevu-tailwindcss-tdesign-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/template-wevu-tailwindcss-tdesign-hmr.runtime.test.ts",
+      "sourceSha256": "d0d1c1a02b00d181d3ee0481c8abe760791cec1549454ff5348ea72d475c663f"
+    },
+    {
+      "id": "ide-uview-plus-compat-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/uview-plus-compat.runtime.test.ts",
+      "sourceSha256": "bee1d14e1c79c5429bed9fd01367bc9dfcbd7711b5180563c71a70cd30ee7e1c"
+    },
+    {
+      "id": "ide-vite-native-ts-worker-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/vite-native-ts.worker.runtime.test.ts",
+      "sourceSha256": "65a4d2da00d5f83f14ac66e1e44a72f534fec928ef33d39177772db32b4e9d83"
+    },
+    {
+      "id": "ide-vite-plugin-npm-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/vite-plugin-npm.runtime.test.ts",
+      "sourceSha256": "fddeb53c0e5bd6fc665b2589564db6cf5a7c00f3c07c37902036c1361831bbab"
+    },
+    {
+      "id": "ide-vite-plugin-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/vite-plugin.runtime.test.ts",
+      "sourceSha256": "2570ba478473914ac7e08770ba8ef215214d662a5d39463715e83d7b7a815683"
+    },
+    {
+      "id": "ide-vue-mini-issue151-wevu-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/vue-mini-issue151-wevu.runtime.test.ts",
+      "sourceSha256": "85ec508f5a1924d7c3f4a10f92f71ddb3ff02d223deb352ce6f95788d5c404eb"
+    },
+    {
+      "id": "ide-wevu-composition-api-weapp",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-composition-api.weapp.test.ts",
+      "sourceSha256": "85b133d3c1e3f8e4d9b9fa49429754320487e1acefc30dbbc31091aec718713f"
+    },
+    {
+      "id": "ide-wevu-comprehensive-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-comprehensive.runtime.test.ts",
+      "sourceSha256": "c362305173db27efe453bd747eaec1ad23fbd50702076a61eb27755f055f3c8c"
+    },
+    {
+      "id": "ide-wevu-features-runtime-behavior",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-features.runtime.behavior.test.ts",
+      "sourceSha256": "c2bb7a29b278b209b5a5dc08756fccd4ad811c3043406dca0493a39cfacc6b80"
+    },
+    {
+      "id": "ide-wevu-features-runtime-router",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-features.runtime.router.test.ts",
+      "sourceSha256": "e68ff1b1e2f309948c299047dfc8857e633252c2cd601a9f2cb3032c1a56f97c"
+    },
+    {
+      "id": "ide-wevu-features-runtime-subpath",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-features.runtime.subpath.test.ts",
+      "sourceSha256": "a6842516155578f3a8c7a67ee0fce23c0c787b359f5f94656980cf0d4b20e6b9"
+    },
+    {
+      "id": "ide-wevu-initial-style-runtime",
+      "status": "blocked",
+      "source": "e2e/ide/wevu-initial-style.runtime.test.ts",
+      "sourceSha256": "1ebbfc455636a41a02d1e1044351d0b6e3247de431068cfce931bc8a980ffac0"
+    },
+    {
+      "id": "ide-wevu-json-render-runtime",
+      "status": "passed",
+      "source": "e2e/ide/wevu-json-render.runtime.test.ts",
+      "sourceSha256": "f49f560859c3c7d9d917de2433d7e9ae1b117bb735547e688888a18885851c1e"
+    },
+    {
+      "id": "ide-wevu-jsx-tsx-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-jsx-tsx.hmr.runtime.test.ts",
+      "sourceSha256": "61a7577c64308cd6f9d41cc3130a36023ec9fc5f27acc90ccc8cb6c6e7f576c4"
+    },
+    {
+      "id": "ide-wevu-jsx-tsx-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-jsx-tsx.runtime.test.ts",
+      "sourceSha256": "0bfc440ddf5527a0c103ed7ba54b9657dcb09665edd0ca0431dd32fb6ee4af95"
+    },
+    {
+      "id": "ide-wevu-query-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-query.runtime.test.ts",
+      "sourceSha256": "0fb610f29d87d60bf3eab2c0483df9f53249d7f7f7939e495a01a90028c045a0"
+    },
+    {
+      "id": "ide-wevu-router-hmr-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-router-hmr.runtime.test.ts",
+      "sourceSha256": "c351a6251bdd13a7a4f391c58bbe4006a5f9c1e6dbc1e81d7cb5e259d649544d"
+    },
+    {
+      "id": "ide-wevu-runtime-class-computed-weapp",
+      "status": "passed",
+      "source": "e2e/ide/wevu-runtime.class-computed.weapp.test.ts",
+      "sourceSha256": "837f77dfd34c1ee3989a86b5b6727efc3f8b54e476e6d0e7f4f66821744f3b17"
+    },
+    {
+      "id": "ide-wevu-runtime-core-hmr",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-runtime.core-hmr.test.ts",
+      "sourceSha256": "626f79b35d144f9e5290f12de0b295cab60e13e226c02f9db3f9b13460db9762"
+    },
+    {
+      "id": "ide-wevu-runtime-demo-request-globals-weapp",
+      "status": "passed",
+      "source": "e2e/ide/wevu-runtime-demo.request-globals.weapp.test.ts",
+      "sourceSha256": "568a68a05a1113a2528d6b8eda50c17871abe8723e0edb5be75750d9551f8508"
+    },
+    {
+      "id": "ide-wevu-runtime-demo-vue-query-weapp",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-runtime-demo.vue-query.weapp.test.ts",
+      "sourceSha256": "cda1d5b710793fde3d569e4aceba131e2d7b44ae08cf0a889f388f7c27fe86e8"
+    },
+    {
+      "id": "ide-wevu-runtime-function-props-weapp",
+      "status": "passed",
+      "source": "e2e/ide/wevu-runtime.function-props.weapp.test.ts",
+      "sourceSha256": "45b4582ccebdee6a6dc378a7d6177dfee701a8e06553dcea09859e25a5aa5244"
+    },
+    {
+      "id": "ide-wevu-runtime-inline-object-reactivity-weapp",
+      "status": "passed",
+      "source": "e2e/ide/wevu-runtime.inline-object-reactivity.weapp.test.ts",
+      "sourceSha256": "c61214496728a8a3eaa7643efa16846ddc869025cdd5a29703440477657175e6"
+    },
+    {
+      "id": "ide-wevu-runtime-layout-shared-template-wxs-hmr",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-runtime.layout-shared-template-wxs.hmr.test.ts",
+      "sourceSha256": "3c9d82a6665105302f8e6e15fa9fbf269adef6a404ba92f9372b9d7fc619ff4c"
+    },
+    {
+      "id": "ide-wevu-runtime-pruning",
+      "status": "failed",
+      "source": "e2e/ide/wevu-runtime.pruning.test.ts",
+      "sourceSha256": "a4e93fcdac0d41132b78705d593d50c89231b866644f46705ee76a11a2333ec7"
+    },
+    {
+      "id": "ide-wevu-runtime-shared-template-wxs-hmr",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-runtime.shared-template-wxs.hmr.test.ts",
+      "sourceSha256": "31542defe4704b2a6c87ddf25f10bed99222c422d81d77c60bc549589fd16815"
+    },
+    {
+      "id": "ide-wevu-runtime-weapp",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-runtime.weapp.test.ts",
+      "sourceSha256": "aab62fcb2e75910a705479261af74bb50242d92a2adae2f7665e169eea42c718"
+    },
+    {
+      "id": "ide-wevu-subpackage-placement-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-subpackage-placement.runtime.test.ts",
+      "sourceSha256": "34fb1ae11d4b6518e561972bb98707c0eb71a778c50931855bbffe9cba6ea89c"
+    },
+    {
+      "id": "ide-wevu-vue-demo-script-setup-emit-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-vue-demo.script-setup.emit.runtime.test.ts",
+      "sourceSha256": "58aa817664716aeb910fddca1a1036262b6ceef787955d651ca80d925f714667"
+    },
+    {
+      "id": "ide-wevu-watch",
+      "status": "unknown",
+      "source": "e2e/ide/wevu-watch.test.ts",
+      "sourceSha256": "c8e5185618b68f0faff51f58bb40f56c3800c14e151f4f126f66c05c4264c695"
+    },
+    {
+      "id": "ide-worker-host-runtime",
+      "status": "passed",
+      "source": "e2e/ide/worker-host.runtime.test.ts",
+      "sourceSha256": "ec7dc132ab84eef94dd03563c7eecad181df6468611ebc793912adb4adfa0e35"
+    },
+    {
+      "id": "ide-wot-ui-compat-runtime",
+      "status": "unknown",
+      "source": "e2e/ide/wot-ui-compat.runtime.test.ts",
+      "sourceSha256": "95ecf43a07121ff34d292010afefe7d0440045b3205df867bbef08d2c4c7194d"
+    },
+    {
+      "id": "ide-wxml-transform-runtime",
+      "status": "passed",
+      "source": "e2e/ide/wxml-transform.runtime.test.ts",
+      "sourceSha256": "697e7f72f545f1c8df358930c5ecca297d8888bb16f0cf01a4bc88084392d4a2"
+    },
+    {
+      "id": "ide-wxml-transform-watch-runtime",
+      "status": "passed",
+      "source": "e2e/ide/wxml-transform-watch.runtime.test.ts",
+      "sourceSha256": "2e57bd0297dbbcbd5fa7d0cab99567e0d3d6268d64d5e81cdef6f88d3b81faae"
+    }
+  ],
+  "officialRegressionIds": [
+    "ide-app-lifecycle",
+    "ide-app-prelude-native-runtime",
+    "ide-auto-routes-define-app-json-runtime",
+    "ide-body-blob-runtime",
+    "ide-github-issues-runtime-component-instance-apis",
+    "ide-github-issues-runtime-issue1013",
+    "ide-github-issues-runtime-issue1014",
+    "ide-github-issues-runtime-issue1015",
+    "ide-github-issues-runtime-issue1138",
+    "ide-github-issues-runtime-issue289",
+    "ide-github-issues-runtime-issue547",
+    "ide-issue-1029-auto-routes-runtime",
+    "ide-issue-1034-auto-routes-hmr-runtime",
+    "ide-issue-1034-auto-routes-runtime",
+    "ide-issue-1058-template-tags-runtime",
+    "ide-issue-1082-confirmation-runtime",
+    "ide-issue-1174-native-slot-opt-in",
+    "ide-issue-1182-production-mount-runtime",
+    "ide-issue-1185-sibling-entry-runtime",
+    "ide-issue-340-hoist-runtime",
+    "ide-issue-963-plugin-es6-runtime",
+    "ide-issue-969-launch-runtime",
+    "ide-issue-997-rebuild-runtime",
+    "ide-lifecycle-compare",
+    "ide-platform-host-runtime",
+    "ide-wevu-json-render-runtime",
+    "ide-wevu-runtime-class-computed-weapp",
+    "ide-wevu-runtime-demo-request-globals-weapp",
+    "ide-wevu-runtime-function-props-weapp",
+    "ide-wevu-runtime-inline-object-reactivity-weapp",
+    "ide-worker-host-runtime",
+    "ide-wxml-transform-runtime",
+    "ide-wxml-transform-watch-runtime"
+  ],
+  "runtimeContractIds": [
+    "animation-001",
+    "api-unsupported-002",
+    "api-unsupported-003",
+    "api-unsupported-004",
+    "api-unsupported-007",
+    "api-unsupported-008",
+    "api-unsupported-009",
+    "api-unsupported-010",
+    "api-unsupported-012",
+    "canvas-001",
+    "canvas-002",
+    "capability-001",
+    "component-event-001",
+    "component-event-002",
+    "component-event-003",
+    "component-relations-001",
+    "component-relations-002",
+    "component-relations-003",
+    "component-selection-001",
+    "component-selection-002",
+    "component-selection-003",
+    "component-selection-004",
+    "data-001",
+    "data-002",
+    "data-003",
+    "event-001",
+    "event-002",
+    "event-control-001",
+    "event-metadata-values-001",
+    "life-001",
+    "life-002",
+    "nav-001",
+    "nav-002",
+    "nav-003",
+    "nav-004",
+    "nav-005",
+    "nav-006",
+    "observer-intersection-001",
+    "observer-intersection-002",
+    "observer-intersection-003",
+    "observer-media-001",
+    "observer-media-002",
+    "offscreen-001",
+    "page-stack-001",
+    "provider-account-001",
+    "provider-auth-001",
+    "provider-auth-002",
+    "provider-auth-003",
+    "provider-device-001",
+    "provider-device-002",
+    "provider-device-003",
+    "provider-device-004",
+    "provider-device-005",
+    "provider-ext-config-001",
+    "provider-filesystem-001",
+    "provider-filesystem-003",
+    "provider-filesystem-004",
+    "provider-media-005",
+    "provider-media-006",
+    "provider-media-007",
+    "provider-media-008",
+    "provider-mini-program-001",
+    "provider-network-001",
+    "provider-network-002",
+    "provider-network-003",
+    "provider-payment-001",
+    "provider-permission-001",
+    "provider-permission-002",
+    "provider-permission-003",
+    "provider-share-001",
+    "provider-share-002",
+    "provider-system-001",
+    "provider-system-003",
+    "provider-system-004",
+    "provider-system-005",
+    "provider-system-006",
+    "provider-system-007",
+    "provider-system-008",
+    "selector-001",
+    "selector-002",
+    "selector-003",
+    "selector-004",
+    "selector-005",
+    "selector-metadata-values-001",
+    "storage-001",
+    "storage-002",
+    "storage-003",
+    "storage-004",
+    "style-border-001",
+    "style-flex-order-001",
+    "style-opacity-group-001",
+    "style-overflow-001",
+    "style-text-flow-001",
+    "style-transform-2d-001",
+    "timer-001",
+    "ui-001",
+    "ui-002",
+    "view-001",
+    "view-002",
+    "view-image-static-001"
+  ],
+  "apiInventorySha256": "e9aeeda19fbc8d7ef942c4502b6001696edc8b7099fd04703b218dbd473d2e4d",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "5e681b304e4eb7e7c0290844867ef1ad4ed8f187f6cbfddb36b2727952e9377a"
+    },
+    {
+      "path": ".github/workflows/modern-view.yml",
+      "sha256": "5ffe5dc03fb046f89b966ff5107831913303e36710ae0f148beba665eddc7782"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "bf0e4200141515fb1aeedef679d766765d670c910fdabec1c6dd0dde2c3b3a58"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "4c704d6988c3fa9470cbfcf652ea1b606feeb599fbdb1ce8b3a7818517b1aedc"
+    },
+    {
+      "path": "crates/container-bridge/Cargo.toml",
+      "sha256": "a844ea1f4a4aea6c11e951bacbf6f4d532feb4d22d29ff579e1c8cf7578fee47"
+    },
+    {
+      "path": "crates/container-bridge/src/lib.rs",
+      "sha256": "c99f29b883d8df61a2b47dff7e1cb5062ab117f1e518507b93d8773fc639cf41"
+    },
+    {
+      "path": "crates/container-core/Cargo.toml",
+      "sha256": "3f4851759ce188d990b6dcec2001f00a285232d961ad7d17bcdf7db007e72f5d"
+    },
+    {
+      "path": "crates/container-core/src/lib.rs",
+      "sha256": "624aa9ade8364e55ece028df1da95d7b4c241a1d853fca17a58a9c3604e96679"
+    },
+    {
+      "path": "crates/container-core/tests/support/modern_view.rs",
+      "sha256": "442c4826d601afa181fdaeaeb3cca06bfc844a5abd0c28f884ccde0e71a36c28"
+    },
+    {
+      "path": "crates/container-core/tests/support/view_engine.rs",
+      "sha256": "7f76214de9549a49bbafe8705dfd9d64bf430f49cc7b38ec247f60e0e39cce17"
+    },
+    {
+      "path": "crates/container-core/tests/support/view_perf.rs",
+      "sha256": "9cd58b3702c14d3dfd3484f3fc2b7b664a07c85b17fdb5c968ad990e0e88f95f"
+    },
+    {
+      "path": "crates/container-core/tests/support/view_render.rs",
+      "sha256": "2cefbcc50a4709531d91ba0501a43eae17c68a10e6bbe3e74487f68272b0b8ac"
+    },
+    {
+      "path": "crates/container-engine-quickjs/Cargo.toml",
+      "sha256": "0210e2612609a33b16acceeaeef125d1a4d8306a2610e83731dc0d238232f39a"
+    },
+    {
+      "path": "crates/container-engine-quickjs/src/lib.rs",
+      "sha256": "cae1f498933cd29b9db4e10ff06a094d28ba355fde415ce3a27db685fb7fd387"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/account_info.rs",
+      "sha256": "97d58ad6c8185e2aeea721be9f0f3108f281d60102c30c6ddaf1ac3346eb0e2b"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/redirect_mini_program.rs",
+      "sha256": "44422db2746567adf15315a1d703ee894b238c491f8e377964d0ed6d86f1b5a5"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/save_file.rs",
+      "sha256": "88a33b3ceda7a99ba106e5db646019d4061cfd2f89d8842acdb7e5e4a25d9907"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/share.rs",
+      "sha256": "d217883d89562eeb94def153087a3c1a5cd8427b356db27fa636c4d29db9e95e"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/storage.rs",
+      "sha256": "55e5188bc2b0c4159c73fa2a9bf97f2e118ae55731616feb2f7e8b942641d4a7"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/support/timer_contract.rs",
+      "sha256": "a57823377152f6630f39744e1b12b7e44bf396d8539361a992eff55e94254104"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/timers.rs",
+      "sha256": "e87d028876c18954cb514ba19c8b85980df7a8ecadafc7c048016258e41eb8a3"
+    },
+    {
+      "path": "crates/container-engine-quickjs/tests/view_conformance.rs",
+      "sha256": "8445066bdfeedf850a629d8dcd42724f6c1b677ed07dae7f6abc0eee8687674e"
+    },
+    {
+      "path": "crates/container-engine-v8/Cargo.toml",
+      "sha256": "eec722e7faa10de6eb7a1b15ccf56cf7ca92bd7f6481b371663f56685e21d007"
+    },
+    {
+      "path": "crates/container-engine-v8/src/lib.rs",
+      "sha256": "e46f8ce4558d925d6e20fb8525a753aeda2a3e817bed3a67821a2b2ec5855d60"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/account_info.rs",
+      "sha256": "c382b1bcc8fc9c402f243d42550c9b602b17c7ed80e0e52d5ee8c71dd214a099"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/redirect_mini_program.rs",
+      "sha256": "927d28b500b223f3594c0c2277d9eda6c8c582e9022f9de42b0ab85d27442ff2"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/save_file.rs",
+      "sha256": "ce3bebd72088e397715ced3e1f649d960f323213c9e328ce50df2b99ebd8cb31"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/session_lifecycle.rs",
+      "sha256": "bcad2513922b914982c431c65d943b2068acfbfbed9cde06be35eba5c22be7b6"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/share.rs",
+      "sha256": "1d1a05543aa2d915411f3e769e06fb0e0df6ec29cd00f897480f2318c494917a"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/storage.rs",
+      "sha256": "18bb9009866d109bc04b632dac34f50a4790c0de45b9146ef6229f24fed81110"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/timers.rs",
+      "sha256": "2f82befe4b75a49faaf668fa0afe7f76d9314b4fccf2d2a16c240489a3c3edd5"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/view.rs",
+      "sha256": "6583b4980378c352375cf17ad7907fdf43c353abec2cfb59487f806ab01801d0"
+    },
+    {
+      "path": "crates/container-engine-v8/tests/view_conformance.rs",
+      "sha256": "805042c660fe3bde9bb79dd5150a16a76e2ca691cc3bc9cd2c43d76aedecb2e1"
+    },
+    {
+      "path": "crates/container-host-android/Cargo.toml",
+      "sha256": "b6e3834a819eaa787cfe39ff894dffa849e4028eb6f8c9eeb62283ca0d8b2a3f"
+    },
+    {
+      "path": "crates/container-host-android/src/lib.rs",
+      "sha256": "a64e2564807ef5bc2c20393b8c4775cbdf18dd768781eb444e265e06f920c27a"
+    },
+    {
+      "path": "crates/container-host-common/Cargo.toml",
+      "sha256": "f9b1a52591105daea9125c791c3596e499bab4cd52c41eeb2a0e06c63eae9b14"
+    },
+    {
+      "path": "crates/container-host-common/src/lib.rs",
+      "sha256": "7c23361802886a47ba0d083219edc2d875edab19b073d115be1b2d999fde4d6a"
+    },
+    {
+      "path": "crates/container-host-desktop/Cargo.toml",
+      "sha256": "776a87dcaee0eea4cddfadc063a12256585af80e8c9514907b0c0ff12b6eabf8"
+    },
+    {
+      "path": "crates/container-host-desktop/src/lib.rs",
+      "sha256": "b71bf5c39f274e1c735176d866ce6567fa05779cd41eba561211850864e38d98"
+    },
+    {
+      "path": "crates/container-host-harmony/Cargo.toml",
+      "sha256": "c01588bf3352cc83b5c9ef42521926d8ae5f66ea0b4f1b175b7bce8c7a3635ed"
+    },
+    {
+      "path": "crates/container-host-harmony/src/lib.rs",
+      "sha256": "50c7cea712a4dcd09d3172786720ba91585d284a55efd87bdf762642727c2631"
+    },
+    {
+      "path": "crates/container-host-harmony/src/live_tests.rs",
+      "sha256": "42dd6fcd7e257264e5e805ede0299cd5ed9c177fba934a8365f38e242306efb4"
+    },
+    {
+      "path": "crates/container-host-ios/Cargo.toml",
+      "sha256": "482b06b65906d8caea60f276d95f487c6cb93d005e14547d6a62b25f3973b5ce"
+    },
+    {
+      "path": "crates/container-host-ios/src/lib.rs",
+      "sha256": "6ca3af79a051d27bf70ae238422e7821d7e9b7ada886488957b0bf319ef1f104"
+    },
+    {
+      "path": "crates/container-host-web/Cargo.toml",
+      "sha256": "9d1e037c9c706c5fa18f54b7089d1af2a38b72d630c6dcc57c410b29f14f94e2"
+    },
+    {
+      "path": "crates/container-host-web/src/lib.rs",
+      "sha256": "2be30f88895186922f6219d843e8c4f0bea72c214dc26061bc75537fa8e820c7"
+    },
+    {
+      "path": "crates/container-ir/Cargo.toml",
+      "sha256": "0c1adacdbabb61fad26ff79d0046e797bc732248d07551ba86675279f728de8a"
+    },
+    {
+      "path": "crates/container-ir/src/lib.rs",
+      "sha256": "5ec60dbeb3f89ab1442dea18b79bde535df723c623c76b36984411164c375e84"
+    },
+    {
+      "path": "crates/container-ir/tests/formatting_whitespace.rs",
+      "sha256": "6aad8c3d2d80f00959b0e74e34b87cccd74b2527e1c3f1376e419a187a3eb8ef"
+    },
+    {
+      "path": "crates/container-ir/tests/key_scopes.rs",
+      "sha256": "c9ddeb4ff1afe310557bdf852087ccdd75014c4af86bf2a5ae534fdcfcc81ad0"
+    },
+    {
+      "path": "crates/container-ir/tests/lexical_origins.rs",
+      "sha256": "d3d15a93a71ad039e0c94ef68e07ea0e953a2c3a0936754c9ffc41837004e1fb"
+    },
+    {
+      "path": "crates/container-ir/tests/modern_view.rs",
+      "sha256": "efdf2429301dab4c3cde2d70b5d736f90e4e865fc328890b1962ae076cc01dc8"
+    },
+    {
+      "path": "crates/container-ir/tests/source_sites.rs",
+      "sha256": "0b642591ae51b5fc36b65623e0f2225185210e4a54e08cd047bad6efcdcfc453"
+    },
+    {
+      "path": "crates/container-ir/tests/stateful_view_reload.rs",
+      "sha256": "0de62eeb4401aa9f47424ec12241bb4caf2c092f1807e7d001e9349c863fe9c5"
+    },
+    {
+      "path": "crates/container-ir/tests/style_cascade.rs",
+      "sha256": "25ff6bca3a5f05f10205dd068262a3188a4daa6c0b68bf69201aea7104a030c4"
+    },
+    {
+      "path": "crates/container-ir/tests/template_scopes.rs",
+      "sha256": "6bbb58bfb721ae32b86bf323ade4818c33d4e1ed4f1821423443a69e7395c34e"
+    },
+    {
+      "path": "crates/container-ir/tests/text_values_chrome.rs",
+      "sha256": "78e2f237bc004fe95c9a72ad5ee9c7f16438ebbba350b43f989a7ad8e6af8000"
+    },
+    {
+      "path": "crates/container-ir/tests/typed_attributes.rs",
+      "sha256": "b1add88c2fe672394efd48469219ffa99ed53dc18cc1f7800a21ae260f629506"
+    },
+    {
+      "path": "crates/container-ir/tests/wxss_structure.rs",
+      "sha256": "c60b79b16c2ad856c98b42e94ec9f666bdc3cdb9254500345788326e6ea78e88"
+    },
+    {
+      "path": "crates/container-render-skia/Cargo.toml",
+      "sha256": "61f1e2f678aa3f07b5f4c0849a0c286c4c64c2d5f3eda6bedfbfed9fc1e5564e"
+    },
+    {
+      "path": "crates/container-render-skia/src/lib.rs",
+      "sha256": "1ce3273978b83dcb86e9db1e0b6fd1bb073efefe268308a6d0841a6fde39c5cf"
+    },
+    {
+      "path": "crates/container-render-skia/src/paint_tests.rs",
+      "sha256": "823052248224aae44f269b3a39d539cc16fe1d0f1b588e8cd0a9525ef332c364"
+    },
+    {
+      "path": "crates/container-render-skia/tests/typed_metadata.rs",
+      "sha256": "62ca5fa959c7b9e8a05688219522b3061f6c49a10b14ccf0c069788a22dc4a9b"
+    },
+    {
+      "path": "crates/container-runtime/Cargo.toml",
+      "sha256": "f1a6acd06d74f4e7f997f951e518b09892b48fa46e8ccd993ba7e6ced6aec92e"
+    },
+    {
+      "path": "crates/container-runtime/src/declarative_tests.rs",
+      "sha256": "406b78c31d81819e473042fa06707a59c63101c88b3cf3309a38bd79affa3f34"
+    },
+    {
+      "path": "crates/container-runtime/src/lib.rs",
+      "sha256": "c626af23a427c7a3710ca96cd30d63d410553349ab238a8506ff086fa545407f"
+    },
+    {
+      "path": "crates/container-runtime/tests/border_box.rs",
+      "sha256": "17ecdc6265007d1ed159c15cfe7aacd6bd3a506ca2299a24c730374dc9a6d3fd"
+    },
+    {
+      "path": "crates/container-runtime/tests/component_page_lifetimes.rs",
+      "sha256": "6b94840b0a8b935034e227ed50693dd7bbe77d44c4576dfc0fbef562f22e5ebb"
+    },
+    {
+      "path": "crates/container-runtime/tests/component_recovery.rs",
+      "sha256": "d6595e64535a223b81d5dcd223c7ccf3afd37cb99a4dca2661371d2c5fccbeff"
+    },
+    {
+      "path": "crates/container-runtime/tests/component_relations.rs",
+      "sha256": "86eecf29ae8a5e5c2ebe4d02d2fed7fe3e53a69c69118a3bc0776024908d2af3"
+    },
+    {
+      "path": "crates/container-runtime/tests/component_selection.rs",
+      "sha256": "9d50d2a25fdb1e87707e298d1f7709cafbdb5282b4e7553765eae654c994046a"
+    },
+    {
+      "path": "crates/container-runtime/tests/declarative_render.rs",
+      "sha256": "cf35c7be2a3aa0a2e5c6eebf0a403efb0ae85baf63aa7641a74c7a1085fe2e82"
+    },
+    {
+      "path": "crates/container-runtime/tests/flex_order.rs",
+      "sha256": "12460e312c665bcd8d67522b2b3d29cad44f6b0b263036d4fb4d36c8bcf8e2c5"
+    },
+    {
+      "path": "crates/container-runtime/tests/group_opacity.rs",
+      "sha256": "d78d4b543ab7647c778f172196e2d763fc37d5bd5e01eb420987fa3dc9ef6681"
+    },
+    {
+      "path": "crates/container-runtime/tests/host_window_metrics.rs",
+      "sha256": "d0e1fc9dbb8e1ad6c914e2bf415b4bd05644cd08c856cfc6a22afe5ea8d30ebd"
+    },
+    {
+      "path": "crates/container-runtime/tests/image_render.rs",
+      "sha256": "bcdf5a0991622d5e577b61bb782ea3364f1381d4f231a6afef6dd1ddd696d73d"
+    },
+    {
+      "path": "crates/container-runtime/tests/managed_components.rs",
+      "sha256": "7b2d2b10d47c90eb15150540b49a756e37c6eab1137c64f5a2a35d82309c110e"
+    },
+    {
+      "path": "crates/container-runtime/tests/modern_session.rs",
+      "sha256": "5efda2d9e8b1aa5a692a66c043177dc557433b1c70315b12933b31f3c56eaebc"
+    },
+    {
+      "path": "crates/container-runtime/tests/module_loading.rs",
+      "sha256": "1a0219ca5b0d57fc03bc19ffc285c213ad61554bb2fc7e6d543d4c489612216d"
+    },
+    {
+      "path": "crates/container-runtime/tests/navigation_completion.rs",
+      "sha256": "3a0975c3eaa798ef6bc4285f15a0112378576c1b30b300900fde919ad2f0fbb5"
+    },
+    {
+      "path": "crates/container-runtime/tests/observer_geometry.rs",
+      "sha256": "621e43aee53fd8f984a6586f86855ec0f8dabdc5e7b2eb89526d9c0b546d2499"
+    },
+    {
+      "path": "crates/container-runtime/tests/overflow_clipping.rs",
+      "sha256": "6d1c365561d26aa94e38ed9f97990800b345504d71d34f4bcb69530164a996a9"
+    },
+    {
+      "path": "crates/container-runtime/tests/page_viewport.rs",
+      "sha256": "270751d04c7c0b9c9a47e2f5f868f9a5c4987bd4a202f2ecee3fee9655051557"
+    },
+    {
+      "path": "crates/container-runtime/tests/presentation_reload.rs",
+      "sha256": "c77dae48c020b3bd1601d9cf6ab5ef7397f84aa630554fbb8949e559bdc2510b"
+    },
+    {
+      "path": "crates/container-runtime/tests/redirect_mini_program.rs",
+      "sha256": "b9d43a2210a764ca758e683d115b6313315cde2f0978235d373f02b7eb4e12ce"
+    },
+    {
+      "path": "crates/container-runtime/tests/session_render_resources.rs",
+      "sha256": "fe329134757d4e6f28d1bd82dd04df735f84a8ef4e12c2167c70a2a8aacb31fc"
+    },
+    {
+      "path": "crates/container-runtime/tests/session_view.rs",
+      "sha256": "85c40d6e5ad98ef4eb3ba3c8d844d75d4cc740b641ec9ca5b979e0c363bf6386"
+    },
+    {
+      "path": "crates/container-runtime/tests/text_flow.rs",
+      "sha256": "b88c816c673ca456984cd719a8e75727d3023dff4005dd8de4a491b6aea979eb"
+    },
+    {
+      "path": "crates/container-runtime/tests/touch_capture.rs",
+      "sha256": "f5a6c0c9bf7324415505dc02882b735cd739f4ff8a05dc1b48e6083fc8ddee19"
+    },
+    {
+      "path": "crates/container-runtime/tests/transforms.rs",
+      "sha256": "d239b03ab83fe15abadaf6bf5934897edcbe705914c14cc5784f7bd8814812ab"
+    },
+    {
+      "path": "crates/container-runtime/tests/typed_metadata.rs",
+      "sha256": "2a8b0ca81e5dc7e643080edf45e0ff7dfe9477c5003b0561032837eda0f6c9c0"
+    },
+    {
+      "path": "crates/container-runtime/tests/view_render_conformance.rs",
+      "sha256": "4e2244bf80d1cc3268ee46ed8238c4a5785642a39dc72369d7c5ce3ffd79eb50"
+    },
+    {
+      "path": "crates/container-simulator/Cargo.toml",
+      "sha256": "dab8f51dd49cac9fca377c0c7868b0b1b4ce407f94cf409f21ec20880a30df51"
+    },
+    {
+      "path": "crates/container-simulator/src/lib.rs",
+      "sha256": "3ea430f0c8f41e541e56113cabadc8a71865936be6f5eb0b404af54de263ba35"
+    },
+    {
+      "path": "crates/container-simulator/tests/cli.rs",
+      "sha256": "45f6e836d6cf43656e7063c8aa4711de95ab0df3e6d4c3ec559a1cbfff359d62"
+    },
+    {
+      "path": "crates/container-simulator/tests/managed_reload.rs",
+      "sha256": "56d87263cc12941e7252ee3cfe1d6c60d9277d9ac9a2de85f1a133f6d4e2a507"
+    },
+    {
+      "path": "crates/container-simulator/tests/render_publication.rs",
+      "sha256": "9196032171576a6d7eebda3a3b9807e4b77af98fb28ee2ae2e8c981515847a47"
+    },
+    {
+      "path": "crates/container-simulator/tests/view_reload.rs",
+      "sha256": "e9077e57f10b469cb7f4c77e176bca4e7172264ad338ccbbfa82b2ca2b474e50"
+    },
+    {
+      "path": "docs/api-inventory-v1.json",
+      "sha256": "03b1b3c18430095e78fa1ab0f24a2f51bb9c045da6c3b892d155f59f3d961518"
+    },
+    {
+      "path": "docs/api-inventory-v1.sha256",
+      "sha256": "ee6c44cf4134ea42479af9cd64efee778c4705f330fa0ab91d7529cdba8f36d4"
+    },
+    {
+      "path": "docs/conformance/baseline-v1.json",
+      "sha256": "67016935c8654332925f28df4a4099167ef82b1c50c87c5e5b4d7a94f7db71a6"
+    },
+    {
+      "path": "docs/conformance/case-index-v1.json",
+      "sha256": "df98c4e5bb8473525a5b22eae5d46ce7d6a86f316e9077484b825bbf9e91c9bc"
+    },
+    {
+      "path": "docs/conformance/case-index-v1.sha256",
+      "sha256": "6237e3352768d90ea0b3d173ea8b88a7cbe83cd11527de640b0fcdc0baec5358"
+    },
+    {
+      "path": "package.json",
+      "sha256": "90d92988bea13d5138ad75398d302e503dad7c7fbd210d4291d081cfd43eb8b1"
+    },
+    {
+      "path": "schemas/conformance-case-index-v1.schema.json",
+      "sha256": "039a8b63f0e1cfb1df6b61837ca2ba819e5fb74931cc73e368c11a9de100a2cb"
+    },
+    {
+      "path": "schemas/conformance-differential-v1.schema.json",
+      "sha256": "3860e805d96e4dcf197b5353171db62fac5961bb57ecaf6f26c18d07904e2474"
+    },
+    {
+      "path": "schemas/conformance-oracle-execution-v1.schema.json",
+      "sha256": "6b549b3f069b96b2270a12929d5ee57e8393d9b0cbd07f74a4d3e96e51113ea5"
+    },
+    {
+      "path": "schemas/conformance-report-v1.schema.json",
+      "sha256": "7b5170a31e325f1de30f3f4ab2962353eccbe0a009b40c3b7f5ef76e3b73953c"
+    },
+    {
+      "path": "schemas/conformance-trace-v1.schema.json",
+      "sha256": "63f9a27827cfcaf6ab0314192e77f330dbb3101fa78a2ffc0588aa51c1ce95aa"
+    },
+    {
+      "path": "schemas/performance-matrix-v1.schema.json",
+      "sha256": "5dbb88f64769910c385b8e1eb954b9f34b723833c344a5ae53af3fd88db46afa"
+    },
+    {
+      "path": "schemas/performance-report-v1.schema.json",
+      "sha256": "55e93216b8e6b82442a02f2f1c62346911e8e176d14c09c1932bdce700420fe7"
+    },
+    {
+      "path": "scripts/android-app-smoke.mjs",
+      "sha256": "5081c41c8ba1b45f2bb3b3132131baad57d63a382a432a23c3bbc5feed5a6312"
+    },
+    {
+      "path": "scripts/android-app-smoke.test.mjs",
+      "sha256": "4c336858af5e89483333322c7e86b3d37f1c2f3ab0cdb4d48c13e27b54340bce"
+    },
+    {
+      "path": "scripts/android-pack-contract-test.mjs",
+      "sha256": "208e5f79e6e2a77aba5f15b9a2c2728aae7d4cc654d86ebecb0832d992470d82"
+    },
+    {
+      "path": "scripts/android-reference-capture.mjs",
+      "sha256": "b2b4158c6ab581bdc5e6c12baa2342a3d8276a10466f8e9f6b29e383a1e30aed"
+    },
+    {
+      "path": "scripts/android-reference-capture.test.mjs",
+      "sha256": "74ef938131ee5b0947963ec19605d065ece3ab67146cba6071ce3a9ef475acea"
+    },
+    {
+      "path": "scripts/android-reference-interaction.mjs",
+      "sha256": "3d584c9a67f168c960e4dee42279592a3f9e95cfbec91d1fcd3b839e487cc4ac"
+    },
+    {
+      "path": "scripts/android-reference-interaction.test.mjs",
+      "sha256": "4602e94397b39647ab6325b64d1abd686df8a0d99317f59552d460dcf18b7e01"
+    },
+    {
+      "path": "scripts/android-reference-visual.mjs",
+      "sha256": "322936a30cde1b92474847e8a17d3df2f34a093f1626e263482de1236ef3baff"
+    },
+    {
+      "path": "scripts/android-reference-visual.test.mjs",
+      "sha256": "165472326d27ca9bc335411294dd885e461c39773c96fc75da64ce4484f7fe98"
+    },
+    {
+      "path": "scripts/border-box-browser-smoke.mjs",
+      "sha256": "54af7aca639a91789d4a30bf65693b78d4cd1717cf3eacea26827d12f668d79f"
+    },
+    {
+      "path": "scripts/border-box-browser-smoke.test.mjs",
+      "sha256": "0a35e41263d8f4729374dc6128bb023ab5bec85948fc52fe208584532ab3d728"
+    },
+    {
+      "path": "scripts/build-harmony-hap.mjs",
+      "sha256": "d28387d92af96f7f1ab5d6b7e656d69848093e62a596429a0ca8261b3352e543"
+    },
+    {
+      "path": "scripts/build-native-hosts.mjs",
+      "sha256": "8066fbdec0a2790f0b790b99f7bc7bdc53bdb123a65c0a67b3aebb51153365a7"
+    },
+    {
+      "path": "scripts/build-native-hosts.test.mjs",
+      "sha256": "c7592e0c3376f5b8a50d0fe811407099585bacbe0d76bb66455286b4926c3447"
+    },
+    {
+      "path": "scripts/build-weapp-vite-platforms.mjs",
+      "sha256": "c0b5cfbd2129c9400ce8a70d86d545b77e92e9125b789a0702939cf9a562e9cc"
+    },
+    {
+      "path": "scripts/build-web-wasm.mjs",
+      "sha256": "fe92136254e9e6ce68a4003fc619e18c9edcf4ee240762fa26944052b0c5e166"
+    },
+    {
+      "path": "scripts/build-web-wasm.test.mjs",
+      "sha256": "af5caf7b12a1f510f739235d889d5995e99b2c7f2651b11ca34bd33dbf7186ce"
+    },
+    {
+      "path": "scripts/canvaskit-presenter.test.mjs",
+      "sha256": "76bd425a74dfa1f937688a31bc7f519712dcd066f760b5ee600299285b561631"
+    },
+    {
+      "path": "scripts/check-near-parity-gates.mjs",
+      "sha256": "6fd60719bab95b8cce2e687990163d664f0853ab06962d37d64b825abc8aa629"
+    },
+    {
+      "path": "scripts/check-performance-report.mjs",
+      "sha256": "1dde1f0133a23436277896d4a326a31ec085fc3f114634927deb124c1d39115e"
+    },
+    {
+      "path": "scripts/check-product-naming.mjs",
+      "sha256": "e614ba34ad0252724892f8e668ff0046f70e51486a5bcaf94ebe4126d6e85601"
+    },
+    {
+      "path": "scripts/check-product-naming.test.mjs",
+      "sha256": "d630896e5af01da2204c11ff3657e9976de982f64e91291b9f926d266a21151b"
+    },
+    {
+      "path": "scripts/check-toolchain.mjs",
+      "sha256": "03c8a6ee07efa9d26ac6b2c074e5a90909aef90d4b20bf52a400f6382a60d50b"
+    },
+    {
+      "path": "scripts/component-custom-events-smoke.mjs",
+      "sha256": "d68041127360f0f30d1690075c046d7afc8d82f89e7b5db4ce5800b0c5aad5ea"
+    },
+    {
+      "path": "scripts/component-custom-events-smoke.test.mjs",
+      "sha256": "dd6425d23590b1874654db83fbb4ddc1e5108cbc612c3304e8030af8f711cb68"
+    },
+    {
+      "path": "scripts/component-relations-smoke.mjs",
+      "sha256": "564683dfc96ad93455a82a3b31e0545ba11ab157098c170ca38c3ad666dd700b"
+    },
+    {
+      "path": "scripts/component-relations-smoke.test.mjs",
+      "sha256": "b72e1c43ae69357e126b0bd770027ded9ba5e49d700c0147408b9ddd9b44c5b2"
+    },
+    {
+      "path": "scripts/component-selection-oracle.ts",
+      "sha256": "6b14a092463085e1e04c928f514056800ea96fcbce2791fbee656880ef4c1299"
+    },
+    {
+      "path": "scripts/conformance-evidence.mjs",
+      "sha256": "deb532725f528e71313ac52f1f4bf307b19994ec261430707be94cb105048082"
+    },
+    {
+      "path": "scripts/conformance-evidence.test.mjs",
+      "sha256": "ed73adb1cdb4cf768f7c1aab15a40c02b02141ac2662be13a5ce34a8506a7c91"
+    },
+    {
+      "path": "scripts/dataset-values-smoke.mjs",
+      "sha256": "5c5d2b5018c7facd6fd97531e89ad7c0a819ea411172a4e2187374f504afe389"
+    },
+    {
+      "path": "scripts/dataset-values-smoke.test.mjs",
+      "sha256": "f1289b3e3273798d53031392b4831b5c0a3f0db53f13923795eae714846a6d1a"
+    },
+    {
+      "path": "scripts/desktop-surface-smoke.mjs",
+      "sha256": "2d76d1b7d0b6ae8fcab4f921abd77375147fb9d3e97069adf608519bb8368ea4"
+    },
+    {
+      "path": "scripts/engine-conformance-smoke.mjs",
+      "sha256": "57834e64019312cb613209f8ab359f4d3061a4b97be7553d2e3e2bd127de0972"
+    },
+    {
+      "path": "scripts/evidence-source.mjs",
+      "sha256": "2b479c0602afa65624fe0905c5ffe1e6dd49cfe372b6ab4974bf47ab10a34391"
+    },
+    {
+      "path": "scripts/evidence-source.test.mjs",
+      "sha256": "b179c31522f3e06378c290fde2b28998cc7d19163d3b52de2f13f7ccdf6af8e2"
+    },
+    {
+      "path": "scripts/fixtures/ios-ui-xctestrun-format1.json",
+      "sha256": "f8ce305ae1e466427c3538c61daa0838e97c33881bee9aeeca8a0092e2fbae9e"
+    },
+    {
+      "path": "scripts/flex-layout-smoke.mjs",
+      "sha256": "a5b83872b048964b68221a56cef75dbc00cb8d66da9960d7de0913162fab4410"
+    },
+    {
+      "path": "scripts/flex-order-smoke.mjs",
+      "sha256": "fb27ff5adefbde6966f5539f72a46f9ab1d8f3d9f1c9bed3aca7ec9fced6f149"
+    },
+    {
+      "path": "scripts/generate-conformance-index.mjs",
+      "sha256": "27453a6c98950eb3346ab0227f4363971dd8194ff20b7eadb5c64ab513ad0f8c"
+    },
+    {
+      "path": "scripts/group-opacity-browser-oracle.mjs",
+      "sha256": "9009ae3acf2022a5ed6a5a0547e1085b577a117c6e35837640ef2d9579de00cc"
+    },
+    {
+      "path": "scripts/group-opacity-frame-replay.mjs",
+      "sha256": "e502426a2eaafad269bae8c31b67b6602d92e9d46b886627989b674e7b6c00f1"
+    },
+    {
+      "path": "scripts/group-opacity-smoke.mjs",
+      "sha256": "9b47ac77493202a0fde4efd21c4677f1599e66a34e4f37b59c23679230de7def"
+    },
+    {
+      "path": "scripts/harmony-app-smoke.mjs",
+      "sha256": "3f2965ca1caf947b02bfcfadb4f78625b542e0f895310c912e3493141e7344cf"
+    },
+    {
+      "path": "scripts/harmony-app-smoke.test.mjs",
+      "sha256": "3c1e9aae0329e942af23d19e2711cedb0a83225f0ee596b40ac7f41707b5db84"
+    },
+    {
+      "path": "scripts/harmony-live-session.test.mjs",
+      "sha256": "141431b06e64b4f1b69197220be425b49c587c2b976710b997c0a8984cd87976"
+    },
+    {
+      "path": "scripts/harmony-native-arguments.test.mjs",
+      "sha256": "21b104d9bb6b8b81ec395b29ad937b968b0390b1588cac8ec2b3e3c9f1cc4db6"
+    },
+    {
+      "path": "scripts/host-bridge-smoke.mjs",
+      "sha256": "b96f30e729ed3095ecf8b1fdb3ae1aa0d815e3004d830e8c698e93e74893cf20"
+    },
+    {
+      "path": "scripts/host-device-smoke.mjs",
+      "sha256": "9a9b4e513955dc49ceba886edb5f2a8d5f99b362c08df2be12e4b64bd97bbd70"
+    },
+    {
+      "path": "scripts/host-feature-smoke.sh",
+      "sha256": "f7338945f2534ba46109cac526a7874e7629bf19ed3da8013c55ce0d3b0a1b45"
+    },
+    {
+      "path": "scripts/image-render-smoke.mjs",
+      "sha256": "7a969c64b20eeb1289c52cdfe285eaa2c9b0303e67552569cd4bc24804355a26"
+    },
+    {
+      "path": "scripts/ios-app-execution-evidence.mjs",
+      "sha256": "76d8e67c31dac291deb8189d2c1905c84489cbd0b87ed51bccc1cdcda2a974a6"
+    },
+    {
+      "path": "scripts/ios-app-execution-evidence.test.mjs",
+      "sha256": "ff7d82210502bf2cf5449f45b87084c006e017334c0c1e19a7a2417beace65ee"
+    },
+    {
+      "path": "scripts/ios-app-resource-cleanup.mjs",
+      "sha256": "1ac6aad942eb393af329b3dc5aa6857df7190ae94f17f3e615e02c3f185d8c8e"
+    },
+    {
+      "path": "scripts/ios-app-resource-cleanup.test.mjs",
+      "sha256": "54b1a1ca7d672ea0ede0cc4a62bf64f5a6787a69266e81771de09c1d02d25bf5"
+    },
+    {
+      "path": "scripts/ios-app-screen.mjs",
+      "sha256": "a3721e5a2fb5a5634f99cc5a4966de9e80e329daf516f29ffe26bd5eed67b03e"
+    },
+    {
+      "path": "scripts/ios-app-screen.test.mjs",
+      "sha256": "4b92e82c3fdd53d5fbe84a73c5ad4f4634fdab2ed5070ff40fa8fc3093350d81"
+    },
+    {
+      "path": "scripts/ios-app-smoke",
+      "sha256": "24c455d69bdf127053fd4a12d55215bce8d1cbaf5f6a05e0ef825189803bd8a1"
+    },
+    {
+      "path": "scripts/ios-app-startup.mjs",
+      "sha256": "c81ebe0a9b69882732e8db183baee4b5b37ef09dfa3fff796ffb75ac9954b066"
+    },
+    {
+      "path": "scripts/ios-app-startup.test.mjs",
+      "sha256": "d97e8725f124bc820d5c410def4679b9e772351ac3f989319f11034642caacbc"
+    },
+    {
+      "path": "scripts/ios-embedding-smoke",
+      "sha256": "fbe278e66ccb5cdc3920eb2c9b67c96d12045c17758320c7a5ef071ee0ff3104"
+    },
+    {
+      "path": "scripts/ios-embedding-ui-smoke",
+      "sha256": "f123b8525fecc8e7f7c67e68bf856d4c040efcfd75b14520f17720d3075a92b0"
+    },
+    {
+      "path": "scripts/ios-embedding-ui-smoke.mjs",
+      "sha256": "b226f12e74396b4ca8f4ef6207c92e1686248b5ff7e7f0ae9e8b1c23fafea241"
+    },
+    {
+      "path": "scripts/ios-simulator-apps.mjs",
+      "sha256": "78caff393d9c9123b804ab37809a291a88e276429ff49eb780af87a6eea4b2f7"
+    },
+    {
+      "path": "scripts/ios-simulator-apps.test.mjs",
+      "sha256": "8efa9fd01ede05dd80ceb6d21b3315afc4359736e65e91281aa74c378af332d7"
+    },
+    {
+      "path": "scripts/ios-ui-test-contracts.mjs",
+      "sha256": "680c9ced1d8dd107fc7774144b18e33bbf9b6310a28cd59564e858d5219d7533"
+    },
+    {
+      "path": "scripts/ios-ui-test-contracts.test.mjs",
+      "sha256": "c49c2e8c8ed16e2ec333fe3523fb70a712dd1a29ef19669de72156d88e87b78c"
+    },
+    {
+      "path": "scripts/ios-ui-test-resources.mjs",
+      "sha256": "1812237c1f84ce3b43bb5edfa5c1532f4671cdca02c6767a6d69afed94e408d6"
+    },
+    {
+      "path": "scripts/lib/harmony-skia-build.mjs",
+      "sha256": "701cbe1352d877f2f37dd2b81dc3a007c0f4cbfeca5b5589f3d44b21aa99fdf4"
+    },
+    {
+      "path": "scripts/lib/harmony-skia-build.test.mjs",
+      "sha256": "c37cb84126ae0213587eb37916505fed4342982131fa5f57c67631640a9688c8"
+    },
+    {
+      "path": "scripts/lib/simulator-scroll-driver.mjs",
+      "sha256": "b927250158d7048cd9d571b44c02aa916bf0db9091cc23633bd35535b77b7449"
+    },
+    {
+      "path": "scripts/lib/simulator-scroll-metrics.mjs",
+      "sha256": "fbbcdc8e4614d9a299ed943747b83bbf5002cf26d564952e744afcfd415218ab"
+    },
+    {
+      "path": "scripts/mobile-gpu-probe.mjs",
+      "sha256": "d7098c408e1bd758323e9ac644b1e85c76dff6b634b63daa67e41411198d5ab1"
+    },
+    {
+      "path": "scripts/mobile-gpu-probe.test.mjs",
+      "sha256": "079741307da4771de1729c4a1ec8d9144729c0c1cd2fb484a0c3773d008dc3b7"
+    },
+    {
+      "path": "scripts/mobile-module-evidence.mjs",
+      "sha256": "19c86411d62708cba7e72b873a0f2adc0cc72583f9da9d42e189a26f5a1d4201"
+    },
+    {
+      "path": "scripts/mobile-module-evidence.test.mjs",
+      "sha256": "39b2c8dba78b07ba6ec4a3a36251ac841c9e17746829770ea42ff9006a337e87"
+    },
+    {
+      "path": "scripts/mobile-runtime-parser.mjs",
+      "sha256": "c526aa2302693001594c5ed3439e71d3c9ef6e837f0a0f43355b198fdfce689c"
+    },
+    {
+      "path": "scripts/mobile-runtime-parser.test.mjs",
+      "sha256": "67f77f0cea64c1ad8adf5d78d7b211ebc91827e614a8e2a082f1f3264892f92a"
+    },
+    {
+      "path": "scripts/mobile-runtime-smoke.mjs",
+      "sha256": "c58687ed129267392f05abd2987194281ce6340bd4309e20d065abbf7266e086"
+    },
+    {
+      "path": "scripts/modern-view-browser-smoke.mjs",
+      "sha256": "914486b55712225b374cef8a6f1c8f8018c3ad9181489751234517981a7b703e"
+    },
+    {
+      "path": "scripts/modern-view-host-pack.test.mjs",
+      "sha256": "bdf289b5a639de18e1e35bab0e164504bd3496225cf90bd718df565550155583"
+    },
+    {
+      "path": "scripts/modern-view-pack-resources.mjs",
+      "sha256": "81896d6b0200caa37c292980db4c8af6ccfebc610a48c96e8373925dbe1ef258"
+    },
+    {
+      "path": "scripts/modern-view-perf.mjs",
+      "sha256": "57d60d969205cc38342b280586ff512632bdc3c33ae0f2a1d79e648612a5208f"
+    },
+    {
+      "path": "scripts/modern-view-watch-smoke.mjs",
+      "sha256": "b403f1ebb51e67a381aceed7a5660b96b02c08ed9ff6b59d4455dd76e4e56798"
+    },
+    {
+      "path": "scripts/native-build-recovery-smoke.mjs",
+      "sha256": "6577a9331ac8a6fe9024ca94ec91e75370e841e7c185fae47d1141945eab6a4c"
+    },
+    {
+      "path": "scripts/overflow-clipping-browser-smoke.mjs",
+      "sha256": "3362f08ab959fd2b657bb18dade7991750e021178fbdad25b61f62dbff3bf411"
+    },
+    {
+      "path": "scripts/overflow-clipping-browser-smoke.test.mjs",
+      "sha256": "05c53ca162bc32952ce3072654e3496ef7704c2d6ba5300bef2043a0aad68bd4"
+    },
+    {
+      "path": "scripts/pack-execution-evidence.mjs",
+      "sha256": "006cfd55197f389e3fea18e630c2314f4d80985a52be0c677848c3965432b44d"
+    },
+    {
+      "path": "scripts/pack-execution-evidence.test.mjs",
+      "sha256": "3e26167d70c0fe53ac1cdfc73e7d74a45eb9e3df04fa8ed0df1cc4fe4f23f5dc"
+    },
+    {
+      "path": "scripts/perf-baseline.mjs",
+      "sha256": "774d8564aba72656e0d08f70089baa978a50a6d78297c045f363764601cadbca"
+    },
+    {
+      "path": "scripts/perf-matrix.mjs",
+      "sha256": "bef3b988eb801622bba6a999921ce10b7d840010b11165c4dd46aa3858271c6b"
+    },
+    {
+      "path": "scripts/perf-native-render.mjs",
+      "sha256": "0b54a9f7b14aabf4b0aa53f7c6ade5da014ed06d5f1881b411e336ee56d50551"
+    },
+    {
+      "path": "scripts/perf-simulator-host.mjs",
+      "sha256": "76fdd901d8c06f9545d64f5e50a0ff81cb511d9ffbcf9ddf15a9cc3a13f1011c"
+    },
+    {
+      "path": "scripts/perf-simulator-host.test.mjs",
+      "sha256": "2063114c29cf7e5276bd26fa135f5c185340d1ba01129814d53686eb14229c07"
+    },
+    {
+      "path": "scripts/portable-pack.mjs",
+      "sha256": "9474bf90794c3275281caa6c4bf1c4ec0122d92e7df8ffeb7d4db7b968a08b84"
+    },
+    {
+      "path": "scripts/runtime-frame-replay.mjs",
+      "sha256": "dd342047cd3df18cfa9efe3ccc74e698a3a87a2899ce74c9ece92948581cee7d"
+    },
+    {
+      "path": "scripts/scroll-browser-smoke.mjs",
+      "sha256": "2c8102541665b30f7064abdde77c21250df8c8dc8ab7431a9426b25f16444a13"
+    },
+    {
+      "path": "scripts/scrolling-smoke.mjs",
+      "sha256": "2d999ee9f4295558b5485a24cd6ad875682115ad989b69802a7c51f0ed16ea5e"
+    },
+    {
+      "path": "scripts/simulator-cli-harness.mjs",
+      "sha256": "cc9383c58a87e2b2928fc1358914483f896639d0b6ef960d656d96072157ff05"
+    },
+    {
+      "path": "scripts/simulator-cli-harness.test.mjs",
+      "sha256": "8bba85c9b86218cb107eef2dfde927fa8b55a7d04118383482d1eca11abf2df0"
+    },
+    {
+      "path": "scripts/simulator-client-binary-fixture.mjs",
+      "sha256": "a3af019a2cb731fae54ba1200d50f39c258cdc4f7d0052d012d897473c9ec917"
+    },
+    {
+      "path": "scripts/simulator-dev-assertions.mjs",
+      "sha256": "a6671423a7397fc5b41df0235072b78c63cc545c9d923289fbd6ccea35622f15"
+    },
+    {
+      "path": "scripts/simulator-dev-assertions.test.mjs",
+      "sha256": "f11a5641d3f1393eb14ad033c196b3ff34a176cf11c4bb2b3ecdc3cab3f5bdf2"
+    },
+    {
+      "path": "scripts/simulator-dev-browser-smoke.mjs",
+      "sha256": "7fc84fd40e122d84e46849f872c31cb7715844de4c0b8ff06925f592ab03af66"
+    },
+    {
+      "path": "scripts/simulator-dev-harness.mjs",
+      "sha256": "396abab138db341b27c937cbd727327cb5ee7eb667fc95bd11e2343e65b17ac9"
+    },
+    {
+      "path": "scripts/simulator-dev-harness.test.mjs",
+      "sha256": "8e58502d679f11bff52eb09e301eaded93b95ef3dd6bc9f343b17408cb214f67"
+    },
+    {
+      "path": "scripts/simulator-dev-smoke",
+      "sha256": "d2366766d43af860b829e20ef8d28d2aa6b5a189c29b132aa2fb30515c7ba995"
+    },
+    {
+      "path": "scripts/simulator-dev-smoke.mjs",
+      "sha256": "b052ee20c21fc1dbc43853c0f7b24fd415d0447b42180aeb0afb833e54b42c86"
+    },
+    {
+      "path": "scripts/simulator-embed-client.test.mjs",
+      "sha256": "b2137e42e79e215ebecea1972b1c71f4ad25f021718c981f2f2f9832ec56aea7"
+    },
+    {
+      "path": "scripts/simulator-inspector-client.test.mjs",
+      "sha256": "d42e37fd2b4fee80464522a5875e3c2116efce183c93f409624fcd4e78048098"
+    },
+    {
+      "path": "scripts/simulator-presentation-client.test.mjs",
+      "sha256": "61692a9811513a48bcaa4e836b2094e2ecaad3f8cf83be245b1c7dc9ac21b63b"
+    },
+    {
+      "path": "scripts/simulator-presentation-controls-smoke.mjs",
+      "sha256": "13451d1612331605bdc334d633957a88300aef86edbd4a987f54ea261d5bc778"
+    },
+    {
+      "path": "scripts/simulator-presentation-controls-smoke.test.mjs",
+      "sha256": "4371d0f551f311ad15a2f234d7630a3b51b6333e79faf4682b88cce5ea3aa52f"
+    },
+    {
+      "path": "scripts/simulator-presentation-smoke.mjs",
+      "sha256": "844db7f90f0e3fecf465619aa55f3b053827da380e8c7e55e36e787aa0842d74"
+    },
+    {
+      "path": "scripts/simulator-reconnect-client.test.mjs",
+      "sha256": "09ac49da83b95a8b578287c6b1f96b3e3723b5969ad02f30ab0fd88071058ff6"
+    },
+    {
+      "path": "scripts/simulator-reference-fixture.mjs",
+      "sha256": "d88b0be12c73b52363773704e2d8588f58116be6e5568bb732d51d9d92af7c98"
+    },
+    {
+      "path": "scripts/simulator-reference-fixture.test.mjs",
+      "sha256": "6a6b19406999faaba221634dda92bd8e468111af715d50bdc9c97c3472250a47"
+    },
+    {
+      "path": "scripts/simulator-scroll-driver.test.mjs",
+      "sha256": "0b0888845efe68dc9ecd5ecef43187259486f96b1b642eeadfe68a08b9bef4d5"
+    },
+    {
+      "path": "scripts/simulator-scroll-metrics.test.mjs",
+      "sha256": "c1c476f54c82c16ec7fde7684cc02e891a912e87be22dbf2db273fb2097b1d42"
+    },
+    {
+      "path": "scripts/simulator-snapshot-client.test.mjs",
+      "sha256": "cd5379080c487428c13f46f1d03326d345cbc4042e16683f86dd072066c194af"
+    },
+    {
+      "path": "scripts/simulator-sse-proxy.mjs",
+      "sha256": "e0c66c2037ae4942b11a22257480fd365d99f33cd3830ac8dc28db5d4468bdf6"
+    },
+    {
+      "path": "scripts/simulator-sse-proxy.test.mjs",
+      "sha256": "f3515f686465757190c039e23b45cf9b60a9124de0065f51b04e3ee706fabbb8"
+    },
+    {
+      "path": "scripts/simulator-watch.mjs",
+      "sha256": "0f551f75f4cd84e31d180f9548d09b2540af91549454997a425a34d81214c5b1"
+    },
+    {
+      "path": "scripts/simulator-watch.test.mjs",
+      "sha256": "bcea057058e14d931f0ede7e810f0622526b00e413001e75528cc467f82ce257"
+    },
+    {
+      "path": "scripts/stacking-frame-replay.mjs",
+      "sha256": "20abcb7813cdec8b12350b16dd98134338b67bd7c8aec70ca2beb3fce18aff6e"
+    },
+    {
+      "path": "scripts/style-module-boundary-smoke.mjs",
+      "sha256": "79bcf56c0a4992df7081445ac3377d8f6e3e2890c0640cfba261ce88ca07e4db"
+    },
+    {
+      "path": "scripts/style-module-boundary-smoke.test.mjs",
+      "sha256": "13363227becaac8c5bdfbf400ae3b7d22cd401e3ea79cfa1ab544c3a0b436ba7"
+    },
+    {
+      "path": "scripts/surface-input.test.mjs",
+      "sha256": "8e29a952670562930b5de45e77880bd025b48f3ab506bf9a5dcf66161efee553"
+    },
+    {
+      "path": "scripts/sync-android-portable-pack.mjs",
+      "sha256": "a75fda436290ecb2239c30afd013c21c5ce57c68165b4219054b0847be18749a"
+    },
+    {
+      "path": "scripts/sync-android-portable-pack.test.mjs",
+      "sha256": "62407c7aa785cfd0b7b79f6c88ca386d3138fc65eca5875e396851df16266d87"
+    },
+    {
+      "path": "scripts/sync-harmony-pack.mjs",
+      "sha256": "909c90b746369140dd16a427364e1aca10802deea4c13a1563c5f47a27332030"
+    },
+    {
+      "path": "scripts/sync-harmony-pack.test.mjs",
+      "sha256": "9d319b8afdcf996c0461d96f4ea38cd1a42ae5efd2c60770c7c5b5501d1f5848"
+    },
+    {
+      "path": "scripts/sync-ios-portable-pack.mjs",
+      "sha256": "f5cb71fa2b9ce9eb682885a15e4b16d7d3fe4f1a1f7bbb85ae2b7d20309aaaa2"
+    },
+    {
+      "path": "scripts/sync-ios-portable-pack.test.mjs",
+      "sha256": "827783f06ff2c09175bd339ae20cf6bd98ef04dda200a7522785b73bd23a75c2"
+    },
+    {
+      "path": "scripts/test-ios-container-session",
+      "sha256": "d6ca5223b1fe1aeb40df4fef29ac0875bc7376e32247ee8f0f5b8ab5b06a1e94"
+    },
+    {
+      "path": "scripts/test-ios-portable-pack",
+      "sha256": "40ff5b42d09326aa7161a8267502acac14b8f980515c6a04a2e1b76bc16f9f0d"
+    },
+    {
+      "path": "scripts/text-flow-browser-oracle.mjs",
+      "sha256": "23eeaf45ae6af0ed2eb3bc74bc683f350be9c91a2264203f7cbf3cfcfd8763cc"
+    },
+    {
+      "path": "scripts/text-flow-plan.test.mjs",
+      "sha256": "68089fdc9a0dd33a9bb2b25804a23d2bc35443d8d9c0736ce6de39881ac9dd1f"
+    },
+    {
+      "path": "scripts/text-flow-smoke.mjs",
+      "sha256": "33ffc05ceb40702fe4011898afa6e37a66cf6b4c0280cc7d9a85e370e39f9b01"
+    },
+    {
+      "path": "scripts/transform-browser-oracle.mjs",
+      "sha256": "8f93be0f2b743bd8bc45da89aa452c6e2465b142b918b92c614650e7d42827d2"
+    },
+    {
+      "path": "scripts/transform-frame-replay.mjs",
+      "sha256": "144e304d67f4ca1f575dea76b643c37039536a94551049f702137b7db63b43ed"
+    },
+    {
+      "path": "scripts/transform-smoke.mjs",
+      "sha256": "68225bb931be97004599938215ce43500a8e1b7e09db17d90fd2baff7ff62410"
+    },
+    {
+      "path": "scripts/typography-smoke.mjs",
+      "sha256": "5fa41133b7e0a8038e87b9d7c9cc2250cdfb42abf005ae7522fd44d526762612"
+    },
+    {
+      "path": "scripts/validate-ios-app-evidence.mjs",
+      "sha256": "a49709d79debeef1626e884e83601eb967ec2eb517904ab5ce61fe5a07b84436"
+    },
+    {
+      "path": "scripts/validate-ios-app-evidence.test.mjs",
+      "sha256": "dba4da9e19244e5431cf687480427058fe2a9a076e1e516fba48d746554cfdca"
+    },
+    {
+      "path": "scripts/verify-api-inventory.mjs",
+      "sha256": "68bbe39607976ff587124def9dbd4a648e7797b326f3fb63f5e2babba6084210"
+    },
+    {
+      "path": "scripts/verify-conformance.mjs",
+      "sha256": "9cb4b7724b146d53408a0d30d230aaca2f41002569a5cddd33231e9c89e0566f"
+    },
+    {
+      "path": "scripts/verify-mpcore-conformance.mjs",
+      "sha256": "25a53f133c9acc0da6711b197b9b44869887261c5666fd252c4c60851ec8f6ff"
+    },
+    {
+      "path": "scripts/verify-submodule.mjs",
+      "sha256": "a45c37786acb04ec4cefd88992f74d30e5b18e795b19a2e1c48b7b4525ae6ab3"
+    },
+    {
+      "path": "scripts/verify-weapp-vite-matrix.mjs",
+      "sha256": "664dbc37b530e1c38f511dd757af85cdc98fe12fe2867d6e1c5305feeb02eda9"
+    },
+    {
+      "path": "scripts/web-render-inputs.test.mjs",
+      "sha256": "25ab3f308539f91622f844366140e220b87538732feb05820277772c4746c6ac"
+    },
+    {
+      "path": "scripts/web-timer-clock.test.mjs",
+      "sha256": "d04c505ee52837fbeb2ee7eb5a43548fa685c4b970ca226f518652c8a2e6d46d"
+    },
+    {
+      "path": "scripts/web-wasm-browser-smoke.mjs",
+      "sha256": "a806be083c51451fce127671b52aa488760bd977eff38b0e70f19981de47f4b4"
+    },
+    {
+      "path": "scripts/web-wasm-browser-smoke.test.mjs",
+      "sha256": "4bd237e2381bf995dd64392329da0215f7ae24fa5491358570f944c4d427747c"
+    },
+    {
+      "path": "scripts/wxs-datatype-differential.mjs",
+      "sha256": "5150c5359e24cc5cb11cae613e9278574e3bdec4ee643cf250fb2c5c7924ea2b"
+    },
+    {
+      "path": "scripts/wxs-datatype-differential.test.mjs",
+      "sha256": "afe1c2d0c79e60adbdf4a7a275bcc957c409261b7705b6576491991351934610"
+    },
+    {
+      "path": "scripts/wxs-datatype-observations.mjs",
+      "sha256": "4b6cc830962ece7d3c6f71cab54336867747c0db896951f392c568a9ea216204"
+    },
+    {
+      "path": "scripts/wxs-dialect-smoke.mjs",
+      "sha256": "a61c69488e256db1cf52aad911d9af0dcab5879ec59727909b59d36e0693e494"
+    },
+    {
+      "path": "scripts/wxs-execution-oracle.test.mjs",
+      "sha256": "3c059551b5c347ab4b44285f5c1b09e05864c3437f833fd18e9d701585739719"
+    },
+    {
+      "path": "scripts/wxs-execution-oracle.ts",
+      "sha256": "7f839910952cdc81485a4e83d703be805863ac1de7649434f4ce7e759eaac846"
+    },
+    {
+      "path": "scripts/wxs-graph-smoke.mjs",
+      "sha256": "b037607e7447a84a94b38f80ae7a843a5f7179d2483a498c826d167274d8f611"
+    },
+    {
+      "path": "scripts/wxss-conditions-smoke.mjs",
+      "sha256": "20706ee61908367a3a28ef1f24db4d056a7ae660168d5953f8822f52fd783745"
+    },
+    {
+      "path": "tools/container-manifest/package.json",
+      "sha256": "910a979bf695da4588eaaef0c0db3bb0ad18b3a5e5fe88355bd66d0542bd4b53"
+    },
+    {
+      "path": "tools/container-manifest/test/container-manifest.test.mjs",
+      "sha256": "4ac47d1dda1bccdff7bd1ed2fd0b812d4414749cf414de3d5ee00b562b328df9"
+    },
+    {
+      "path": "tools/container-manifest/test/modern-view.test.mjs",
+      "sha256": "d3b03a4af6d68e93c58cddefac209c04bfd39b41201b5d9cae80afa5bb18c3ce"
+    },
+    {
+      "path": "tools/container-manifest/test/view-render-pack.test.mjs",
+      "sha256": "c386b6a7640bc3ee6a1fba98701402325353722b11d06132cf70232ebf0f7f51"
+    },
+    {
+      "path": "tools/container-manifest/test/wxml-raw-script.test.mjs",
+      "sha256": "79b4efdb4d38af9d1f0b0e7b08b19133bea142f86c32745aa6d051f064d103b6"
+    },
+    {
+      "path": "tools/container-manifest/test/wxs-compiler.test.mjs",
+      "sha256": "7d351cb2d2f7f9ae4d919891c3526a6f57a0c69ebd629b37ada14c90809f2148"
+    },
+    {
+      "path": "tools/container-manifest/test/wxs-dependencies.test.mjs",
+      "sha256": "1109c76c3a74cee026d89673710fa26110282c5c731b4fd62455f8838f72ac74"
+    },
+    {
+      "path": "tools/container-manifest/test/wxs-runtime.test.mjs",
+      "sha256": "4a34f8d69c6ed3153b58a8e8b9c52e570cefe9d417e3662cb7a535723b361d87"
+    },
+    {
+      "path": "tools/container-manifest/test/wxss-v2.test.mjs",
+      "sha256": "2e2a5925d5994ad6d6339219b55a60c5ecd1fe3ac8aa397710fdd0d4da12677e"
+    }
+  ],
+  "engineAvailability": [
+    {
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "required"
+    },
+    {
+      "host": "web",
+      "runtime": "remote",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "required"
+    },
+    {
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "web",
+      "runtime": "browser",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "required"
+    },
+    {
+      "host": "macos",
+      "runtime": "native",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "required"
+    },
+    {
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "windows",
+      "runtime": "native",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "linux",
+      "runtime": "native",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "android",
+      "runtime": "native",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "android",
+      "runtime": "native",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "required"
+    },
+    {
+      "host": "ios",
+      "runtime": "native",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "required"
+    },
+    {
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "skia",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    },
+    {
+      "host": "harmony",
+      "runtime": "native",
+      "renderer": "webview",
+      "quickjs": "required",
+      "v8": "explicit-availability-contract"
+    }
+  ]
+}

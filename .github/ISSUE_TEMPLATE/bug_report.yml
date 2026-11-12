@@ -1,0 +1,17 @@
+name: Bug report
+description: 报告可复现的问题
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境
+      description: 源码提交、平台、工具链、引擎和渲染路径。请移除凭据和个人数据。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤
+      description: 最小示例、执行命令、预期和实际行为。
+    validations:
+      required: true

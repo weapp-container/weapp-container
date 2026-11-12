@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "kind": "fresh-official-case-completion-summary",
+  "recordedAt": "2026-11-07T02:45:13.812780+00:00",
+  "status": "passed",
+  "caseId": "ide-github-issues-runtime-issue1012",
+  "run": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/run.json",
+    "sha256": "028a5dd4b28ce48ecf0e51825faf970202f3d6a00ac7113b46ff0e116a1b3144",
+    "bytes": 9916
+  },
+  "command": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/command.json",
+    "sha256": "cce7997795708789b8646702bf30d05c0f54b4b10f233dab4466cca97fb2bb49",
+    "bytes": 1665
+  },
+  "sourceFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/control/01-1012/source-freeze.json",
+    "sha256": "01d9e11a0ec1773032e3d5dd04d8aa111188574887b66fa21f69b65203255c62",
+    "bytes": 40345
+  },
+  "batchFreeze": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/source-freeze.json",
+    "sha256": "243e0540d3a68ad15c57fa44aa684efa5ed25aa3db9a0446547514daa068ce92",
+    "bytes": 132755
+  },
+  "sourceStable": true,
+  "source": {
+    "path": "e2e/ide/github-issues.runtime.issue1012.test.ts",
+    "sha256": "c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff",
+    "before": "c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff",
+    "after": "c91ec602d9bc78f722f5a3d4e4930e840f4227f8d567c0ee1c88063579bb67ff"
+  },
+  "actualRuntime": [
+    {
+      "recordedAt": "2026-11-07T02:42:33.310Z",
+      "projectPath": "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/checkout/.tmp/e2e-ide-bridge-projects/2fd237e87b9276be",
+      "installationId": "cfb4b996ecf67c6b9043748163f6c783950d1e56a1935be50652b3b443e477a6",
+      "tool": {
+        "version": "2.02.2609250",
+        "SDKVersion": "3.17.3"
+      },
+      "system": {
+        "SDKVersion": "3.17.3",
+        "platform": "devtools"
+      }
+    }
+  ],
+  "failures": [],
+  "cleanup": {
+    "owner": "conformance-56932",
+    "machineLeaseAcquired": true,
+    "machineLeaseReleased": true,
+    "hostLeaseAcquired": true,
+    "hostLeaseReleased": true,
+    "ownedResourcesReleased": true,
+    "borrowedResourcesPreserved": true
+  },
+  "projects": 1,
+  "allProjectsReleased": true,
+  "borrowedHostUnchanged": true,
+  "officialCommand": {
+    "startedAt": "2026-11-07T02:41:15.086Z",
+    "endedAt": "2026-11-07T02:43:49.200Z",
+    "exitCode": 0,
+    "command": [
+      "caffeinate",
+      "-dimsu",
+      "--",
+      "/home/developer/.nvm/versions/node/v24.22.1/bin/node",
+      "/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/checkout/node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-cache",
+      "--no-fsModuleCache",
+      "--configLoader",
+      "runner",
+      "-c",
+      "./e2e/vitest.e2e.devtools.config.ts",
+      "e2e/ide/github-issues.runtime.issue1012.test.ts",
+      "--reporter=default",
+      "--reporter=json",
+      "--reporter=./e2e/scripts/domAcceptanceReport/reporter.ts",
+      "--outputFile.json=/home/developer/Projects/github/weapp-container/artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/vitest.json",
+      "--hookTimeout=180000",
+      "--testTimeout=300000"
+    ],
+    "pid": 14534
+  },
+  "vitest": {
+    "numTotalTests": 1,
+    "numPassedTests": 1,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numRuntimeErrorTestSuites": null,
+    "success": true
+  },
+  "artifactInventory": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/artifacts.json",
+    "sha256": "f7ca86444f2f521c8a31b2a331278743910926fc62b8acf9155aa2b7e3ea3bde",
+    "bytes": 496675
+  },
+  "artifactInventoryVerified": 1837,
+  "productionAttemptInspection": {
+    "status": "passed",
+    "errors": [],
+    "diagnosticOnly": true
+  },
+  "productionRecipeLoader": {
+    "exitCode": 0,
+    "recipes": [
+      "ide-github-issues-runtime-issue1012"
+    ],
+    "stdout": "{\"attempt\":{\"status\":\"passed\",\"errors\":[],\"diagnosticOnly\":true},\"recipes\":[\"ide-github-issues-runtime-issue1012\"]}\n",
+    "stderr": ""
+  },
+  "ownedPids": [
+    {
+      "pid": 14534,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "pid": 21435,
+      "absent": true,
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "borrowedHostProcess": {
+    "pid": 97351,
+    "absent": false,
+    "exitCode": 0,
+    "stdout": "97351 Sat Nov  7 01:00:58 2026     /Applications/wechatwebdevtools.app/Contents/MacOS/Electron\n",
+    "stderr": ""
+  },
+  "indexPromoted": false,
+  "formalMatrixAdmitted": false,
+  "formalPairs": 0,
+  "boundary": "Actual official attempt observation; parent independently reviews before index/golden admission. No native differential pair is implied.",
+  "observer-observation.json": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/observer-observation.json",
+    "sha256": "c9ec54c49e15ecea045552601f4dc4bddc917194c5da20a8e446ee08db21e315",
+    "bytes": 272
+  },
+  "observed-events.json": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/observed-events.json",
+    "sha256": "f61ee7bb3957493605bd851dc362b78a978ebf5da80455c967c1bd47da79375e",
+    "bytes": 2318
+  },
+  "runtime-observation.json": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/runtime-observation.json",
+    "sha256": "739801fc0f082f4d6a568dcf557a697f3e187f011dff2ea3736204f642551986",
+    "bytes": 563
+  },
+  "attempt.json": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/attempt.json",
+    "sha256": "da710531cdee98912b9c78718102a08744082370c9cc13940d47b88e3cbf118e",
+    "bytes": 2479
+  },
+  "oracleSet": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/oracle-set.json",
+    "sha256": "75641f5cd9a50af691bf8b3de1df7c67901228da299dd336ecd31ea592bad91a",
+    "bytes": 852
+  },
+  "oracle": {
+    "trace": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-trace.json",
+      "sha256": "b6b5912f512817204b3218203c02f99828113ab06cb4a82a72228473bb2b24a1",
+      "bytes": 2556
+    },
+    "execution": {
+      "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-execution.json",
+      "sha256": "11a9149b5dbbaa009e452fd4bbaa66d3938dae53c46d44215bb8fa8d3c628aa8",
+      "bytes": 3197
+    }
+  },
+  "events": 4,
+  "assertions": [
+    {
+      "id": "e2e app: github-issues / issue #1012 keeps JavaScript this ownership across compiled template expressions",
+      "passed": true
+    }
+  ],
+  "executionStatus": "passed",
+  "observedDevtoolsVersion": "2.02.2609250",
+  "observedBaseLibraryVersion": "3.17.3",
+  "compilerUse": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/compiler-use/objects/sha256/4a3ac3ee413a48bfeda78165c4d6f6c6695bda89e0240dde6eed65ddf06835fb",
+    "sha256": "4a3ac3ee413a48bfeda78165c4d6f6c6695bda89e0240dde6eed65ddf06835fb",
+    "bytes": 180306
+  },
+  "fixtureBuild": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/fixture-build/objects/sha256/923d31c7afc298133053273c7b97eb52ed3958ae91ac5ac2e935ccbe3a99f791",
+    "sha256": "923d31c7afc298133053273c7b97eb52ed3958ae91ac5ac2e935ccbe3a99f791",
+    "bytes": 49962
+  },
+  "trace": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-trace.json",
+    "sha256": "b6b5912f512817204b3218203c02f99828113ab06cb4a82a72228473bb2b24a1",
+    "bytes": 2556
+  },
+  "execution": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/ide-github-issues-runtime-issue1012/official-execution.json",
+    "sha256": "11a9149b5dbbaa009e452fd4bbaa66d3938dae53c46d44215bb8fa8d3c628aa8",
+    "bytes": 3197
+  },
+  "executionRecipes": {
+    "path": "artifacts/conformance-official/2026-11-07-cjs-v4-r5c-v1/01-1012/execution-recipes.json",
+    "sha256": "2978731daa6083c952557485baf67cb82cc4b28e7e65b44aa4785d334a75b8fd",
+    "bytes": 18410
+  }
+}

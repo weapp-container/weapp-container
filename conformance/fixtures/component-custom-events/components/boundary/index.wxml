@@ -1,0 +1,1 @@
+<view id="boundary-inner" bind:signal="bubble"><probe id="nested" bind:signal="direct" /></view>

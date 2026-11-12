@@ -1,0 +1,85 @@
+/** One pinned standalone WXML case. No normalization, pruning or generic admission. */
+import { createHash } from 'node:crypto'
+import { basename, dirname, isAbsolute, join, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { instrumentSnapshotAutomator, snapshotFileMap, verifySnapshotTransport, verifySnapshotCleanupFinal,
+  verifySnapshotSourceFinal } from './conformance-snapshot-transport.mjs'
+const MODULE = new URL('./conformance-wxml-producer.mjs', import.meta.url)
+const hash = bytes => createHash('sha256').update(bytes).digest('hex')
+const ensure = (ok, message) => { if (!ok) throw new Error(message) }
+const same = (left, right) => JSON.stringify(left) === JSON.stringify(right)
+export const WXML_PRODUCER_PROFILE = 'wxml-static-snapshot-v1'
+export const WXML_PRODUCER_CASE = Object.freeze({ caseId: 'ide-wxml-transform-runtime', caseSourcePath: 'e2e/ide/wxml-transform.runtime.test.ts',
+  sourceSha256: '697e7f72f545f1c8df358930c5ecca297d8888bb16f0cf01a4bc88084392d4a2' })
+export const WXML_PRODUCER_GUARDS = Object.freeze([
+  Object.freeze({ path: WXML_PRODUCER_CASE.caseSourcePath, sha256: WXML_PRODUCER_CASE.sourceSha256 }),
+  Object.freeze({ path: 'e2e/utils/wxmlTransformProject.ts', sha256: '97b2b0b9d2ce864f04498c344481ce322bddcd247ce1f5fd0cac6969356c5db0' }),
+  Object.freeze({ path: 'e2e/utils/automator.ts', sha256: '3389347206d95d6cbaa3fba9a0f72ab75519868032dc868810019599186f0938' }),
+  Object.freeze({ path: 'e2e/utils/automatorBridgeFiles.ts', sha256: 'f136b7809732b7fc6f66cb77ec33fe06ae94dca5b3fae12df492392095e2a95b' }),
+  Object.freeze({ path: 'e2e/utils/buildLog.ts', sha256: '1c992ab9649f2a56fa6c37e3d7f9f4f02c254f3427999a51b26146e941419868' }),
+])
+export function wxmlProducerCase(identity) {
+  return identity && Object.entries(WXML_PRODUCER_CASE).every(([key, value]) => identity[key] === value) ? WXML_PRODUCER_CASE : null
+}
+export function wxmlProducerInvocation({ args, cliPath, cwd, checkout, ...identity }) {
+  const item = wxmlProducerCase(identity)
+  if (!item || !isAbsolute(checkout ?? '') || resolve(checkout) !== checkout || cwd !== checkout
+    || !Array.isArray(args) || args.length !== 3 || args[0] !== cliPath || args[1] !== 'build') return null
+  const target = args[2], parent = join(checkout, '.tmp/e2e-projects')
+  if (typeof target !== 'string' || !isAbsolute(target) || resolve(target) !== target || dirname(target) !== parent) return null
+  const name = basename(target)
+  if (!/^wxml-transform-[a-zA-Z0-9]{6}$/.test(name) || target !== join(parent, name)) return null
+  return Object.freeze({ profile: WXML_PRODUCER_PROFILE, ...item, sourceRoot: target, generatedRoot: join(target, 'dist') })
+}
+export function wxmlProducerBytes() { return readFileSync(MODULE) }
+export function verifyWxmlProducerGuards({ guards, members, load }) {
+  ensure(Array.isArray(guards) && guards.length === WXML_PRODUCER_GUARDS.length && Array.isArray(members), 'WXML producer source guards are missing')
+  const map = new Map(members.map(item => [item.path, item]))
+  for (let at = 0; at < WXML_PRODUCER_GUARDS.length; at++) {
+    const expected = WXML_PRODUCER_GUARDS[at], guard = guards[at], member = map.get(expected.path)
+    ensure(guard.path === expected.path && hash(load(guard.original)) === expected.sha256, 'WXML producer original source guard differs')
+    const original = load(guard.original), observed = load(guard.observed)
+    const transformed = expected.path.endsWith('/automator.ts') ? Buffer.from(instrumentSnapshotAutomator(original.toString('utf8'))) : original
+    ensure(observed.equals(transformed) && member?.kind === 'file' && member.sha256 === hash(observed) && member.bytes === observed.length
+      && member.origin === (expected.path.endsWith('/automator.ts') ? 'patch' : 'source'), 'WXML producer observed helper is not the exact reviewed transform')
+  }
+}
+export function verifyWxmlProducerTransaction({ transaction: t, build, checkout, members, load, identity }) {
+  const profile = wxmlProducerInvocation({ ...build.producerProfile, args: build.command?.slice(1), cliPath: build.command?.[1], cwd: build.cwd, checkout })
+  ensure(profile && same(profile, build.producerProfile), 'WXML producer invocation or case binding differs')
+  ensure(wxmlProducerCase(identity) && profile.caseId === identity.caseId && profile.caseSourcePath === identity.caseSourcePath
+    && profile.sourceSha256 === identity.sourceSha256, 'WXML producer profile belongs to another consumer case')
+  ensure(t.schemaVersion === 1 && t.kind === 'weapp-container.wxml-producer-transaction' && t.profile === WXML_PRODUCER_PROFILE,
+    'WXML producer transaction profile differs')
+  ensure(hash(load(t.producer)) === hash(wxmlProducerBytes()), 'WXML producer verifier implementation differs')
+  verifyWxmlProducerGuards({ guards: t.guards, members, load })
+  snapshotFileMap(build.sourceAfter, load, true); snapshotFileMap(build.generated, load)
+  ensure(build.sourceRootIdentity && Object.keys(build.sourceRootIdentity).sort().join(',') === 'birthtimeNs,device,inode'
+    && Object.values(build.sourceRootIdentity).every(value => typeof value === 'string' && /^\d+$/.test(value))
+    && BigInt(build.sourceRootIdentity.inode) > 0n && BigInt(build.sourceRootIdentity.birthtimeNs) > 0n
+    && same(t.sourceRootIdentity, build.sourceRootIdentity), 'WXML actual source directory identity differs from the build')
+  ensure(same(t.postHelperSource, build.sourceAfter) && same(t.postHelperGenerated, build.generated), 'WXML post-CLI source/generated transition is not identity')
+  const links = build.sourceAfter.filter(item => item.kind === 'consumer-link')
+  ensure(links.length === 2 && links.every(item => item.target === ({ 'node_modules/weapp-vite': 'packages/weapp-vite',
+    'node_modules/wevu': 'packages-runtime/wevu' })[item.path]), 'WXML source dependency links differ from the pinned helper')
+  const runtimeGenerated = verifySnapshotTransport({ transaction: t, build, profile, checkout, load, label: 'WXML', allowSourceLinks: true })
+  return { profile, runtimeGenerated }
+}
+export function verifyWxmlSnapshotFinal(options) {
+  return verifySnapshotCleanupFinal({ ...options, profile: WXML_PRODUCER_PROFILE, prefix: 'wxml', label: 'WXML',
+    verifyTransaction: transaction => verifyWxmlProducerTransaction({ ...options, transaction }) })
+}
+export function verifyWxmlSourceCleanup({ final, transaction, transactionReference, ownerId, checkpointAt, recordingEndedAt, load }) {
+  ensure(final, 'WXML actual source cleanup proof is missing')
+  const cleanup = JSON.parse(load(final)), before = JSON.parse(load(cleanup.beforeCleanup))
+  ensure(cleanup.schemaVersion === 1 && cleanup.kind === 'weapp-container.wxml-source-cleanup' && cleanup.profile === WXML_PRODUCER_PROFILE
+    && cleanup.ownerId === ownerId && same(cleanup.transaction, transactionReference) && cleanup.sourceRoot === transaction.sourceRoot
+    && cleanup.generatedRoot === transaction.generatedRoot && same(cleanup.observer, transaction.observer) && cleanup.projectAbsent === true
+    && same(cleanup.sourceRootIdentity, transaction.sourceRootIdentity)
+    && before.schemaVersion === 1 && before.kind === 'weapp-container.wxml-source-before-cleanup' && before.profile === WXML_PRODUCER_PROFILE
+    && before.ownerId === ownerId && same(before.transaction, transactionReference) && same(before.observer, transaction.observer)
+    && same(before.sourceRootIdentity, transaction.sourceRootIdentity)
+    && Date.parse(before.capturedAt) <= Date.parse(cleanup.removedAt) && Date.parse(cleanup.removedAt) <= Date.parse(recordingEndedAt),
+  'WXML source cleanup belongs to another owner or interval')
+  verifySnapshotSourceFinal({ final: before, transaction, checkpointAt, recordingEndedAt, load, label: 'WXML', allowSourceLinks: true })
+}

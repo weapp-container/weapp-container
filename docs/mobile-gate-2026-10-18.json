@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "kind": "historical-validation-summary",
+  "scope": "Archived mobile diagnostics from 2026-10-18",
+  "status": "unknown",
+  "originalRecord": "private-archive",
+  "limitations": "Original environment and device records are retained privately. This public summary does not establish current source, platform, GPU or release conformance."
+}

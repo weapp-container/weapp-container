@@ -1,0 +1,6 @@
+<view class="component-panel">
+  <text id="component-label" class="component-label">{{config.label}}</text>
+  <text id="component-count" class="component-count">组件计数：{{count}}</text>
+  <view id="component-increment" class="component-button" bindtap="increment">点击组件 setData</view>
+  <slot />
+</view>

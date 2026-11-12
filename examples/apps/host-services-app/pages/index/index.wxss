@@ -1,0 +1,7 @@
+.page { padding: 32rpx; color: #172033; background: #f8fafc; }
+.title { display: block; font-size: 42rpx; font-weight: bold; margin-bottom: 16rpx; }
+.notice, .status, .message { display: block; margin: 20rpx 0; line-height: 1.6; }
+.notice { color: #655232; }
+button { margin: 16rpx 0; }
+.order { margin: 32rpx 0; padding-top: 24rpx; border-top: 1px solid #cbd5e1; }
+.message { color: #475569; }

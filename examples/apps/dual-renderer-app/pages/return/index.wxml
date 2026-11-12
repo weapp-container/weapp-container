@@ -1,0 +1,14 @@
+<view id="dual-renderer-return" class="screen">
+  <view class="kicker">DOM / CSS</view>
+  <view class="title">这是新建的 DOM 页面</view>
+  <view id="instance" class="meta instance">实例 {{instance}} · ready {{readyCount}} · 显示 {{showCount}}</view>
+  <view id="shared" class="meta shared">共享点击 {{sharedTaps}} · App 时钟 {{ticks}} s</view>
+  <view id="timer" class="meta timer">timer #{{timerId}} · App 启动 {{launches}} 次</view>
+  <view id="session" class="meta token">{{token}}</view>
+  <view id="count" class="counter" style="background:{{color}}">当前页面计数：{{count}}</view>
+  <view id="increment" class="button increment" bindtap="increment">当前页 +1，同时写入共享存储</view>
+  <view id="back" class="button navigate" bindtap="back">返回最初的 DOM 页面</view>
+  <view id="refresh" class="button refresh refresh-short" bindtap="refresh">刷新共享存储与时钟</view>
+  <view class="hint">当前实例应不同于首页。返回后首页计数仍保留，共享点击及 App 时钟继续增长。</view>
+  <view id="last-event" class="trace">最近生命周期：{{lastEvent}}</view>
+</view>

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-case-recipes",
+  "baselineId": "wechat-devtools-2.02.2609250-sdk-3.17.3",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "recipes": [
+    {
+      "caseId": "ide-github-issues-runtime-import-meta",
+      "sourceSha256": "87bf4d6ff17686b0b10dcdfd19d21292aa2a5de1f049ad209cbfee98c0cb2c09",
+      "fixtureProfile": "captured-static-v1",
+      "collector": {
+        "path": "conformance/recipes/import-meta-collector.mjs",
+        "sha256": "3b26958f413d7f1aaa2907de6cc673e56c746b9f44b9c3dc1ebfee78640fa56a",
+        "bytes": 334
+      },
+      "collectorInputs": [
+        {
+          "path": "conformance/recipes/import-meta-descriptor.mjs",
+          "sha256": "6416f5aac164ef7b597b5623f1fa52a840becd8a76fd90ebf07003a3c8c65881",
+          "bytes": 3579
+        },
+        {
+          "path": "conformance/recipes/import-meta-source-policy.mjs",
+          "sha256": "a8ccb52fb0cf38ffb994e5508ef4716f4c5b09e4929eb0eca45d60a37f1014bc",
+          "bytes": 492
+        },
+        {
+          "path": "conformance/recipes/ordered-steps-collector-core.mjs",
+          "sha256": "cc84b287766d95a5776681a7e05cb01ea19d31ea2f8d32522e48da8cad505b67",
+          "bytes": 47431
+        },
+        {
+          "path": "conformance/recipes/passive-query-context.mjs",
+          "sha256": "b73284d8fcc450d145556e1437e8e47b6e342f487a68d9d4af4a3b04f4970b6f",
+          "bytes": 5481
+        },
+        {
+          "path": "conformance/recipes/source-method-values.mjs",
+          "sha256": "c73d4757d9c444663bdbfd4b0989844cb4d7543f447e1e2614ef4763003cd9d3",
+          "bytes": 2396
+        }
+      ]
+    }
+  ]
+}

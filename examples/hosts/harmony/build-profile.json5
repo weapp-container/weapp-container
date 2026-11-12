@@ -1,0 +1,41 @@
+{
+  "app": {
+    "signingConfigs": [],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "compileSdkVersion": 24,
+        "targetSdkVersion": 24,
+        "compatibleSdkVersion": 24,
+        "runtimeOS": "OpenHarmony",
+        "buildOption": {
+          "externalNativeOptions": {
+            "path": "./entry/src/main/cpp/CMakeLists.txt",
+            "arguments": ""
+          },
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      { "name": "debug" },
+      { "name": "release" }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": ["default"]
+        }
+      ]
+    }
+  ]
+}

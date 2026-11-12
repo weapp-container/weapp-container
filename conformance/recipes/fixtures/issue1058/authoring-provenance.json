@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "kind": "weapp-container-issue1058-fixture-authoring",
+  "diagnosticOnly": true,
+  "qualifiesAsOfficialConformance": false,
+  "officialStatus": "unknown",
+  "indexPromoted": false,
+  "caseId": "ide-issue-1058-template-tags-runtime",
+  "sourceSha256": "00adf03eed85511cd47f33867ed6e1dc897ade9c043671ff6f05a361feb180ea",
+  "compilerCommit": "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+  "compilerBuild": {
+    "path": "artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/compiler-build.json",
+    "sha256": "9a90ace29f5cb55e6dd11081b4de986b24008960f92851145808332db99a93ad",
+    "bytes": 10459037
+  },
+  "caseSource": {
+    "path": "e2e/ide/issue-1058-template-tags.runtime.test.ts",
+    "artifact": {
+      "path": "artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/objects/sha256/00adf03eed85511cd47f33867ed6e1dc897ade9c043671ff6f05a361feb180ea",
+      "sha256": "00adf03eed85511cd47f33867ed6e1dc897ade9c043671ff6f05a361feb180ea",
+      "bytes": 3978
+    }
+  },
+  "originalHelper": {
+    "path": "artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/checkout/e2e/utils/issue1058Project.ts",
+    "sha256": "c62f595c46339309306db87b38791e97fb51be9b82474abedb8b92173f7a525f",
+    "bytes": 1421
+  },
+  "originalCli": {
+    "path": "artifacts/conformance-compiler-build/2026-11-07-fresh-pinned-v4/checkout/packages/weapp-vite/bin/weapp-vite.js",
+    "sha256": "4afd34dc8ec35c03c271f21caa257ff6bd40dbf995ddc2d09a5835613f2f7f0e",
+    "bytes": 193
+  },
+  "diagnosticSourceOutputReceipt": {
+    "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/diagnostic.json",
+    "sha256": "3f0c3a743076c07c82cddb8a3eab520569bd1a492feaec6b9db9eda4f02822a0",
+    "bytes": 14630
+  },
+  "diagnosticManifest": {
+    "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/pack/manifest.json",
+    "sha256": "1824793fb124a0850d075a7d39a8592980ac2e6d4fd0752dfe9141ba279f31a0",
+    "bytes": 8467
+  },
+  "portableManifest": {
+    "path": "conformance/recipes/fixtures/issue1058/manifest.json",
+    "sha256": "1824793fb124a0850d075a7d39a8592980ac2e6d4fd0752dfe9141ba279f31a0",
+    "bytes": 8467
+  },
+  "fixture": {
+    "path": "conformance/recipes/fixtures/issue1058/fixture.json",
+    "sha256": "08218d453bb33e45b8c2411227f60991963a70f9e935e522a3bb360601d2c062",
+    "bytes": 11713
+  },
+  "collector": {
+    "path": "conformance/recipes/issue1058-collector.mjs",
+    "sha256": "227ee8a5a4166fdada2c65cf25344f9bf64bf7cbe3853558bb854e1efe1ecdf5",
+    "bytes": 6173
+  },
+  "collectorInputs": [],
+  "generatedInputs": [
+    {
+      "generatedPath": "app.js",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/app.js",
+      "sha256": "1445ce69f0aed871f98554c6ead0a751c51e30dc4dd401f2ad5016f2fe8e2ccf",
+      "bytes": 280
+    },
+    {
+      "generatedPath": "app.json",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/app.json",
+      "sha256": "3f08037c1f767598f0c04fa15803fba0ed255647f2a3629dc9659103d0748b5e",
+      "bytes": 92
+    },
+    {
+      "generatedPath": "components/CaseCard/index.js",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/components/CaseCard/index.js",
+      "sha256": "6e6cdff15e52564805ef80e8b55debf0bfad83bb9da0cdc7b2052f171986d67d",
+      "bytes": 1483
+    },
+    {
+      "generatedPath": "components/CaseCard/index.json",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/components/CaseCard/index.json",
+      "sha256": "4a0976b08df9b20d33c41e43ee32d12c91774a0148d55232ad070b1944333646",
+      "bytes": 23
+    },
+    {
+      "generatedPath": "components/CaseCard/index.wxml",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/components/CaseCard/index.wxml",
+      "sha256": "09558c0ce156fc6d537edb6608ed7a4f4f296d5409631d74c567bae64129833f",
+      "bytes": 22
+    },
+    {
+      "generatedPath": "pages/boundary/index.js",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/pages/boundary/index.js",
+      "sha256": "270e13b4dba75832bac2d475b4f2b4c6977bbcd9877fd77271de8e4aad76bbc4",
+      "bytes": 834
+    },
+    {
+      "generatedPath": "pages/boundary/index.json",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/pages/boundary/index.json",
+      "sha256": "168da388ebbc416f40b92fff7b7d661d5e7dee823b5b7369b8c491386be03592",
+      "bytes": 72
+    },
+    {
+      "generatedPath": "pages/boundary/index.wxml",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/pages/boundary/index.wxml",
+      "sha256": "8cb8ca8143a39fde63ebb625960ea7b7cdc565b34feeb9279d4cd3aba46bd8a4",
+      "bytes": 282
+    },
+    {
+      "generatedPath": "pages/home/index.js",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/pages/home/index.js",
+      "sha256": "aa3948cb2e7d6fe68a82fcb0966c626a8d0eb5a4198728d85f0065a750105b71",
+      "bytes": 904
+    },
+    {
+      "generatedPath": "pages/home/index.json",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/pages/home/index.json",
+      "sha256": "2c777eb69e926f2ab35fd0c552c13491f8858b3069c08b8f1b74ca380c03eed7",
+      "bytes": 76
+    },
+    {
+      "generatedPath": "pages/home/index.wxml",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/pages/home/index.wxml",
+      "sha256": "31458a719d6db48c2477ae56fe648fd21710edb4c8ebdbcbaf25fc7649538ea3",
+      "bytes": 311
+    },
+    {
+      "generatedPath": "weapp-vendors/wevu-runtime.js",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/weapp-vendors/wevu-runtime.js",
+      "sha256": "0bc249456fb1861dcf3e1532c8aabd2df14b2b8dfb4f6b69f510b7c84cf00064",
+      "bytes": 163917
+    },
+    {
+      "generatedPath": "weapp-vendors/wevu-runtime2.js",
+      "path": "artifacts/conformance-issue1058/2026-11-07-fresh-v4-diagnostic/input/weapp-vendors/wevu-runtime2.js",
+      "sha256": "da2a67fa46c3c13853f4888156e96846f2f17823eb278ec579af8eaff4f5e6f3",
+      "bytes": 2719
+    }
+  ],
+  "requiredBlobCount": 20,
+  "requiredBlobBytes": 172359,
+  "formalRequirement": "The official checkpoint must capture its own successful pinned compiler build and repack its actual generated dist. Fixture-build evidence must match this exact portable manifest and required blob closure. This authoring diagnostic does not supply an official trace, compiler-use receipt, or index promotion."
+}

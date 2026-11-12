@@ -1,0 +1,7 @@
+{
+  "appid": "touristappid",
+  "projectname": "player-correctness-app",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": "."
+}

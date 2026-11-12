@@ -1,0 +1,48 @@
+name: React Native SDK contracts
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: SDK validation group (full retains the complete platform matrix)
+        type: choice
+        default: quick
+        options: [quick, full]
+      platform:
+        description: Platform selection for non-full runs
+        type: choice
+        default: linux
+        options: [linux, macos, windows, all]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.suite }}-${{ inputs.platform }}
+  cancel-in-progress: ${{ inputs.suite != 'full' }}
+
+permissions:
+  contents: read
+
+jobs:
+  types-and-codegen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install React Native 0.88 tooling
+        working-directory: sdk/react-native
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Check types and generate real native interfaces
+        working-directory: sdk/react-native
+        run: |
+          npm run typecheck
+          npm run codegen
+          test -s codegen/build/generated/ios/ReactCodegen/WeappContainerSpec/WeappContainerSpec.h
+          test -s codegen/android/app/build/generated/source/codegen/java/com/facebook/react/viewmanagers/WeappContainerNativeViewManagerInterface.java
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: 7
+          name: react-native-codegen
+          path: sdk/react-native/codegen

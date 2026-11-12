@@ -1,0 +1,47 @@
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "EntryAbility",
+    "deviceTypes": ["default"],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "description": "$string:EntryAbility_desc",
+        "label": "$string:EntryAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "skills": [
+          {
+            "entities": ["entity.system.home"],
+            "actions": ["action.system.home"]
+          }
+        ]
+      }
+    ],
+    "requestPermissions": [
+      { "name": "ohos.permission.INTERNET" },
+      { "name": "ohos.permission.NFC_TAG" },
+      { "name": "ohos.permission.ACCESS_BIOMETRIC" },
+      { "name": "ohos.permission.GET_NETWORK_INFO" },
+      { "name": "ohos.permission.GET_WIFI_INFO" },
+      { "name": "ohos.permission.SET_WIFI_INFO" },
+      { "name": "ohos.permission.GET_WIFI_PEERS_MAC", "reason": "$string:device_permission_reason", "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" } },
+      { "name": "ohos.permission.ACCESS_BLUETOOTH", "reason": "$string:device_permission_reason", "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" } },
+      { "name": "ohos.permission.VIBRATE" },
+      { "name": "ohos.permission.ACCELEROMETER" },
+      { "name": "ohos.permission.GYROSCOPE" },
+      { "name": "ohos.permission.APPROXIMATELY_LOCATION", "reason": "$string:device_permission_reason", "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" } },
+      { "name": "ohos.permission.LOCATION", "reason": "$string:device_permission_reason", "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" } },
+      { "name": "ohos.permission.CAMERA", "reason": "$string:device_permission_reason", "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" } },
+      { "name": "ohos.permission.MICROPHONE", "reason": "$string:device_permission_reason", "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" } },
+      { "name": "ohos.permission.READ_PASTEBOARD", "reason": "$string:device_permission_reason", "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" } }
+    ]
+  }
+}

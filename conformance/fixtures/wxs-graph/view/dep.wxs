@@ -1,0 +1,1 @@
+module.exports = { divisor: 3, label: 'dep', marker: '/' };

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "ios27-simctl-executable-bit-removal-observed-se-v1",
+  "recordedAt": "2026-10-29T14:55:01.738175+00:00",
+  "allowedPaths": [
+    "Frameworks/App.framework/App",
+    "Frameworks/Flutter.framework/Flutter",
+    "Frameworks/flutter_secure_storage.framework/flutter_secure_storage",
+    "Frameworks/objective_c.framework/objective_c",
+    "Runner.debug.dylib",
+    "__preview.dylib"
+  ],
+  "transition": {
+    "preparedExecutable": true,
+    "installedExecutable": false
+  },
+  "observationSha256": "e3e9669f52be9c3fed551b111ac1aa48c4c1b9d16899131515b525767f1392ea",
+  "originalFailureSha256": "5864b016c9251bf3b07e12a8000d8e451e630fd1bf2872c0c2f6a8195d4ac3c3",
+  "scope": "Only six independently observed Xcode27.1/iOS27.0 simctl-installed metadata changes. All original archive identities, member/link identities, sizes/SHA and main Runner metadata remain strict. No product acceptance or byte normalization.",
+  "authorization": "Explicit root instruction after independent76/76content-match observation; preserve prior failure and original producer receipts."
+}

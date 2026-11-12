@@ -1,0 +1,8 @@
+const require_common = require("./weapp-vendors/wevu-runtime.js");
+//#region .tmp/e2e-projects/issue-1058-XrHwqz/src/app.vue
+require_common.o({ component: { allowNullPropInput: true } });
+require_common._$1({ setup(__props, { expose }) {
+	expose();
+	return {};
+} });
+//#endregion

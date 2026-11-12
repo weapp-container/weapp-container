@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-report-v1.schema.json",
+  "title": "Weapp Container conformance report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "suite", "indexSha256", "runs", "summary"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "suite": { "const": "weapp-vite-e2e-ide" },
+    "indexSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["caseId", "status", "trace"],
+        "properties": {
+          "caseId": { "type": "string", "pattern": "^ide-[a-z0-9][a-z0-9-]*$" },
+          "status": { "enum": ["passed", "failed", "blocked", "unknown"] },
+          "trace": { "type": "string", "minLength": 1 },
+          "error": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "passed", "failed", "blocked", "unknown"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "passed": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "blocked": { "type": "integer", "minimum": 0 },
+        "unknown": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

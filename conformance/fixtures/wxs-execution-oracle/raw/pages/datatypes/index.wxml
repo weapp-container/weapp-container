@@ -1,0 +1,5 @@
+<wxs module="types" src="../../view/datatypes.wxs" />
+<view>
+  <text wx:if="{{phase === 'ready'}}" id="datatype-ready" data-case="{{caseId}}">ready</text>
+  <text wx:if="{{phase === 'ready'}}" id="datatype-result" data-case="{{caseId}}" data-value="{{types.probe(caseId)}}">datatype</text>
+</view>

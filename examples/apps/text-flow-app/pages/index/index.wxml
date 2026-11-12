@@ -1,0 +1,20 @@
+<text id="dynamic-raw" class="sample dynamic-raw" style="white-space:{{whiteSpace}};word-break:{{wordBreak}};text-align:{{textAlign}}">{{raw}}</text>
+<text id="dynamic-word" class="sample dynamic-word" style="white-space:{{whiteSpace}};word-break:{{wordBreak}};text-align:{{textAlign}}">{{longLatin}}</text>
+<text id="dynamic-align" class="sample dynamic-align" style="text-align:{{textAlign}}">{{alignment}}</text>
+<text id="graphemes" class="sample graphemes">{{graphemes}}</text>
+<text id="ws-normal" class="sample ws-normal">{{raw}}</text>
+<text id="ws-nowrap" class="sample ws-nowrap">{{raw}}</text>
+<text id="ws-pre" class="sample ws-pre">{{raw}}</text>
+<text id="ws-pre-wrap" class="sample ws-pre-wrap">{{raw}}</text>
+<text id="ws-pre-line" class="sample ws-pre-line">{{raw}}</text>
+<text id="ws-break-spaces" class="sample ws-break-spaces">{{raw}}</text>
+<text id="wb-normal" class="sample wb-normal">{{cjk}}</text>
+<text id="wb-break-all" class="sample wb-break-all">{{cjk}}</text>
+<text id="wb-keep-all" class="sample wb-keep-all">{{cjk}}</text>
+<text id="align-start" class="sample align-start">{{alignment}}</text>
+<text id="align-end" class="sample align-end">{{alignment}}</text>
+<text id="align-left" class="sample align-left">{{alignment}}</text>
+<text id="align-right" class="sample align-right">{{alignment}}</text>
+<text id="align-center" class="sample align-center">{{alignment}}</text>
+<view id="toggle" class="control toggle" bindtap="onToggle">toggle {{phase}}</view>
+<view id="inspect" class="control inspect" bindtap="onInspect">inspect</view>

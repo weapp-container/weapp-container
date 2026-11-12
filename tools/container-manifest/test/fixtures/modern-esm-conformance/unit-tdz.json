@@ -1,0 +1,31 @@
+{
+  "id": "modern:fba1663577a8cd0aad32f146c9f1e4ff6ea7d7ec37e2e47b99ab30d4e986ae19",
+  "executableSha256": "0de349978d4d4e33a188ef830f7fe8ac8844db65cc57e00085d9c612190ab9cd",
+  "sourceMapSha256": "d77ab9bc1b80588336e0fa277bf9f1622d6b27e1b26bb1db5215e519966ffc92",
+  "sources": [
+    {
+      "path": "container-tdz.config.json",
+      "sha256": "26480b80be9ed57f078c19507afcc3ed1d6310bb6f9670afae6ab931589772fa"
+    },
+    {
+      "path": "tdz-a.ts",
+      "sha256": "a6d755a0509d325d8832abb826dd4951f5c58b5409a7586239926567083a4c6f"
+    },
+    {
+      "path": "tdz-b.ts",
+      "sha256": "883d4236b59406610dd6f094fb91938a85f14e44145a8bce2ea374d656e3912e"
+    },
+    {
+      "path": "tdz.view.ts",
+      "sha256": "c192abe5535bd17c0d2ec7730e53f3b6850a024353fb335bd5324f8c94bec7cd"
+    }
+  ],
+  "documents": [
+    {
+      "documentId": "page.wxml",
+      "aliases": [
+        "tools"
+      ]
+    }
+  ]
+}

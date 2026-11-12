@@ -1,0 +1,9 @@
+var dep = requ\u0069re('./dep.wxs');
+var decoy = /require\(["']\.\/ghost\.wxs["']\)/;
+var commentLike = /[/*]/;
+if (false) {} else /[/*]/.test(require('./dep.wxs').marker);
+do /[/*]/.test('/'); while (false);
+exports.read = function(value) {
+  return [value / dep.divisor, commentLike.test('/'),
+    decoy.test("require('./ghost.wxs')"), dep.label].join('|');
+};

@@ -1,0 +1,30 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/settings/index",
+    "pages/detail/index",
+    "pages/custom/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "宿主界面验证",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f2f4f7"
+  },
+  "tabBar": {
+    "color": "#667085",
+    "selectedColor": "#087f5b",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/settings/index",
+        "text": "设置"
+      }
+    ]
+  }
+}

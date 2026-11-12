@@ -1,0 +1,429 @@
+/** Reviewed compiler consumer witness. Inherited by Node children through the
+ * exact controlled NODE_OPTIONS --require set by sealCompilerUse.
+ * Synchronous registration happens before execArgv --require imports, so every
+ * admitted extra loader must have a real subsequent resolve/load witness. This records Node's
+ * actual file loads; Vite transforms that bypass Node are deliberately not
+ * inferred from successful process exit. */
+const { appendFileSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } = require('node:fs')
+const { createHash } = require('node:crypto')
+const { types: { isProxy, isNativeError } } = require('node:util')
+const Module = require('node:module')
+const { registerHooks, syncBuiltinESMExports } = Module
+const { fileURLToPath, pathToFileURL } = require('node:url')
+const { isMainThread, threadId } = require('node:worker_threads')
+const { dirname, isAbsolute, join, relative, sep } = require('node:path')
+
+const config = JSON.parse(readFileSync(process.env.WEAPP_CONTAINER_COMPILER_USE_CONFIG, 'utf8'))
+if (config.outputLoadPolicy !== undefined && (config.outputLoadPolicy !== 'sealed-esm-v1' || !config.macroObservation))
+  throw new Error('Unsupported sealed compiler output load policy')
+const hash = value => createHash('sha256').update(value).digest('hex')
+const slash = value => value.split(sep).join('/')
+const inside = (root, file) => file === root || file.startsWith(root + sep)
+const log = join(config.logDirectory, `${process.pid}-${threadId}.jsonl`)
+let eventSeq = 0
+const record = value => appendFileSync(log, JSON.stringify({ ...value, eventSeq: ++eventSeq, runId: config.runId, pid: process.pid,
+  caseId: config.caseId, sourceSha256: config.sourceSha256, caseSourcePath: config.caseSourcePath,
+  ppid: process.ppid, threadId, isMainThread, at: new Date().toISOString() }) + '\n')
+const archive = value => {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value)
+  const digest = hash(bytes), directory = join(dirname(config.logDirectory), 'objects', 'sha256')
+  mkdirSync(directory, { recursive: true })
+  const file = join(directory, digest)
+  try { writeFileSync(file, bytes, { flag: 'wx' }) }
+  catch (error) { if (error.code !== 'EEXIST' || !readFileSync(file).equals(bytes)) throw error }
+  return { path: slash(relative(config.evidenceRoot, file)), sha256: digest, bytes: bytes.length }
+}
+let macroObserver
+let activeToken = 0, nextToken = 0, registrationId = 0, registrationDepth = 0, hookDepth = 0
+let observerFailed = false
+const observationFailure = error => {
+  observerFailed = true
+  // Read only own data properties. A diagnostic must not invoke a thrown
+  // object's getters/proxy traps or change the compiler's original behavior.
+  const diagnostic = {}
+  if (error && (typeof error === 'object' || typeof error === 'function') && !isProxy(error)) {
+    for (const key of ['name', 'code', 'message']) {
+      try {
+        const descriptor = Object.getOwnPropertyDescriptor(error, key)
+        if (typeof descriptor?.value === 'string') diagnostic[key] = descriptor.value.slice(0, 512)
+      } catch {}
+    }
+    if (!diagnostic.name && isNativeError(error)) diagnostic.name = 'Error'
+  }
+  try { record({ kind: 'observer-failure', errorType: typeof error,
+    ...(Object.keys(diagnostic).length ? { diagnostic } : {}) }) } catch {}
+}
+const fixtureInputClosure = process.env.WEAPP_CONTAINER_COMPILER_FIXTURE_INPUTS
+  ? JSON.parse(process.env.WEAPP_CONTAINER_COMPILER_FIXTURE_INPUTS) : undefined
+const guardBytes = readFileSync(join(config.evidenceRoot, config.membersReference.path))
+if (hash(guardBytes) !== config.membersReference.sha256 || guardBytes.length !== config.membersReference.bytes) throw new Error('Compiler consumer guard changed')
+const expected = new Map(JSON.parse(guardBytes).members.filter(item => item.kind === 'file').map(item => [item.path, item]))
+const runners = new Map(config.runnerFiles.map(item => [item.file, item]))
+const npmProfiles = ['pinned-json-macro-esm-cjs-v5-npm-support', 'pinned-json-macro-esm-cjs-v6-core-transform']
+const cjsProfiles = ['pinned-json-macro-esm-cjs-v3', 'pinned-json-macro-esm-cjs-v4-runtime-input', ...npmProfiles]
+const npmProfile = npmProfiles.includes(config.macroObservation?.profile)
+// The macro observer is an operation witness, not a process-wide consequence
+// of loading instrumented compiler code. The static recorder supplies this
+// closure only to its actual target CLI. Legacy profiles keep their exact
+// historical behavior; their generated-load admission remains unchanged.
+const staticMacroProcess = isMainThread && threadId === 0 && process.execArgv.length === 0
+  && process.argv[1] === join(config.checkout, 'packages/weapp-vite/bin/weapp-vite.js')
+  && process.argv[2] === 'build'
+let boundMacroFixture
+if (npmProfile && staticMacroProcess && fixtureInputClosure) {
+  const reference = fixtureInputClosure
+  if (Object.keys(reference).sort().join(',') !== 'bytes,path,sha256' || typeof reference.path !== 'string'
+    || isAbsolute(reference.path) || /[\\\0]/.test(reference.path)
+    || reference.path.split('/').some(part => !part || part === '.' || part === '..'))
+    throw new Error('Static macro fixture reference is malformed')
+  const file = join(config.evidenceRoot, reference.path), stat = lstatSync(file)
+  if (!stat.isFile() || stat.isSymbolicLink() || realpathSync(file) !== file)
+    throw new Error('Static macro fixture reference is not a physical file')
+  const bytes = readFileSync(file)
+  if (bytes.length !== reference.bytes || hash(bytes) !== reference.sha256) throw new Error('Static macro fixture reference changed')
+  boundMacroFixture = JSON.parse(bytes)
+  if (boundMacroFixture.projectPath !== process.argv[3] || !Array.isArray(boundMacroFixture.sourceBefore)
+    || !isAbsolute(boundMacroFixture.projectPath) || !inside(config.checkout, boundMacroFixture.projectPath))
+    throw new Error('Static macro fixture belongs to another actual project')
+}
+const activeMacroObservation = !npmProfile || Boolean(boundMacroFixture)
+const npmPlans = new Map()
+let npmSnapshotBytes = 0
+function npmTree(root, boundInputs = false) {
+  if (typeof root !== 'string' || !isAbsolute(root) || realpathSync(root) !== root
+    || !inside(config.checkout, root) || !lstatSync(root).isDirectory()) throw new Error('npm observation root is not canonical and owned')
+  const files = []
+  const walk = (directory, prefix = '') => {
+    const before = lstatSync(directory)
+    if (!before.isDirectory() || before.isSymbolicLink() || realpathSync(directory) !== directory) throw new Error('npm observation directory changed')
+    for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      if (!entry.name || ['.', '..'].includes(entry.name) || /[\\/\0]/.test(entry.name)) throw new Error('npm observation member is unsafe')
+      const file = join(directory, entry.name), path = prefix ? `${prefix}/${entry.name}` : entry.name
+      if (entry.isDirectory()) walk(file, path)
+      else {
+        const first = lstatSync(file)
+        if (!entry.isFile() || !first.isFile() || first.isSymbolicLink() || realpathSync(file) !== file) throw new Error('npm observation member is not a regular file')
+        const bytes = readFileSync(file), last = lstatSync(file)
+        if (['dev', 'ino', 'size', 'mtimeMs', 'ctimeMs'].some(key => first[key] !== last[key])) throw new Error('npm observation file changed while reading')
+        const consumerPath = slash(relative(config.checkout, file)), member = expected.get(consumerPath)
+        if (boundInputs && (!member || member.origin !== 'dependency' || member.sha256 !== hash(bytes) || member.bytes !== bytes.length)) throw new Error('npm observation input differs from sealed dependency')
+        npmSnapshotBytes += bytes.length
+        if (files.length >= 20000 || npmSnapshotBytes > 536870912) throw new Error('npm observation exceeds reviewed bounds')
+        files.push({ path, ...(boundInputs ? { consumerPath } : {}), artifact: archive(bytes) })
+      }
+    }
+    const after = lstatSync(directory)
+    if (['dev', 'ino', 'mtimeMs', 'ctimeMs'].some(key => before[key] !== after[key])) throw new Error('npm observation directory changed while reading')
+  }
+  walk(root)
+  return { root, files }
+}
+function emptyNpmOutput(plan) {
+  // The pinned service removes its output when this exact plan has zero
+  // dependencies. This records a physical absence, never an empty tree proof.
+  if (!plan || plan.cwd !== boundMacroFixture?.projectPath || plan.resolveFrom !== plan.cwd
+    || plan.packageJsonPath !== join(plan.cwd, 'package.json') || plan.platform !== 'weapp'
+    || plan.npmDistDirName !== 'miniprogram_npm' || plan.sourceOutDir !== plan.outDir
+    || !['allDependencies', 'mainDependencies', 'localSubPackageRoots'].every(key => Array.isArray(plan[key]) && plan[key].length === 0)
+    || plan.packageFiles !== null || plan.hasBuildOptions !== false
+    || typeof plan.sourceOutDir !== 'string' || !inside(plan.cwd, plan.sourceOutDir) || plan.sourceOutDir === plan.cwd) return null
+  const parts = relative(plan.cwd, plan.sourceOutDir).split(sep)
+  if (parts.some(part => !part || part === '.' || part === '..')) throw new Error('Empty npm output path is not canonical')
+  let parent = plan.cwd
+  for (const part of parts) {
+    const before = lstatSync(parent)
+    if (!before.isDirectory() || before.isSymbolicLink() || realpathSync(parent) !== parent)
+      throw new Error('Empty npm output parent is not a physical owned directory')
+    const child = join(parent, part)
+    try { lstatSync(child) }
+    catch (error) {
+      if (error.code !== 'ENOENT') throw error
+      const after = lstatSync(parent)
+      if (['dev', 'ino', 'mtimeMs', 'ctimeMs'].some(key => before[key] !== after[key]))
+        throw new Error('Empty npm output parent changed while observing absence')
+      return { kind: 'empty-npm-plan-absent-output-v1', root: plan.sourceOutDir, absent: true,
+        missingPath: child, parent: { path: parent, device: String(after.dev), inode: String(after.ino) } }
+    }
+    parent = child
+  }
+  return null
+}
+let bridgeProject
+if (process.argv[1] === join(config.checkout, 'e2e/utils/automator.cli-bridge.ts') && process.argv[2]) {
+  const payload = JSON.parse(process.argv[2])
+  const projectPath = realpathSync(payload.projectPath)
+  const configFile = join(projectPath, 'project.config.json')
+  const bytes = readFileSync(configFile)
+  bridgeProject = { projectPath, configFile, configSource: bytes.toString('utf8'), sha256: hash(bytes), bytes: bytes.length }
+}
+record({ kind: 'start', cwd: process.cwd(), argv: process.argv, execArgv: process.execArgv, nodeOptions: process.env.NODE_OPTIONS,
+  outputLoadPolicy: config.outputLoadPolicy,
+  cjsCompileWitness: cjsProfiles.includes(config.macroObservation?.profile) ? 'captured-node-cjs-compile-v1' : undefined,
+  bridgeProject, fixtureInputClosure, hookWitness: config.macroObservation ? 'terminal-rearm-registerHooks-v1' : undefined,
+  preloadSha256: hash(readFileSync(__filename)) })
+function installWitness() {
+ const token = ++nextToken
+ registerHooks({
+  resolve(specifier, context, next) {
+    if (config.macroObservation && token !== activeToken) return next(specifier, context)
+    const generation = activeToken, depth = registrationDepth
+    hookDepth++
+    try {
+    const result = config.macroObservation && specifier === 'weapp-container:conformance-observer-v1'
+      ? { url: pathToFileURL(config.macroObservation.observerPath).href, shortCircuit: true }
+      : next(specifier, context)
+    if (config.macroObservation && (generation !== activeToken || depth !== 0 || registrationDepth !== 0)) observationFailure('resolve crossed hook registration')
+    let targetURL
+    if (config.macroObservation) {
+      try {
+      const plain = !!result && typeof result === 'object' && !isProxy(result) && [Object.prototype, null].includes(Object.getPrototypeOf(result))
+      const fields = plain ? Object.getOwnPropertyDescriptors(result) : {}
+      const stable = plain && Reflect.ownKeys(fields).every(key => Object.hasOwn(fields[key], 'value'))
+        && Object.hasOwn(fields, 'url') && typeof fields.url.value === 'string'
+      if (!stable) observationFailure('resolve has an unstable result')
+      else targetURL = fields.url.value
+      } catch (error) { observationFailure(error) }
+    } else targetURL = result.url
+    if (typeof targetURL === 'string') {
+      const emit = () => record({ kind: 'resolve', specifier, parentURL: context.parentURL ?? null, url: targetURL,
+        ...(config.macroObservation ? { witnessToken: token } : {}) })
+      if (config.macroObservation) { try { emit() } catch (error) { observationFailure(error) } } else emit()
+    }
+    return result
+    } finally { hookDepth-- }
+  },
+  load(url, context, next) {
+    if (config.macroObservation && token !== activeToken) return next(url, context)
+    const generation = activeToken, depth = registrationDepth
+    hookDepth++
+    try {
+    if (!url.startsWith('file:')) {
+      const result = next(url, context)
+      if (config.macroObservation) {
+        const plain = !!result && typeof result === 'object' && !isProxy(result) && [Object.prototype, null].includes(Object.getPrototypeOf(result))
+        const fields = plain ? Object.getOwnPropertyDescriptors(result) : {}
+        const builtin = url.startsWith('node:') && Reflect.ownKeys(fields).every(key => Object.hasOwn(fields[key], 'value'))
+          && fields.format?.value === 'builtin' && fields.source?.value == null
+        if (!builtin || generation !== activeToken || depth !== 0 || registrationDepth !== 0)
+          observationFailure('non-file load is not a stable builtin')
+        try { record({ kind: builtin ? 'builtin-load' : 'non-file-load', url, format: fields.format?.value ?? null, witnessToken: token }) }
+        catch (error) { observationFailure(error) }
+      }
+      return result
+    }
+    const file = realpathSync(fileURLToPath(url))
+    const bytes = readFileSync(file)
+    const path = inside(config.checkout, file) ? slash(relative(config.checkout, file)) : null
+    const item = path && expected.get(path), runner = runners.get(file)
+    const observer = config.macroObservation?.observerPath === file ? config.macroObservation.observer : null
+    // Verify source bytes before handing control to Node/tsx. The returned
+    // source may be transformed; retain that separate hash without pretending
+    // it was the original archived output.
+    if ((item || runner || observer) && (hash(bytes) !== (item ?? runner ?? observer).sha256 || bytes.length !== (item ?? runner ?? observer).bytes)) {
+      record({ kind: 'violation', file, path, error: 'compiler member changed before load' })
+      throw new Error(`Compiler consumer member changed: ${path}`)
+    }
+    const macroContext = macroObserver?.currentObserverContext() ?? null
+    // These are executable ESM products of the sealed compiler build. A TS
+    // helper loader must not compile them again (tsx also rewrites dynamic
+    // import in .mjs). Leave sources, dependencies and transient macro output
+    // on their normal loader paths; only exact canonical sealed ESM qualifies.
+    let rawOutput = false
+    if (config.outputLoadPolicy === 'sealed-esm-v1' && ['output', 'observed-output'].includes(item?.origin)
+      && path.endsWith('.mjs') && url === pathToFileURL(file).href) {
+      const info = lstatSync(file)
+      if (!info.isFile() || info.isSymbolicLink()) throw new Error('Sealed compiler output is not a regular file')
+      const attributes = context.importAttributes
+      const emptyAttributes = attributes == null || !isProxy(attributes)
+        && [Object.prototype, null].includes(Object.getPrototypeOf(attributes)) && Reflect.ownKeys(attributes).length === 0
+      rawOutput = context.format === 'module' && emptyAttributes
+    }
+    const result = rawOutput ? { format: 'module', source: bytes, shortCircuit: true } : next(url, context)
+    let shape = true, source, format
+    try {
+    if (config.macroObservation) {
+      shape = !!result && typeof result === 'object' && !isProxy(result)
+        && [Object.prototype, null].includes(Object.getPrototypeOf(result))
+      const fields = shape ? Object.getOwnPropertyDescriptors(result) : {}
+      shape = shape && Reflect.ownKeys(fields).every(key => Object.hasOwn(fields[key], 'value'))
+        && Object.hasOwn(fields, 'format')
+        && (typeof fields.format.value === 'string' || fields.format.value === undefined)
+      const value = fields.source?.value
+      const byteArray = value && !isProxy(value) && [Uint8Array.prototype, Buffer.prototype].includes(Object.getPrototypeOf(value))
+        && !['buffer', 'byteLength', 'byteOffset', 'length'].some(key => Object.hasOwn(value, key))
+        && !(typeof SharedArrayBuffer === 'function' && value.buffer instanceof SharedArrayBuffer)
+      shape = shape && (value == null || typeof value === 'string' || byteArray)
+      source = shape && value != null ? Buffer.from(value) : null
+      // Pinned Node may return source with an own-data undefined format for
+      // nested CommonJS requires. Preserve that absence; generated macro ESM
+      // still needs an explicit module format in the separate validator.
+      format = shape ? fields.format.value ?? null : null
+      if (shape && typeof value === 'string' && source.toString('utf8') !== value) shape = false
+      if (!shape || generation !== activeToken || depth !== 0 || registrationDepth !== 0)
+        observationFailure('load has an unstable terminal result')
+    } else { source = result.source == null ? null : Buffer.from(result.source); format = result.format ?? null }
+    const observeLoad = () => record({ kind: 'load', file, path, sha256: hash(bytes), bytes: bytes.length,
+      argv: isMainThread ? undefined : process.argv.slice(),
+      loadedSourceSha256: source && hash(source), format,
+      ...(rawOutput ? { outputLoadPolicy: config.outputLoadPolicy, url, contextFormat: context.format, importAttributes: {} } : {}),
+      ...(['output', 'observed-output'].includes(item?.origin) && source && hash(source) !== hash(bytes)
+        ? { loadedSourceArtifact: archive(source) } : {}),
+      ...(config.macroObservation ? { witnessToken: token, terminalResult: shape && generation === activeToken && depth === 0 && registrationDepth === 0 } : {}),
+      ...(config.macroObservation && !item && !runner && !observer ? {
+        sourceArtifact: archive(bytes), loadedSourceArtifact: source ? archive(source) : null, macroContext,
+      } : {}),
+      classification: item ? 'bound' : runner ? 'runner' : observer ? 'observation-helper' : 'unbound' })
+    if (config.macroObservation) { try { observeLoad() } catch (error) { observationFailure(error) } }
+    else observeLoad()
+    } catch (error) { if (config.macroObservation) observationFailure(error); else throw error }
+    return result
+    } finally { hookDepth-- }
+  },
+ })
+ activeToken = token
+ return token
+}
+installWitness()
+if (config.macroObservation) record({ kind: 'hook-ready', witnessToken: activeToken })
+
+// These wrappers preserve the original registration result and effect. A
+// successful synchronous registration is followed by a new outer observation
+// hook. Reentrancy or failure cannot establish final bytes. This is a trusted
+// toolchain witness, not a sandbox.
+if (config.macroObservation) {
+  process.on('exit', exitCode => {
+    try { record({ kind: 'end', observerFailed, exitCode, witnessToken: activeToken }) } catch {}
+  })
+  for (const api of ['register', 'registerHooks']) {
+    const original = Module[api]
+    Module[api] = function (...args) {
+      const id = ++registrationId
+      try { record({ kind: 'hook-registration', api, registrationId: id, reentrant: hookDepth !== 0 || registrationDepth !== 0 }) }
+      catch (error) { observationFailure(error) }
+      let result
+      registrationDepth++
+      try { result = original.apply(this, args) }
+      catch (error) {
+        try { record({ kind: 'hook-registration-failed', api, registrationId: id }) } catch (failure) { observationFailure(failure) }
+        throw error
+      } finally { registrationDepth-- }
+      if (api === 'registerHooks') {
+        try { const witnessToken = installWitness(); record({ kind: 'hook-rearmed', registrationId: id, witnessToken }) }
+        catch (error) { observationFailure(error) }
+      }
+      return result
+    }
+  }
+  syncBuiltinESMExports()
+  // CJS addon loading bypasses Node's JS source hook. Observe the actual
+  // captured native API separately; source-hash guards do not claim kernel mmap
+  // attestation or protection from a concurrent external file replacement.
+  const nativeDlopen = process.dlopen
+  process.dlopen = function (...args) {
+    const input = args[1]
+    let before
+    const snapshot = () => {
+      if (typeof input !== 'string' || !isAbsolute(input) || this !== process || args.length !== 2) throw new Error('Unsupported native addon invocation')
+      const file = realpathSync(input), stat = lstatSync(file), bytes = readFileSync(file)
+      if (file !== input || !stat.isFile() || stat.isSymbolicLink()) throw new Error('Native addon is not an exact canonical regular file')
+      return { file, bytes, sha256: hash(bytes), identity: [stat.dev, stat.ino, stat.size, stat.mtimeMs, stat.ctimeMs] }
+    }
+    try { before = snapshot() } catch (error) { observationFailure(error) }
+    let result
+    try { result = Reflect.apply(nativeDlopen, this, args) }
+    catch (error) {
+      try { record({ kind: 'native-load-failed' }) } catch (failure) { observationFailure(failure) }
+      throw error
+    }
+    try {
+      const after = snapshot()
+      if (!before || before.file !== after.file || before.sha256 !== after.sha256
+        || JSON.stringify(before.identity) !== JSON.stringify(after.identity)) throw new Error('Native addon changed during actual load')
+      const file = before.file, path = inside(config.checkout, file) ? slash(relative(config.checkout, file)) : null
+      const item = path && expected.get(path)
+      if (!item || item.sha256 !== before.sha256 || item.bytes !== before.bytes.length) throw new Error('Native addon differs from the sealed consumer member')
+      record({ kind: 'load', boundary: 'process.dlopen', format: 'addon', nativeFileStable: true,
+        witnessToken: activeToken, filename: input, argumentCount: args.length, receiver: 'process', file, path, sha256: before.sha256, bytes: before.bytes.length,
+        loadedSourceSha256: null, classification: 'bound' })
+    } catch (error) { observationFailure(error) }
+    return result
+  }
+  // registerHooks does not see a custom require.extensions loader's _compile
+  // call. Capture Node's original compiler before project/dependency imports;
+  // observe its actual argument, separately from the temporary physical TS.
+  if (cjsProfiles.includes(config.macroObservation.profile)) {
+    const nativeCompile = Module.prototype._compile
+    Module.prototype._compile = function (...args) {
+      const macroContext = macroObserver?.currentObserverContext() ?? null
+      if (macroContext?.kind !== 'cjs-compile-loader') return Reflect.apply(nativeCompile, this, args)
+      const content = args[0], filename = args[1]
+      let before
+      const snapshot = () => {
+        if (args.length !== 2 || typeof content !== 'string' || typeof filename !== 'string' || !isAbsolute(filename)
+          || !(this instanceof Module) || this.filename !== filename) throw new Error('Unsupported macro CJS compile invocation')
+        const file = realpathSync(filename), info = lstatSync(filename), bytes = readFileSync(filename)
+        if (file !== filename || !info.isFile() || info.isSymbolicLink()) throw new Error('Macro CJS compile is not a canonical regular file')
+        return { file, bytes, identity: [info.dev, info.ino, info.size, info.mtimeMs, info.ctimeMs] }
+      }
+      try { before = snapshot() } catch (error) { observationFailure(error) }
+      let result
+      try { result = Reflect.apply(nativeCompile, this, args) }
+      catch (error) { observationFailure(error); throw error }
+      try {
+        const after = snapshot(), source = Buffer.from(content)
+        if (!before || before.file !== after.file || !before.bytes.equals(after.bytes)
+          || JSON.stringify(before.identity) !== JSON.stringify(after.identity) || source.toString('utf8') !== content)
+          throw new Error('Macro CJS source changed during actual compilation')
+        const file = before.file, path = inside(config.checkout, file) ? slash(relative(config.checkout, file)) : null
+        record({ kind: 'load', boundary: 'Module.prototype._compile', format: 'commonjs', file, path,
+          sha256: hash(before.bytes), bytes: before.bytes.length, sourceArtifact: archive(before.bytes),
+          loadedSourceSha256: hash(source), loadedSourceArtifact: archive(source), macroContext,
+          witnessToken: activeToken, terminalResult: true, executionReturned: true,
+          filename, argumentCount: args.length, receiver: 'Module', classification: path && expected.has(path) ? 'bound' : 'unbound' })
+      } catch (error) { observationFailure(error) }
+      return result
+    }
+  }
+  macroObserver = require(config.macroObservation.observerPath)
+  macroObserver.installObserverSink(event => {
+    if (observerFailed) return
+    try {
+      if (npmProfile) {
+        if (event.kind === 'span-start' && event.data?.kind === 'npm-package-build')
+          event = { ...event, inputObservation: npmTree(event.data.input.packageRoot, true) }
+        else if (event.kind === 'npm-package-output') event = { ...event,
+          inputObservation: npmTree(event.data.packageRoot, true), outputObservation: npmTree(event.data.outDir) }
+        else if (event.kind === 'npm-service-plan') npmPlans.set(event.span.id, event.data)
+        else if (event.kind === 'npm-subpackage-plan') event = { ...event,
+          sourceObservation: npmTree(event.data.sourceOutDir), targetAbsent: (() => {
+            try { lstatSync(event.data.targetDir); return false } catch (error) { if (error.code !== 'ENOENT') throw error; return true }
+          })() }
+        else if (event.kind === 'npm-subpackage-output') event = { ...event, outputObservation: npmTree(event.data.targetDir) }
+        else if (event.kind === 'span-end' && event.data?.kind === 'npm-service-build') {
+          const plan = npmPlans.get(event.span.id)
+          if (plan) {
+            const absent = event.data.outcome === 'returned' ? emptyNpmOutput(plan) : null
+            event = absent ? { ...event, noOutputObservation: absent }
+              : { ...event, cacheObservation: npmTree(plan.sourceOutDir) }
+          }
+        }
+      }
+      if (['before:fsp.writeFile(target', 'after:fsp.writeFile(target', 'after:writeFile(tempFile', 'module-type-stat', 'module-type-package'].includes(event.kind)) {
+        const file = event.kind === 'after:writeFile(tempFile' ? event.data?.tempFile
+          : event.kind.startsWith('module-type-') ? event.data?.pkgPath : event.data?.target
+        if (typeof file !== 'string') throw new Error('Macro output observation has no target')
+        try {
+          const stat = lstatSync(file)
+          const bytes = stat.isFile() && !stat.isSymbolicLink() ? readFileSync(file) : null
+          event = { ...event, fileObservation: { path: file, absent: false, regular: bytes !== null,
+            ...(bytes ? { sha256: hash(bytes), bytes: bytes.length, artifact: archive(bytes) } : {}) } }
+        } catch (error) {
+          if (error.code !== 'ENOENT') throw error
+          event = { ...event, fileObservation: { path: file, absent: true } }
+        }
+      }
+      record({ kind: 'macro', payload: archive(JSON.stringify(event)) })
+    }
+    catch (error) { observationFailure(error) }
+  }, observationFailure, { active: activeMacroObservation })
+}

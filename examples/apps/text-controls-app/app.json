@@ -1,0 +1,9 @@
+{
+  "pages": ["pages/home/index"],
+  "window": {
+    "navigationBarTitleText": "Text controls",
+    "navigationBarBackgroundColor": "#172b4d",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f4f6f9"
+  }
+}

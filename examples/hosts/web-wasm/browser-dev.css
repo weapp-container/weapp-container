@@ -1,0 +1,20 @@
+:root { font-family: ui-sans-serif, system-ui, sans-serif; color: #e4e8ef; background: #11151b; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+header { min-height: 64px; padding: 16px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #303744; }
+h1 { font-size: 17px; margin: 0; font-weight: 600; }
+header span { font: 12px ui-monospace, monospace; color: #a6bbd0; }
+main { display: grid; grid-template-columns: minmax(400px, 1fr) 360px; min-height: calc(100vh - 64px); }
+#dev-preview { display: flex; justify-content: center; align-items: flex-start; padding: 32px; overflow: auto; background: #191f28; }
+#dev-surface { flex: none; min-width: 1px; min-height: 1px; background: #fff; }
+aside { padding: 24px; border-left: 1px solid #303744; }
+h2 { margin: 0 0 16px; font-size: 13px; font-weight: 600; color: #a6bbd0; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 24px; font: 12px/1.8 ui-monospace, SFMono-Regular, monospace; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+button { border: 1px solid #566174; padding: 8px 12px; border-radius: 4px; background: #252f3e; color: inherit; cursor: pointer; }
+button:hover { background: #34435a; }
+button:disabled { opacity: .5; cursor: default; }
+button[hidden] { display: none; }
+p { font-size: 12px; line-height: 1.8; color: #9aa7b8; margin: 0 0 24px; }
+#dev-diagnostics { max-height: 50vh; overflow: auto; color: #c4cfdd; }
+@media (max-width: 800px) { main { display: flex; flex-direction: column; } aside { border-left: 0; border-top: 1px solid #303744; } }

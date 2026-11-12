@@ -1,0 +1,10 @@
+docs/evidence/2026-10-24-browser-runtime-preparation/raw/** -text
+docs/evidence/2026-10-24-browser-runtime-preparation/raw/validation/*.log whitespace=-blank-at-eof
+docs/evidence/2026-10-24-managed-browser-sources/raw/** -text
+docs/evidence/2026-10-24-managed-browser-sources/raw/validation/*.log whitespace=-blank-at-eof
+# Preserve immutable SDK validation bytes, native line endings and unified patches.
+docs/sdk-migration/preview2-validation/** -text whitespace=-blank-at-eol,-blank-at-eof
+# Keep source-bound Dev Player logs, metadata and evidence byte-for-byte.
+docs/dev-player/evidence/** -text whitespace=-blank-at-eol,-blank-at-eof
+# Content-addressed pack blobs must retain their exact bytes on every host.
+**/blobs/sha256/* -text

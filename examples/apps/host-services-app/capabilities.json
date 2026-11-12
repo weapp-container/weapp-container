@@ -1,0 +1,15 @@
+{
+  "wx.login":"partial",
+  "wx.checkSession":"partial",
+  "wx.getUserProfile":"partial",
+  "wx.request":"partial",
+  "weappContainer.invoke":"partial",
+  "weappContainer.identity.getState":"partial",
+  "weappContainer.identity.onChange":"partial",
+  "weappContainer.identity.offChange":"partial",
+  "weappContainer.identity.logout":"partial",
+  "weappContainer.identity.authorizePhone":"partial",
+  "weappContainer.payment.request":"partial",
+  "component:button.open-type.getPhoneNumber":"partial",
+  "component:button.bindgetphonenumber":"partial"
+}
