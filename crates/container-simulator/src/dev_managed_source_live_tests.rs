@@ -1,5 +1,7 @@
 //! Explicit real compiler/producer gate. Never counted as an ordinary unit
 //! pass when its independently pinned input or compiler dependencies are absent.
+#![cfg(unix)]
+
 use super::*;
 use crate::browser_dev_runtime_receipt::{ProducerExpected, RuntimeBundleRenderer};
 

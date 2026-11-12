@@ -13,8 +13,8 @@ The `desktop` surface for simulator development is merely a shared window alias 
 | --- | --- | --- | --- | --- |
 | Web | sandbox/provider + software metadata | `wasm`, `canvas-kit` | QuickJS/V8 boundaries | provider smoke; CanvasKit/browser permissions pending validation |
 | macOS | sandbox/provider + software metadata | `window`, `metal`, `skia-backend` | QuickJS/V8 boundaries | `host:desktop:surface` verifiable: winit/softbuffer native window; GPU pending validation |
-| Windows | sandbox/provider + software metadata | `window`, `direct2d`, `skia-backend` | QuickJS/V8 boundaries | provider smoke; GPU/window pending validation |
-| Linux | sandbox/provider + software metadata | `window`, `vulkan`, `skia-backend` | QuickJS/V8 boundaries | provider smoke; GPU/window pending validation |
+| Windows | sandbox/provider + software metadata | `window`, `gl-window`, `direct2d`, `skia-backend` | QuickJS/V8 boundaries | Provider smoke; GL presenter integrated; Windows device/GPU acceptance pending |
+| Linux | sandbox/provider + software metadata | `window`, `gl-window`, `vulkan`, `skia-backend` | QuickJS/V8 boundaries | Provider smoke; GL presenter and X11 display test entry integrated; Wayland/hardware GPU acceptance pending |
 | Android | sandbox/provider + software metadata | `android`, `gles`, `vulkan`, `skia-backend` | QuickJS/V8 boundaries | provider smoke; device/GPU pending validation |
 | iOS | sandbox/provider + software metadata | `ios`, `metal`, `skia-backend` | QuickJS/V8 boundaries | provider smoke; device/GPU pending validation |
 | HarmonyOS | sandbox/provider + software metadata | `harmony`, `arkui`, `skia-backend` | QuickJS/V8 boundaries | provider smoke; device/GPU pending validation |

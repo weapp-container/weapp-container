@@ -344,8 +344,7 @@ owner ownership, error name, engine origin, and available plain-text stack; diag
 Each notification can expand at most 32 entries, with overflow shown as ellipsis; message, error code/name, and stack are limited to
 2048, 128, and 8192 UTF-8 bytes respectively, with a maximum of 32 historical entries. Only existing plain data fields are read; getters are not evaluated, and business data is not traversed. This fix addresses display and normalization only, without altering the engine's native exception extraction, nor does it verify actual browser exceptions or source code locations have been accepted.
 
-Desktop development mode on macOS uses Metal; explicit error is reported when GPU is not yet available on Windows/Linux;
-`--software` can choose `winit + softbuffer`. Both reuse the same supervisor and `HostSession` presenter
+Desktop development mode uses Metal on macOS. Windows/Linux create an OpenGL 3.3 core window with `winit + glutin`, drawing directly to its drawable through the shared Skia GL interface. Linux uses X11/GLX and Wayland/EGL. Missing drivers, contexts, or window configurations fail explicitly. Known software GL drivers cannot satisfy the default GPU path; `--software` explicitly selects `winit + softbuffer`. Successful GL submission and swap establish submission only, not hardware execution, GPU completion, or screen scanout. Both paths reuse the same supervisor and `HostSession` presentation
 window; the window title includes revision, route, and error status. `--surface both` does not create a second
 page state. Controlled exit (signal, window closure, watcher exit, or return of error) explicitly executes the same order:
 stop and reap watch, end output reader, stop and reap pack, clean up preparation files, close Web listener,

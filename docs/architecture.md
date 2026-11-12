@@ -3,6 +3,8 @@
 
 **简体中文** · [English](architecture.en.md)
 
+桌面窗口、嵌入视图与 Flutter 外壳的取舍，以及已实现和待验收的边界，见
+[桌面跨平台架构与后续方向](desktop-architecture.md)。
 
 ```text
 原生小程序目录 / 任意兼容框架的构建产物

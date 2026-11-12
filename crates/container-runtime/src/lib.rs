@@ -1518,6 +1518,15 @@ impl Session {
             .is_some_and(SkiaRenderer::has_metal_context)
     }
 
+    /// Inspect the current GL attachment without initializing a renderer.
+    #[cfg(feature = "skia-gpu-gles")]
+    pub fn has_gles_context(&self) -> bool {
+        self.skia_backend
+            .renderer
+            .peek()
+            .is_some_and(SkiaRenderer::has_gles_context)
+    }
+
     /// Legacy explicit Skia initialization. This is not a backend-neutral DOM
     /// layout/presentation API and does not grant presentation authority.
     /// Explicit diagnostic readback of the accepted scene at a physical size.

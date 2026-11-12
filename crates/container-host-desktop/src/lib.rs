@@ -16,6 +16,12 @@ mod window;
 #[cfg(all(feature = "metal-window", target_os = "macos"))]
 mod metal_window;
 
+#[cfg(all(feature = "gl-window", any(target_os = "windows", target_os = "linux")))]
+mod gl_window;
+
+#[cfg(all(feature = "gl-window", any(target_os = "windows", target_os = "linux")))]
+pub use gl_window::{GlWindowPresenter, GlWindowPresenterError};
+
 #[cfg(feature = "window")]
 pub use window::{DesktopWindowPresenter, WindowPresenterError, WindowSurfaceCapabilities};
 

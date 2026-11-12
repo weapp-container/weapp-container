@@ -417,7 +417,11 @@ test('first stop observes a child that already exited without waiting for a miss
   await until(() => session.child.exitCode === 0, 'spontaneous child exit')
   const started = Date.now()
   await session.stop()
-  assert.ok(Date.now() - started < 500)
+  // stop also verifies listener closure with its own 1 s HTTP deadline.
+  // Windows may spend most of that budget rejecting the closed TCP port;
+  // leave 500 ms for cleanup while still rejecting a missed exit event's
+  // 10 s process wait. This is a lifecycle check, not TCP latency acceptance.
+  assert.ok(Date.now() - started < 1_500)
   assert.equal(alive(session.child.pid), false)
   assert.equal(existsSync(session.staging), false)
   await assert.rejects(session.json('/api/state'), /exited/)

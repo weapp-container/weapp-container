@@ -4,6 +4,8 @@
 [简体中文](architecture.md) · **English**
 
 
+For desktop window, embedded view, and Flutter shell tradeoffs and the implemented versus pending acceptance boundaries, see [cross-platform desktop architecture](desktop-architecture.en.md).
+
 ```text
 原生小程序目录 / 任意兼容框架的构建产物
     ├── 原始微信目录（供官方 DevTools）

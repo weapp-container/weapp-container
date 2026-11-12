@@ -84,3 +84,25 @@ pnpm host:desktop:surface -- --out artifacts/desktop/native-window-surface.json
 ```
 
 它创建了一个真实的 `winit` 窗口，附加 `softbuffer`，呈现一帧固定的 RGBA 帧，并记录 `nativeSurface: true`、`presentedFrame: true` 以及一个像素的 SHA-256。其 `surfaceBackend` 为 `softbuffer-raster`，`gpuSurface` 保持为 `false`；CPU 窗口呈现无法满足 Skia/Metal/Vulkan GPU 门禁。在无头运行器上，报告为 `blocked`，这与通过原生窗口或运行时失败的情况不同。
+
+<a id="native-gl-windows-on-windows-and-linux"></a>
+## Windows 和 Linux 原生 GL 窗口
+
+`gl-window` 使用 winit 0.30 和 glutin 0.32 提供 `GlWindowPresenter`。它拥有 OpenGL 3.3 core 上下文与单采样窗口 drawable。Windows 使用 WGL；Linux 在 X11 上使用 GLX/EGL，在 Wayland 上使用 EGL。独立窗口不引入 GTK 依赖。现有 C/C++ Desktop SDK 仍是单独的嵌入适配器，包括其 GTK 3 父视图契约。
+
+呈现器接收应用已有的 `HostSession`，通过共享的显式 GL 符号解析器附着上下文，将 retained scene 直接绘制到 framebuffer 0，再交换缓冲区。热重载后查询 renderer 的实际附着状态，不缓存 session id。最小化后的零尺寸 drawable 会撤销帧提交标记；恢复或调整尺寸后必须重新接收一帧。
+
+所有调用及 session 替换、销毁均须在事件循环线程执行。在释放呈现器或已装载会话之前调用 `detach_session`：它在 GL 为 current 时排空已提交命令并释放 Skia。上下文丢失时 abandon Skia 句柄并返回错误。上下文和 surface 在其窗口之前销毁。模拟器在正常退出与事件循环失败时都执行此清理。
+
+公开构造器拒绝已知 CPU GL 驱动。驱动检测不证明硬件执行。`has_gpu_surface` 表示帧已提交到 GL drawable 且 swap 成功，不代表 GPU completion 或屏幕呈现。模拟器中的 `--software` 仍为显式 CPU 选项。
+
+在 Linux 编译集成并执行 display 测试：
+
+```sh
+cargo check -p container-simulator --features desktop-window --locked
+LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a cargo test -p container-host-desktop -p container-simulator \
+  --features container-simulator/desktop-window --locked x11_gl_drawable_renders_resizes_reloads_and_detaches \
+  -- --ignored --test-threads=1 --nocapture
+```
+
+只有模块内的这项测试允许 CPU GL 驱动。它检查 swap 前窗口 framebuffer 的像素、最小化和 resize、运行时替换、detach，以及公开构造器的驱动拒绝策略。Xvfb/Mesa 结果只覆盖 X11 GL 集成；Windows、Wayland 和物理 GPU 执行需要独立运行环境。

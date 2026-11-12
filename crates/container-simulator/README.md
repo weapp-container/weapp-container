@@ -101,6 +101,8 @@ cargo run --release -p container-simulator -- \
 
 开发网页预览现在默认使用浏览器本地的 CanvasKit/WebGL2。原生的 QuickJS/V8 会话导出一个已验收的场景批次以及单独处理的图像资源；该路径不会对页面大小的 RGBA 图像进行光栅化或传输。`--software` 显式恢复旧的 CPU 预览。`run` 和 `dispatch` 保持其确定性的无头默认设置。
 
+使用 `--features desktop-window --surface desktop` 时，macOS 使用 Metal 呈现器，Windows/Linux 通过 glutin 使用 OpenGL 3.3 core drawable。所有呈现器借用同一个运行时会话，保留呈现 ACK 与输入坐标边界。GPU 初始化失败不会自动切换到 CPU；`--software` 显式选择 winit/softbuffer。详见[桌面窗口契约与 display 测试](../container-host-desktop/README.md#native-gl-windows-on-windows-and-linux)。
+
 准备一次固定的公共渲染器/字体依赖项，然后通过 `--renderer-assets`（或 `WEAPP_CONTAINER_RENDERER_ASSETS`）传递资源包：
 
 ```sh

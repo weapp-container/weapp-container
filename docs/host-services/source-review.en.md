@@ -39,6 +39,22 @@ The fixture separates protocol semantic verification from this performance thres
 The production default value is still 50 ms, and the default loading path of the SDK still uses this value; configure the default value, outer deadline,
 Cancellation, interruption and post-failure privilege revocation continue to be verified by dedicated testing. The fixture results do not demonstrate passing the 50 ms performance threshold.
 
+Simulator configuration now forwards the runtime's existing finite `ViewExecutionPolicy`, replacing a unit-test-only configuration field so integration tests can explicitly choose a semantic-test budget. The default remains 50 ms. Initial load, development reload, and `default_session_config` share the same policy; the runtime still validates it and tightens the outer deadline.
+
+<a id="2026-11-12-桌面-gl-宿主复核"></a>
+## 2026-11-12 desktop GL host review
+
+The following changes were reviewed file by file against this PR's baseline, updating the complete `runtime`, `commonHost`, and `workspaceLock` source identities. Capability ratings, acceptance contracts, and the acceptance ledger are unchanged.
+
+| Source | Changes and preserved boundaries |
+| --- | --- |
+| `container-runtime/src/lib.rs` | Adds a passive GL attachment query that only reads the existing renderer; no GPU state creation or changes to the scheduler, budget, or presentation permissions. |
+| `container-host-common/src/lib.rs` | Forwards passive queries and an explicit GL loader. An unloaded session still fails; the host owns GL context threading, current state, and teardown. |
+| `container-render-skia/src/lib.rs` | The explicit GL loader rejects non-GL function names so GLX/WGL cannot provide non-callable non-null addresses for EGL names. Native EGL attachment retains its existing path. |
+| `Cargo.lock` | Adds glutin/glow and transitive dependencies for desktop presentation without changing existing dependency versions; duplicate Objective-C dependencies carry explicit versions. |
+
+The review also covers resize, zero-size invalidation, reload, presentation receipts, and shutdown in the standalone desktop host. Linux Xvfb/Mesa integration tests check pixels, resize, reload, and detach on a real GL drawable. These results do not establish Windows, Wayland, or physical-device acceptance and do not raise SDK acceptance status.
+
 <a id="后续更新"></a>
 ## Subsequent updates
 

@@ -2,9 +2,11 @@ use crate::SdkError;
 use container_core::StorageSnapshot;
 use container_ir::hex_digest;
 use fs2::FileExt;
+#[cfg(unix)]
+use std::fs::File;
 use std::{
     collections::BTreeMap,
-    fs::{self, File, OpenOptions},
+    fs::{self, OpenOptions},
     io::Write,
     path::Path,
     sync::{Arc, Condvar, Mutex},

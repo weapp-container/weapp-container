@@ -14,14 +14,19 @@ API inventory 使用七个明确的宿主键：`web`、`macos`、`windows`、`li
 | --- | --- | --- | --- | --- |
 | Web | sandbox/provider + software metadata | `wasm`, `canvas-kit` | QuickJS/V8 边界 | provider smoke；CanvasKit/浏览器权限待验收 |
 | macOS | sandbox/provider + software metadata | `window`, `metal`, `skia-backend` | QuickJS/V8 边界 | `host:desktop:surface` 可验证 winit/softbuffer 原生窗口；GPU 待验收 |
-| Windows | sandbox/provider + software metadata | `window`, `direct2d`, `skia-backend` | QuickJS/V8 边界 | provider smoke；GPU/window 待验收 |
-| Linux | sandbox/provider + software metadata | `window`, `vulkan`, `skia-backend` | QuickJS/V8 边界 | provider smoke；GPU/window 待验收 |
+| Windows | sandbox/provider + software metadata | `window`, `gl-window`, `direct2d`, `skia-backend` | QuickJS/V8 边界 | provider smoke；GL presenter 已接入，Windows 实机/GPU 待验收 |
+| Linux | sandbox/provider + software metadata | `window`, `gl-window`, `vulkan`, `skia-backend` | QuickJS/V8 边界 | provider smoke；GL presenter 与 X11 display 测试入口已接入，Wayland/硬件 GPU 待独立验收 |
 | Android | sandbox/provider + software metadata | `android`, `gles`, `vulkan`, `skia-backend` | QuickJS/V8 边界 | provider smoke；真机/GPU 待验收 |
 | iOS | sandbox/provider + software metadata | `ios`, `metal`, `skia-backend` | QuickJS/V8 边界 | provider smoke；真机/GPU 待验收 |
 | HarmonyOS | sandbox/provider + software metadata | `harmony`, `arkui`, `skia-backend` | QuickJS/V8 边界 | provider smoke；真机/GPU 待验收 |
 
 <a id="api-level"></a>
 ## API 级别
+
+独立桌面模拟器的 `gl-window` 使用现有 Skia GL backend；`direct2d`、`vulkan`
+目前仍是预留 feature，不能据此声称对应 GPU presenter 已实现。Xvfb/Mesa display
+测试只验证窗口、像素与生命周期，不改变物理硬件验收状态，见
+[桌面跨平台架构](desktop-architecture.md)。
 
 容器 capability key 应由 manifest 和 bridge 协商。首批 key 与语义如下：
 

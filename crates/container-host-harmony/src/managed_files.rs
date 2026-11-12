@@ -330,7 +330,14 @@ fn shared_lock(path: &Path) -> Result<File, String> {
     Ok(lock)
 }
 fn sync_dir(path: &Path) -> Result<(), String> {
-    File::open(path).and_then(|v| v.sync_all()).map_err(err)
+    // Directory fsync is a Unix durability barrier. Windows cannot open a
+    // directory with File::open; match the shared native filesystem boundary
+    // there, while keeping file sync and atomic registry replacement intact.
+    #[cfg(unix)]
+    File::open(path).and_then(|v| v.sync_all()).map_err(err)?;
+    #[cfg(not(unix))]
+    let _ = path;
+    Ok(())
 }
 fn sync_parents(source: &Path, destination: &Path) -> Result<(), String> {
     let source = source.parent().ok_or("source parent missing")?;

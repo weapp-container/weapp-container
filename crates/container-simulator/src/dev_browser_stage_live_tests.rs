@@ -1,5 +1,7 @@
 //! Opt-in real compiler + independently pinned completed producer gate.
 //! Static staging only: never executes a Worker, HTTP server or presenter.
+#![cfg(unix)]
+
 use crate::browser_dev_coordinator::{
     BrowserDevCoordinator, PublicationApproval, StageArtifact, StageTicket, StartupIntentPin,
     WireU64,

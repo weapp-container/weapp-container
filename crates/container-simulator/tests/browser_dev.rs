@@ -184,10 +184,26 @@ impl Pack {
         let config = SimulatorConfig {
             engine,
             browser_view_enabled: true,
+            // These assertions cover owner transactions, not cold VM latency.
+            // Keep initialization bounded while leaving the default-policy
+            // and deadline conformance tests at their independent limits.
+            view_execution: container_runtime::ViewExecutionPolicy {
+                batch_timeout_ms: 2_000,
+            },
             ..Default::default()
         };
         assert!(default_session_config(&config).browser_view_enabled);
         let mut simulator = Simulator::from_pack_dir(&self.root, config).unwrap();
+        assert_eq!(
+            simulator
+                .host()
+                .session()
+                .unwrap()
+                .config()
+                .view_execution
+                .batch_timeout_ms,
+            2_000
+        );
         simulator.run().unwrap();
         simulator
     }
@@ -901,6 +917,16 @@ fn module_restart_prepares_a_new_session_without_claiming_dom_presentation() {
         let (kind, report) = simulator.apply_dev_pack(&valid.root).unwrap();
         assert_eq!(kind, DevReloadKind::Restart);
         assert_eq!(simulator.session_id(), "simulator-1-reload-1");
+        assert_eq!(
+            simulator
+                .host()
+                .session()
+                .unwrap()
+                .config()
+                .view_execution
+                .batch_timeout_ms,
+            2_000
+        );
         assert!(report.snapshot.is_none());
         assert!(simulator.host().view_document().unwrap().is_none());
         assert_eq!(simulator.browser_render_request().unwrap().revision, "1");

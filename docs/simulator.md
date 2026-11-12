@@ -517,8 +517,11 @@ owner 归属、错误名、引擎来源和可用的纯文本 stack；诊断不�
 不遍历业务数据。这里修复的是展示与规范化，不改变引擎的原生异常提取，也不证明真实
 浏览器异常或源代码位置已经验收。
 
-桌面开发态在 macOS 使用 Metal，Windows/Linux GPU 尚未接入时显式报错；
-`--software` 可选择 `winit + softbuffer`。两者复用同一 supervisor 和 `HostSession` 呈现
+桌面开发态在 macOS 使用 Metal，Windows/Linux 使用 `winit + glutin` 创建
+OpenGL 3.3 core 窗口，通过共享 Skia GL 接口直接绘制到 drawable；Linux 分别接入
+X11/GLX 和 Wayland/EGL。缺少驱动、上下文或窗口配置时明确失败，已知软件 GL 驱动
+不能满足默认 GPU 路径；`--software` 可显式选择 `winit + softbuffer`。
+OpenGL 提交和 swap 成功只表示提交完成，不表示硬件执行、GPU completion 或屏幕扫描输出。两者复用同一 supervisor 和 `HostSession` 呈现
 窗口；窗口标题包含 revision、route 和错误状态。`--surface both` 不会创建第二份
 页面状态。受控退出（信号、窗口关闭、watcher 退出或返回错误）显式执行同一顺序：
 停止并 reap watch、结束输出 reader、停止并 reap pack、清理准备文件、关闭 Web listener，

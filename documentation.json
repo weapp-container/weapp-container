@@ -196,8 +196,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "crates/container-host-desktop/README.md"
       },
-      "reviewedChineseSummary": "container-host-desktop；可选的桌面开发窗口",
-      "reviewedChineseSha256": "f87158e798b5192abd24f611a87be000d405dcac2252248e3af5edde035d7bda",
+      "reviewedChineseSummary": "同步主分支桌面 GL 实现：保留上下文、呈现回执、清理与软件驱动边界，不提升设备或 GPU 验收结论。",
+      "reviewedChineseSha256": "80b9b62d2580358007c88e6c25f0ba56007f09bb5c8b08b6b20c199c513a87a5",
       "legacyHeadingIds": [
         "container-host-desktop",
         "optional-desktop-development-window"
@@ -341,8 +341,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "crates/container-simulator/README.md"
       },
-      "reviewedChineseSummary": "container-simulator；浏览器运行时嵌入准备；CLI；开发模式；本地 GPU 场景呈现；网页解析和呈现；嵌入 API",
-      "reviewedChineseSha256": "4e51a1e4e24e4d40b5a76776ac86c238c741dc2e474bd5069dce8c9150e16179",
+      "reviewedChineseSummary": "同步主分支桌面 GL 实现：保留上下文、呈现回执、清理与软件驱动边界，不提升设备或 GPU 验收结论。",
+      "reviewedChineseSha256": "24e5c4dd5805b9ee188a48d9e121f2edef80b86457b388c7ff615e5f448359c0",
       "legacyHeadingIds": [
         "browser-runtime-preparation-for-embedding",
         "cli",
@@ -423,8 +423,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/architecture.md"
       },
-      "reviewedChineseSummary": "容器架构；版本与边界",
-      "reviewedChineseSha256": "718ad698e1e558a46b6152a46436b2463e0a5d95b6024715bbc1f753fdb82e50",
+      "reviewedChineseSummary": "同步主分支桌面 GL 实现：保留上下文、呈现回执、清理与软件驱动边界，不提升设备或 GPU 验收结论。",
+      "reviewedChineseSha256": "80ab19b3ca2b74f7dc22f08ca5b0cab0d3c7795b1dfeaab8f7ecc2f2847071c7",
       "legacyHeadingIds": [
         "容器架构",
         "版本与边界"
@@ -476,8 +476,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/capability-matrix.md"
       },
-      "reviewedChineseSummary": "宿主能力矩阵；API 级别",
-      "reviewedChineseSha256": "c43f6e998b9b290719957741973778ccebaa97e9deda39d96e1733f979d4e340",
+      "reviewedChineseSummary": "同步主分支桌面 GL 实现：保留上下文、呈现回执、清理与软件驱动边界，不提升设备或 GPU 验收结论。",
+      "reviewedChineseSha256": "8b103a8f1b8bb5dd35561a2def8539b3ec4df5e2550fbacd3aa055e8dcecc9a4",
       "legacyHeadingIds": [
         "api-级别",
         "宿主能力矩阵"
@@ -1799,8 +1799,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/host-services/source-review.md"
       },
-      "reviewedChineseSummary": "API 来源审定；2026-11-12 复核范围；后续更新",
-      "reviewedChineseSha256": "fbedf20d2b715c616b3cca8211de773b776b74b4c6dd95943d24aa611d797b9e",
+      "reviewedChineseSummary": "同步主分支桌面 GL 实现：保留上下文、呈现回执、清理与软件驱动边界，不提升设备或 GPU 验收结论。",
+      "reviewedChineseSha256": "432a067041a7b8e07007b949ecb046df24d68d925e9ef62fa0b7eabd76abdca5",
       "legacyHeadingIds": [
         "2026-11-12-复核范围",
         "api-来源审定",
@@ -2255,8 +2255,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/simulator.md"
       },
-      "reviewedChineseSummary": "Weapp Container 模拟器；快速运行；DOM 文本编辑示例；组件关系开发示例；开发态监督器；自定义组件执行子集；JSONL 调试脚本；App 植入边界",
-      "reviewedChineseSha256": "e95cdd9c77948965d5749de2f0b398895fdce12a6be5cb001c3e21a0c32035bb",
+      "reviewedChineseSummary": "同步主分支桌面 GL 实现：保留上下文、呈现回执、清理与软件驱动边界，不提升设备或 GPU 验收结论。",
+      "reviewedChineseSha256": "896cc1fa24e8378189d4f32e74b9115f3928b12e0e6e2b89b1e1f48ccd19d084",
       "legacyHeadingIds": [
         "app-植入边界",
         "dom-文本编辑示例",
@@ -3310,6 +3310,19 @@
         "运行库发行工具",
         "验证与发布"
       ]
+    },
+    {
+      "id": "docs/desktop-architecture",
+      "zh": "docs/desktop-architecture.md",
+      "en": "docs/desktop-architecture.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/desktop-architecture.md"
+      },
+      "reviewedChineseSummary": "说明独立桌面窗口、嵌入 SDK 与 Flutter 的架构边界，记录 GL 生命周期与后续平台验收优先级。",
+      "reviewedChineseSha256": "0ed7222fad02783f29b88934210f7575edef71660cfb95b06d676387316960fa",
+      "legacyHeadingIds": []
     }
   ],
   "excluded": [
