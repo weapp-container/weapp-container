@@ -3477,18 +3477,20 @@ mod tests {
         );
         let args = command
             .get_args()
-            .map(|arg| arg.to_string_lossy().into_owned())
+            .map(|arg| arg.to_os_string())
             .collect::<Vec<_>>();
         assert_eq!(
             args,
             vec![
-                "/tmp/workspace/scripts/simulator-watch.mjs",
-                "--project",
-                "/tmp/reference-app",
-                "--wv-bin",
-                "/tmp/custom-wv",
-                "--output-root",
-                "/tmp/reference-app/dist",
+                Path::new("/tmp/workspace")
+                    .join("scripts/simulator-watch.mjs")
+                    .into_os_string(),
+                "--project".into(),
+                "/tmp/reference-app".into(),
+                "--wv-bin".into(),
+                "/tmp/custom-wv".into(),
+                "--output-root".into(),
+                "/tmp/reference-app/dist".into(),
             ]
         );
     }
