@@ -92676,12 +92676,114 @@
       "hosts": {
         "android": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92697,12 +92799,114 @@
         },
         "ios": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92719,12 +92923,114 @@
         },
         "harmony": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92738,12 +93044,114 @@
         },
         "web": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92758,12 +93166,114 @@
         },
         "macos": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92778,12 +93288,114 @@
         },
         "windows": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92798,12 +93410,114 @@
         },
         "linux": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92827,12 +93541,114 @@
       "hosts": {
         "android": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92848,12 +93664,114 @@
         },
         "ios": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92870,12 +93788,114 @@
         },
         "harmony": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92889,12 +93909,114 @@
         },
         "web": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92909,12 +94031,114 @@
         },
         "macos": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92929,12 +94153,114 @@
         },
         "windows": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92949,12 +94275,114 @@
         },
         "linux": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92978,12 +94406,114 @@
       "hosts": {
         "android": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -92999,12 +94529,114 @@
         },
         "ios": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93021,12 +94653,114 @@
         },
         "harmony": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93040,12 +94774,114 @@
         },
         "web": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93060,12 +94896,114 @@
         },
         "macos": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93080,12 +95018,114 @@
         },
         "windows": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93100,12 +95140,114 @@
         },
         "linux": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93129,12 +95271,114 @@
       "hosts": {
         "android": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93150,12 +95394,114 @@
         },
         "ios": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93172,12 +95518,114 @@
         },
         "harmony": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93191,12 +95639,114 @@
         },
         "web": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93211,12 +95761,114 @@
         },
         "macos": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93231,12 +95883,114 @@
         },
         "windows": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -93251,12 +96005,114 @@
         },
         "linux": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -166895,7 +169751,6 @@
             "Synchronous private native immutable byte lease for ArrayBuffer and exactly nine TypedArrays, exact byteOffset/byteLength snapshot, per-create native 192-bit opaque identity, 8 MiB per lease/32 MiB per owner/1024 lease bounds. One Session incarnation owns its AppService callback, Skia decoded image lookup and official Web Worker/WASM keyed resource reader; hide/page retirement retain leases. Native fixture execution and actual Web acceptance remain pending; other APIs retain their own consumer assessments"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -167027,7 +169882,6 @@
             "Synchronous private native immutable byte lease for ArrayBuffer and exactly nine TypedArrays, exact byteOffset/byteLength snapshot, per-create native 192-bit opaque identity, 8 MiB per lease/32 MiB per owner/1024 lease bounds. One Session incarnation owns its AppService callback, Skia decoded image lookup and official Web Worker/WASM keyed resource reader; hide/page retirement retain leases. Native fixture execution and actual Web acceptance remain pending; other APIs retain their own consumer assessments"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -167160,7 +170014,6 @@
             "Synchronous private native immutable byte lease for ArrayBuffer and exactly nine TypedArrays, exact byteOffset/byteLength snapshot, per-create native 192-bit opaque identity, 8 MiB per lease/32 MiB per owner/1024 lease bounds. One Session incarnation owns its AppService callback, Skia decoded image lookup and official Web Worker/WASM keyed resource reader; hide/page retirement retain leases. Native fixture execution and actual Web acceptance remain pending; other APIs retain their own consumer assessments"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -167290,7 +170143,6 @@
             "Synchronous private native immutable byte lease for ArrayBuffer and exactly nine TypedArrays, exact byteOffset/byteLength snapshot, per-create native 192-bit opaque identity, 8 MiB per lease/32 MiB per owner/1024 lease bounds. One Session incarnation owns its AppService callback, Skia decoded image lookup and official Web Worker/WASM keyed resource reader; hide/page retirement retain leases. Native fixture execution and actual Web acceptance remain pending; other APIs retain their own consumer assessments"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -167421,7 +170273,6 @@
             "Synchronous private native immutable byte lease for ArrayBuffer and exactly nine TypedArrays, exact byteOffset/byteLength snapshot, per-create native 192-bit opaque identity, 8 MiB per lease/32 MiB per owner/1024 lease bounds. One Session incarnation owns its AppService callback, Skia decoded image lookup and official Web Worker/WASM keyed resource reader; hide/page retirement retain leases. Native fixture execution and actual Web acceptance remain pending; other APIs retain their own consumer assessments"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -167552,7 +170403,6 @@
             "Synchronous private native immutable byte lease for ArrayBuffer and exactly nine TypedArrays, exact byteOffset/byteLength snapshot, per-create native 192-bit opaque identity, 8 MiB per lease/32 MiB per owner/1024 lease bounds. One Session incarnation owns its AppService callback, Skia decoded image lookup and official Web Worker/WASM keyed resource reader; hide/page retirement retain leases. Native fixture execution and actual Web acceptance remain pending; other APIs retain their own consumer assessments"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -167683,7 +170533,6 @@
             "Synchronous private native immutable byte lease for ArrayBuffer and exactly nine TypedArrays, exact byteOffset/byteLength snapshot, per-create native 192-bit opaque identity, 8 MiB per lease/32 MiB per owner/1024 lease bounds. One Session incarnation owns its AppService callback, Skia decoded image lookup and official Web Worker/WASM keyed resource reader; hide/page retirement retain leases. Native fixture execution and actual Web acceptance remain pending; other APIs retain their own consumer assessments"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -179712,12 +182561,114 @@
       "hosts": {
         "android": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -179733,12 +182684,114 @@
         },
         "ios": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -179755,12 +182808,114 @@
         },
         "harmony": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -179774,12 +182929,114 @@
         },
         "web": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -179794,12 +183051,114 @@
         },
         "macos": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -179814,12 +183173,114 @@
         },
         "windows": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -179834,12 +183295,114 @@
         },
         "linux": {
           "implementation": "runtimeOwned",
-          "implementationState": "missing",
+          "implementationState": "partial",
           "sources": [
             {
               "id": "boundary",
               "role": "protectedBoundary"
+            },
+            {
+              "id": "logManager",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "environment",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostInstaller",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "lifecycleNotifications",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "boundary",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjs",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "v8",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtime",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "hostServices",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "logJournal",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "nativeProvider",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "simulatorWeb",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "asyncHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "snapshots",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "runtimeLifecycle",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreAssembly",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "quickjsExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "terminalResources",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "engineExecution",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "webHost",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "coreManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceManifest",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "workspaceLock",
+              "role": "runtimeImplementation"
+            },
+            {
+              "id": "manifestPacker",
+              "role": "runtimeImplementation"
             }
+          ],
+          "implementationScopes": [
+            "Dedicated Session-owned native journal captures explicit arbitrary-argument graphs and default App/Page/wx producers; level 1 excludes automatic records. Native/Web diagnostic wire carries full records with a 256KiB/128-entry drain, bounded 5MiB volatile retention and exact-once retained tails. Projection, projected UTF8 100KiB accounting, repeated-factory policy, persistence/upload and Web/native retention parity are container policy, not established complete WeChat parity"
+          ],
+          "missing": [
+            "fixedLogManagerProjectionBudgetPersistenceUploadParity"
           ],
           "status": "pendingAcceptance",
           "coverage": {
@@ -256188,7 +259751,6 @@
             "Synchronous void revocation removes only the addressed owner lease, duplicate/unknown/foreign URLs are no-ops, and new Skia/cache or keyed Worker/WASM reads recheck live authority. Native engine drop, terminal app unload, account/service revoke and terminal call shutdown drain all leases even when public revoke is denied. Already published immutable frame/DOM leases keep the existing last-use lifetime. Native fixture execution and actual Web acceptance remain pending"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -256320,7 +259882,6 @@
             "Synchronous void revocation removes only the addressed owner lease, duplicate/unknown/foreign URLs are no-ops, and new Skia/cache or keyed Worker/WASM reads recheck live authority. Native engine drop, terminal app unload, account/service revoke and terminal call shutdown drain all leases even when public revoke is denied. Already published immutable frame/DOM leases keep the existing last-use lifetime. Native fixture execution and actual Web acceptance remain pending"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -256453,7 +260014,6 @@
             "Synchronous void revocation removes only the addressed owner lease, duplicate/unknown/foreign URLs are no-ops, and new Skia/cache or keyed Worker/WASM reads recheck live authority. Native engine drop, terminal app unload, account/service revoke and terminal call shutdown drain all leases even when public revoke is denied. Already published immutable frame/DOM leases keep the existing last-use lifetime. Native fixture execution and actual Web acceptance remain pending"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -256583,7 +260143,6 @@
             "Synchronous void revocation removes only the addressed owner lease, duplicate/unknown/foreign URLs are no-ops, and new Skia/cache or keyed Worker/WASM reads recheck live authority. Native engine drop, terminal app unload, account/service revoke and terminal call shutdown drain all leases even when public revoke is denied. Already published immutable frame/DOM leases keep the existing last-use lifetime. Native fixture execution and actual Web acceptance remain pending"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -256714,7 +260273,6 @@
             "Synchronous void revocation removes only the addressed owner lease, duplicate/unknown/foreign URLs are no-ops, and new Skia/cache or keyed Worker/WASM reads recheck live authority. Native engine drop, terminal app unload, account/service revoke and terminal call shutdown drain all leases even when public revoke is denied. Already published immutable frame/DOM leases keep the existing last-use lifetime. Native fixture execution and actual Web acceptance remain pending"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -256845,7 +260403,6 @@
             "Synchronous void revocation removes only the addressed owner lease, duplicate/unknown/foreign URLs are no-ops, and new Skia/cache or keyed Worker/WASM reads recheck live authority. Native engine drop, terminal app unload, account/service revoke and terminal call shutdown drain all leases even when public revoke is denied. Already published immutable frame/DOM leases keep the existing last-use lifetime. Native fixture execution and actual Web acceptance remain pending"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
@@ -256976,7 +260533,6 @@
             "Synchronous void revocation removes only the addressed owner lease, duplicate/unknown/foreign URLs are no-ops, and new Skia/cache or keyed Worker/WASM reads recheck live authority. Native engine drop, terminal app unload, account/service revoke and terminal call shutdown drain all leases even when public revoke is denied. Already published immutable frame/DOM leases keep the existing last-use lifetime. Native fixture execution and actual Web acceptance remain pending"
           ],
           "missing": [
-            "bufferURLSourceReview",
             "bufferURLNativeWasmConsumerValidation"
           ],
           "status": "pendingAcceptance",
