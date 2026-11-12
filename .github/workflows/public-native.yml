@@ -31,8 +31,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       RUSTUP_TOOLCHAIN: 1.99.1
-      DEVELOPER_DIR: ${{ runner.os == 'macOS' && '/Applications/Xcode_27.2.app/Contents/Developer' || '' }}
     steps:
+      - name: Select the recorded Apple toolchain
+        if: runner.os == 'macOS'
+        shell: bash
+        run: echo 'DEVELOPER_DIR=/Applications/Xcode_27.2.app/Contents/Developer' >> "$GITHUB_ENV"
       - name: Enable long source paths on Windows
         if: runner.os == 'Windows'
         run: |
@@ -72,9 +75,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       RUSTUP_TOOLCHAIN: 1.99.1
-      DEVELOPER_DIR: ${{ runner.os == 'macOS' && '/Applications/Xcode_27.2.app/Contents/Developer' || '' }}
     timeout-minutes: 90
     steps:
+      - name: Select the recorded Apple toolchain
+        if: runner.os == 'macOS'
+        shell: bash
+        run: echo 'DEVELOPER_DIR=/Applications/Xcode_27.2.app/Contents/Developer' >> "$GITHUB_ENV"
       - name: Enable long source paths on Windows
         if: runner.os == 'Windows'
         run: |
