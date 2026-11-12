@@ -371,7 +371,12 @@ jobs:
         run: swift build --package-path examples/hosts/ios --target WeappContainerHost
       - name: Simulator desktop CLI and input diagnostic tests
         # These tests bind an ephemeral loopback surface without opening a window.
-        run: cargo test -p container-simulator --features desktop-window --bin weapp-simulator --locked
+        run: cargo test -p container-simulator --features desktop-window --bin weapp-simulator --locked -- --test-threads=1
+      - name: X11 GL drawable lifecycle (Mesa software driver)
+        if: runner.os == 'Linux'
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a cargo test -p container-host-desktop -p container-simulator --features container-simulator/desktop-window --locked x11_gl_drawable_renders_resizes_reloads_and_detaches -- --ignored --test-threads=1 --nocapture
       - name: Host feature smoke
         if: runner.os != 'Windows'
         run: bash scripts/host-feature-smoke.sh

@@ -11,6 +11,16 @@ description = "Desktop host adapter boundary for macOS, Windows and Linux"
 default = ["stub"]
 stub = []
 window = ["dep:softbuffer", "dep:winit"]
+gl-window = [
+    "window",
+    "skia-backend",
+    "dep:glutin",
+    "dep:glutin-winit",
+    "dep:glow",
+    "container-render-skia/skia-gpu-gles",
+    "container-runtime/skia-gpu-gles",
+    "container-host-common/skia-gpu-gles",
+]
 metal = []
 metal-window = [
     "window",
@@ -44,6 +54,11 @@ serde_json.workspace = true
 thiserror.workspace = true
 softbuffer = { version = "0.4", optional = true }
 winit = { version = "0.30", optional = true }
+
+[target.'cfg(any(target_os = "windows", target_os = "linux"))'.dependencies]
+glutin = { version = "0.32.3", optional = true }
+glutin-winit = { version = "0.5.0", optional = true }
+glow = { version = "0.16", optional = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = { version = "0.5.3", optional = true, default-features = false }

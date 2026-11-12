@@ -10,6 +10,7 @@ runs:
         sudo apt-get install -y \
           clang libclang-dev ninja-build pkg-config python3 \
           libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libegl1-mesa-dev \
+          libx11-dev libxkbcommon-dev libxkbcommon-x11-0 libwayland-dev xvfb xauth \
           fonts-dejavu-core
         pkg-config --exists freetype2 fontconfig
         fc-match sans-serif

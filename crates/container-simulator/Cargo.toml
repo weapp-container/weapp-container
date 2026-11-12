@@ -41,5 +41,8 @@ nix = { version = "0.31", default-features = false, features = ["signal", "proce
 [target.'cfg(target_os = "macos")'.dependencies]
 container-host-desktop = { path = "../container-host-desktop", optional = true, features = ["metal-window"] }
 
+[target.'cfg(any(target_os = "windows", target_os = "linux"))'.dependencies]
+container-host-desktop = { path = "../container-host-desktop", optional = true, features = ["gl-window"] }
+
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Diagnostics_ToolHelp", "Win32_System_JobObjects", "Win32_System_Threading"] }

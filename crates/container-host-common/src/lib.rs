@@ -721,6 +721,30 @@ impl HostSession {
             .map_err(HostSessionError::Session)
     }
 
+    /// Inspect the attachment after session replacement without allocating GPU state.
+    #[cfg(feature = "skia-gpu-gles")]
+    pub fn has_gles_context(&self) -> Result<bool, HostSessionError> {
+        Ok(self
+            .session
+            .as_ref()
+            .ok_or(HostSessionError::NotLoaded)?
+            .has_gles_context())
+    }
+
+    /// Attach the current desktop GL or GLES context using the host's loader.
+    /// The caller must keep the context current for all rendering and teardown.
+    #[cfg(feature = "skia-gpu-gles")]
+    pub fn attach_gl_context_with(
+        &mut self,
+        resolver: impl FnMut(&str) -> *const std::ffi::c_void,
+    ) -> Result<(), HostSessionError> {
+        self.session
+            .as_mut()
+            .ok_or(HostSessionError::NotLoaded)?
+            .attach_gl_context_with(resolver)
+            .map_err(HostSessionError::Session)
+    }
+
     /// Attach the current OpenGL ES context to the loaded runtime session.
     /// The caller owns the EGL context and must keep this host thread-affine.
     #[cfg(feature = "skia-gpu-gles")]

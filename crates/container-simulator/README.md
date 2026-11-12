@@ -153,6 +153,13 @@ addressed image resources; it does not rasterize or transport a page-sized RGBA
 image on this path. `--software` explicitly restores the legacy CPU preview.
 `run` and `dispatch` keep their deterministic headless defaults.
 
+With `--features desktop-window --surface desktop`, macOS uses the Metal
+presenter and Windows/Linux use an OpenGL 3.3 core drawable via glutin. All
+presenters borrow the same runtime session and preserve its presentation ACK
+and input-coordinate boundary. GPU initialization failures do not select a CPU
+path; `--software` explicitly selects winit/softbuffer. See the [desktop window
+contract and display test](../container-host-desktop/README.md#native-gl-windows-on-windows-and-linux).
+
 Prepare the pinned public renderer/font dependencies once, then pass the asset
 bundle with `--renderer-assets` (or `WEAPP_CONTAINER_RENDERER_ASSETS`):
 

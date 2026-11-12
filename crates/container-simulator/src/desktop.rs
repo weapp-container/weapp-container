@@ -12,6 +12,9 @@ use winit::window::WindowId;
 #[cfg(target_os = "macos")]
 use container_host_desktop::{MetalWindowPresenter, MetalWindowPresenterError};
 
+#[cfg(any(target_os = "windows", target_os = "linux"))]
+use container_host_desktop::{GlWindowPresenter, GlWindowPresenterError};
+
 #[derive(Debug, Error)]
 pub enum DesktopPresenterError {
     #[error("ERR_UNSUPPORTED_CAPABILITY: native desktop GPU presentation is unavailable on this platform; select software explicitly")]
@@ -31,6 +34,9 @@ pub enum DesktopPresenterError {
     #[cfg(target_os = "macos")]
     #[error(transparent)]
     Metal(#[from] MetalWindowPresenterError),
+    #[cfg(any(target_os = "windows", target_os = "linux"))]
+    #[error(transparent)]
+    Gl(#[from] GlWindowPresenterError),
 }
 
 /// Scale of the content actually submitted to the window compositor.
@@ -79,12 +85,23 @@ pub enum DesktopPresenter {
         presenter: Box<MetalWindowPresenter>,
         geometry: Option<PresentationGeometry>,
     },
+    #[cfg(any(target_os = "windows", target_os = "linux"))]
+    Gl {
+        presenter: Box<GlWindowPresenter>,
+        geometry: Option<PresentationGeometry>,
+    },
 }
 
 impl DesktopPresenter {
     /// May be called before starting a watcher or constructing an event loop.
     pub fn ensure_supported(software: bool) -> Result<(), DesktopPresenterError> {
-        if software || cfg!(target_os = "macos") {
+        if software
+            || cfg!(any(
+                target_os = "macos",
+                target_os = "windows",
+                target_os = "linux"
+            ))
+        {
             Ok(())
         } else {
             Err(DesktopPresenterError::UnsupportedGpu)
@@ -126,7 +143,14 @@ impl DesktopPresenter {
                 geometry: None,
             })
         }
-        #[cfg(not(target_os = "macos"))]
+        #[cfg(any(target_os = "windows", target_os = "linux"))]
+        {
+            Ok(Self::Gl {
+                presenter: Box::new(GlWindowPresenter::new(event_loop, title, width, height)?),
+                geometry: None,
+            })
+        }
+        #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
         Err(DesktopPresenterError::UnsupportedGpu)
     }
 
@@ -135,6 +159,8 @@ impl DesktopPresenter {
             Self::Software { .. } => PageRenderMode::Raster,
             #[cfg(target_os = "macos")]
             Self::Metal { .. } => PageRenderMode::NativeGpu,
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { .. } => PageRenderMode::NativeGpu,
         }
     }
 
@@ -143,6 +169,8 @@ impl DesktopPresenter {
             Self::Software { presenter, .. } => presenter.window_id(),
             #[cfg(target_os = "macos")]
             Self::Metal { presenter, .. } => presenter.window_id(),
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { presenter, .. } => presenter.window_id(),
         }
     }
 
@@ -163,6 +191,14 @@ impl DesktopPresenter {
                 *geometry = None;
                 presenter.resize(size);
             }
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl {
+                presenter,
+                geometry,
+            } => {
+                *geometry = None;
+                presenter.resize(size)?;
+            }
         }
         Ok(())
     }
@@ -172,6 +208,8 @@ impl DesktopPresenter {
             Self::Software { presenter, .. } => presenter.request_redraw(),
             #[cfg(target_os = "macos")]
             Self::Metal { presenter, .. } => presenter.request_redraw(),
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { presenter, .. } => presenter.request_redraw(),
         }
     }
 
@@ -180,6 +218,8 @@ impl DesktopPresenter {
             Self::Software { presenter, .. } => presenter.set_title(title),
             #[cfg(target_os = "macos")]
             Self::Metal { presenter, .. } => presenter.window().set_title(title.as_ref()),
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { presenter, .. } => presenter.window().set_title(title.as_ref()),
         }
     }
 
@@ -190,6 +230,8 @@ impl DesktopPresenter {
             Self::Software { geometry, .. } => geometry,
             #[cfg(target_os = "macos")]
             Self::Metal { geometry, .. } => geometry,
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { geometry, .. } => geometry,
         };
         geometry
             .map(PresentationGeometry::input_scale)
@@ -197,18 +239,21 @@ impl DesktopPresenter {
     }
 
     pub fn present(&mut self, host: &mut HostSession) -> Result<(), DesktopPresenterError> {
+        match self {
+            Self::Software { geometry, .. } => *geometry = None,
+            #[cfg(target_os = "macos")]
+            Self::Metal { geometry, .. } => *geometry = None,
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { geometry, .. } => *geometry = None,
+        }
         let revision = host.render_revision();
         let viewport = host
             .accepted_page_observation()?
             .ok_or(DesktopPresenterError::NotPresented)?
             .frame
             .viewport;
-        match self {
-            Self::Software {
-                presenter,
-                geometry,
-            } => {
-                *geometry = None;
+        let next = match self {
+            Self::Software { presenter, .. } => {
                 let size = presenter.surface_size();
                 if size.width == 0 || size.height == 0 {
                     return Err(DesktopPresenterError::NotPresented);
@@ -221,14 +266,22 @@ impl DesktopPresenter {
                     snapshot.height,
                 )?;
                 presenter.present(&snapshot)?;
-                *geometry = Some(next);
+                next
+            }
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { presenter, .. } => {
+                let size = presenter.surface_size();
+                let next = PresentationGeometry::new(
+                    f64::from(viewport.width),
+                    f64::from(viewport.height),
+                    size.width,
+                    size.height,
+                )?;
+                presenter.present_session(host)?;
+                next
             }
             #[cfg(target_os = "macos")]
-            Self::Metal {
-                presenter,
-                geometry,
-            } => {
-                *geometry = None;
+            Self::Metal { presenter, .. } => {
                 let size = presenter.surface_size();
                 let next = PresentationGeometry::new(
                     f64::from(viewport.width),
@@ -242,9 +295,9 @@ impl DesktopPresenter {
                     presenter.attach_session(host)?;
                 }
                 presenter.present_session(host)?;
-                *geometry = Some(next);
+                next
             }
-        }
+        };
         if self.mode() == PageRenderMode::NativeGpu {
             let batch: container_bridge::BridgeBatch =
                 serde_json::from_slice(&host.acknowledge_presentation_json(revision)?)?;
@@ -260,6 +313,15 @@ impl DesktopPresenter {
                     failure.payload.clone(),
                 ));
             }
+        }
+        // All native backends publish input geometry only after the runtime
+        // accepts the submitted revision. A failed ACK must revoke old input.
+        match self {
+            Self::Software { geometry, .. } => *geometry = Some(next),
+            #[cfg(target_os = "macos")]
+            Self::Metal { geometry, .. } => *geometry = Some(next),
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl { geometry, .. } => *geometry = Some(next),
         }
         Ok(())
     }
@@ -278,8 +340,16 @@ impl DesktopPresenter {
                     presenter.detach_session(host)?;
                 }
             }
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            Self::Gl {
+                presenter,
+                geometry,
+            } => {
+                *geometry = None;
+                presenter.detach_session(host)?;
+            }
         }
-        #[cfg(not(target_os = "macos"))]
+        #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
         let _ = host;
         Ok(())
     }
@@ -314,7 +384,11 @@ mod tests {
         assert!(DesktopPresenter::ensure_supported(true).is_ok());
         assert_eq!(
             DesktopPresenter::ensure_supported(false).is_ok(),
-            cfg!(target_os = "macos")
+            cfg!(any(
+                target_os = "macos",
+                target_os = "windows",
+                target_os = "linux"
+            ))
         );
     }
 }

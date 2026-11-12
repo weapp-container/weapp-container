@@ -1938,6 +1938,7 @@ fn run_desktop_dev(
     let mut last_title = String::new();
     let mut shutdown_reason = "event-loop-exit";
     let mut web_error = None;
+    let mut detach_result = None;
     // winit 0.30 permits a borrowed callback. Retain ownership outside it so
     // a run error that skips LoopExiting still has the same cleanup barrier.
     let run_result = event_loop.run(|event, target| match event {
@@ -2358,19 +2359,25 @@ fn run_desktop_dev(
             }
         }
         Event::LoopExiting => {
-            if let Some(simulator) = supervisor.simulator_mut() {
-                if let Err(error) = presenter.detach(simulator.host_mut()) {
-                    eprintln!("weapp-simulator: detach failed: {error}");
-                }
-            }
+            detach_result = Some(match supervisor.simulator_mut() {
+                Some(simulator) => presenter.detach(simulator.host_mut()),
+                None => Ok(()),
+            });
             finish_desktop_shutdown(&mut supervisor, &mut web, shutdown_reason);
         }
         _ => {}
     });
     // Idempotent fallback for a controlled winit error without LoopExiting.
+    // The supervisor still owns the runtime; detach its Skia resources before
+    // dropping the window/context, and preserve teardown failures for callers.
+    let detach_result = detach_result.unwrap_or_else(|| match supervisor.simulator_mut() {
+        Some(simulator) => presenter.detach(simulator.host_mut()),
+        None => Ok(()),
+    });
     finish_desktop_shutdown(&mut supervisor, &mut web, shutdown_reason);
     drop(presenter);
     run_result?;
+    detach_result?;
     if let Some(error) = web_error {
         return Err(error.into());
     }
