@@ -312,7 +312,7 @@ HTTP 202 is only a queue receipt. A later `presentation` SSE event carries
 revisions return 409. A client keeps one in-flight frame and one latest RAF
 candidate, rejects obsolete session/generation frames, and suspends old-image
 input while logical geometry is changing. See the [full Web
-protocol](../../docs/simulator.md#开发态监督器) for field and budget details.
+protocol](../../docs/simulator.en.md#开发态监督器) for field and budget details.
 
 Each start atomically reserves its own run namespace and session id. Reusing
 an output directory preserves earlier generations; concurrent runs have
