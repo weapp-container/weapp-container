@@ -27,10 +27,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ fromJSON((inputs.suite == 'full' || inputs.platform == 'all') && '["ubuntu-22.04","macos-15","windows-2022"]' || inputs.platform == 'macos' && '["macos-15"]' || inputs.platform == 'windows' && '["windows-2022"]' || '["ubuntu-22.04"]') }}
+        os: ${{ fromJSON((inputs.suite == 'full' || inputs.platform == 'all') && '["ubuntu-22.04","xcode-27","windows-2022"]' || inputs.platform == 'macos' && '["xcode-27"]' || inputs.platform == 'windows' && '["windows-2022"]' || '["ubuntu-22.04"]') }}
     runs-on: ${{ matrix.os }}
     env:
       RUSTUP_TOOLCHAIN: 1.99.1
+      DEVELOPER_DIR: ${{ runner.os == 'macOS' && '/Applications/Xcode_27.2.app/Contents/Developer' || '' }}
     steps:
       - name: Enable long source paths on Windows
         if: runner.os == 'Windows'
@@ -58,7 +59,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang libclang-dev pkg-config libfontconfig1-dev libgl1-mesa-dev
       - name: Test real engine, persistence, asynchronous requests and C ABI
-        run: cargo test -p container-sdk -p container-sdk-ffi --no-default-features --features quickjs-native,skia-backend --locked
+        run: cargo test -p container-sdk -p container-sdk-ffi --no-default-features --features quickjs-native,skia-backend --locked -- --test-threads=1
 
   native:
     name: Native SDK (${{ matrix.target }})
@@ -67,10 +68,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON((inputs.suite == 'full' || inputs.platform == 'all') && '[{"os":"macos-15","target":"aarch64-apple-darwin"},{"os":"macos-15","target":"x86_64-apple-darwin"},{"os":"macos-15","target":"aarch64-apple-ios"},{"os":"macos-15","target":"aarch64-apple-ios-sim"},{"os":"macos-15","target":"x86_64-apple-ios"},{"os":"ubuntu-22.04","target":"aarch64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-unknown-linux-gnu"},{"os":"windows-2022","target":"x86_64-pc-windows-msvc"}]' || inputs.platform == 'macos' && '[{"os":"macos-15","target":"aarch64-apple-darwin"},{"os":"macos-15","target":"x86_64-apple-darwin"},{"os":"macos-15","target":"aarch64-apple-ios"},{"os":"macos-15","target":"aarch64-apple-ios-sim"},{"os":"macos-15","target":"x86_64-apple-ios"}]' || inputs.platform == 'windows' && '[{"os":"windows-2022","target":"x86_64-pc-windows-msvc"}]' || '[{"os":"ubuntu-22.04","target":"aarch64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-unknown-linux-gnu"}]') }}
+        include: ${{ fromJSON((inputs.suite == 'full' || inputs.platform == 'all') && '[{"os":"xcode-27","target":"aarch64-apple-darwin"},{"os":"xcode-27","target":"x86_64-apple-darwin"},{"os":"xcode-27","target":"aarch64-apple-ios"},{"os":"xcode-27","target":"aarch64-apple-ios-sim"},{"os":"xcode-27","target":"x86_64-apple-ios"},{"os":"ubuntu-22.04","target":"aarch64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-unknown-linux-gnu"},{"os":"windows-2022","target":"x86_64-pc-windows-msvc"}]' || inputs.platform == 'macos' && '[{"os":"xcode-27","target":"aarch64-apple-darwin"},{"os":"xcode-27","target":"x86_64-apple-darwin"},{"os":"xcode-27","target":"aarch64-apple-ios"},{"os":"xcode-27","target":"aarch64-apple-ios-sim"},{"os":"xcode-27","target":"x86_64-apple-ios"}]' || inputs.platform == 'windows' && '[{"os":"windows-2022","target":"x86_64-pc-windows-msvc"}]' || '[{"os":"ubuntu-22.04","target":"aarch64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-unknown-linux-gnu"}]') }}
     runs-on: ${{ matrix.os }}
     env:
       RUSTUP_TOOLCHAIN: 1.99.1
+      DEVELOPER_DIR: ${{ runner.os == 'macOS' && '/Applications/Xcode_27.2.app/Contents/Developer' || '' }}
     timeout-minutes: 90
     steps:
       - name: Enable long source paths on Windows
