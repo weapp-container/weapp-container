@@ -19,6 +19,6 @@
 [submodule "sdk/react-native"]
 	path = sdk/react-native
 	url = https://github.com/weapp-container/sdk-react-native.git
-[submodule "showcase"]
-	path = showcase
+[submodule "website"]
+	path = website
 	url = https://github.com/weapp-container/website.git

@@ -71,13 +71,9 @@ jobs:
           git -C vendor/weapp-vite diff --exit-code
       - name: Install the vendor-pinned headless Chromium and system libraries
         run: pnpm --dir vendor/weapp-vite exec playwright install --with-deps chromium
-      - name: Install native raster build dependencies and Latin fonts
+      - uses: ./.github/actions/setup-linux-native
         # The software fallback paints boxes/images but not page glyphs. Keep
         # the real text/changed-pixels assertions on Skia CPU raster instead.
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build python3 pkg-config libfontconfig1-dev libfreetype6-dev fonts-dejavu-core
-          fc-match sans-serif
       - name: Preserve real weapp output and a separately compiled modern pack
         run: |
           node vendor/weapp-vite/packages/weapp-vite/bin/weapp-vite.js build \

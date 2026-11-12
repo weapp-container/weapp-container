@@ -348,12 +348,14 @@ jobs:
         run: node scripts/check-toolchain.mjs --json
       - name: Format check
         run: cargo fmt --all -- --check
+      - uses: ./.github/actions/setup-linux-native
+        if: runner.os == 'Linux'
       - name: Check workspace
-        run: cargo check --workspace --all-targets
+        run: cargo check --workspace --all-targets --locked
       - name: Clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Tests
-        run: cargo test --workspace
+        run: cargo test --workspace --locked -- --test-threads=1
       - name: Simulator snapshot client boundaries
         run: node --test scripts/simulator-snapshot-client.test.mjs scripts/simulator-watch.test.mjs scripts/simulator-source-credit-close.test.mjs scripts/simulator-source-credit-terminal.test.mjs scripts/simulator-source-credit-watch.test.mjs scripts/simulator-dev-harness.test.mjs scripts/simulator-dev-assertions.test.mjs scripts/simulator-embed-client.test.mjs scripts/simulator-inspector-client.test.mjs scripts/simulator-reconnect-client.test.mjs scripts/simulator-presentation-client.test.mjs scripts/simulator-scroll-metrics.test.mjs scripts/simulator-scroll-driver.test.mjs scripts/simulator-presentation-controls-smoke.test.mjs scripts/simulator-sse-proxy.test.mjs scripts/simulator-reference-fixture.test.mjs scripts/style-module-boundary-smoke.test.mjs scripts/component-custom-events-smoke.test.mjs scripts/component-relations-smoke.test.mjs scripts/simulator-cli-harness.test.mjs
       - name: Test iOS portable pack loader without a device
@@ -530,9 +532,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install source-build fallback tools (Ubuntu)
+      - uses: ./.github/actions/setup-linux-native
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ninja-build python3
       - name: Install source-build fallback tools (macOS)
         if: runner.os == 'macOS'
         run: brew list ninja >/dev/null 2>&1 || brew install ninja

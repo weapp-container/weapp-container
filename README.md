@@ -43,10 +43,10 @@ pnpm simulator:dev -- --project examples/apps/reference-app --surface web --soft
 | `crates/container-render-skia`、`container-host-*` | 绘制、Web 与原生宿主适配 |
 | `crates/container-simulator`、`apps/dev-player` | 开发模拟器和设备客户端 |
 | `sdk/*` | 独立的合约及 Android、iOS、Desktop、Flutter、React Native 包装层 |
-| `showcase` | website 文档与展示应用源码 |
+| `website` | 文档与展示应用源码 |
 | `tools/runtime-artifacts` | [运行库打包、离线验证与发行工具](tools/runtime-artifacts/README.md) |
 
-SDK、Showcase、产物工具和 `vendor/weapp-vite` 通过 submodule 固定提交。修改后应在对应仓库提交，再更新主仓库指针。SDK 的预编译锁文件仍可能指向历史发行物；当前源码接入见 [SDK 构建说明](docs/sdk-repositories.md)。
+SDK、Website 和 `vendor/weapp-vite` 通过 submodule 固定提交。修改后应在对应仓库提交，再更新主仓库指针。SDK 的预编译锁文件仍可能指向历史发行物；当前源码接入见 [SDK 构建说明](docs/sdk-repositories.md)。
 
 ## 检查
 

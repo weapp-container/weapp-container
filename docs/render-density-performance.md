@@ -18,9 +18,9 @@ Worker 的 event/frame/ACK 队列原先经由嵌套零延时 timer，受浏览�
 
 原 Noto Sans SC 可变字体的默认 wght 为 100，Web 默认实例因此呈现 Thin 字形。`scripts/prepare-renderer-font.py` 固定使用 fonttools 4.60.1 生成 wght 400 的 Container Sans SC Regular，保留全部 30,890 个字符及 OFL。输出 10,595,952 字节，比原字体减少 40.4%；两次生成哈希一致，SHA-256 为 `916bd5146cd1099aff18931fd0c85f4f3fd1ff7b2c966cb3cc22a4e5a6216983`。历史 restricted native SDK 仍包含原字体，保留旧哈希及安装边界；本次 Web 字体替换不代表历史原生包已经重建。
 
-Showcase 历史生产输入 p95 1116.7ms、frame RPC p95 736.5ms 的样本见子模块 `showcase/docs/showcase-performance.md`。新版本的现场结果以发布保留报告为准，不能用本次源码优化直接推断已通过性能门禁。
+Showcase 历史生产输入 p95 1116.7ms、frame RPC p95 736.5ms 的样本见子模块 `website/docs/showcase-performance.md`。新版本的现场结果以发布保留报告为准，不能用本次源码优化直接推断已通过性能门禁。
 
-`showcase/` 为 website 仓库的 submodule，使用 `git submodule update --init showcase` 获取锁定提交；发行工具位于核心仓库的 `tools/runtime-artifacts/`。在父 pnpm workspace 内安装 Showcase 时执行 `pnpm --ignore-workspace install --frozen-lockfile`。运行库需从干净的已提交源码重新构建，发布锁定确切源提交、产物哈希与许可收据；生产部署前先完成 staging 验收并封存回滚版本。
+`website/` 为文档与展示仓库的 submodule，使用 `git submodule update --init website` 获取锁定提交；发行工具位于核心仓库的 `tools/runtime-artifacts/`。在父 pnpm workspace 内安装 Website 时执行 `pnpm --ignore-workspace install --frozen-lockfile`。运行库需从干净的已提交源码重新构建，发布锁定确切源提交、产物哈希与许可收据；生产部署前先完成 staging 验收并封存回滚版本。
 
 
 原生核心产物可以通过 `node scripts/dev-player-runtime-archives.mjs --runtime-root <inputs> --platform <platform> --runtime-only --out <fresh-output>` 独立打包。该路径仍校验完整架构集合、同一干净源码提交、原生库和 ABI header 的原始哈希、许可、离线解包与所有文件；不要求未改动的 wrapper 先重新构建，也不会生成 wrapper 已通过的记录。没有 `--runtime-only` 时保留原 SDK 分发与消费者检查。

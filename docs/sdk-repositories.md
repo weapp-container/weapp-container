@@ -11,7 +11,7 @@
 | [sdk-flutter](https://github.com/weapp-container/sdk-flutter) | `sdk/flutter` | Flutter 平台插件 |
 | [sdk-react-native](https://github.com/weapp-container/sdk-react-native) | `sdk/react-native` | Fabric / TurboModule |
 
-`showcase` 对应 website 文档与展示仓库，运行库发行工具已迁入主仓库的 [tools/runtime-artifacts](../tools/runtime-artifacts/README.md)。旧 `runtime-artifacts` 仓库仅保留只读历史归档，不再作为 submodule 或新发行入口。`vendor/weapp-vite` 固定到审核过的上游提交。
+`website` 对应文档与展示仓库，运行库发行工具位于主仓库的 [tools/runtime-artifacts](../tools/runtime-artifacts/README.md)。旧 `runtime-artifacts` 仓库仅保留只读历史归档，不再作为 submodule 或新发行入口。`vendor/weapp-vite` 固定到审核过的上游提交。
 
 ## 当前源码构建
 
@@ -21,6 +21,15 @@
 pnpm sdk:build:native -- --target aarch64-apple-darwin --profile release
 pnpm sdk:licenses -- --target aarch64-apple-darwin
 ```
+
+Ubuntu 的 Skia 预编译缓存可能不覆盖当前 feature 组合；从源码编译前安装系统依赖：
+
+```sh
+sudo apt-get update
+sudo apt-get install -y clang libclang-dev ninja-build pkg-config python3 libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libegl1-mesa-dev fonts-dejavu-core
+```
+
+CI 通过共享的 Linux 原生依赖 action 执行同样的准备，不依赖 runner 镜像碰巧携带开发头文件。
 
 发布级原生构建要求干净、已提交的源码，并记录提交、feature、平台和产物哈希。其他目标见 `scripts/lib/sdk-native-features.mjs` 及[平台归档说明](platform-runtime-artifacts.md)。
 
@@ -36,7 +45,7 @@ pnpm sdk:licenses -- --target aarch64-apple-darwin
 
 新清单由主仓库生成，指向 `weapp-container/weapp-container` 的精确 `runtime-v<版本>`。使用 `pnpm runtime:package` 打包、`pnpm runtime:verify` 离线验证，再按[发行工具说明](../tools/runtime-artifacts/README.md)执行 `pnpm runtime:publish`。发布器拒绝覆盖已有 tag 或资产。独立 SDK 使用 `--manifest` 显式选取审核过的新清单，下载回执记录实际仓库，无跨仓库回退。
 
-本次只迁移源码和发行流程，没有新构建或发布原生二进制；不能把旧锁的 repository 改成核心仓库并复用哈希。核心仓库当前私有，下载仍需对应读取权限；Apache-2.0 源码许可与仓库访问权限分别管理。
+源码和发行流程迁移没有重新发布原生二进制；不能把旧锁的 repository 改成核心仓库并复用哈希。核心源码仓库现已公开，私有历史二进制仍需档案读取权限；Apache-2.0 源码许可不重新授权旧归档。
 
 归档前发现部分旧默认 pin 已与同名远端资产不符，详见[历史 pin 审计](runtime-artifacts-migration.md)。这些下载继续失败并保留校验；接入时应构建匹配源码，或显式选择经过核验的配套清单。
 
