@@ -1,4 +1,8 @@
+<a id="web-and-harmony-independent-products"></a>
 # Web 与 Harmony 独立产物
+
+**简体中文** · [English](platform-runtime-artifacts.en.md)
+
 
 `scripts/platform-runtime-archives.mjs` 生成与原生 SDK 归档分开的 Web/Harmony
 清单和安装包，版本为未发布的 `0.1.0-preview.6.0`。它只验证、复制、归档既有
@@ -14,6 +18,7 @@ release 构建，不签名、安装到设备或发布 release。历史清单和�
 同时保存 `execution: "direct"` 和 `producerExecution: "legacy"`，不能把 Worker
 构建重新命名为 direct。清单格式是 `weapp-container-platform-artifacts/1`。
 
+<a id="build-input"></a>
 ## 构建输入
 
 Web 必须是干净、稳定源码产生的成功 release 构建，启用
@@ -109,6 +114,7 @@ node scripts/harmony-platform-notices.mjs \
 独立审查固定 `identity.json` 的 `platformNoticesSha256`。重写 NOTICE 和本地
 identity 中的摘要也不能绕过该 pin。
 
+<a id="fresh-install-from-archive"></a>
 ## 从归档全新安装
 
 输出包含 `.tar.gz`、`SHA256SUMS` 和平台 lock。先在可信渠道独立固定整个 lock

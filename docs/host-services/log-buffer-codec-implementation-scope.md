@@ -1,4 +1,8 @@
+<a id="logmanager-bufferurl-and-file-encoding-implementation-scope"></a>
 # LogManager、BufferURL 与文件编码实现范围
+
+**简体中文** · [English](log-buffer-codec-implementation-scope.en.md)
+
 
 产品提交 **`b9f53efe3ff1d919d23411f08d6eda6f5a92f345`** 把日志和临时字节资源放回实际 Session owner，同时补齐八项生命周期通知的独立准入和文件文本的 UTF-16 传输边界。统计口径仍为微信基础库 3.17.3、`miniprogram-api-typings@5.2.3`、1265 API × 七平台 = 8855 单元。源码实现、有限执行结果和完整 API 验收分别记录。
 
@@ -9,10 +13,11 @@
 | 八项 App/页面卸载通知 | 修正准入与所有权，状态不变 | 0 |
 | 四项同步文件文本 API × 六 native 平台 | 补编码传输，继续 Partial | 0 |
 
-合计恰好 **49 个 Missing → Partial**，Available 增量为 0。合并后的源码矩阵为 Available **1504（16.98%）**、Partial **1070**、RequiresHostService **86**、Missing **6195**；accepted **0**、platformNotApplicable **87**。距离 7084 个 Available 仍差 **5580**。本批没有把有限浏览器结果导入正式 acceptance ledger，80% 阶段 goal 继续 active，父全量验收 goal 保持 paused、未完成。
+合计恰好 **49 个 Missing → Partial**，Available 增量为 0。合并后的源码矩阵为 Available **1504（16.98%）**、Partial **1070**、RequiresHostService **86**、Missing **6195**；accepted **0**、platformNotApplicable **87**。距离 7084 个 Available 仍差 **5580**。本批没有把有限浏览器结果导入正式 acceptance ledger，80% 阶段目标仍未完成，父全量验收 goal 保持 paused、未完成。
 
 完整 8855 个 cell 对象比较共有 **129 个对象变化**：上述 49 个状态变化、24 个 codec 来源/范围说明和 56 个 lifecycle owner/来源说明；其余 **8726 个对象不变**，全部 acceptance 与 coverage 不变。acceptance contracts 和 ledger 仅重新绑定当前 canonical catalog 摘要，合同及空 reports 不变；清点与矩阵相关的最终 **513/513** 项测试、实际生成和 `--check` 均通过。
 
+<a id="session-held-logmanager-logs"></a>
 ## Session 持有的 LogManager 日志
 
 [`log-manager.js`](../../crates/container-core/src/log-manager.js) 提供独立的 runtime factory 和四个方法，QuickJS/V8 回调把记录写入 [`LogManagerJournal`](../../crates/container-core/src/log_manager.rs)。日志不借用 Console 的十六参数、2048 字符格式化器，也不依赖可写 guest effect/drain 全局。Session 从同一 native journal 取记录，投递到已有 native SDK Console consumer 和 Web 诊断 wire；只产生日志的调用和公开 `toJSON` 失败的调用仍能到达该 drain。
@@ -27,6 +32,7 @@ App 隐藏、页面销毁不终止应用级 journal。终态应用/host 调用�
 
 五个 API 继续 Partial：任意值的官方投影、100 KiB 计费口径、重复 factory 策略、持久化/上传、Web/native 保留行为与固定微信版本的一致性均未完成。当前诊断 consumer 通过不等于微信日志服务验收。
 
+<a id="immutable-byte-owner-of-bufferurl-and-image-consumption"></a>
 ## BufferURL 的不可变字节 owner 与图像消费
 
 [`buffer-url.js`](../../crates/container-core/src/buffer-url.js) 同步接收 ArrayBuffer 和锁定声明中的九种 TypedArray，按其真实 `byteOffset/byteLength` 快照字节。DataView、BigInt TypedArray、共享缓冲区、伪造 receiver、已 detach 和超预算输入明确拒绝。create/revoke 独立准入，私有 native callback 在 bootstrap 后从全局删除，通用 host descriptor 不能替换这两个 runtime API。
@@ -41,12 +47,14 @@ Web direct/WASM 和生产 Worker/DOM 通过 [`browser_view_resource_at_path`](..
 
 两个 API 继续 Partial。当前没有证明 URL 的完整官方生命周期/限额语义，也没有把图像 consumer 扩大到 audio、video、文件或其他媒体 API；这些 consumer 必须分别实现和验收。有限 QuickJS/WASM 图像执行不能代替七端公开 SDK、其他引擎/OS、物理设备或微信 oracle 验收。
 
+<a id="independent-admission-for-lifecycle-notifications"></a>
 ## 生命周期通知的独立准入
 
 [`lifecycle-notifications.js`](../../crates/container-core/src/lifecycle-notifications.js) 为 `on/offAppShow`、`on/offAppHide`、`on/offBeforePageUnload`、`on/offAfterPageUnload` 各自保存私有准入；Session 先取该方法的 manifest 声明，再与可信 host/provider 求最小等级，保留 Partial，不借 counterpart 授权。通用 installer 的直接或 counterpart descriptor 都不能覆盖这些方法，篡改公开 capability map 不会授予权限。
 
 撤销某个 on 方法只清除该事件 listener 并增加 generation，截断已捕获但未执行的尾部；重新授权不重放旧订阅。普通 off 仍按既有 emission snapshot 执行，不等同可信撤权。通知准入不删除内部 departure/receiver 状态，因此 before/after 能继续配对并完成实际页面退休；拒绝公开 show/hide listener 也不取消 scheduler 的暂停/恢复。终态 retire 清空全部 listener 和 pending departure，独立于公开 off 权限。这是已有通知实现的边界修复，不增加本批 Available。
 
+<a id="file-text-encoding-and-utf-16-boundaries"></a>
 ## 文件文本编码与 UTF-16 边界
 
 [`host-bridge.js`](../../crates/container-core/src/host-bridge.js) 在 `writeFileSync`、`appendFileSync`、`writeSync` 进入 Rust JSON 前，把原始 JS 字符串逐 code unit 投影成私有 `__weappSyncText`，并只序列化一次。真正的 ArrayBuffer 继续走二进制路径；`readSync` 仍修改并返回调用方原 buffer。私有标记不是新的公开输入类型，伪造普通对象或 TypedArray 写入不因此获得支持。
@@ -57,6 +65,7 @@ Web direct/WASM 和生产 Worker/DOM 通过 [`browser_view_resource_at_path`](..
 
 四个同步 producer 在六 native host 的 24 个单元继续 Partial。managed-user 路径、单块/JSON/owner 预算、剩余锁定参数、跨 owner quota 和公开 SDK 验收仍单独保留；Web 同步文件持久化没有被 native `std::fs` 实现晋级。
 
+<a id="achieved-verifications-and-pending-gateways"></a>
 ## 已取得的验证与未决门禁
 
 本轮已报告通过 native engine/runtime 的定向门禁和 Node/catalog 门禁；最终 UTF-16 修正另通过 Harmony library **17 项**、目标 live FFI 测试、codec Node **7 项**。这七项已包含在随后四组 LogManager/BufferURL/lifecycle/codec Node **121/121** 的复验中，不能相加成唯一测试总数。`cargo check --workspace --all-targets --locked`、全 features Clippy `-D warnings` 和 `cargo fmt --all -- --check` 通过。

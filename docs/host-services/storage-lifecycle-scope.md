@@ -1,15 +1,20 @@
+<a id="scope-of-implementation-for-storage-transactions-and-application-lifecycle-notifications"></a>
 # Storage 事务与应用生命周期通知的实现范围
+
+**简体中文** · [English](storage-lifecycle-scope.en.md)
+
 
 本文说明共享存储的提交边界，以及应用前后台、页面销毁通知的实现和限制。源码清点按
 微信基础库 3.17.3、`miniprogram-api-typings@5.2.3` 的固定 1265 API × 七端统计。
 源码清点与实际平台验收分别记录；平台结论须绑定精确源码提交和可复核的执行证据。
 
+<a id="source-code-change-tracking"></a>
 ## 源码清点变化
 
 | API | Android/iOS/Harmony/Web/macOS/Windows/Linux | 单元变化 |
 | --- | --- | ---: |
 | `wx.onAppShow`、`wx.offAppShow`、`wx.onAppHide`、`wx.offAppHide` | partial → available | 28 |
-| `wx.onBeforePageUnload`、`wx.offBeforePageUnload`、`wx.onAfterPageUnload`、`wx.offAfterPageUnload` | missing → available | 28 |
+| `wx.onBeforePageUnload`、`wx.offBeforePageUnload`、`wx.onAfterPageUnload`、`wx.offAfterPageUnload` | 不存在 → 可用 | 28 |
 | `wx.batchSetStorage`、`wx.batchSetStorageSync` | missing → partial | 14 |
 
 这八项生命周期 API 共用相同的真实运行时实现，新增 available 56。四项前后台通知是
@@ -30,6 +35,7 @@ batch set 接收数组，没有 `encrypt` 参数。固定版本只有四项 batc
 `routeEventId`，after 只包含 `path`、`routeEventId`；四个 off 均允许不传 listener
 移除全部。不能根据其他版本或示例注释增加固定签名中不存在的能力。
 
+<a id="storage-successfully-sent-from-local-to-host-submission"></a>
 ## 存储从本地成功到宿主提交
 
 原实现先修改 JS 存储，再排公开 patch；engine 在 Session 应用 patch 前就 ACK。
@@ -67,6 +73,7 @@ strict 启动；超限状态只允许不增长的写入，remove/clear 可恢复
 另行验证。native SDK 的合并全量快照 writer、atomic replace、flush/close barrier
 和账号 namespace 边界保持原有职责。
 
+<a id="storage-limitations"></a>
 ## 存储限制
 
 普通 quota 使用容器定义的逻辑算法：规范 JSON UTF8 payload 每值最多 1,048,576 字节，
@@ -101,6 +108,7 @@ JSON/UTF16 与有限参数范围、字节算法确认缺口保持 partial，不�
 恢复/保存不是本批实现；OPFS 文件服务和 whole-Session Worker 也不提供该证明。其余七项
 已有 storage API 沿用原清点范围，本批不将三个已确认的旧高估泛化成新的整组下修。
 
+<a id="receivers-and-cleanup-in-the-lifecycle"></a>
 ## 生命周期的接收者与收尾
 
 前后台 listener 与 App hook 分开归属。on 去重注册，off 按函数 identity 移除，未传参
@@ -134,6 +142,7 @@ V8 的 native installer、通知派发与私有 receiver capture 在 TryCatch �
 空闲 isolate 的待处理中断请求本身不是已发生的执行故障；回归分别验证公共 interrupt
 入口和执行循环中实际触发的 native 终止，不为策略设置方法加入 guest 执行探针。
 
+<a id="verification-and-unaccepted-boundary"></a>
 ## 验证与未验收边界
 
 行为回归分别位于 core `storage.rs`、双引擎共享 `fixtures/storage-engine.rs`、runtime

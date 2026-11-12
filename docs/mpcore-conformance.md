@@ -1,7 +1,12 @@
-# mpcore / DevTools conformance
+<a id="mpcore--devtools-conformance"></a>
+# mpcore / DevTools 兼容性
+
+**简体中文** · [English](mpcore-conformance.en.md)
+
 
 `scripts/verify-mpcore-conformance.mjs` 是容器仓库的串行 headless conformance 入口。它固定使用 `vendor/weapp-vite` 的 pinned commit，先构建上游 package，再依次执行静态 IDE 启动复用检查、mpcore headless provider smoke 和 Wevu runtime suite。每一步的命令、退出码、耗时和输出都会写入 `artifacts/mpcore-conformance.json`。
 
+<a id="runtime"></a>
 ## 运行
 
 安全的计划检查不会启动构建或运行时：
@@ -32,6 +37,7 @@ suite 结构如下：
 
 这条入口显式设置 `WEAPP_VITE_E2E_RUNTIME_PROVIDER=headless`，所以报告中的 `simulator.status=passed` 只表示 `@mpcore/simulator` headless 语义通过。它不会把结果写成真实微信开发者工具、桌面 GPU、模拟器或真机通过。
 
+<a id="real-devtools-gatekeeping"></a>
 ## 真实 DevTools 门禁
 
 真实 IDE 必须单独运行上游 DevTools 配置，并显式设置 `WEAPP_VITE_E2E_DEVTOOLS_CLI_PATH`。启动前要使用官方稳定版下载渠道核对安装和版本，并记录实际 Tool 版本、基础库版本、查询时间和资源清理证据。官方渠道来源为 [微信开发者工具下载页](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)。
@@ -40,6 +46,7 @@ suite 结构如下：
 
 所有真实 IDE suite 继续遵守上游的机器级串行 lease、单窗口、共享 automator 和幂等清理规则。启动失败、未登录、缺少 CLI 或版本无法核对都应在报告中标为 blocked，而不能回退到 headless 并宣称 IDE 通过。
 
+<a id="native-real-ide-observation-2026-10-17"></a>
 ## 本机真实 IDE 观察（2026-10-17）
 
 本轮预检发现本机安装了 `/Applications/wechatwebdevtools.app`，并通过显式 CLI 选择完成稳定版核对：安装版本与官方稳定版均为 `2.02.2608080`，基础库回执为 `3.17.3`。本轮官方版本查询时间为 `2026-10-17T16:37:11.296Z`、`2026-10-17T16:40:31.237Z` 和 `2026-10-17T16:42:38.562Z`，来源均为 `https://devtools.wxqcloud.qq.com.cn/WechatWebDev/nightly/versions/config.json`。

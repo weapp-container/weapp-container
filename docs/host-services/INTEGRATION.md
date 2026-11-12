@@ -1,10 +1,15 @@
+<a id="host-integration-guide"></a>
 # 宿主接入指南
+
+**简体中文** · [English](INTEGRATION.en.md)
+
 
 本指南对应 `0.1.0-preview.6.0` 源码和 host services 协议 `1.0`，C ABI 仍为 `1`。
 历史 runtime archive/ORIGIN/验收记录没有更新，旧二进制不能运行本功能。先构建匹配
 此源码的 runtime 和 SDK，再通过 `capabilities.hostServices.protocolVersion` 判断可用；
 配置、注册或能力检查失败应直接终止接入，不能退回开发沙箱登录或支付。
 
+<a id="installation-and-account"></a>
 ## 安装和账号
 
 宿主先验证发行者、安装许可及包内容，形成 `TrustedApplication`。`packRoot` 必须
@@ -61,6 +66,7 @@ consent。`hostLoggedIn:false` 时三项应用/授权状态均为 false。快照
 `authorizationVersion`；`userInfo` 只在资料授权有效时出现。宿主仍须显式刷新或推送
 授权变化，不能凭缓存判断后端当前是否允许披露。
 
+<a id="web-reference-identity-backend"></a>
 ### Web 参考身份后端
 
 Web 归档提供 `reference-identity-client.mjs`，由宿主页面创建客户端后传入
@@ -79,6 +85,7 @@ client 凭据兑换；这些凭据不属于 Web 客户端配置。兑换后 `wx.
 启动账号管理器的应用退出操作，返回可查询 receipt；该回调不能等待正在退休的
 owner 自身关闭。关闭、换号或超时后的结果不会写回新 owner。
 
+<a id="number-swapping-and-resource-cleanup"></a>
 ## 换号与资源清理
 
 原生 SDK 的 `HostAccountManager` 按 host/tenant 共享。宿主的换号操作提升共享 epoch，
@@ -108,6 +115,7 @@ Flutter 和 React Native 可用 `registerAccountCleanupHandler` 注册自定义�
 app grants/token；返回的后端撤销要求不能被忽略。不要记录用户 token 或手机号到
 诊断日志。
 
+<a id="files-events-and-native-components"></a>
 ## 文件、事件与原生组件
 
 持久键值、文件和 native 授权记录按宿主/租户、小程序、环境、用户分区。合法版本
@@ -146,6 +154,7 @@ Context 的 `context.componentTarget` 由 runtime 解析，native 不接受 gues
 变换和 sibling 层级；不能把独立窗口当作组件。节点卸载、隐藏、后台、换号和关闭
 均停止对应资源。格式为 rgba8，单帧/总保留量有界，旧帧序号直接丢弃。
 
+<a id="payment-and-example"></a>
 ## 支付与示例
 
 推荐 guest 只调用 `weappContainer.payment.request({orderId})`。宿主从冻结的 app/用户/
@@ -170,5 +179,5 @@ epoch 上下文向自己的后端取得 launch，再交给明确配置的渠道�
 reference 仅为明确配置的本地参考通道，不会发生真实交易。真实商户验收需另提供
 已开通的产品、签名宿主、密钥与回跳配置，按后端 README 的验签流程独立执行。
 
-完整清单和七端状态见 [台账](./README.md)。`present` 只说明具体源码存在；每个 API
+完整清单和七端状态见 [台账](README.md)。`present` 只说明具体源码存在；每个 API
 的参数范围、OS 条件、真实硬件证据和当前产物版本都必须另行核对。

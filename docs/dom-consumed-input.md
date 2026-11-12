@@ -1,7 +1,10 @@
-# DOM preparation consumed-input metadata
+<a id="dom-preparation-consumed-input-metadata"></a>
+# DOM 准备消耗输入元数据
 
-A successful final bridge `view.prepare` response may include an optional
-`scheduling` field next to the unchanged `submission`:
+**简体中文** · [English](dom-consumed-input.en.md)
+
+
+一个成功的最终桥 `view.prepare` 响应可能包含一个可选的 `scheduling` 字段，位于不变的 `submission` 字段旁边：
 
 ```json
 {
@@ -20,37 +23,12 @@ A successful final bridge `view.prepare` response may include an optional
 }
 ```
 
-The runtime reads `Session::browser_page_input(&submission.key)` immediately
-after preparation. That candidate already holds the root-data clone-boundary
-snapshot; component hooks, later effects, geometry and ACK cannot replace what
-it consumed. Page/template IDs stay canonical u64 decimal strings. The full
-`Rect` is retained because nonzero x/y are accepted. Its f32 values are promoted
-to f64 on the wire, matching the exact actual submission width/height.
+运行时在准备之后立即读取 `Session::browser_page_input(&submission.key)`。该候选值已经持有根数据克隆边界快照；组件钩子、后续效果、几何信息和确认回执都无法替代它所消耗的内容。页面/模板 ID 保持为标准的十进制 u64 字符串。完整的 `Rect` 被保留，因为非零的 x/y 值是被接受的。其 f32 值在传输过程中提升为 f64，与实际提交的宽度/高度完全一致。
 
-Explicit render data produces `consumedInput: null`, including data equal to
-the current page. Detached development preparation has no authoritative page
-snapshot and cannot produce consumed proof. Absence of the entire scheduling
-field remains compatible with existing clients/servers; it does not mean a
-preparation consumed the current page. A future product scheduler must require
-an advertised scheduling capability before relying on this optional metadata.
-This patch does not add such product negotiation or enable a Worker product.
+显式渲染数据产生 `consumedInput: null`，包括等于当前页面的数据。脱离开发准备没有权威的页面快照，无法产生已消耗的证明。整个调度字段的缺失仍与现有客户端/服务器兼容；这并不意味着该准备已消耗了当前页面。未来的产物调度器在依赖此可选元数据前，必须先要求声明调度能力。本补丁不添加此类产物协商，也不启用 Worker 产物。
 
-`DomSessionClient` validates the metadata version, exact full presentation key,
-canonical IDs, route against `submission.document.routePath`, and width/height
-against `submission.viewport`. It retains finite x/y and returns an independent,
-frozen `scheduling` object from `present()`. Missing/null proof stays missing/null;
-metadata on a later ACK is ignored. Invalid metadata fails before presenter
-preparation and aborts the exact runtime candidate.
+`DomSessionClient` 验证元数据版本、完整的呈现键（精确全键）、规范化的 ID、路由（对比 `submission.document.routePath`），以及宽高（对比 `submission.viewport`）。它保留有限的 x/y 值，并从 `present()` 返回一个独立的、冻结的 `scheduling` 对象。缺失或为空的证明保持缺失或为空；后续 ACK 中的元数据被忽略。无效元数据在呈现器准备之前失败，并中止精确运行时候选。
 
-These are scheduling facts, separate from presentation/input authority. They do
-not enter the permit, ACK payload, application data or DOM observation lease.
-The existing `prepare → commit → presented` transaction still controls input.
-They are not screenshot, physical-display, browser or performance evidence.
+这些是调度事实，与呈现/输入权威无关。它们不进入许可、ACK有效载荷、应用数据或DOM观察租约。现有的 `prepare → commit → presented` 事务仍控制输入。它们不是截图、物理显示、浏览器或性能证据。
 
-External Skia frame consumed-input provenance remains unimplemented. A complete
-change must carry `ManifestViewInput.page_input` through `PreparedViewFrame` and
-commit publication, bind it to the exact render revision, preserve it for
-retained scroll/scale paints, return no proof for explicit frames and detached
-previews, and retire it on manifest/session replacement. Sampling runtime state
-after frame/ACK would lose the clone-boundary guarantee. That wider runtime/host
-change is deliberately outside this independent DOM patch.
+外部 Skia 帧的 consumed-input 来源尚未实现。必须在完整变更中将 `ManifestViewInput.page_input` 传递到 `PreparedViewFrame`，并提交发布，将其与确切的渲染版本绑定，保留用于保留的滚动/缩放绘制，对显式帧和分离预览不返回证明，并在 manifest/session 更换时废弃该信息。在帧/ACK 之后采样运行时状态将丢失克隆边界保证。这种更广泛的运行时/宿主变更故意位于此独立的 DOM 修补之外。

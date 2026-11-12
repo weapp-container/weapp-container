@@ -1,11 +1,16 @@
+<a id="appservice-api-semantic-regression"></a>
 # AppService API 语义回归
+
+**简体中文** · [English](api-runtime-conformance.en.md)
+
 
 `container-core` 和 `container-runtime` 在宿主无持久化存储时提供一个
 **session-scoped memory provider**。它只在 `ContainerManifestV1.capabilities`
 显式声明对应 `wx.*` 项目为 `full` 或 `partial` 时开放；宿主配置会再取两者
 的较低等级。这样 `wx.canIUse` 的结果与实际 dispatch 门禁保持一致。
 
-## Storage
+<a id="storage"></a>
+## 存储
 
 `wx.setStorage`、`wx.setStorageSync`、`wx.getStorage`、
 `wx.getStorageSync`、`wx.removeStorage`、`wx.removeStorageSync`、
@@ -45,7 +50,8 @@ fail/complete 并拒绝 Promise。同步读取的 `result` 是原始值，缺失
 显式保存 undefined 仍是成功读取，bridge 以 `found: true`、`undefined: true`
 标记，JavaScript 端返回真实 undefined；null 与缺失 key 分别处理。
 
-## Launch options
+<a id="launch-options"></a>
+## 发布选项
 
 `app.init` 的 `launchOptions` 会在 session 中保存为同一份 JSON 对象，并在
 App.onLaunch、后续 App.onShow、`wx.getLaunchOptionsSync` 以及
@@ -55,7 +61,8 @@ App.onLaunch、后续 App.onShow、`wx.getLaunchOptionsSync` 以及
 referrerInfo: {}, scene: 1001 }` 形状，非对象输入会返回
 `ERR_INVALID_REQUEST`。
 
-## Device snapshot
+<a id="device-snapshot"></a>
+## 设备快照
 
 `wx.getBatteryInfo` 和 `wx.getBatteryInfoSync` 通过同一个 typed host provider
 边界返回 `{ level, isCharging, errMsg }`，其中 `level` 固定在 `0..100`。
@@ -74,7 +81,8 @@ deadline 和 cancellation，过期或取消时返回 `ERR_TIMEOUT` 或 `ERR_CANC
 在 provider 入口统一校验，sandbox 默认亮度为 `1`，宿主可以注入真实显示服务
 并在不支持时将 capability 协商为 `unsupported`。
 
-## Timers
+<a id="timers"></a>
+## 定时器
 
 `setTimeout`、`setInterval`、`clearTimeout`、`clearInterval` 使用
 `TimerScheduler`。调度器不创建 native 线程，由宿主在事件循环中调用
@@ -89,13 +97,15 @@ storage、setData 和 API effects；trace 分别标记为 `quickjs.timer` 和 `v
 回调执行前同步最新宿主 storage 快照，因此 bridge 写入后立即触发的定时器
 不会读取旧镜像。没有到期回调时不发出空的 engine timer trace。
 
-## Capability and error contract
+<a id="capability-and-error-contract"></a>
+## 能力与错误合约
 
 `wx.canIUse` 从 manifest 与宿主 capability 的协商结果计算，未知或
 `unsupported` 项返回 `result: false`。其它 API 在同一状态下返回
 `payload.error.code = "ERR_UNSUPPORTED_CAPABILITY"`；不会静默返回空值。
 
-## Sharing
+<a id="sharing"></a>
+## 共享
 
 `wx.shareAppMessage` 和 `wx.shareTimeline` 都通过同一批量 provider 边界传递
 分享选项。QuickJS/V8 facade 在进入 bridge 前拒绝 `null`、数组和其它非对象
@@ -106,26 +116,18 @@ provider 另外保存一个 typed `ShareRequest` 快照供 conformance 和 nativ
 适配器读取。sandbox 不打开系统分享面板，也不把请求记录当作用户已完成分享；
 真实平台 provider 需要自行接入系统分享生命周期。
 
-## Transient UI and page controls
+<a id="transient-ui-and-page-controls"></a>
+## 临时 UI 与页面控件
 
-`wx.showToast`/`hideToast`, `showLoading`/`hideLoading`, `showModal`,
-`showActionSheet`, `pageScrollTo` and `setNavigationBarColor` cross the same
-typed provider boundary as network and device APIs. The deterministic sandbox
-records the latest overlay, scroll and navigation-bar state without opening a
-native window. It validates the public option shapes and returns the documented
-result envelopes (`confirm`/`cancel` for modal and `tapIndex` for action sheet),
-so a host can replace the provider implementation while retaining batch bridge
-semantics, deadlines, cancellation and teardown. These APIs remain `partial`
-until each host supplies user-action timing, native overlay and accessibility
-evidence.
+`wx.showToast`/`hideToast`，`showLoading`/`hideLoading`，`showModal`，`showActionSheet`，`pageScrollTo` 和 `setNavigationBarColor` 跨越了与网络和设备 API 相同的类型提供者边界。确定性沙箱在不打开原生窗口的情况下记录了最新的叠加层、滚动和导航栏状态。它验证了公共选项的形状，并返回文档记录的结果封装（模态的`confirm`/`cancel`，操作面板的`tapIndex`），因此主机可以在保留批处理桥接语义、截止时间、取消和销毁的前提下替换提供者实现。这些 API 在每个主机提供用户操作时间、原生叠加层和可访问性证据之前将持续为`partial`。
 
-## Selector query
+<a id="selector-query"></a>
+## 选择器查询
 
-QuickJS/V8 keep each `NodesRef` selection and its callbacks inside the isolate.
-`boundingClientRect`, `scrollOffset`, `fields` and `node` append operations;
-`select`/`selectAll` alone do not append work to an existing operation batch.
-One nonempty `exec()` emits one `wx.createSelectorQuery` bridge request, rather
-than one request per reference or matched node:
+QuickJS/V8 将每个 `NodesRef` 选择及其回调保留在隔离区内。
+`boundingClientRect`、`scrollOffset`、`fields` 和 `node` 的追加操作；
+`select`/`selectAll` 单独操作不会将工作追加到现有操作批处理中。
+一个非空的 `exec()` 仅发出一个 `wx.createSelectorQuery` 桥接请求，而不是为每个引用或匹配节点发出一个请求：
 
 ```json
 {
@@ -151,175 +153,46 @@ than one request per reference or matched node:
 }
 ```
 
-The earlier direct bridge shape (`selector`, `all`, `fields`) remains accepted.
-In the batched shape every result slot belongs to the operation that queued it.
-Its callback runs in enqueue order, followed by the `exec` callback with the
-complete array; the returned Promise resolves to that same array. Values such
-as `false`, `null` and `[]` are retained rather than filtered as falsy. A callback
-exception enters the engine diagnostic stream while later callbacks still run.
-A provider error or malformed result-array length rejects the batch without
-running success callbacks. The operation queue is consumed before dispatch,
-so reuse cannot replay callbacks from an earlier failed execution. Empty
-`exec()` resolves asynchronously to `[]` without a geometry request. The
-portable `select(...).exec()` shorthand queues one bounding-rectangle operation
-only when no explicit operation is queued; this convenience is not additional
-official API evidence.
+较早的直接桥接形状（`selector`，`all`，`fields`）仍然被接受。
+在批处理形状中，每个结果槽属于其排队的操作。回调按入队顺序运行，随后是带有完整数组的`exec`回调；返回的Promise解析为该相同数组。像`false`、`null`和`[]`这样的值会被保留而不是被当作假值过滤掉。回调中的异常会进入引擎诊断流，而后续回调仍会运行。提供者错误或结果数组长度不正确将拒绝整个批处理，且不会运行成功回调。操作队列在分发前被消耗，因此无法从先前失败的执行中重放回调。空的`exec()`会异步解析为`[]`，且不会发出几何请求。可移植的`select(...).exec()`简写仅在没有显式操作排队时才会排队一个边界矩形操作；这种便利性并非额外的官方API证据。
 
-The query reads the most recent `render.commit` frame in tree order. `#id`,
-`.class`, `tag`, simple combinations (`view.card`), comma-separated lists,
-descendant (`view .card`), child (`view > text`), adjacent sibling (`.a + .b`)
-and general sibling (`.a ~ .b`) relationships are supported. Attribute
-presence/equality selectors (`[disabled]`, `[data-state=ready]`, including
-quoted values) are also supported. `selectViewport()` targets the committed
-viewport; `in({ scopeId })` scopes a query to the render node carrying the
-matching `data-sim-scope` attribute. Unsupported pseudo-class selectors and
-malformed attribute selectors are rejected with `ERR_INVALID_REQUEST`. A
-missing committed frame returns `ERR_RENDER` so the
-API cannot report geometry from stale or fabricated state. `all: false` returns
-the first match (or `null`), and `all: true` returns an array (or `[]`). These
-empty results keep their position in an `exec` batch.
+查询按树序读取最近的 `render.commit` 帧。支持 `#id`、`.class`、`tag`、简单组合（`view.card`）、逗号分隔列表、后代（`view .card`）、子元素（`view > text`）、相邻兄弟（`.a + .b`）以及一般兄弟（`.a ~ .b`）关系。还支持属性存在/相等选择器（`[disabled]`、`[data-state=ready]`，包括引号值）。`selectViewport()` 针对已提交的视口；`in({ scopeId })` 将查询限制在携带匹配 `data-sim-scope` 属性的渲染节点上。不支持的伪类选择器和格式错误的属性选择器将返回 `ERR_INVALID_REQUEST`。缺少已提交帧将返回 `ERR_RENDER`，因此 API 无法报告来自过时或伪造状态的几何信息。`all: false` 返回第一个匹配项（或 `null`），`all: true` 返回数组（或 `[]`）。这些空结果在 `exec` 批处理中保持其位置。
 
-A retained `NodesRef` keeps its original selection even if the query later
-creates another reference. Scope belongs to the query and is captured for all
-queued operations at `exec` time. The portable facade accepts a nonempty
-`scopeId`/`__scopeId`/`id` on the supplied scope descriptor; `in(null)` resets
-the scope. A descriptor without a usable id rejects with
-`ERR_INVALID_REQUEST` and never falls back to a page-wide query. A well-formed
-scope id whose render node is absent returns no node matches. This descriptor
-contract does not yet prove automatic binding between a JS `Component`
-instance and a `data-sim-scope` render subtree.
+一个保留的 `NodesRef` 即使查询稍后创建了另一个引用，也会保持其原始选择。作用域属于查询，并在 `exec` 时被捕获用于所有排队操作。可移植的前端面板在提供的作用域描述符中接受非空的 `scopeId`/`__scopeId`/`id`；`in(null)` 会重置作用域。一个没有可用 id 的描述符将返回 `ERR_INVALID_REQUEST`，并永远不会退化到页面级查询。一个格式正确的作用域 id，其渲染节点缺失，将不返回任何节点匹配。此描述符约定目前尚不能证明 JavaScript `Component` 实例与 `data-sim-scope` 渲染子树之间的自动绑定。
 
-The `fields` projection follows the public mpcore contract: `rect`, `size`,
-`scrollOffset`, `id`, `dataset`, `mark`, arbitrary component `properties`, and
-requested `computedStyle` names are returned as flat fields. `node` and
-`context` return portable descriptors (`canvas` nodes retain their type) at the
-JSON bridge boundary. Render nodes preserve `data-*` attributes as camel-cased
-`dataset` values, and `mark:*`/`mark-*` attributes as camel-cased mark values;
-these are the same objects used by pointer events. Malformed properties or
-style lists return `ERR_INVALID_REQUEST`. Portable node/context descriptors do
-not provide native Canvas/WebGL object identity or resource ownership.
+`fields` 投影遵循公共 mpcore 合约：`rect`、`size`、`scrollOffset`、`id`、`dataset`、`mark`，以及任意组件的 `properties` 和请求的 `computedStyle` 名称作为扁平字段返回。`node` 和 `context` 在 JSON 桥接边界处返回可移植的描述符（`canvas` 节点保留其类型）。渲染节点保留 `data-*` 属性作为驼峰命名的 `dataset` 值，以及 `mark:*`/`mark-*` 属性作为驼峰命名的 mark 值；这些对象与指针事件中使用的对象相同。属性或样式列表格式错误将返回 `ERR_INVALID_REQUEST`。可移植的节点/上下文描述符不提供原生 Canvas/WebGL 对象身份或资源所有权。
 
-SelectorQuery remains `partial`. Effective manifest/host support controls
-`wx.canIUse`. The facade checks support at `exec`, including empty executions,
-and rejects unavailable work with `ERR_UNSUPPORTED_CAPABILITY` before success
-callbacks or host effects. The runtime checks the same capability at direct
-bridge and native-engine effect boundaries, so a manually emitted native
-effect cannot bypass negotiation. Constructing a fluent object alone is not
-evidence that querying is supported. Local engine/runtime fixtures cover these
-distinct entry paths and the batching/projection boundary; they do not promote
-real DevTools or seven-host evidence.
+SelectorQuery 仍为 `partial`。有效 manifest/host 支持控制
+`wx.canIUse`。该封装层在 `exec` 时检查支持情况，包括空执行，且在成功回调或主机效果之前，若功能不可用则会抛出 `ERR_UNSUPPORTED_CAPABILITY` 错误。运行时在直接桥接和原生引擎效果边界处也进行相同能力的检查，因此手动发出的原生效果无法绕过协商。仅构造一个流畅对象并不能证明查询功能被支持。本地引擎/运行时的固定配置覆盖了这些不同的入口路径以及批处理/投影边界；它们并不能促进真正的 DevTools 或七主机证据。
 
-`event.batch` may carry `x`/`y` (or `clientX`/`clientY`) without a target/path.
-The session hit-tests the last committed frame once, fills the target path and
-dataset, and then runs capture/target/bubble dispatch as one batch. A pointer
-event without a committed frame fails with `ERR_RENDER`. Page handlers receive
-`stopPropagation`, `stopImmediatePropagation`, `preventDefault` and
-`cancelBubble`; propagation control is reflected in the batched hook result and
-the returned dispatch list is truncated at the handler that consumed it.
-The same hit-test also projects WXML `mark:*`/`mark-*` attributes into
-`event.mark`. Marks are inherited in root-to-target order and a nearer mark
-replaces a value with the same key, matching the public event-mark contract;
-the merged object is stable across capture, target and bubble phases.
+`event.batch` 可能携带 `x`/`y`（或 `clientX`/`clientY`）且没有目标/路径。
+会话对最后一次提交的帧进行一次命中检测，填充目标路径和数据集，然后以批次方式运行捕获/目标/冒泡分发。没有提交帧的指针事件将失败并返回 `ERR_RENDER`。页面处理器接收 `stopPropagation`、`stopImmediatePropagation`、`preventDefault` 和 `cancelBubble`；传播控制在批处理钩子结果中体现，且返回的分发列表在消耗它的处理器处被截断。
+相同的命中检测还将 WXML 的 `mark:*`/`mark-*` 属性投影到 `event.mark` 中。标记按根节点到目标的顺序继承，更近的标记会覆盖相同键的值，符合公共事件标记契约；合并后的对象在捕获、目标和冒泡阶段保持稳定。
 
-Navigation URLs are normalized at the same boundary: `/pages/detail?id=7`
-stores `pages/detail` as the route and passes string query values to `onLoad`;
-percent escapes and `+` are decoded, explicit `query` keys override URL keys,
-and declared manifests reject unknown routes, tab targets for `navigateTo` /
-`redirectTo`, or non-tab `switchTab` targets before mutating the page stack.
-Empty and whitespace-only URLs are also rejected before page hooks run.
+导航 URL 在相同边界进行归一化：`/pages/detail?id=7`
+将 `pages/detail` 作为路由存储，并将字符串查询值传递给 `onLoad`；
+百分比编码和 `+` 会被解码，显式 `query` 键会覆盖 URL 键，
+且声明的 manifest 会在修改页面栈之前拒绝未知路由、`navigateTo`/`redirectTo` 的标签目标，或非标签的 `switchTab` 目标。
+在页面钩子运行之前，也会拒绝空 URL 和仅包含空格的 URL。
 
-QuickJS and V8 navigation methods now use pending `api.call` requests rather
-than reporting success when a navigation effect is merely queued. The shared
-runtime operation validates capability, deadline, cancellation and target,
-commits page state and synchronizes `getCurrentPages()` before invoking
-`success`, `complete`, and then resolving the Promise. Failures invoke `fail`,
-`complete`, and reject that request; a handled failure does not discard later
-requests in the same batch or emit an additional global error. Public result
-`errMsg` values use `navigateTo:ok` / `navigateTo:fail ...`; structured failures
-retain their `ERR_*` code and `wx.*` API name. Callback exceptions are reported
-separately and cannot skip `complete` or Promise settlement.
+QuickJS 和 V8 导航方法现在使用待处理的 `api.call` 请求，不会在导航效果刚入队时就报告成功。共享运行时操作校验能力、截止时间、取消状态与目标，提交页面状态并同步 `getCurrentPages()`，随后依次调用 `success`、`complete`，再兑现 Promise。失败时调用 `fail`、`complete` 并拒绝该请求；已处理失败不会丢弃同批后续请求，也不会额外触发全局错误。公开结果的 `errMsg` 使用 `navigateTo:ok` / `navigateTo:fail ...`；结构化失败保留 `ERR_*` 错误码和 `wx.*` API 名称。回调异常单独报告，不能跳过 `complete` 或 Promise 结算。
 
-Effect continuations drain until quiescent, with a limit of 1024 batches per
-drain and the inherited host deadline. Reaching either limit emits an explicit
-`ERR_TIMEOUT` event after the consumed trace. Completed work remains committed;
-queued continuations wait for the next host turn. This does not mark all
-Promises complete or cause exception cleanup to consume another budget.
-`RequestTask.abort()` and bridge cancellation update the same session token
-registry and notify the Provider, including cancellation effects queued in the
-same turn as a navigation request. These are local dual-engine conformance
-results; navigation remains `partial` pending official and host evidence.
+效果延续会持续耗尽，每个耗尽限制为每轮1024批，以及继承自主机的截止时间。达到任一限制后，会在消耗的追踪之后显式发出`ERR_TIMEOUT`事件。已完成的工作仍保持提交状态；排队的延续等待下一次主机轮次。这并不会标记所有承诺完成，也不会导致异常清理消耗另一个预算。`RequestTask.abort()`和桥接取消会更新相同的会话令牌注册表，并通知提供者，包括在导航请求同一轮次中排队的取消效果。这些是本地双引擎合规性结果；导航仍保持`partial`状态，直到获得官方和主机证据。
 
-`wx.setNavigationBarTitle` crosses the typed provider boundary before mutating
-the current `PageEntry`. The title is persisted on that page instance and is
-therefore included in page-stack responses, restored when a cached tab is
-activated, and discarded after `redirectTo`, `reLaunch` or `onUnload`.
-Missing current pages, non-string titles and provider deadline/cancellation
-failures return structured errors without mutating page state; an empty string
-is a valid title override. QuickJS and V8 facades
-emit the same cloned navigation options in their batched host effects.
+`wx.setNavigationBarTitle` 在修改当前 `PageEntry` 之前跨越了类型提供者边界。标题会被持久化到该页面实例中，因此会包含在页面栈响应中，当缓存的标签被激活时会恢复，且在执行 `redirectTo`、`reLaunch` 或 `onUnload` 后会被丢弃。缺少当前页面、非字符串标题以及提供者超时/取消失败的情况会返回结构化错误，而不会修改页面状态；空字符串是有效的标题覆盖。QuickJS 和 V8 的代理会在其批量主机效果中发出相同的克隆导航选项。
 
-## Intersection and media-query observers
+<a id="intersection-and-media-query-observers"></a>
+## 相交与媒体查询观察器
 
-`wx.createIntersectionObserver` and `wx.createMediaQueryObserver` use persistent
-Session-owned subscriptions in QuickJS and V8. Page and component instances
-also expose `this.createIntersectionObserver(options)` and
-`this.createMediaQueryObserver()`. The intersection API accepts the options-only
-and `createIntersectionObserver(component, options)` overloads. Each observer
-and observation has a serializable identity; callbacks stay in the isolate,
-and registrations, disconnections and measurement notifications cross the
-bridge in batches. Registration acknowledgement is not a measurement and does
-not invoke the observation callback. Measurements are produced after a
-successful `render.commit` or an actual host viewport resize. Registration
-after an idle frame schedules its initial observation on the next host timer
-poll, so it does not require a new `setData` or repaint. Subscriptions created
-by ready/resize hooks enter the registry before that boundary is measured.
+`wx.createIntersectionObserver` 和 `wx.createMediaQueryObserver` 在 QuickJS 和 V8 中使用持久化会话所有者订阅。页面和组件实例也暴露了 `this.createIntersectionObserver(options)` 和 `this.createMediaQueryObserver()`。交集 API 接受仅选项的重载和 `createIntersectionObserver(component, options)` 重载。每个观察器和观察行为都有可序列化的身份；回调保留在隔离环境中，注册、断开连接和测量通知以批处理方式跨桥传递。注册确认不是测量，也不会触发观察回调。测量在成功执行 `render.commit` 或实际的宿主视口调整后产生。在空闲帧之后注册，会将其初始观察安排在下一个宿主定时器轮询时进行，因此不需要新的 `setData` 或重绘。由 ready/resize 事件钩子创建的订阅在该边界被测量之前已进入注册表。
 
-Intersection selectors resolve against the committed frame and the owning
-page/component scope. An explicit component argument or `this.create*Observer`
-uses the component selector scope. An implicit `wx` factory retains its
-lifecycle owner for cleanup and uses page selectors. Results include `id`, `dataset`, `intersectionRatio`,
-`boundingClientRect`, `intersectionRect`, `relativeRect` and `time`. Geometry
-uses the world-space axis-aligned bounds of all four transformed node corners,
-including inherited transform origins. `display: none` is inherited; zero
-opacity does not remove layout geometry. The default non-native mode intersects
-the target with the configured reference regions directly, allowing multiple
-`relativeTo`/`relativeToViewport` regions whose intersection forms the root.
-`nativeMode` uses an ancestor reference and clips along the ancestor path.
-Margins expand or shrink the corresponding reference region. Thresholds and
-`initialRatio` control notifications, so unchanged committed measurements do
-not repeatedly invoke callbacks. `observeAll` selects multiple scoped targets.
+交集选择器根据已提交的帧和拥有页面/组件作用域进行解析。显式组件参数或 `this.create*Observer` 使用组件选择器作用域。隐式 `wx` 工厂保留其生命周期所有者以进行清理，并使用页面选择器。结果包括 `id`、`dataset`、`intersectionRatio`、`boundingClientRect`、`intersectionRect`、`relativeRect` 和 `time`。几何信息使用四个变换节点角点的世界空间对齐边界，包括继承的变换原点。`display: none` 会被继承；零不透明度不会移除布局几何。默认的非原生模式直接将目标与配置的参考区域相交，允许多个 `relativeTo`/`relativeToViewport` 区域，其相交形成根区域。`nativeMode` 使用祖先参考并沿祖先路径裁剪。边距会扩展或收缩相应的参考区域。阈值和 `initialRatio` 控制通知，因此未改变的已提交测量值不会反复触发回调。`observeAll` 选择多个作用域目标。
 
-Media queries use `width`, `minWidth`, `maxWidth`, `height`, `minHeight`,
-`maxHeight` and `orientation` (`portrait` or `landscape`). They evaluate the
-host's logical viewport, using the first committed frame viewport when the
-host has not supplied dimensions. Initial delivery occurs at a committed
-measurement boundary, then notifications report `matches` transitions;
-repeated resizes with the same match result do not notify again. The current
-auxiliary baseline treats equal width and height as `landscape`; this is media
-query geometry rather than the physical device-orientation API.
+媒体查询使用 `width`、`minWidth`、`maxWidth`、`height`、`minHeight`、`maxHeight` 和 `orientation`（`portrait` 或 `landscape`）。它们评估主机的逻辑视口，在主机未提供尺寸时使用第一个已提交帧的视口。初始交付发生在已提交的测量边界时，然后通知报告 `matches` 转换；如果重复调整尺寸且匹配结果相同，则不再通知。当前辅助基线将相等的宽度和高度视为 `landscape`；这是媒体查询的几何特性，而不是物理设备方向 API。
 
-`disconnect()` releases the observer, and page unload/component detach release
-their owned subscriptions. A local disconnect also prevents a queued callback
-from being delivered after cancellation. Invalid descriptors, thresholds and
-selectors return `ERR_INVALID_REQUEST`; an unnegotiated capability returns
-`ERR_UNSUPPORTED_CAPABILITY` and makes `wx.canIUse` return `false`. A standalone
-`SandboxProvider` does not advertise or service either observer API: it returns
-an explicit unsupported error instead of fabricating zero geometry or a
-one-shot match. Session handles observation before provider dispatch.
+`disconnect()` 释放观察者，并且页面卸载/组件解绑会释放其拥有的订阅。本地断开也会在取消后阻止排队的回调被传递。无效的描述符、阈值和选择器返回 `ERR_INVALID_REQUEST`；未协商的能力返回 `ERR_UNSUPPORTED_CAPABILITY`，并使 `wx.canIUse` 返回 `false`。独立的 `SandboxProvider` 不会宣传或提供任一观察者 API：它会明确返回不支持的错误，而不是伪造零几何或一次性匹配。会话句柄在提供者分发前进行观察。
 
-Both APIs remain `partial`. Lifecycle and observer callbacks establish an owner
-context; arbitrary Promise chains do not propagate implicit component ownership.
-Hidden-page observation timing and dynamic target identity still need official
-oracle coverage. Scroll offsets are currently metadata and do not
-move painted subtrees; actual scrolling observation is not implemented. World
-AABBs do not prove pixel visibility, occlusion, or exact rotated-region
-clipping. The cached public typings describe initial delivery as a changed
-ratio that reaches a threshold, while the headless helper ignores intersection
-options and the Web helper uses browser observer rules. Exact threshold
-equality/crossing, initial zero-area behavior and square-viewport orientation
-therefore still require the fixed DevTools/SDK oracle. Local geometry and
-subscription tests do not establish official DevTools, host GPU, emulator or
-physical-device parity; those observer gates have not been run for this change.
+两个 API 仍为 `partial`。生命周期和观察器回调建立了拥有上下文；任意的 Promise 链不会传播隐式的组件所有权。隐藏页面的观察时机和动态目标身份仍需要官方的 oracle 覆盖。滚动偏移目前是元数据，并不会移动渲染的子树；实际的滚动观察尚未实现。世界 AABB 无法证明像素可见性、遮挡或精确的旋转区域裁剪。缓存的公共类型声明描述了初始交付作为变化比率达到阈值的情况，而无头辅助程序忽略交集选项，Web 辅助程序使用浏览器观察器规则。确切的阈值相等/跨越、初始零面积行为以及正方形视口方向因此仍需要固定的 DevTools/SDK oracle。本地几何和订阅测试无法证明官方 DevTools、主机 GPU、模拟器或物理设备的一致性；这些观察器门控尚未为本次变更运行。
 
 ## Canvas 2D
 
@@ -338,7 +211,8 @@ Sandbox provider 会校验命令操作名和参数形状；runtime 随后将同�
 文本对齐命令会返回明确的 `ERR_RENDER`，不会静默丢弃绘制。未声明 capability 时创建 context 立即返回
 `ERR_UNSUPPORTED_CAPABILITY`，不会伪造绘制成功。
 
-## Animation
+<a id="animation"></a>
+## 动画
 
 `wx.createAnimation` 在 QuickJS 和 V8 中提供与 `weapp-vite` WebAnimation polyfill
 一致的本地链式对象。属性变换（包括 `opacity`、尺寸、平移、旋转、缩放、矩阵、
@@ -355,553 +229,155 @@ View/Renderer。能力仍标记为 `partial`，因为各宿主还需要提供逐
 抛出 `ERR_UNSUPPORTED_CAPABILITY`，并且 `wx.canIUse('wx.createAnimation')`
 返回 `false`，不会返回一个静默空对象。
 
-## WXSS and inline style rendering
+<a id="wxss-and-inline-style-rendering"></a>
+## WXSS 和内联样式渲染
 
-Inline `style` bindings and WXSS declarations enter the same IR cascade.
-Importance is compared before inline/selector specificity and source order;
-an author `!important` declaration therefore wins over ordinary inline style,
-while an important inline declaration wins over an important stylesheet rule.
-Supported shorthands contribute their longhands before comparison, retaining
-declaration order instead of applying shorthand precedence after collecting a
-property map. Inline parsing keeps delimiters inside quoted strings/functions
-and ignores malformed declarations individually.
+Inline `style` 绑定和 WXSS 声明进入相同的 IR 优先级级联。
+重要性在内联/选择器特异性及源顺序之前进行比较；
+因此，作者的 `!important` 声明会胜过普通内联样式，而重要的内联声明会胜过重要的样式表规则。
+支持的简写形式在比较前会贡献其完整形式，保留声明顺序，而不是在收集属性映射后应用简写优先级。内联解析会保留引号字符串/函数内的分隔符，并单独忽略错误的声明。
 
-The final declaration map drives computed-style projection, layout, background,
-foreground, opacity and z-index. A dynamic width consequently changes both the
-painted area and the input hit-test tree. Supported color inheritance follows
-the composed render tree; background, opacity and geometry are not inherited.
-Sibling painting and hit testing share a stable z-index order, and valid
-negative margin longhands retain their signed layout offsets. `computedStyle`
-still exposes some winning declaration strings; full computed-value
-normalization and invalid longhand filtering are not implemented.
-This closes the earlier discrepancy where a query could report inline values
-while layout and pixels still used the stylesheet.
+最终的声明映射驱动了计算样式投影、布局、背景、前景、不透明度和z-index。因此，动态宽度会同时改变绘制区域和输入命中测试树。支持的颜色继承遵循合成渲染树；背景、不透明度和几何属性不会被继承。兄弟元素的绘制和命中测试共享一个稳定的z-index顺序，且有效的负边距简写保留其带符号的布局偏移。`computedStyle` 仍会暴露一些获胜的声明字符串；完整的计算值归一化和无效简写过滤尚未实现。这解决了之前的问题，即查询可以报告内联值，而布局和像素仍使用样式表。
 
-`visibility` resolves after projection and is inherited through the composed
-tree. Hidden nodes preserve geometry, while visible descendants keep ancestor
-transform/clip/opacity and ordinary bubbling. Invalid declarations are discarded
-before cascade; valid unsupported winners reject scene preparation and retain
-the accepted frame. See [visibility](visibility.md) for the bounded grammar,
-wire compatibility and CPU rendering validation.
+`visibility` 在投影之后确定，并通过组合树继承。隐藏的节点保留几何信息，而可见的后代节点保持祖先的变换/裁剪/不透明度以及普通冒泡行为。无效声明在级联之前被丢弃；有效的但不受支持的声明拒绝场景准备，并保留被接受的帧。有关 visibility 的有界语法、wire 兼容性以及 CPU 渲染验证，请参见 [visibility](visibility.md)。
 
-A manifest-backed `render.commit` without an explicit `data` reads the current
-Page's accepted AppService data. Explicit data, including `{}`, remains an
-override; rendering does not replace the Page's stored data. Navigation selects
-the current Page snapshot, so returning to a covered page cannot render a later
-page's data. These are local contracts for the admitted style/expression subset,
-not evidence for complete CSS/WXSS or official host parity.
+一个带有 manifest 支持的 `render.commit`，如果没有显式指定 `data`，将读取当前页面所接受的 AppService 数据。显式指定的数据（包括 `{}`）仍为覆盖操作；渲染不会替换页面存储的数据。导航会选择当前页面的快照，因此返回到被覆盖的页面时，无法渲染后续页面的数据。这些是针对已承认的样式/表达子集的本地约定，不能作为完整 CSS/WXSS 或官方主机一致性证据。
 
-Explicit `overflow`, `overflow-x` and `overflow-y` now constrain descendant
-painting as well as hit testing. Software rasterization, native Skia and the
-Web CanvasKit presenter share the admitted axis rules: `hidden`/`auto`/`scroll`
-clip, `clip` can constrain one axis beside `visible`, and `visible` computes
-to a clipping axis beside a scrolling axis. Two-axis clipping uses normalized
-corner radii in the ancestor's transformed coordinate space; one-axis clipping
-keeps the other axis open. Nested clips intersect and do not leak to later
-siblings. A node paints its own background before applying its descendant clip.
-Clipping uses the inner border edge (padding box); the node itself still
-receives input on its outer rounded border. The [border contract](wxss-borders.md)
-defines shared sizing and geometry. Full CSS overflow parity still requires
-overflow-clip-margin, fixed-position escape rules,
-actual scrolling and official DevTools visual comparison remain incomplete.
-The `overflow-clipping` runtime fixture emits accepted frames for replay by
-`scripts/overflow-clipping-browser-smoke.mjs`; browser WebGL readback does not
-establish physical GPU/device or performance acceptance.
+显式 `overflow`、`overflow-x` 和 `overflow-y` 现在也限制了后代绘制以及命中测试。软件光栅化、原生 Skia 以及 Web CanvasKit 演示器共享已确认的轴规则：`hidden`/`auto`/`scroll` 裁剪，`clip` 可以在 `visible` 之外限制一个轴，而 `visible` 会计算为一个裁剪轴，同时伴随一个滚动轴。双轴裁剪使用祖先在变换坐标空间中的归一化角半径；单轴裁剪保持另一轴开放。嵌套裁剪相互交集，不会泄露到后续的兄弟节点。节点在应用其后代裁剪之前会先绘制自身的背景。裁剪使用内边框边缘（内边距框）；节点本身仍会接收其外层圆角边框的输入。[边框契约](wxss-borders.md) 定义了共享的尺寸和几何属性。完整的 CSS overflow 一致性仍需要 overflow-clip-margin、固定位置逃逸规则、实际滚动以及官方 DevTools 视觉对比仍不完整。`overflow-clipping` 运行时固定装置会向 `scripts/overflow-clipping-browser-smoke.mjs` 发出被接受的帧以供回放；浏览器 WebGL 读回操作并不能建立物理 GPU/设备或性能接受标准。
 
-## WXML component slots
+<a id="wxml-component-slots"></a>
+## WXML 组件插槽
 
-`container-ir::project_wxml_slots` applies the observable projection rules for
-custom component templates before a host builds its render tree. Direct light
-children with `slot="name"` are grouped into matching named `<slot
-name="name">` outlets; children without a marker use the default outlet. An
-outlet with no assigned children recursively renders its fallback subtree, and
-an empty outlet is removed. The helper clones both the component template and
-projected children, so one parsed component template can be reused for every
-instance without leaking slot state between pages.
+`container-ir::project_wxml_slots` 在宿主构建渲染树之前，为自定义组件模板应用可观察的投影规则。带 `slot="name"` 的直接 light 子节点分组到匹配的命名 `<slot
+name="name">` 出口；无标记的子节点使用默认出口。没有分配子节点的出口递归渲染其 fallback 子树，空出口被移除。该辅助函数克隆组件模板和投影子节点，因此每个实例均可复用同一份已解析模板，不会在页面间泄漏 slot 状态。
 
-`project_wxml_slots_with_options(..., false)` models a component that does not
-enable `multipleSlots`: all light children flow into the default slot and
-`slot` markers are treated as composition metadata rather than renderable
-attributes. Dynamic slot names remain literal until the caller evaluates the
-component instance data; this keeps the IR helper deterministic and avoids a
-per-node JavaScript bridge call.
+`project_wxml_slots_with_options(..., false)` 表示一个不启用 `multipleSlots` 的组件：所有轻量级子节点流入默认插槽，且 `slot` 标记被视为组合元数据而非可渲染属性。动态插槽名称在调用者评估组件实例数据之前保持为字面值；这使得 IR 辅助函数具有确定性，并避免了每个节点的 JavaScript 桥接调用。
 
-`evaluate_wxml_with_templates` also honors WXML `<import src="..." />`
-declarations. The imported file contributes named `<template name="...">`
-definitions to the caller's lookup scope, while the import declaration itself
-is removed from the rendered tree. Import paths accept package-relative names
-and the manifest's `template:<path>` blob IDs. Missing targets and recursive
-import cycles are deterministic `MarkupError::InvalidSyntax` failures, even
-when a data-dependent branch would not invoke the imported template; this
-prevents malformed package graphs from becoming host-specific behavior.
+`evaluate_wxml_with_templates` 也支持 WXML 中的 `<import src="..." />` 声明。导入的文件会将其命名的 `<template name="...">` 定义添加到调用者的查找作用域中，而导入声明本身将从渲染树中移除。导入路径支持包相对名称以及清单中的 `template:<path>` 数据块 ID。目标缺失和递归导入循环将导致确定性的 `MarkupError::InvalidSyntax` 错误，即使在数据依赖分支中不会调用导入的模板；这可以防止错误的包图结构变成特定主机的行为。
 
-Template lookup is package-scoped rather than a global map lookup: a template
-blob that is present in the manifest but is neither declared in the current
-WXML file nor reached through `<import>` is not visible and produces a
-structured `WXML template target not found` error. `<include>` is treated as a
-textual expansion, so named declarations in the included file become visible;
-recursive include graphs are rejected before data evaluation. This prevents
-unrelated manifest templates from entering the portable evaluator's lookup
-scope; official differential validation of this boundary remains pending.
+模板查找是包作用域而非全局映射查找：在清单中存在但未在当前 WXML 文件中声明且未通过 `<import>` 达到的模板 blob 将不可见，并会产生结构化的 `WXML template target not found` 错误。`<include>` 被视为文本扩展，因此被包含文件中的命名声明将变得可见；递归的包含图将在数据评估前被拒绝。这防止了无关的清单模板进入可移植求值器的查找范围；官方的差分验证仍待处理。
 
-Template expansion and binding evaluation share the same data traversal.
-Each `wx:for` occurrence installs its item/index aliases before evaluating a
-same-node conditional or `<template is="..." data="...">`. Nested loops and
-`<include>` retain the current aliases, and relative paths continue from the
-file that declared the include. An inactive branch does not evaluate its
-dynamic template name or data. The import/include graph is still validated
-separately before data evaluation, so an invalid declared package graph cannot
-hide behind an inactive branch. Evaluated template text and attributes are
-inserted as values; a data string such as `{{secret}}` is never parsed again
-as a parent-page binding. Source ASTs remain reusable between invocations.
+模板扩展和绑定评估共享相同的數據遍歷。
+每个 `wx:for` 的出现都会在评估同一节点的条件或 `<template is="..." data="...">` 之前安装其项/索引别名。嵌套循环和 `<include>` 保留当前的别名，相对路径从声明包含的文件继续。一个非活动分支不会评估其动态模板名或数据。在数据评估之前，导入/包含图仍然会单独进行验证，因此一个无效的声明包图无法隐藏在非活动分支之后。评估的模板文本和属性作为值插入；像 `{{secret}}` 这样的数据字符串在父页面绑定中将不再被解析。源AST在调用之间保持可重用。
 
-Portable binding expressions use a Rust tokenizer and Pratt parser over the
-serialized data snapshot. The pure subset includes literals, dot/computed
-member access, unary `!`/`+`/`-`, arithmetic, equality/relational comparisons,
-logical operators, nested conditionals and array/object literals with supported
-spread forms. Parsing validates the whole expression before evaluation;
-short-circuiting selects among parsed pure subexpressions. Missing values,
-`undefined`, `null`, coercion and array/object identity have explicit local
-semantics rather than being delegated to string splitting or a host `eval`.
-This is a bounded expression subset, not a complete JavaScript or WXML/WXS
-implementation: calls are rejected with `MarkupError::InvalidSyntax`, and WXS
-modules, assignments and side effects are not executed. There is no fallback
-that silently sends an unsupported binding to QuickJS/V8, and no per-node
-JS/Rust round trip. These local contracts remain `partial` until differential
-evidence covers the admitted subset and each host.
+便携式绑定表达式使用 Rust 词法分析器和 Pratt 解析器在序列化数据快照上运行。纯子集包括字面量、点运算/计算成员访问、一元 `!`/`+`/`-`、算术运算、相等/关系比较、逻辑运算、嵌套条件以及支持展开形式的数组/对象字面量。解析在求值之前会验证整个表达式；短路选择在解析出的纯子表达式中。缺失值、`undefined`、`null`、类型转换和数组/对象身份具有明确的本地语义，而不是被委托给字符串分割或宿主 `eval`。这是一个有边界的表达式子集，而不是完整的 JavaScript 或 WXML/WXS 实现：调用会被拒绝并抛出 `MarkupError::InvalidSyntax`，且 WXS 模块、赋值和副作用不会执行。没有回退机制，不会静默地将不支持的绑定发送给 QuickJS/V8，也没有每个节点的 JS/Rust 交互。这些本地约定在差分证据覆盖所承认的子集和每个宿主之前保持为 `partial`。
 
-Within that subset, WXML binding expressions preserve JavaScript's
-value-selection behavior for
-logical operators. `a || b` evaluates to `a` when it is truthy and otherwise
-to `b`; `a && b` evaluates to `b` when `a` is truthy and otherwise to `a`.
-This matters for interpolation such as `{{title || 'Untitled'}}`, which must
-render the selected string rather than a boolean. The portable evaluator keeps
-this result deterministic for serialized data snapshots; it does not run page
-methods or WXS functions to obtain a binding value.
+在该子集内，WXML 绑定表达式保留了 JavaScript 中逻辑运算符的值选择行为。`a || b` 在其左值为真时返回 `a`，否则返回 `b`；`a && b` 在 `a` 为真值时返回 `b`，否则返回 `a`。这在插值（如 `{{title || 'Untitled'}}`）中尤为重要，必须渲染所选字符串而不是布尔值。可移植的求值器会保持该结果在序列化数据快照中的确定性；它不会运行页面方法或 WXS 函数来获取绑定值。
 
-Member expressions also support computed bracket access. For example,
-`{{items[index].name}}`, `{{lookup[key]}}`, and nested forms such as
-`{{matrix[row][column]}}` evaluate each bracket expression in the current WXML
-scope, with quoted and numeric keys retaining JavaScript property-key
-coercion. Empty or unterminated brackets are reported as deterministic
-`MarkupError::InvalidSyntax` failures instead of being treated as literal
-property names. This keeps dynamic list/table lookups consistent with the
-QuickJS/V8 facade while preserving the portable evaluator's host-independent
-behavior.
+成员表达式还支持计算括号访问。例如，`{{items[index].name}}`、`{{lookup[key]}}` 以及类似 `{{matrix[row][column]}}` 的嵌套形式会在当前 WXML 作用域中求值每个括号表达式，带引号和数值键的保留 JavaScript 属性键转换行为。空或未终止的括号将被报告为确定性的 `MarkupError::InvalidSyntax` 错误，而不是被当作字面属性名处理。这使得动态列表/表格查找与 QuickJS/V8 面板保持一致，同时保留了可移植求值器的与主机无关的行为。
 
-The same evaluator handles parenthesized arithmetic/comparisons and nested
-conditional expressions such as
-`{{ready ? (count >= 2 ? 'many' : 'few') : 'off'}}`. Delimiters are validated
-before lookup, so unmatched parentheses, quotes, or member indexes produce a
-structured syntax error instead of a missing-value rendering. `wx:key` remains
-a directive value during attribute interpolation, which preserves the special
-`*this` key form for primitive repeat items.
+同一个求值器处理括号内的算术/比较运算和嵌套条件表达式，例如`{{ready ? (count >= 2 ? 'many' : 'few') : 'off'}}`。在查找之前会验证分隔符，因此不匹配的括号、引号或成员索引会产生结构化语法错误，而不是缺失值的渲染。`wx:key`在属性插值期间仍保持为指令值，这保留了原始重复项的特殊`*this`键形式。
 
-WXSS resolution accepts descendant and child selector chains when the renderer
-supplies the root-to-parent ancestry (`.card .title` and `.card > text`). The
-existing specificity/important/source-order cascade is applied after the chain
-matches. The renderer now passes that ancestry while building each WXML node,
-so computed styles and layout use the same selector result that selector-query
-and hit-test consumers observe.
+WXSS 解析在渲染器提供根节点到父节点的祖先关系时，支持后代和子元素选择器链（`.card .title` 和 `.card > text`）。选择器链匹配后，会应用现有的特异性/重要性/源顺序优先级机制。渲染器在构建每个 WXML 节点时，现在会传递该祖先关系，因此计算样式和布局使用与选择器查询和命中测试消费者观察到的相同选择器结果。
 
-The same render-tree context supports the structural pseudo-classes
-`:first-child`, `:last-child`, `:only-child`, `:nth-child(...)` (`odd`/`even` and
-`an+b` forms), and `:not(<simple-selector>)`. This renderer counts element
-siblings and omits formatting text and comments from those positions. The
-identity-only `matches_wxss_selector` helper deliberately leaves these
-pseudo-classes unmatched when no sibling context is supplied; renderer paths
-use `resolve_wxss_style_for_node` with one-based child position metadata so
-computed style and layout receive the same result. Dynamic state pseudo-classes
-such as `:hover` remain unsupported and are not silently treated as matches.
+相同的渲染树上下文支持结构伪类：`:first-child`、`:last-child`、`:only-child`、`:nth-child(...)`（`odd`/`even` 和 `an+b` 形式），以及 `:not(<simple-selector>)`。该渲染器会计算元素兄弟节点，并且会省略这些位置的格式化文本和注释。仅用于身份匹配的 `matches_wxss_selector` 辅助函数在未提供兄弟上下文时，故意不匹配这些伪类；渲染器路径使用带有从一基的子节点位置元数据的 `resolve_wxss_style_for_node`，以便计算样式和布局获得相同的结果。动态状态伪类（如 `:hover`）仍不支持，且不会被静默地视为匹配。
 
-`wx:for` expansion records an optional `key` on each repeated element. A simple
-property name such as `wx:key="id"` reads that property from the object item;
-explicitly alias-qualified expressions use the current loop scope. Primitive
-items support `wx:key="*this"`. Evaluated-only identity metadata is omitted
-from source nodes, preserving existing v1 canonical manifest bytes.
+`wx:for` 扩展会在每个重复元素上记录一个可选的 `key`。例如 `wx:key="id"` 会从对象项中读取该属性；明确指定别名的表达式则使用当前循环作用域。原始项支持 `wx:key="*this"`。源节点中省略了仅用于评估的身份元数据，以保留现有 v1 的标准清单字节。
 
-When the evaluated AST enters the renderer, `RenderNode.key` retains that
-identity. Generated node identifiers incorporate the loop's source site,
-ancestor loop identities and an encoded key segment, so separate source loops
-can reuse a key without colliding and delimiter characters cannot form extra
-path segments. Unique keys remain stable when items reorder within their source
-loop; unkeyed nodes use positional identity. Session-owned managed components
-use these identities for local reconciliation and reject duplicate keyed
-occurrences. CanvasKit, native host and official runtime parity still require
-separate evidence.
+当评估的AST进入渲染器时，`RenderNode.key` 保留了该身份。生成的节点标识符包含循环的源位置、祖先循环身份以及一个编码后的键段，因此不同源循环可以重用键而不会发生冲突，分隔符字符也不会形成额外的路径段。当项目在其源循环中重新排序时，唯一键保持稳定；未标记键的节点使用位置身份。会话拥有的管理组件使用这些身份进行本地协调，并拒绝重复的键值出现。CanvasKit、原生宿主和官方运行时的一致性仍需要单独的证据。
 
-The manifest `render.commit` path now applies this projection for local static
-`usingComponents` relations. A page template such as `template:pages/index/index.wxml`
-looks up its owner config (`pages/index/index.json`), resolves each alias to a
-content-addressed `template:<target>.wxml`, evaluates that component template,
-and replaces the custom tag with the projected component tree before layout.
-`multipleSlots` is carried from component JSON or a statically lexed
-`Component({ options: { multipleSlots } })` registration; omitted options use
-the WeChat default (`false`). Missing plugin/npm targets remain unresolved for
-an explicit host/provider boundary and are not reported as rendered component
-parity.
+manifest `render.commit` 路径现在为本地静态 `usingComponents` 关系应用此投影。例如页面模板 `template:pages/index/index.wxml` 会查找其所有者配置（`pages/index/index.json`），将每个别名解析为内容寻址的 `template:<target>.wxml`，评估该组件模板，并在布局前将自定义标签替换为投影的组件树。`multipleSlots` 从组件 JSON 或静态词法解析的 `Component({ options: { multipleSlots } })` 注册中继承；省略的选项使用微信默认值（`false`）。缺失的插件/npm 目标在显式主机/提供者边界下仍保持未解析状态，且不会报告组件渲染一致性问题。
 
-With a native QuickJS/V8 provider, the session automatically creates,
-reconciles and disposes managed component occurrences in batched graph
-frontiers. Each occurrence owns independent data, property defaults,
-observers and lifecycle hooks. Pure mustache attributes retain JSON values in
-optional IR boundValues; declared property bindings normalize dash names and
-update only changed parent inputs. Component setData invalidates the frame,
-and internal event handlers run on the corresponding instance. Supplying
-verified blobs in app.init allows attach before page onLoad; ready follows
-the first render commit. The older explicit component factory remains
-available to host adapters.
+配备原生 QuickJS/V8 提供商时，会话会自动创建、协调和销毁管理组件实例，在批处理图前沿中进行。每个实例拥有独立的数据、属性默认值、观察器和生命周期钩子。纯 Mustache 属性在可选的 IR 绑定值中保留 JSON 值；声明的属性绑定会规范化短横线命名，并仅更新变更的父级输入。组件 setData 会失效帧，内部事件处理器将在相应实例上运行。在 app.init 中提供经过验证的 blob 可在页面 onLoad 之前进行附加；ready 会在首次渲染提交后执行。较旧的显式组件工厂仍可供主机适配器使用。
 
-Projected slot content carries declaration data, event ownership and
-usingComponents lookup separately from its visual parent. Component-scoped
-selector queries and internal hit-test identity separate repeated public IDs.
-Keyed updates retain surviving instances; removed instances are detached and
-their late patches are discarded. Safe presentation reloads preserve this
-graph, while structural component edits start an isolated replacement session.
+投影的槽内容独立承载声明数据、事件所有权以及usingComponents查找信息，与它的视觉父组件分离。组件作用域的查询选择器和内部命中测试身份使重复的公共ID得以区分。带键的更新保留存活的实例；被移除的实例将被解离，其延迟补丁将被丢弃。安全的呈现重载会保留该图谱，而结构化组件编辑则会启动一个隔离的替换会话。
 
-Component pageLifetimes.show/hide follow session page visibility through one
-dedicated engine batch. Same-named ordinary methods cannot shadow them;
-throwing hooks are reported once per transition without skipping siblings.
-Cached tabs and covered pages remain hidden, and reLaunch releases cached as
-well as active components. Window resize does not invent a component resize
-lifecycle. The local contract does not prove every official hook ordering.
-Page/Component selectComponent and selectAllComponents use a versioned,
-batched declaration-tree index, including ordinary nodes. ID/class compounds,
-child, descendant and union selectors return live same-page occurrences in
-tree order; a first matching native node resolves to null instead of skipping
-to a later custom component. Projected content retains declaration ancestry.
-Named-slot projection that reorders declarations still follows render traversal
-order locally; its selection-order parity remains unknown.
-Nested selectOwnerComponent uses the declaration owner rather than the
-physical slot receiver. This direct-Page-child owner's current null result is
-an auxiliary compatibility candidate: fixed-SDK evidence is still unknown,
-and the newer public glass-easel reference can return a Page owner.
+组件页面生命周期.show/hide 通过一个专用引擎批处理跟随会话页面可见性。同名的普通方法不能遮蔽它们；抛出钩子在每次转换中仅报告一次，不会跳过兄弟元素。缓存的标签页和被遮挡的页面仍保持隐藏，且重新启动会释放缓存以及活动组件。窗口大小调整不会创建组件大小调整生命周期。本地合约不能证明每个官方钩子的排序。页面/组件的 selectComponent 和 selectAllComponents 使用版本化的、批处理的声明树索引，包括普通节点。ID/类组合选择器、子选择器、后代选择器和并集选择器返回同页面中实时的树序匹配项；首次匹配的原生节点解析为 null，而不是跳转到后续的自定义组件。投影内容保留声明祖先关系。重排声明的命名槽投影仍遵循本地渲染遍历顺序；其选择顺序的一致性仍未知。嵌套的 selectOwnerComponent 使用声明所有者而不是物理槽接收器。此直接页面子节点所有者的当前空结果是一个辅助兼容性候选：固定SDK证据仍未知，而较新的公共glass-easel引用可以返回页面所有者。
 
-Cross-component >>>, tag/attribute patterns and targets with custom export
-functions explicitly return ERR_UNSUPPORTED_CAPABILITY. Export targets never
-silently expose their internal instance. All five selection methods have
-partial capability entries and respect negotiated unsupported capabilities.
-Property observers can change native selection metadata without changing any
-component record. The accepted frontier republishes that metadata before
-attached hooks, including the transition to a native-only tree.
-If a new rendering frontier fails, a publication-only batch restores the
-accepted reference tree without repeating observers or lifetimes; it does
-not roll back arbitrary user JS effects. Disposing a page clears its entire
-selection index, including native indexes first published during rollback.
-Occurrences prepared in an earlier frontier and hidden by attached hooks are
-detached before the final tree is accepted. The additive capability inventory and manifest golden retain
-schema v1; its capability-name grammar now also accepts one Page/Component
-method identifier. Rust validation, JSON schema and the packer enforce the same
-namespace boundary. Older validators can explicitly reject these new keys.
+跨组件 >>>，标签/属性模式和具有自定义导出函数的目标明确返回 ERR_UNSUPPORTED_CAPABILITY。导出目标从不静默暴露其内部实例。所有五种选择方法都有部分能力条目，并尊重协商的不支持能力。属性观察者可以在不更改任何组件记录的情况下修改原生选择元数据。接受的前沿在附加钩子之前重新发布该元数据，包括向仅原生树的过渡。如果新的渲染前沿失败，仅发布批次将恢复已接受的引用树，而不会重复观察者或生命周期；它不会回滚任意的用户 JS 效果。销毁页面将清除其整个选择索引，包括在回滚期间首次发布的原生索引。在先前前沿中准备的且被附加钩子隐藏的条目将在最终树被接受前被解离。累加能力清单和清单金本保留 v1 模式；其能力名称语法现在也接受一个页面/组件方法标识符。Rust 验证、JSON 模式和打包器强制执行相同的命名空间边界。较旧的验证器可以明确拒绝这些新键。
 
-See [public sources and the blocked native probe](archived-evidence.md).
-The probe holds the machine lease and uses one owned native project; an
-already-running DevTools host was preserved, and the attempt collected no
-runtime results. Relations, complete selection/export semantics,
-plugin/npm component resolution, full property rules, style isolation and
-complete host semantics remain incomplete. Component/slot coverage stays
-partial; no official conformance case or host gate is promoted by local tests.
+见 [公共资料和被阻塞的原生探针](archived-evidence.md)。
+该探针持有机器租赁并使用了一个自有原生项目；已保留一个正在运行的DevTools主机，但尝试收集到的运行时结果为空。关系、完整的选择/导出语义、插件/npm组件解析、完整属性规则、样式隔离以及完整的主机语义仍不完整。组件/插槽的覆盖范围仍为部分；本地测试未推广任何官方符合性案例或主机门禁。
 
-## Component custom events
+<a id="component-custom-events"></a>
+## 组件自定义事件
 
-`Component.triggerEvent` is a partial, capability-gated API on session-owned
-component occurrences. The session publishes a batched event graph to the
-selected QuickJS/V8 isolate. `triggerEvent(name, detail, options)` resolves
-listeners and calls their declaration owner in the same JavaScript turn;
-custom events emitted by a listener use that same boundary. It does not send
-one Rust/JS request per ancestor or serialize `detail` between local listeners.
-The local contract retains the supplied JavaScript detail object's identity.
-The graph is prepared before lifecycle and input callbacks, so dispatch does
-not depend on a frame already having been painted.
+`Component.triggerEvent` 是一个部分功能受限的 API，作用于会话所拥有的组件实例。会话会将一批事件图发布到选定的 QuickJS/V8 隔离空间。`triggerEvent(name, detail, options)` 会解析监听器并调用同一 JavaScript 执行周期内监听器声明的所有者；由监听器发出的自定义事件将使用相同的边界。它不会为每个祖先发送一次 Rust/JS 请求，也不会在本地监听器之间序列化 `detail`。本地合约保留了所提供 JavaScript detail 对象的标识。该事件图在生命周期和输入回调之前进行准备，因此事件分发不依赖于帧已绘制完成。
 
-`name` must be a nonempty string. Omitted options use an empty object;
-explicit null, arrays and non-object options are invalid. Supplied
-`bubbles`, `composed` and `capturePhase` values must be booleans; unknown option
-keys are ignored. Invalid input and stale/disposed receivers return
-`ERR_INVALID_REQUEST`. The legacy explicit component factory lacks a managed
-scope and uses the same rejection rather than simulating delivery. An active
-scope without a published event graph/page returns
-`ERR_UNSUPPORTED_CAPABILITY`, as does an unnegotiated
-`Component.triggerEvent` capability.
+`name` 必须是非空字符串。省略的选项使用空对象；显式为 null、数组和非对象的选项是无效的。提供的 `bubbles`、`composed` 和 `capturePhase` 值必须是布尔值；未知的选项键将被忽略。无效输入和已过期/已销毁的接收器返回 `ERR_INVALID_REQUEST`。旧版显式组件工厂缺少管理作用域，并使用相同的拒绝而不是模拟传递。没有发布事件图/页面的活动作用域返回 `ERR_UNSUPPORTED_CAPABILITY`，未协商的 `Component.triggerEvent` 能力同样如此。
 
-The isolate retains `detail` directly, including undefined, functions and
-cyclic objects; event effects contain routing metadata and counts rather than
-serializing that object into the bridge trace. The local lifecycle contract
-allows emission from created/attached and during the detached hook while the
-occurrence is still live. After detachment completes, saved references reject
-new emissions. These rules describe the admitted local subset, not an
-official observation of argument validation or lifecycle dispatch timing.
+该隔离实例直接保留`detail`，包括未定义、函数和循环对象；事件效果包含路由元数据和计数，而不是将该对象序列化到桥接跟踪中。本地生命周期合约允许在创建/附加时以及在脱离钩子期间（只要发生仍处于活动状态）进行发射；脱离完成后，保存的引用将拒绝新的发射。这些规则描述了允许的本地子集，而不是对参数验证或生命周期分发时机的正式观察。
 
-`triggerEvent` returns undefined. Listener exceptions enter the existing
-engine diagnostic stream while later listeners still run unless propagation
-has been caught. Nested emission has a local 128-level recursion bound and
-fails with `ERR_ENGINE` when exceeded; this resource limit is not a WeChat
-compatibility claim. The session publishes a complete page event graph only
-after validation, preserving its previous graph on publication failure.
+`triggerEvent` 返回 undefined。监听器异常会进入现有的引擎诊断流，而后续监听器仍会运行，除非传播已被捕获。嵌套发射具有本地 128 级递归限制，超出该限制时会抛出 `ERR_ENGINE`；此资源限制并非微信兼容性声明。会话只有在验证通过后才会发布完整的页面事件图，在发布失败时会保留其之前的事件图。
 
-`bubbles`, `composed` and `capturePhase` default to false. The default path
-invokes the direct component listener. Explicit capture is independent of
-bubbling; non-composed propagation stops at the containing component boundary,
-while composed propagation may continue through the outer tree. `catch` and
-`capture-catch` stop later propagation. Graph ownership keeps the component
-host listener on its declaration owner and projected slot handlers on their
-declaration side. These propagation, detail-identity and same-turn rules are
-local conformance contracts, not new official runtime observations.
+`bubbles`、`composed` 和 `capturePhase` 默认为 false。默认路径会调用直接组件监听器。显式捕获与冒泡无关；非合成传播在包含组件边界处停止，而合成传播可能继续通过外层树。`catch` 和 `capture-catch` 会延迟传播停止。图的拥有权会将组件宿主监听器保留在其声明的所有者上，并将投影槽处理器保留在其声明侧。这些传播、细节身份和同轮规则是本地符合性协议，而非新的官方运行时观察结果。
 
-Listener spelling follows the saved DevTools `2.02.2608080` / base library
-`3.17.3` alias and named-event observations:
+监听器拼写遵循已保存的 DevTools `2.02.2608080` / 基础库 `3.17.3` 别名和命名事件观察结果：
 
-| Event name | Bare binding | Colon binding | Both on the same node |
+| 事件名称 | 无绑定 | 列绑定 | 同一个节点上都绑定 |
 | --- | --- | --- | --- |
-| `probe` / native `tap` | `bindprobe` / `bindtap` | `bind:probe` / `bind:tap` | Bare binding wins in either attribute order |
-| `probe_under` | `bindprobe_under` | `bind:probe_under` | Bare binding wins |
-| `probe-hyphen` | Does not bind | `bind:probe-hyphen` | Only colon binding runs |
+| `probe` / 原生 `tap` | `bindprobe` / `bindtap` | `bind:probe` / `bind:tap` | 无论属性顺序如何，裸绑定均优先 |
+| `probe_under` | `bindprobe_under` | `bind:probe_under` | 优先级绑定胜出 |
+| `probe-hyphen` | 无结合 | `bind:probe-hyphen` | 仅冒号结合生效 |
 
-The reusable oracle is
-[`lifecycle-compare.json`](archived-evidence.md):
-its alias case records 13 `alias:*` checkpoints with 18 counters, and its
-named-event case records 13 `named:*` checkpoints with 16 counters. Both native
-and WeVu SFC component emitters are covered; the alias case also covers native
-view taps. The saved `acceptance.evidence` entries contain observed
-`devtools-page-frame` text, rather than only expected checkpoint definitions.
-The complete original suite has 50 checkpoints, but it does not observe
-custom-event detail identity, same-turn ordering, option defaults, composed
-retargeting or lifecycle-time emission.
+可重用的预言机是
+[`lifecycle-compare.json`](archived-evidence.md)：
+其别名案例记录了13个 `alias:*` 检查点，包含18个计数器，其命名事件案例记录了13个 `named:*` 检查点，包含16个计数器。两种原生和WeVu SFC组件发射器均被覆盖；别名案例还覆盖了原生视图点击。保存的 `acceptance.evidence` 条目包含观察到的 `devtools-page-frame` 文本，而不仅仅是预期的检查点定义。完整的原始套件共有50个检查点，但它未观察到自定义事件详细身份、同轮顺序、选项默认值、组合重定向或生命周期时间发射。
 
-The upstream `e2e/ide/issue-1126-1128.test.ts` provides candidate assertions for
-private/capture-only/local/composed events and catch behavior. Its indexed
-status remains `unknown`, and no saved official run establishes those event
-boundary rules. Local dual-engine tests must keep that distinction. This API
-does not complete relations, WXS, plugin boundaries, all component event
-semantics or any seven-host/official conformance gate.
+上游 `e2e/ide/issue-1126-1128.test.ts` 提供了私有/捕获-only/本地/组合事件以及catch行为的候选断言。其索引状态仍为 `unknown`，且没有保存的官方运行确立了这些事件边界规则。本地双引擎测试必须保持这一区别。该API不完成关系、WXS、插件边界、所有组件事件语义或任何七主机/官方符合性门禁。
 
-## Host provider APIs
+<a id="host-provider-apis"></a>
+## 宿主 provider API
 
-The session owns one replaceable `HostApiProvider`. The default
-`SandboxProvider` never touches the machine network or filesystem; it supplies
-deterministic system information, request responses, in-memory files,
-clipboard state and explicit permission outcomes. Native hosts replace it with
-their reviewed provider through `Session::set_provider` while preserving the
-same batch request and error shape.
+该会话拥有一个可替换的 `HostApiProvider`。默认的 `SandboxProvider` 从不触及机器的网络或文件系统；它提供确定性的系统信息、请求响应、内存中的文件、剪贴板状态以及明确的权限结果。原生主机通过 `Session::set_provider` 使用已审核的提供者替换它，同时保持相同的批量请求和错误形状。
 
-The provider boundary covers `wx.getSystemInfo*`, `wx.request`/
-`uploadFile`/`downloadFile`, filesystem operations (including `wx.saveFile`,
-`wx.getFileInfo`, `wx.getSavedFileInfo`, `wx.getSavedFileList` and
-`getFileSystemManager().saveFile`), clipboard and network
-information, vibration/keep-screen-on, media/location, login/profile/payment
-and share calls. The deterministic network sandbox accepts seeded responses by
-URL. `wx.request` requires a URL and normalizes `method` exactly like the
-headless runtime (omitted or empty means `GET`, otherwise trim and uppercase);
-its response keeps the public `statusCode`, `header`, `cookies`, `data` and
-`errMsg` fields. The returned request/upload/download object remains thenable for promise consumers and exposes `abort()`, `onHeadersReceived()` and `offHeadersReceived()`; abort before provider dispatch emits a cancellation token and suppresses later success callbacks, while `fail`/`complete` receive the stable `ERR_CANCELLED` envelope. Header listeners run once before `success` when a response contains `header`. A seeded object containing `data` is treated as a complete
-response envelope, while a plain seeded value is kept as the response `data`.
-`wx.uploadFile` additionally requires a `filePath` that exists in the
-provider's in-memory file store and a non-empty form `name`; its success result
-is restricted to the public `{ data: string, statusCode, errMsg }` shape (form
-name, path, byte count, request headers and cookies stay provider diagnostics).
-`wx.downloadFile` writes response bytes to the requested `filePath`, or to a
-deterministic content-addressed temp path when omitted, and returns only
-`{ tempFilePath, statusCode, errMsg }`.
+提供者边界涵盖 `wx.getSystemInfo*`、`wx.request`/`uploadFile`/`downloadFile`、文件系统操作（包括 `wx.saveFile`、`wx.getFileInfo`、`wx.getSavedFileInfo`、`wx.getSavedFileList` 和 `getFileSystemManager().saveFile`）、剪贴板和网络信息、振动/保持屏幕开启、媒体/位置、登录/个人资料/支付和分享调用。确定性网络沙箱按 URL 接受预设响应。`wx.request` 需要URL，并且其`method`与无头运行时完全一致（省略或为空表示`GET`，否则去除空格并转为大写）；其响应保留公共的`statusCode`、`header`、`cookies`、`data`和`errMsg`字段。返回的请求/上传/下载对象保持 thenable 特性，供Promise消费者使用，并暴露`abort()`、`onHeadersReceived()`和`offHeadersReceived()`；在提供者分发前调用 abort会发出取消令牌并抑制后续的成功回调，而`fail`/`complete`将接收稳定的`ERR_CANCELLED`封装体。当响应包含`header`时，头信息监听器在`success`之前运行一次。包含`data`的种子对象被视为完整响应封装体，而纯种子值则作为响应`data`保留。`wx.uploadFile` 还需要一个存在于提供者内存文件存储中的`filePath`和一个非空的表单`name`；其成功结果被限制为公共的 `{ data: string, statusCode, errMsg }` 形式（表单名称、路径、字节数、请求头和cookies保持在提供者诊断中）。`wx.downloadFile` 将响应字节写入请求的`filePath`，或在未指定时写入确定性的内容寻址临时路径，并仅返回 `{ tempFilePath, statusCode, errMsg }`。
 
-`wx.getMenuButtonBoundingClientRect()` is a synchronous system API. The
-provider returns `left`, `right`, `top`, `bottom`, `width` and `height` in
-logical CSS pixels. Native hosts may inject their safe-area/menu geometry via
-`HostMetadata.menuButtonRect`; the deterministic sandbox returns an explicit
-zero rectangle when no host geometry is available and never fabricates a
-platform-specific value.
+`wx.getMenuButtonBoundingClientRect()` 是一个同步系统 API。提供者返回 `left`、`right`、`top`、`bottom`、`width` 和 `height`，单位为逻辑 CSS 像素。原生宿主可通过 `HostMetadata.menuButtonRect` 注入其安全区域/菜单几何信息；确定性沙箱在没有宿主几何信息时返回显式零矩形，且从不伪造平台特定值。
 
-`wx.getAppAuthorizeSetting()` is a synchronous permission snapshot. It maps
-the provider's explicit permission state to the documented `authorized`,
-`denied`, and `not determined` strings for camera, location, microphone,
-notifications, and album access. It never prompts and an unnegotiated
-capability raises `ERR_UNSUPPORTED_CAPABILITY`.
+`wx.getAppAuthorizeSetting()` 是一个同步权限快照。它将提供方的显式权限状态映射到文档中关于相机、位置、麦克风、通知和相册访问的 `authorized`、`denied` 和 `not determined` 字符串。它不会弹出提示，且未经协商的权限将触发 `ERR_UNSUPPORTED_CAPABILITY`。
 
-`wx.onNetworkStatusChange()` is a host-driven observer rather than a polling
-fallback. A native/web adapter calls `Session::notify_network_status_change`
-with the typed `NetworkType` enum; the provider snapshot used by
-`wx.getNetworkType()` is updated first, then all registered callbacks receive
-one cloned `{ networkType, isConnected }` payload in the same engine batch.
-`wx.offNetworkStatusChange` removes one callback or clears the listener list
-when no function is supplied. The sandbox never samples the machine network
-and does not invent transitions.
+`wx.onNetworkStatusChange()` 是一个主机驱动的观察器，而不是轮询回退。原生/网页适配器会调用 `Session::notify_network_status_change`，并传入带类型化的 `NetworkType` 枚举；`wx.getNetworkType()` 所使用的提供者快照会先被更新，然后所有已注册的回调函数将在同一引擎批次中接收到一个克隆的 `{ networkType, isConnected }` 负载。`wx.offNetworkStatusChange` 在未提供函数时会移除一个回调或清空监听器列表。沙箱从不采样机器网络，也不会伪造网络状态转换。
 
-`wx.getAccountInfoSync()` is also installed before module evaluation. The
-portable provider implements the complete synchronous contract and returns a
-stable `{ miniProgram: { appId, envVersion, version }, plugin }` snapshot; the
-sandbox defaults to an empty app ID, `develop`, and an empty version, while
-native hosts can inject the package identity through their provider.
-`envVersion` is validated at the provider boundary against the documented
-`develop`, `trial`, and `release` values. An invalid host snapshot returns
-`ERR_INVALID_REQUEST` instead of exposing an unrecognized value as a
-successful account result; the sandbox uses an empty `plugin` object in the
-mini-program context; each synchronous facade call receives a cloned snapshot
-so JavaScript mutations do not alter provider state. This portable full status
-does not promote the seven host coverage entries, which remain partial until
-each host supplies identity injection evidence.
+`wx.getAccountInfoSync()` 也在模块评估之前被安装。可移植提供程序实现了完整的同步合约，并返回一个稳定的 `{ miniProgram: { appId, envVersion, version }, plugin }` 快照；沙箱默认使用空的 app ID、`develop` 和空版本，而原生主机可通过其提供程序注入包身份。`envVersion` 在提供程序边界上会验证文档中规定的 `develop`、`trial` 和 `release` 值。无效的主机快照将返回 `ERR_INVALID_REQUEST`，而不是暴露一个未识别的值作为成功账户结果；沙箱在小程序上下文中使用空的 `plugin` 对象；每次同步的前端调用都会接收一个克隆的快照，因此 JavaScript 的修改不会影响提供程序状态。此可移植的完整状态不会促进七个主机覆盖条目，这些条目在每个主机提供身份注入证据之前将保持部分状态。
 
-`wx.getExtConfigSync()` is installed alongside the other synchronous provider
-snapshots before module evaluation. `wx.getExtConfig()` uses the regular async
-provider dispatch and callback/promise envelope. Both APIs read the same
-provider-owned `{ extConfig: object }` snapshot; the deterministic sandbox
-defaults to an empty `extConfig` object and exposes `with_ext_config(...)` for
-conformance fixtures. The async response includes `errMsg: "getExtConfig:ok"`.
+`wx.getExtConfigSync()` 与其它同步提供者的快照一起在模块评估前安装。`wx.getExtConfig()` 使用常规异步提供者分发和回调/承诺封装。两个 API 读取相同的提供者拥有的 `{ extConfig: object }` 快照；确定性沙箱默认为空的 `extConfig` 对象，并提供 `with_ext_config(...)` 用于合规性测试 fixture。异步响应包含 `errMsg: "getExtConfig:ok"`。
 
-`wx.connectSocket` uses the same provider boundary. The sandbox validates a
-`ws://` or `wss://` URL, allocates a deterministic `socket-N` id and resolves
-the task's `onOpen` callbacks with `readyState = 1`. `SocketTask.send` records
-the payload and returns `sendSocketMessage:ok`; `SocketTask.close` validates a
-1000..4999 close code, transitions to `readyState = 3` and dispatches the
-close code/reason. No inbound message or host network is fabricated: native
-providers must supply transport, message delivery, permission and teardown
-evidence before this capability can be promoted beyond `partial`.
+`wx.connectSocket` 使用相同的提供者边界。沙箱会验证 `ws://` 或 `wss://` URL，分配一个确定性的 `socket-N` ID，并使用 `readyState = 1` 解析任务的 `onOpen` 回调。`SocketTask.send` 会记录有效负载并返回 `sendSocketMessage:ok`；`SocketTask.close` 会验证 1000..4999 之间的关闭码，转为 `readyState = 3`，并分发关闭码/原因。不会伪造任何入站消息或主机网络：在该能力被提升到 `partial` 之前，原生提供者必须提供传输、消息传递、权限和终止的证据。
 
-`getFileSystemManager().access` performs an existence check against the same
-in-memory file namespace used by `readFile` and `uploadFile`. Existing files
-return `access:ok`; missing paths return the structured invalid-request error
-`access:fail no such file or directory, access '<path>'` instead of a fabricated
-success.
+`getFileSystemManager().access` 对 `readFile` 和 `uploadFile` 所使用的同一内存文件命名空间进行存在性检查。存在文件返回 `access:ok`；缺失的路径返回结构化的无效请求错误 `access:fail no such file or directory, access '<path>'`，而不是伪造的成功。
 
-The synchronous manager methods (`readFileSync`, `writeFileSync`, `accessSync`,
-`unlinkSync` and `readdirSync`) use a permission-scoped file snapshot installed before module
-evaluation. Text and base64 reads stay in the isolate; binary reads expose an
-`ArrayBuffer` when the engine provides `Uint8Array`. Writes and deletes update
-the local snapshot immediately and emit one `api.sync` mutation effect for the
-host provider. A provider that cannot supply a snapshot reports the stable
-`ERR_UNSUPPORTED_CAPABILITY` error rather than silently using stale data.
+同步管理器方法（`readFileSync`、`writeFileSync`、`accessSync`、`unlinkSync` 和 `readdirSync`）使用在模块评估之前安装的基于权限范围的文件快照。文本和 base64 读取保留在隔离环境中；二进制读取在引擎提供 `Uint8Array` 时会暴露一个 `ArrayBuffer`。写入和删除操作会立即更新本地快照，并向主机提供方发出一个 `api.sync` 变化效果。如果提供方无法提供快照，则会报告稳定的 `ERR_UNSUPPORTED_CAPABILITY` 错误，而不是静默地使用过时数据。
 
-`getFileSystemManager().readdir({ dirPath })` crosses the provider boundary in
-one batch and returns `{ files, errMsg }`. The sandbox derives immediate child
-names from its normalized in-memory namespace, includes directory prefixes,
-sorts the result by UTF-8 order and returns an empty list for an existing or
-empty directory. `readdirSync(dirPath)` applies the same projection directly
-to the synchronized snapshot, so QuickJS and V8 observe identical results.
+`getFileSystemManager().readdir({ dirPath })` 跨越提供者边界并在一次批次中返回 `{ files, errMsg }`。沙箱从其归一化的内存命名空间中直接推导出子项名称，包含目录前缀，按 UTF-8 顺序排序，并为已存在或为空的目录返回空列表。`readdirSync(dirPath)` 将相同的投影直接应用于同步快照，因此 QuickJS 和 V8 观察到相同的结果。
 
-Sensitive operations require an explicit permission grant in the provider; a
-denied grant produces `ERR_PERMISSION_DENIED`. Every provider operation checks
-the absolute bridge deadline and cancellation token before dispatch, producing
-`ERR_TIMEOUT` and `ERR_CANCELLED` consistently even for synchronous-looking
-system, clipboard, observer and auth calls. An API that is present in the
-manifest but has no provider implementation fails with
-`ERR_UNSUPPORTED_CAPABILITY` instead of returning a fabricated `result: null`.
+敏感操作需要在提供方显式授权；授权被拒绝将产生 `ERR_PERMISSION_DENIED`。每个提供方操作在分发前都会检查绝对桥接超时期限和取消令牌，即使是对看起来同步的系统、剪贴板、观察者和认证调用，也会一致地产生 `ERR_TIMEOUT` 和 `ERR_CANCELLED`。在清单中存在但没有提供方实现的 API 将产生 `ERR_UNSUPPORTED_CAPABILITY`，而不是返回伪造的 `result: null`。
 
-`wx.authorize` and `wx.openSetting` use the same provider permission state. The
-sandbox validates the documented scope names, returns `authorize:ok` only for
-an explicitly granted scope, and exposes a stable `authSetting` map from
-`openSetting`; it never prompts or silently grants a permission.
+`wx.authorize` 和 `wx.openSetting` 使用相同的提供者权限状态。沙箱会验证文档中列出的权限名称，仅对明确授予的权限返回 `authorize:ok`，并从 `openSetting` 中暴露一个稳定的 `authSetting` 映射；它从不会提示或静默授予权限。
 
-`wx.getLocation` accepts the documented `type` values (`wgs84` and `gcj02`) and
-the boolean `altitude` option. The deterministic sandbox returns zero-valued
-coordinates with `latitude`, `longitude`, `speed`, `accuracy`, `altitude`,
-`verticalAccuracy`, `horizontalAccuracy` and `errMsg` fields. It never exposes a
-machine location; invalid options, missing permission, an expired deadline or
-an active cancellation token produce the corresponding structured provider
-error.
+`wx.getLocation` 接受文档中规定的 `type` 值（`wgs84` 和 `gcj02`）以及布尔型的 `altitude` 选项。确定性沙箱会返回包含 `latitude`、`longitude`、`speed`、`accuracy`、`altitude`、`verticalAccuracy`、`horizontalAccuracy` 和 `errMsg` 字段的零值坐标。它永远不会暴露机器的地理位置；无效选项、缺少权限、过期的截止时间或存在活动的取消令牌将产生相应的结构化提供程序错误。
 
-`wx.chooseMedia` and `wx.chooseImage` validate picker options before touching a
-host resource: `count` must be an integer from 1 through 9, option arrays only
-accept their documented values (`image`/`video`/`mix`, `album`/`camera`, or
-`original`/`compressed`), and the media camera must be `front` or `back`. The
-sandbox returns deterministic empty `tempFiles` and `tempFilePaths` after the
-`photos/camera` permission is granted; native providers replace that selection
-while preserving the same result and error shape.
+`wx.chooseMedia` 和 `wx.chooseImage` 在访问主机资源前会验证选择项：`count` 必须是 1 到 9 之间的整数，选项数组仅接受其文档中规定的值（`image`/`video`/`mix`，`album`/`camera`，或 `original`/`compressed`），且媒体相机必须为 `front` 或 `back`。在授予 `photos/camera` 权限时，沙箱会返回确定性的空 `tempFiles` 和 `tempFilePaths`；原生提供者在替换该选择时会保持相同的结果和错误形态。
 
-`wx.createInnerAudioContext` returns a stateful context object. Property writes
-(`src`, `startTime`, `autoplay`, `loop`, `volume`, `playbackRate` and
-`obeyMuteSwitch`) are sent as typed `set` commands; `play`, `pause`, `stop`,
-`seek` and `destroy` are batched through the `wx.innerAudioContext` provider
-operation. The sandbox validates source, numeric ranges and destroyed-context
-use, then reports the resulting `paused`/`currentTime` state and event name. It
-does not claim to decode or output audio; a native provider owns decoder,
-focus, route and resource lifetime and must preserve this result/error shape.
+`wx.createInnerAudioContext` 返回一个具有状态的上下文对象。属性写入（`src`、`startTime`、`autoplay`、`loop`、`volume`、`playbackRate` 和 `obeyMuteSwitch`）作为带类型 `set` 命令发送；`play`、`pause`、`stop`、`seek` 和 `destroy` 通过 `wx.innerAudioContext` 提供者操作批量处理。沙箱会验证源地址、数值范围和已销毁上下文的使用，然后报告结果的 `paused`/`currentTime` 状态和事件名称。它不声称解码或输出音频；原生提供者拥有解码器、焦点、路由和资源生命周期，并必须保持此结果/错误形态。
 
-`wx.createVideoContext(videoId, component)` returns a component-scoped command
-object. `play`, `pause`, `stop`, `seek`, `playbackRate`, `sendDanmu`,
-`requestFullScreen`, `exitFullScreen`, `showStatusBar` and `hideStatusBar` are
-batched through `wx.videoContext`. The sandbox validates ids, numeric ranges,
-danmu text/color and fullscreen direction, then records deterministic transport
-and UI state; it does not decode or render video. Native providers own decoder,
-surface, orientation and resource release while preserving the same result and
-error shape.
+`wx.createVideoContext(videoId, component)` 返回一个组件作用域的命令对象。`play`、`pause`、`stop`、`seek`、`playbackRate`、`sendDanmu`、`requestFullScreen`、`exitFullScreen`、`showStatusBar` 和 `hideStatusBar` 通过 `wx.videoContext` 批量处理。沙箱会验证 ID、数值范围、弹幕文本/颜色以及全屏方向，然后记录确定性的传输和 UI 状态；它不进行视频解码或渲染。原生提供者拥有解码器、表面、方向和资源释放，同时保持相同的结果和错误形态。
 
-`wx.createCameraContext()` returns a context whose `takePhoto`, `startRecord`,
-`stopRecord` and `onCameraFrame(...).start/stop` commands cross the
-`wx.cameraContext` provider boundary. The provider validates quality, record
-timeout, context lifetime and camera permission. The deterministic sandbox has
-no camera device, decoder or frame source: after validation it returns a
-structured `ERR_UNSUPPORTED_CAPABILITY` error, while a native provider may
-replace only acquisition and resource release with real paths/frames.
+`wx.createCameraContext()` 返回一个上下文，其 `takePhoto`、`startRecord`、`stopRecord` 以及 `onCameraFrame(...).start/stop` 命令会跨越 `wx.cameraContext` 提供者边界。提供者会验证质量、录制超时、上下文生命周期和相机权限。确定性沙箱中没有相机设备、解码器或帧源：在验证后会返回结构化的 `ERR_UNSUPPORTED_CAPABILITY` 错误，而原生提供者可能仅用真实路径/帧替换采集和资源释放。
 
-## Module and page lifecycle
+<a id="module-and-page-lifecycle"></a>
+## 模块与页面生命周期
 
-Native QuickJS/V8 sessions install `App`, `Page`, `Component` and `getApp`
-registration globals before evaluating content-addressed CommonJS modules.
-The host supplies one verified module batch. Factories are registered before
-entry evaluation, and a shared JS registry resolves module-local `require`
-through manifest-declared dependency edges without a per-dependency FFI call.
-Repeated requires retain export identity; CommonJS cycles see partially
-initialized exports. JSON syntax is validated by the selected engine's
-`JSON.parse` before application execution, including its number and UTF-16
-domain. JSON modules retain own `__proto__` properties and negative zero,
-rather than using JavaScript object-literal evaluation.
-Failed evaluation discards that module's export cache, while completed
-dependencies retain theirs. App, page, component and unreferenced legacy batch
-roots evaluate eagerly; modules declared as dependencies evaluate when reached
-by `require` or an explicit `module.call`. The ESM subset uses the same registry
-and evaluates dependencies in source declaration order, including re-exports.
-It does not implement live bindings, dynamic import, export-star or cycles
-involving ESM; unsupported syntax and ESM cycles fail explicitly. This does not add a full
-Node resolution environment or access to arbitrary host files.
+原生 QuickJS/V8 会话在评估内容寻址的 CommonJS 模块之前，会安装 `App`、`Page`、`Component` 和 `getApp` 的全局注册。
+主机提供一个经过验证的模块批次。在入口评估之前注册工厂，共享的 JS 注册表通过声明的依赖关系边解析模块本地的 `require`，而无需为每个依赖关系调用 FFI。
+重复 require 保留导出身份；CommonJS 循环会看到部分初始化的导出。在应用执行之前，由所选引擎的 `JSON.parse` 验证 JSON 语法，包括其数字和 UTF-16 域。
+JSON 模块保留自己的 `__proto__` 属性和负零，而不是使用 JavaScript 对象字面量求值。
+评估失败将丢弃该模块的导出缓存，而完成的依赖项保留其导出缓存。App、page、component 和未引用的旧版批次根节点会立即求值；被声明为依赖的模块在通过 `require` 或显式 `module.call` 被触及时求值。ESM 子集使用相同的注册表，并按源声明顺序求值依赖项，包括重新导出。
+它不实现live bindings、动态导入、导出星号或涉及 ESM 的循环；不支持的语法和 ESM 循环会明确失败。这不会添加完整的 Node 解析环境或对任意主机文件的访问。
 
-The standalone legacy eager loader preserves its atomic nested registration
-contract. It cannot start a new registry factory inside that transaction:
-the runtime rejects that mixed first evaluation with `ERR_MODULE_LOAD` before
-mutating the factory cache or registration tables. Reading an already
-evaluated or currently evaluating module remains supported.
+独立的遗留 eager 加载器保留了其原子性嵌套注册合同。它无法在该事务内启动新的注册工厂：运行时会在修改工厂缓存或注册表之前，拒绝这种混合的首次求值，报错 `ERR_MODULE_LOAD`。读取已求值或正在求值的模块仍受支持。
 
-When the manifest entry module is loaded, `app.init` invokes `App.onLaunch`
-once with `launchOptions`. `page.push`/`page.replace` invoke the registered
-page's `onLoad`, `onShow`, and first-render `onReady` in that order;
-`page.pop` invokes `onUnload`. A replacement first unloads and unregisters the
-old page, so delayed events or `setData` patches cannot address a disposed
-registration. `reLaunch` unloads the existing page stack from top to bottom,
-matching the nested page ownership order. `switchTab` unloads non-tab pages from
-the top down, hides the active tab root, and retains each tab's page id, query,
-and data in a session cache. Returning to a cached tab emits `onShow` without
-re-running `onLoad` or allocating a new page instance. Hook return values are
-carried in the same response envelope under `hooks`, so a host never needs one
-FFI call per lifecycle callback. A protocol-only build reports a null hook
-result and leaves execution to the selected native provider.
+当 manifest entry module 被加载时，`app.init` 会使用 `launchOptions` 调用一次 `App.onLaunch`。`page.push`/`page.replace` 会按顺序调用注册页面的 `onLoad`、`onShow` 和首次渲染的 `onReady`；`page.pop` 会调用 `onUnload`。替换操作首先卸载并注销旧页面，因此延迟事件或 `setData` 修补无法处理已销毁的注册。`reLaunch` 从栈顶到底部卸载现有页面栈，按照嵌套页面的所有权顺序进行。`switchTab` 从栈顶向下卸载非标签页，隐藏当前活动标签页根节点，并在会话缓存中保留每个标签页的页面 ID、查询参数和数据。返回到缓存的标签页会触发 `onShow`，而不会重新运行 `onLoad` 或创建新的页面实例。钩子返回值保留在响应包的 `hooks` 字段中，因此宿主无需为每个生命周期回调调用一次 FFI。仅使用协议构建的版本会报告空的钩子结果，并将执行交由选定的原生提供者处理。
 
-Each new page instance clones its registered `Page.data` and returns that
-initial state to AppService in the existing page-stack batch before `onLoad`.
-Defaults therefore render even when the page has no lifecycle hook or `setData`
-call. Optional object `data` on `page.push`/`page.replace` shallowly overrides
-those defaults once; hooks see the merged value and subsequent `setData` wins.
-Existing instances are never overwritten by later stack synchronization.
+每个新的页面实例都会克隆其注册的 `Page.data`，并在 `onLoad` 之前将该初始状态返回给 AppService。因此，即使页面没有生命周期钩子或 `setData` 调用，也会默认渲染。在 `page.push`/`page.replace` 中，可选对象 `data` 会浅层覆盖这些默认值一次；钩子将看到合并后的值，后续的 `setData` 会生效。现有实例永远不会被后续栈同步所覆盖。
 
-Component registration also composes behavior definitions in declaration order:
-`data()` factories from nested behaviors and the component are merged before
-property defaults are installed, and each behavior/component `created`,
-`attached`, `ready`, `moved`, `detached`, or `error` hook is retained and
-invoked once in that order. `pageLifetimes` (`show`, `hide`, and `resize`) are
-merged as definition records. Managed occurrences receive automatic show/hide
-through the dedicated batch boundary; resize payload forwarding is tested at
-the engine boundary only. This keeps behavior lifecycle hooks from being
-silently replaced by a same-named component hook while preserving the existing
-batch lifecycle envelope.
+组件注册也按声明顺序组成行为定义：
+嵌套行为和组件的`data()`工厂在属性默认值安装前被合并，每个行为/组件的`created`、`attached`、`ready`、`moved`、`detached`或`error`钩子均按此顺序保留并调用一次。`pageLifetimes`（`show`、`hide`和`resize`）作为定义记录被合并。管理的实例通过专用的批处理边界自动获得显示/隐藏；仅在引擎边界测试resize数据的转发。这使得行为生命周期钩子不会被同名组件钩子静默替换，同时保留现有的批处理生命周期封装。
 
-`getCurrentPages()` is installed as a global page-stack facade. The runtime
-updates the active registration indices and each page's `route`/`options` query
-snapshot before invoking a page lifecycle or event hook. Calls return the live
-page objects in stack order, so `data`, `setData`, and page methods retain their
-identity within the JavaScript isolate. Repeated `navigateTo` calls to the same
-route receive distinct page instances (and page ids); a `setData` effect from
-one instance cannot update another instance sharing the same `Page` definition.
-Popped or replaced registrations are removed from the returned stack; the
-protocol-only engine reports an empty stack because no JavaScript page provider
-is available.
+`getCurrentPages()` 作为全局页面栈封装接口存在。运行时在调用页面生命周期或事件钩之前，会更新当前活动注册索引以及每个页面的 `route`/`options` 查询快照。调用返回页面对象，按栈顺序排列，因此 `data`、`setData` 以及页面方法在 JavaScript 隔离中保持其身份。对同一路由的多次 `navigateTo` 调用将获得不同的页面实例（以及页面 ID）；一个实例的 `setData` 效果无法更新另一个共享相同 `Page` 定义的实例。被弹出或替换的注册项将从返回的栈中移除；由于没有可用的 JavaScript 页面提供者，协议引擎会报告空栈。
 
-## Conformance IDs
+<a id="conformance-ids"></a>
+## 兼容性 ID
 
 | ID | 验证 |
 | --- | --- |

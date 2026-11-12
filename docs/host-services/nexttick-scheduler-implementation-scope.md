@@ -1,4 +1,8 @@
+<a id="nexttick-and-idle-scheduling-implementation-scope"></a>
 # nextTick 与 idle 调度实现范围
+
+**简体中文** · [English](nexttick-scheduler-implementation-scope.en.md)
+
 
 retained turn scheduler 使用有界 FIFO frontier、Promise checkpoint 和 Page/Component owner retirement。`wx.nextTick` 保持 callback → void 合同；idle API 仍缺真实 host idle opportunity producer。实现代码、Node 和历史 native 验证分别记录，不能由有限 Web 诊断扩张合同。
 

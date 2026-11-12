@@ -1,4 +1,8 @@
+<a id="canvas-stroke-state-and-page-rendering"></a>
 # Canvas stroke 状态与页面绘制
+
+**简体中文** · [English](canvas-owned-stroke-scope.en.md)
+
 
 最终产品 `c058896f43e346f0c300bcbc6f6ab92ceea33466` 在已交付元数据 `6ea85300` 上实现共享 stroke 状态、页面与组件拥有的 Canvas 接收者，以及事务化页面重绘。固定微信 3.17.3、miniprogram-api-typings@5.2.3、1265 API × 七端 = 8855 单元保持不变。
 
@@ -10,6 +14,7 @@
 
 捕获按实际聚合 wire 字节与 item 限额在 JS admission 前计算。真实 Session 压力测试提交 25 批、每批 50000 个 dash 标量：第一波接受 19 批，下一批同步拒绝；只重试该批并先检查蓝色像素，再提交后续批，最终 25 个 callback 与 Promise 均恰好完成。预算没有放宽。
 
+<a id="verification-and-remaining-scope"></a>
 ## 验证与剩余范围
 
 精确产品完成 47 阶段及前后完整 Git blob/gitlink/source/tool 绑定。测试包括实际 QuickJS/V8、软件/Skia raster、owner/退休/rollback/预算路径，以及真实 macOS offscreen Metal Session 提交与读回。Metal 是一个 Rust 测试循环两个引擎，确认同队列 GPU 完成后读取全部 BGRA 像素，检查旧纹理/Arc 不变以及 stale/current/duplicate revision ACK。ACK 本身仍是宿主顺序合同，不是 GPU 完成凭据。

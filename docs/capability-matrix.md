@@ -1,4 +1,8 @@
+<a id="host-capability-matrix"></a>
 # 宿主能力矩阵
+
+**简体中文** · [English](capability-matrix.en.md)
+
 
 此矩阵描述当前代码中**声明的接口边界**。`feature-gated skeleton` 表示可编译的绑定入口，
 不表示已经通过官方模拟器或真机；真实验收必须在对应宿主和官方工具中单独记录。
@@ -6,25 +10,26 @@
 API inventory 使用七个明确的宿主键：`web`、`macos`、`windows`、`linux`、`android`、`ios`、`harmony`。
 开发模拟器的 `desktop` surface 只是 macOS/Windows/Linux 共用的窗口别名，不代表三个桌面宿主已经分别通过门禁；`miniProgram` 仅出现在微信 API 返回对象（例如 `getAccountInfoSync`）中，不是宿主键。
 
-| Host | Default build | Optional backend feature | JS engine adapters | Native/device validation |
+| 宿主 | 默认构建 | 可选后端特性 | JS 引擎适配器 | 原生/设备验证 |
 | --- | --- | --- | --- | --- |
-| Web | sandbox/provider + software metadata | `wasm`, `canvas-kit` | QuickJS/V8 boundaries | provider smoke；CanvasKit/浏览器权限待验收 |
-| macOS | sandbox/provider + software metadata | `window`, `metal`, `skia-backend` | QuickJS/V8 boundaries | `host:desktop:surface` 可验证 winit/softbuffer native window；GPU 待验收 |
-| Windows | sandbox/provider + software metadata | `window`, `direct2d`, `skia-backend` | QuickJS/V8 boundaries | provider smoke；GPU/window 待验收 |
-| Linux | sandbox/provider + software metadata | `window`, `vulkan`, `skia-backend` | QuickJS/V8 boundaries | provider smoke；GPU/window 待验收 |
-| Android | sandbox/provider + software metadata | `android`, `gles`, `vulkan`, `skia-backend` | QuickJS/V8 boundaries | provider smoke；真机/GPU 待验收 |
-| iOS | sandbox/provider + software metadata | `ios`, `metal`, `skia-backend` | QuickJS/V8 boundaries | provider smoke；真机/GPU 待验收 |
-| HarmonyOS | sandbox/provider + software metadata | `harmony`, `arkui`, `skia-backend` | QuickJS/V8 boundaries | provider smoke；真机/GPU 待验收 |
+| Web | sandbox/provider + software metadata | `wasm`, `canvas-kit` | QuickJS/V8 边界 | provider smoke；CanvasKit/浏览器权限待验收 |
+| macOS | sandbox/provider + software metadata | `window`, `metal`, `skia-backend` | QuickJS/V8 边界 | `host:desktop:surface` 可验证 winit/softbuffer 原生窗口；GPU 待验收 |
+| Windows | sandbox/provider + software metadata | `window`, `direct2d`, `skia-backend` | QuickJS/V8 边界 | provider smoke；GPU/window 待验收 |
+| Linux | sandbox/provider + software metadata | `window`, `vulkan`, `skia-backend` | QuickJS/V8 边界 | provider smoke；GPU/window 待验收 |
+| Android | sandbox/provider + software metadata | `android`, `gles`, `vulkan`, `skia-backend` | QuickJS/V8 边界 | provider smoke；真机/GPU 待验收 |
+| iOS | sandbox/provider + software metadata | `ios`, `metal`, `skia-backend` | QuickJS/V8 边界 | provider smoke；真机/GPU 待验收 |
+| HarmonyOS | sandbox/provider + software metadata | `harmony`, `arkui`, `skia-backend` | QuickJS/V8 边界 | provider smoke；真机/GPU 待验收 |
 
+<a id="api-level"></a>
 ## API 级别
 
 容器 capability key 应由 manifest 和 bridge 协商。首批 key 与语义如下：
 
-| Capability | Level in skeleton | Unsupported behavior |
+| 能力 | 骨架中的级别 | 不支持的行为 |
 | --- | --- | --- |
-| `lifecycle.navigation` / `getCurrentPages` | partial | Rust page stack synchronizes live QuickJS/V8 page objects, route/options snapshots and stack order, including distinct instances for repeated pushes of one route; native host lifecycle and tab-cache evidence remain required |
-| `view.wxml-wxss` | partial | renderer 接收批量 `RenderFrame`；布局、`rpx`/`rem`、定位、变换、solid 四边边框与 content-box/border-box 共用软件/Skia/CanvasKit 几何，overflow 在 padding edge 裁后代且保留自身边框命中；其他合法 border-style 显式失败。`wx:key` 稳定生成节点路径；完整字体、图片、动画和 GPU/设备证据仍需宿主门禁 |
-| `view.components-slots` | partial | Session 按实际 WXML occurrence 批量维护独立实例与 slot 声明归属；pageLifetimes.show/hide 与缓存 tab 清理已接入。Page/Component 选择支持 ID/class、子代/后代和并集，返回活实例并恢复失败 frontier 的旧选择树；native 首匹配返回 null。跨组件 >>>、export 等明确不支持，Page 直挂 owner 仍待固定 SDK 对照；relations、完整属性/样式隔离及宿主语义仍未完整通过 |
+| `lifecycle.navigation` / `getCurrentPages` | partial | Rust 页面栈同步实时 QuickJS/V8 页面对象，路由/options 快照及栈顺序，包括对同一路由重复推送时的独立实例；原生宿主生命周期和标签缓存证据仍需保留 |
+| `view.wxml-wxss` | partial | 渲染器接收批量 `RenderFrame`；布局、`rpx`/`rem`、定位、变换、solid 四边边框与 content-box/border-box 共用软件/Skia/CanvasKit 几何，overflow 在 padding 边缘裁剪后代且保留自身边框命中；其他合法 border-style 显式失败。`wx:key` 稳定生成节点路径；完整字体、图片、动画和 GPU/设备证据仍需宿主门禁 |
+| `view.components-slots` | partial | 会话按实际 WXML 出现情况批量维护独立实例与 slot 声明归属；pageLifetimes.show/hide 与缓存标签清理已接入。页面/组件选择支持 ID/class、子代/后代和并集，返回活实例并恢复失败 frontier 的旧选择树；原生首匹配返回 null。跨组件 >>>、export 等明确不支持，页面直挂 owner 仍待固定 SDK 对照；relations、完整属性/样式隔离及宿主语义仍未完整通过 |
 | `Component.triggerEvent` | partial | 预渲染批量事件树在同一 JS turn 内调用声明 owner；保留 detail 引用并支持显式 capture/bubbles/composed 与 catch。固定 SDK 证据只覆盖 bind 别名优先级与 hyphen/underscore 名称；传播、生命周期和七宿主仍需官方/设备对照；无协商、失效实例和缺少路由图显式失败 |
 | `data.setData.batch` | partial | 只允许批量 patch，不保证原生小程序语义 |
 | `event.bind-capture-bubble` | partial | bridge 接收批量事件并按 capture → target → bubble 顺序展开；原生树、组件事件和 selector 共享 JSON dataset/mark 投影，触摸保留已捕获的元数据快照。字符串不会猜测为 JSON；presence、官方类型与原生宿主仍需验收，见 [事件元数据](event-metadata.md) |

@@ -1,4 +1,8 @@
+<a id="host-account-and-reference-payment-example"></a>
 # 宿主账号与参考支付示例
+
+**简体中文** · [English](README.en.md)
+
 
 此小程序配合 `tools/host-services-reference/scripts/demo-business-server.mjs` 和真实宿主
 适配器运行。它演示一次性登录 code 的业务后端兑换、独立资料/手机号授权、应用退出，

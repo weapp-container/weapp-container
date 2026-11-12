@@ -1,9 +1,13 @@
+<a id="container-architecture"></a>
 # 容器架构
 
+**简体中文** · [English](architecture.en.md)
+
+
 ```text
-weapp-vite build
+原生小程序目录 / 任意兼容框架的构建产物
     ├── 原始微信目录（供官方 DevTools）
-    └── container-manifest pack
+    └── container-manifest pack（独立打包工具）
             └── manifest v1 + content-addressed blobs
                     └── Rust container-core
                             ├── AppService（QuickJS / V8）
@@ -15,6 +19,8 @@ weapp-vite build
                                     ├── iOS / staticlib
                                     └── Harmony / FFI
 ```
+
+打包与宿主接入不依赖 weapp-vite。它可以作为上游构建器之一；已有原生目录或其他框架的兼容产物直接进入同一条 portable pack 路径。
 
 AppService、View 和 Renderer 通过批量 bridge envelope 连接。JS 运行时只提交状态变更和事件批次，渲染器在 native 侧完成布局、绘制和合成，避免逐节点跨语言往返。
 
@@ -34,6 +40,7 @@ positioned ancestor，固定定位相对 viewport；四个 inset 边保持可选
 Rust runtime 唯一维护。对应工程位于 `examples/hosts/`，可用
 `scripts/build-native-hosts.mjs` 做结构和 cross-target 检查。
 
+<a id="version-and-boundaries"></a>
 ## 版本与边界
 
 - manifest schema 和 bridge protocol 独立版本化；启动时先协商版本和 capability matrix。

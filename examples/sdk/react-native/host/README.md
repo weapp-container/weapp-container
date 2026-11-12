@@ -1,6 +1,10 @@
-# Native host integration acceptance
+<a id="native-host-integration-acceptance"></a>
+# 本地宿主集成验收
 
-This harness is separate from the distributable example. It installs the exact npm archive, verifies every SDK file against its inventory, and adds pinned React Navigation native-stack dependencies only to a new independent consumer. It does not change SDK code or the main example.
+**简体中文** · [English](README.en.md)
+
+
+此工具与可分发的示例分离。它安装了精确的 npm 归档，验证每个 SDK 文件与其清单的一致性，并仅向新的独立消费者添加固定版本的 React Navigation native-stack 依赖项。它不会修改 SDK 代码或主示例。
 
 ```sh
 node scripts/sdk-react-native-host-consumer.mjs --package PATH_TO_SDK.tgz --out /tmp/weapp-rn-host-consumer
@@ -8,8 +12,8 @@ node scripts/sdk-react-native-host-smoke.mjs --consumer /tmp/weapp-rn-host-consu
 node scripts/sdk-react-native-host-smoke.mjs --consumer /tmp/weapp-rn-host-consumer --platform android --device EXISTING_EMULATOR_ID --out /tmp/rn-host-android-evidence
 ```
 
-The app keeps its controller above a native host navigation stack and embeds its native surface inside a React Native `ScrollView`. Tests exercise actual host push/pop while preserving the mini-program's own page stack and state, drag the parent area and the embedded scroll area separately, and push a host route while a finger remains down. The last case requires a native `touchcancel`, no accidental tap, and a successful fresh touch after returning.
+该应用将控制器置于原生宿主导航栈之上，并将原生绘制表面嵌入 React Native `ScrollView` 中。测试在实际执行宿主的 push/pop 操作的同时，保持小程序自身的页面栈和状态不变，可分别拖动父区域和嵌入的滚动区域，并在手指仍按在屏幕上时推送宿主路由。最后一种情况需要原生 `touchcancel`，避免意外点击，并在返回后成功检测到新的触摸事件。
 
-The fixture extends the shared acceptance pack with touch-event observations. Its distinct content hash is recorded in the receipt. iOS runs three XCTest methods and exports per-test JSON and screenshots. Android drives the installed release APK using device input and records its receipt, screenshot and app-process log. A build alone is not a passing device test. iOS can select one method with `--test testHostRoute`, `--test testNestedScroll`, or `--test testTouchCancellationOnHostPush` while diagnosing a failure.
+该测试用例通过触摸事件观察扩展了共享的验收包。其独特的内容哈希值记录在回执中。iOS 运行三个 XCTest 方法，并导出每个测试的 JSON 和截图。Android 使用设备输入运行已安装的发布版 APK，并记录其回执、截图和应用进程日志。仅构建本身并不等同于通过设备测试。在诊断失败时，iOS 可通过 `--test testHostRoute`、`--test testNestedScroll` 或 `--test testTouchCancellationOnHostPush` 选择一个方法。
 
-Use a fresh evidence directory for each run. The runner uninstalls only its own app and XCTest runner and preserves the borrowed device. Never run it concurrently with another task's device interaction.
+为每次运行使用一个全新的证据目录。运行器仅卸载其自身的应用和XCTest运行器，并保留借来的设备。绝不与其他任务的设备交互同时运行。

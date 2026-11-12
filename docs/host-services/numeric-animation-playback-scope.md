@@ -1,4 +1,8 @@
+<a id="range-of-numerical-animation-playback-implementation"></a>
 # 数值 Animation 播放实现范围
+
+**简体中文** · [English](numeric-animation-playback-scope.en.md)
+
 
 本批把 `animation` 属性接入 Session 的受信时钟、绑定身份和呈现事务。此前共享
 `animation.js` 只能记录与导出动作；现在有限数值动作可以在原生渲染场景和 Web DOM
@@ -8,6 +12,7 @@
 Requires host service 86、Missing 6195、Accepted 0。本批不晋级任何格；12 个数值方法
 对应的 84 格仍为 Partial，其他 Animation 方法、工厂、`step` 和 `export` 也保留原等级。
 
+<a id="timeline-and-value-ranges"></a>
 ## 时间线与数值范围
 
 播放解码器接受共享 producer 导出的 `actions → animates/type/args + option` 结构。
@@ -39,6 +44,7 @@ initial/unset，拒绝 inherit、延迟解析值和非零 z。origin 在本组 d
 origin 字符串最多 4096 字节。Session 同时保留的绑定/运行最多 4096 个；聚合绑定载荷
 和写入身份另有 8 MiB 限制。这些是显式资源策略，不代表 JS 引擎总内存上限。
 
+<a id="binding-replay-and-owner"></a>
 ## 绑定、重播与 owner
 
 View/IR 在求值时记录私有的属性来源、数据依赖和源码 occurrence，Session 在读取数据
@@ -67,6 +73,7 @@ CSS 基线。基线回复必须覆盖精确 occurrence 和请求属性，不允�
 接受呈现后会退休旧拓扑的节点身份与运行，保留私有写入账本和 Page 暂停状态；后续
 同源码重新出现的节点重新建立基线。失败候选和迟到 ACK 不提前退休已接受绑定。
 
+<a id="clock-presentation-and-lifecycle"></a>
 ## 时钟、呈现与生命周期
 
 动画时间来自 Session 单调时钟。每次宿主 turn 固定一个采样时刻，嵌套调用复用它；
@@ -120,6 +127,7 @@ ACK 后样式不能回滚。旧拓扑、epoch、输入与 permit 不能授权新
 新的 Skia/cache 读取复核当前 BufferURL 权限。撤销后已发布不可变帧/DOM 的既有租约
 保持原有 last-use 生命周期，不能把这一点扩大为对新消费者的授权。
 
+<a id="final-verification-scope"></a>
 ## 最终验证范围
 
 v3 完成 fmt、workspace all-targets check、all-features 严格 Clippy、runtime all-features
@@ -140,7 +148,7 @@ surface recovery 的现有栅栏继续生效。
 217 个完整 cell 对象更新 31 条 Animation 的七端实现范围、源码引用和缺口说明，
 其余 8638 个对象不变。
 8855 格的状态、验收、coverage 和责任未变，CSV/合同/ledger 字节未变。当前
-Available 1504、Partial 1070、Requires host service 86、Missing 6195、Accepted 0、
+可用 1504、部分 1070、需要主机服务 86、缺失 6195、已接受 0、
 N/A 87，距 7084 仍差 5580，本批 Available 增量 0。
 
 干净私有构建快照为 `2a9889589eceee0d90e60f9944e5589e89de34de`，494 项编译输入摘要为

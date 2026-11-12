@@ -1,4 +1,8 @@
+<a id="managed-portable-to-static-site"></a>
 # 受管 portable 到静态站点
+
+**简体中文** · [English](browser-consuming-stage.en.md)
+
 
 > 本页记录底层阶段合同；这些 API 本身不启用开发 CLI。当前显式 Browser CLI 复用的完整 runner、启动参数及关闭限制见 [Browser 开发循环](browser-dev-loop.md)。
 

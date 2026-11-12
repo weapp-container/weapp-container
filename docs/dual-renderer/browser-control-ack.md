@@ -1,9 +1,14 @@
+<a id="browser-developer-control-final-ack"></a>
 # 浏览器开发态控制 final ACK
+
+**简体中文** · [English](browser-control-ack.en.md)
+
 
 控制操作、HTTP 传输和客户端采纳是三个不同阶段。原 `ControlLedger` 先预留容量，
 只执行一次操作并保留原 final 字节；断线后只能查询同一个请求的结果。
 HTTP 写出、SSE 通知、超时或新 snapshot 都不能授权压缩这份结果。
 
+<a id="original-ledger-entry"></a>
 ## 原账本入口
 
 `ControlLedger::acknowledge_final(authenticated_run_id, original_request_bytes,
@@ -28,6 +33,7 @@ entry 数量仍有界。高水位只能防止旧 ID 再执行，不能在删除�
 ACK 只证明该客户端确认保留 final，不证明 Worker 已关闭、当前画面已呈现或站点仍
 对应最新源码。这些仍分别需要 exact close、presented receipt 和 fresh source barrier。
 
+<a id="managers-optional-acceptance-interface"></a>
 ## Manager 的可选采纳接口
 
 `BrowserDevOwnerManager` 保留既有 `control.invoke/replay`，可选接受
@@ -50,6 +56,7 @@ ACK；冲突仍是 sticky 控制协议错误，不确认冲突结果。
 已清空。`transportDrained:false` 时，调用方须继续保留或显式关闭所属 control transport，
 不能丢弃尚未 settle 的请求。
 
+<a id="connection-and-validation-boundaries"></a>
 ## 接线与验证边界
 
 本入口不开放 HTTP 控制路由或 browser watch CLI。静态资源专用入口仍只接受 allowlist

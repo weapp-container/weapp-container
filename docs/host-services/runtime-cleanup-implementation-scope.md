@@ -1,4 +1,8 @@
+<a id="scope-of-implementation-for-private-runtime-cleanup-methods"></a>
 # 私有运行时清理方法的实现范围
+
+**简体中文** · [English](runtime-cleanup-implementation-scope.en.md)
+
 
 源码提交 `a11b94a8b8e1cd1d806e9a574416d1d4271cc79d` 修复了宿主通用安装器可覆盖运行时方法、生产者的 Partial 等级连带压低清理方法，以及 PageNotFound 监听依赖公开诊断表的问题。27 个源码和测试文件共同建立私有所有权、可信准入、撤权和终止清理边界；没有增加默认能力授权。
 
@@ -13,7 +17,7 @@
 
 固定微信 3.17.3、miniprogram-api-typings@5.2.3、1265 API × 七端 = 8855 格。完整矩阵比较只有四个清理方法 × 七端的 **28 格 Partial → Available**。九个 API 的 owner 元数据改为 runtime，63 个完整 cell 对象发生变化：包含所有权分类和私有边界的来源说明；其余 8792 个完整对象不变。生产者保持 Partial，PerformanceObserver.disconnect 的七格整行不变，全部 SDK 验收状态和 coverage 不变。
 
-当前 available **1490（16.83%）**、partial **1007**、requiresHostService **86**、missing **6272**；accepted **0**、platformNotApplicable **87**。相对最初 available1292 净增198，距离7084仍差 **5594**，阶段 goal 继续 active。
+当前 available **1490（16.83%）**、partial **1007**、requiresHostService **86**、missing **6272**；accepted **0**、platformNotApplicable **87**。相对最初 available1292 净增198，距离7084仍差 **5594**，阶段目标仍未完成。
 
 root 的源码回归 Node509/509、最终清点及矩阵 Node367/367、格式、workspace check、全特性严格 Clippy 和 workspace 测试通过。workspace 原始127个结果块合计2859 passed/10 ignored，不宣称这是去重后的测试数量。实际 QuickJS 库309 passed/1 ignored、V8库294 passed/1 ignored及其集成测试通过；此前的 native runtime 库671 passed/2 ignored和各实际集成结果保留原执行范围。workspace 与双引擎门禁之后，只有两份清点脚本更新；派生的完整历史映射明确标注 derived，未冒充当时实际捕获的快照。
 

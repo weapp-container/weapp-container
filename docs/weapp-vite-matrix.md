@@ -1,9 +1,14 @@
+<a id="weapp-vite-product-matrix-verification"></a>
 # weapp-vite 产物矩阵验证
+
+**简体中文** · [English](weapp-vite-matrix.en.md)
+
 
 `verify-weapp-vite-matrix.mjs` 是容器仓库与 `vendor/weapp-vite` 之间的构建回归入口。它先核对 superproject 记录的 submodule SHA 与本地 checkout，再列出容器首版要求的六个小程序产物目标：`weapp`、`alipay`、`swan`、`tt`、`jd`、`xhs`。
 
 这条检查只验证构建侧产物。它不能把构建结果推断为微信开发者工具、第三方开发者工具、模拟器、模拟设备或真机运行时通过。
 
+<a id="runtime-mode"></a>
 ## 运行方式
 
 安全的计划检查不会启动上游 E2E：
@@ -43,6 +48,7 @@ node scripts/verify-weapp-vite-matrix.mjs --run \
 
 也可以用 `CONTAINER_WEAPP_VITE_MATRIX_COMMAND` 提供项目命令。自定义命令在上游 submodule 根目录执行，并会收到 `E2E_FULL_MATRIX=1`、`E2E_PLATFORM` 和 `CONTAINER_MATRIX_PLATFORM` 环境变量。命令输出、退出码、信号、错误和耗时都会原样写入报告；请将报告作为 CI artifact 保存。
 
+<a id="target-agreement"></a>
 ## 目标契约
 
 | 目标 | 主要模板 | 主要样式 | 项目配置 |
@@ -56,6 +62,7 @@ node scripts/verify-weapp-vite-matrix.mjs --run \
 
 上表是容器矩阵的目标清单和产物方向，具体文件断言由固定在 submodule commit 的上游 `e2e:platform:build` 完成。目标清单不是对当前运行时能力的声明；运行时能力仍需在对应官方工具和设备门禁中单独验收。
 
+<a id="ci-constraints"></a>
 ## CI 约束
 
 - 每次运行必须使用与 superproject index 匹配的 `vendor/weapp-vite` commit；不匹配时不会启动构建。

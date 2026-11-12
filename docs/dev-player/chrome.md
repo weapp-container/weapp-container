@@ -1,127 +1,70 @@
-# Mini-program host chrome
+<a id="mini-program-host-chrome"></a>
+# 小程序宿主 Chrome
 
-The preview.4 Dev Player uses a fullscreen mini-program shell on Android, iOS,
-macOS, Windows and Linux. “Fullscreen” fills the client content area while
-retaining mobile system bars and desktop window decorations. The active preview
-has no Player AppBar, permanent tool strip, fixed aspect ratio or outer padding.
+**简体中文** · [English](chrome.en.md)
 
-## Navigation and capsule
 
-The runtime resolves verified app `window` configuration and page overrides.
-The SDK emits a versioned `chrome` observation, including page/stack, title,
-colors, navigation style and configured system tabBar. Flutter does not parse a
-second copy of app/page JSON. Dynamic title/color changes belong to page instances.
-Tab selection uses runtime `switchTab`; the client does not maintain another
-mini-program router.
+预览.4 开发版播放器在 Android、iOS、macOS、Windows 和 Linux 上使用全屏小程序外壳。“全屏”会填充客户端内容区域，同时保留移动系统栏和桌面窗口装饰。活动的预览没有播放器顶部栏、永久工具条、固定长宽比或外部边距。
 
-Normal navigation reserves the system top inset and a host navigation bar.
-Custom navigation extends the page beneath the retained system status bar;
-the floating capsule stays below the actual top inset. Its translucent backing
-contrasts with the configured foreground independently of navigation background.
-Custom pages without a system tabBar also paint through the home-indicator area;
-the native safe-area observation remains available to the program. Host
-diagnostic controls avoid that area independently. Normal navigation and system
-tabBar control layouts retain their bottom safe-area handling.
-More opens tools,
-logs, performance, reload and project information. Close returns to the project
-screen and releases the accepted/candidate session and native surfaces while
-retaining connection, verified packs and persistent storage. A new generation
-does not reopen a closed program. Reopening starts a new instance.
+<a id="navigation-and-capsule"></a>
+## 导航和胶囊
 
-Tools occlusion is separate from application foreground/background. It gates
-native preview input and presentation, leaves business timers running and does
-not generate a false app lifecycle. Downloads can complete while tools are open;
-activation waits until the preview is available.
+运行时解析已验证的应用 `window` 配置和页面覆盖设置。
+SDK 发出版本化的 `chrome` 观察，包括页面/堆栈、标题、颜色、导航样式以及配置的系统标签栏。Flutter 不会解析应用/页面 JSON 的第二份副本。动态标题/颜色变更属于页面实例。
+标签选择使用运行时 `switchTab`；客户端不维护另一个小程序路由。
 
-## Geometry and SDK negotiation
+正常导航保留系统顶部内边距和宿主导航栏。
+自定义导航在保留系统状态栏的下方扩展页面；浮动胶囊始终位于实际顶部内边距之下。其半透明背景与配置的前景独立于导航背景形成对比。
+没有系统 tabbar 的自定义页面也会绘制通过首页指示器区域；原生安全区域观察仍可被程序使用。宿主诊断控件会独立避免该区域。正常导航和系统 tabbar 控制的布局仍保留其底部安全区域的处理。
+“更多”可打开工具、日志、性能、重新加载和项目信息。“关闭”返回项目屏幕，并释放已验收/候选会话和原生绘制表面，同时保留连接、已验证包和持久化存储。新版本不会重新打开已关闭的程序。重新打开将启动新实例。
 
-The additive SDK `chrome` capability negotiates protocol `1.0`. `state.chrome`
-and `chrome` events are scoped to the actual session and page. The `hostChrome`
-command carries schema version, a monotonic layout revision, measured content
-rectangle and measured capsule rectangle. Rectangle coordinates are logical
-screen pixels; mini-program input remains local to the content surface.
-Flutter measurements carry an explicit client-coordinate marker. Native SDK
-bindings translate them using the observed native window/view origin before
-submitting `hostChrome`; native overlay layout retains client coordinates.
+工具的遮挡与应用的前台/后台无关。它控制原生预览输入和呈现，保持业务定时器运行，并不会产生虚假的应用生命周期。在工具打开时，下载仍可完成；激活会等待预览可用。
 
-`windowMetrics` remains the authoritative native surface/display observation.
-The host does not infer or rebase its safe-area observation from capsule geometry.
-Android quantizes the content viewport at the native measurement boundary using
-the same physical-pixel rounding as its surface metrics. Capsule coordinates
-retain their measured fractional screen positions.
-Initial chrome is inspected from a verified pack before starting page code, so
-the host can supply initial capsule geometry. Runtime APIs then expose the
-measured rectangle. Rotation, window resize and navigation changes update the
-host geometry; stale revisions are rejected.
+<a id="geometry-and-sdk-negotiation"></a>
+## 几何形状和 SDK 协商
 
-For a configuration-changing restart, the host measures a prospective shell
-under the accepted view. `prepareHostChrome` only translates/validates those
-rectangles; it does not mutate the accepted session. `initialHostChrome` is
-passed into `load`/`applyDevPack` for candidate initialization. A failed startup
-keeps accepted geometry and state; success commits the candidate and waits for
-matching native surface metrics before authorizing presentation and input.
+加性 SDK `chrome` 能力协商协议 `1.0`。`state.chrome` 和 `chrome` 事件作用于实际的会话和页面。`hostChrome` 命令携带模式版本、单调布局修订号、测量内容矩形和测量胶囊矩形。矩形坐标为逻辑屏幕像素；小程序输入仍保持在内容绘制表面内。Flutter 测量携带明确的客户端坐标标记。原生 SDK 绑定使用观察到的原生窗口/视图原点将其转换后提交 `hostChrome`；原生叠加层布局保留客户端坐标。
 
-Ordinary runtime navigation still executes the destination page lifecycle before
-the host observes its new navigation layout and submits a resize. Therefore an
-`onLoad` geometry query during a normal/custom navigation transition can observe
-the preceding content size. The initial-load and pack-restart transaction above
-does not prove lifecycle geometry parity for these ordinary transitions.
+`windowMetrics` 仍然是原生绘制表面/显示的权威观察结果。
+宿主不会从胶囊几何形状推断或重新计算其安全区域观察值。
+Android 使用与表面度量相同的物理像素四舍五入规则，在原生测量边界上量化内容视口。胶囊坐标保留其测量的屏幕分数位置。
+在启动页面代码之前，会从已验证的包中检查初始 Chrome，因此宿主可以提供初始胶囊几何信息。运行时 API 会暴露测量得到的矩形。旋转、窗口大小变化和导航更改会更新宿主的几何信息；过时的版本将被拒绝。
 
-Android/iOS/macOS use their existing GPU-backed preview composition. Windows
-and Linux own native chrome above their child surface. Before Flutter menus or
-tools cover a native child preview, that preview is hidden; restoration requires
-valid geometry and a matching native frame. No screenshot or CPU raster fallback
-substitutes for a native GPU surface.
+对于配置变更的重启，宿主在已接受的视图下测量一个预期的壳层。`prepareHostChrome` 仅翻译/验证这些矩形；它不会修改已接受的会话。`initialHostChrome` 会被传递给 `load`/`applyDevPack` 用于候选初始化。启动失败时保留已接受的几何形状和状态；启动成功后会提交候选配置，并在获得匹配的原生绘制表面指标前等待，然后授权呈现和输入。
 
-Linux X11 can observe the screen origin. Wayland compositors do not expose a
-global window origin; this screen-coordinate profile therefore rejects that
-combination with `ERR_UNSUPPORTED_CAPABILITY` instead of inventing coordinates.
-Wayland host execution remains an open platform requirement.
+普通运行时导航仍在宿主观察到新的导航布局并提交调整大小之前，执行目标页面的生命周期。因此，在正常/自定义导航过渡期间，`onLoad` 几何查询可以观察到前一内容的大小。上述初始加载和包重启事务并不能证明这些普通过渡的生命周期几何一致性。
 
-## Reproduction and evidence
+Android/iOS/macOS 使用其现有的基于 GPU 的预览合成。Windows 和 Linux 在其子绘制表面之上拥有原生的 Chrome。在 Flutter 菜单或工具覆盖原生子预览之前，该预览会被隐藏；恢复需要有效的几何信息和匹配的原生帧。没有截图或 CPU 光栅化降级可以替代原生 GPU 表面。
+
+Linux X11 可以观测屏幕原点。Wayland 汇聚器不提供全局窗口原点；因此该屏幕坐标配置因此拒绝使用该组合，并返回 `ERR_UNSUPPORTED_CAPABILITY`，而不是自行发明坐标。Wayland 宿主执行仍属于开放平台需求。
+
+<a id="reproduction-and-evidence"></a>
+## 重现和证据
 
 ```sh
 pnpm simulator:dev -- --project examples/apps/player-chrome-app --surface devices
 ```
 
-Connect a matching preview.4 Player. The fixture exercises default/custom
-navigation, dynamic title/color, system tabs, measured capsule geometry, navigation
-back, and persistent storage across close/reopen. Verify portrait/landscape,
-notches, system bars, long titles, text scaling, input hits and visible errors.
+连接一个匹配的 preview.4 Player。该测试用例验证了默认/自定义导航、动态标题/颜色、系统标签页、测量胶囊几何体、导航返回、以及关闭/重新打开时的持久化存储。验证纵向/横向模式、凹槽、系统栏、长标题、文本缩放、输入命中和可见错误。
 
-Record host, source/SDK commits, binary hashes and the precise scope of every
-result. Unit/widget tests do not execute native UI or GPU presenters. Missing
-devices/windows remain blocked; historical preview.3 runs retain their original
-source bindings and are not upgraded by this interface change.
+记录宿主、源码/SDK提交版本、二进制哈希值以及每个结果的精确范围。
+单元/组件测试不执行原生 UI 或 GPU 呈现器。
+缺失的设备/窗口仍被阻塞；历史 preview.3 运行保留其原始源绑定，且不受此接口变更影响。
 
-The [scenario inventory](chrome-cases-v1.json) fixes 20 scenarios and 97
-applicable platform cases. Widget/Rust tests are reported separately from these
-actual-window cases. The existing five-platform release gates remain unchanged.
+[场景清单](chrome-cases-v1.json) 修复了 20 个场景和 97 个适用平台场景。控件/Rust 测试与这些实际窗口场景的测试分开报告。现有的五平台发布门禁保持不变。
 
-## Preview.4 execution results (2026-10-29)
+<a id="preview4-execution-results-2026-10-29"></a>
+## 预览.4 执行结果 (2026-10-29)
 
-The [source-bound execution report](../archived-evidence.md)
-records the actual Xiaomi Android 16 device and iOS 27 simulator attempts. The
-final Player source is `c8d99195`; native runtime binaries were produced from
-`bf9b8cf8`. Those identities are deliberately separate.
+[绑定源的执行报告](../archived-evidence.md)
+记录了实际的小米 Android 16 设备和 iOS 27 模拟器的尝试。最终的 Player 源码为 `c8d99195`；原生运行时二进制文件由 `bf9b8cf8` 生成。这些身份是故意分离的。
 
-Fullscreen/default/custom navigation, capsule interaction, runtime tabs,
-close/reopen with retained storage, and safe WXSS updates have actual execution
-evidence. This is an implementation milestone, not a completed five-host gate.
+全屏/默认/自定义导航，胶囊交互，运行时选项卡，
+保留存储的关闭/重新打开，以及安全的 WXSS 更新具有实际执行证据。这是一项实现里程碑，而不是完成五宿主门。
 
-Two real failures remain open on Android/iOS:
+Android/iOS 上仍存在两个真实故障：
 
-- **C013:** `onResize` can observe the new window dimensions together with the
-  preceding orientation's capsule rectangle. Native metrics and post-frame
-  chrome currently arrive through separate updates. They need one versioned,
-  owner-bound layout transaction before invoking guest callbacks.
-- **C018:** a candidate startup error can produce `ERR_DEV_OUTCOME_UNKNOWN` and
-  pause the accepted preview. Player currently compares presentation revisions
-  when reconciling pack ownership; ordinary accepted-page timers can advance
-  those revisions. The SDK needs a separate accepted pack identity. Removing
-  the frame comparison alone would misclassify an ambiguous in-place commit.
+- **C013：** `onResize` 可以同时观察到新窗口尺寸以及前一方向的胶囊矩形。原生度量和帧后浏览器栏目前通过独立更新传递。在调用客体回调之前，需要一个版本化、归属明确的布局事务。
+- **C018：** 一个候选启动错误可能产生 `ERR_DEV_OUTCOME_UNKNOWN` 并暂停已验收的预览。播放器在协调包所有权时目前会比较呈现修订；普通已验收页面定时器可以推进这些修订。SDK 需要一个独立的已验收包身份。仅移除帧比较将错误分类一个模糊的原地提交。
 
-macOS execution is blocked by the absence of a valid development signing
-identity. Windows/Linux actual-window execution and hardware performance/leak
-acceptance remain open. A correct screenshot, unit test or native frame ACK
-does not discharge these requirements.
+macOS 的执行因缺少有效的开发签名身份而被阻止。Windows/Linux 的实际窗口执行和硬件性能/泄漏验收仍待解决。正确的截图、单元测试或原生帧回执并不能满足这些要求。

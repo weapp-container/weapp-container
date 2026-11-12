@@ -1,10 +1,10 @@
-# Session render resources
+<a id="session-render-resources"></a>
+# 会话渲染资源
 
-Hosts can preload content-addressed render bytes once with `app.init` and reuse
-them for subsequent manifest frames. This avoids serializing the portable pack
-on every display tick. The resource store belongs to a single runtime `Session`;
-it is an immutable Rust `Arc<BTreeMap<String, Vec<u8>>>`. Selecting it clones the
-handle, without cloning resource byte buffers or crossing the host bridge again.
+**简体中文** · [English](render-resource-store.en.md)
+
+
+宿主可以使用 `app.init` 一次性预加载基于内容的渲染字节，并在后续的清单帧中复用这些字节。这避免了每次显示时都序列化可移植包。资源存储属于单个运行时 `Session`；它是一个不可变的 Rust `Arc<BTreeMap<String, Vec<u8>>>`。选择它会克隆句柄，而不会克隆资源字节缓冲区，也不会再次穿过宿主桥接。
 
 ```json
 {
@@ -16,11 +16,7 @@ handle, without cloning resource byte buffers or crossing the host bridge again.
 }
 ```
 
-The shortened examples show envelope `op` and `payload`; actual requests also
-include the usual protocol version, session ID, request ID and kind. Each blob
-key must match its bytes' SHA-256. The normal View-resource validation also runs
-before these bytes enter the store. `modules` uses the existing AppService
-module contract and is independent of the render store.
+简短示例展示了信封的 `op` 和 `payload`；实际请求还包含通常的协议版本、会话 ID、请求 ID 和类型。每个 blob 键必须与其字节的 SHA-256 值匹配。在这些字节进入存储之前，也会运行正常的 View-资源验证。`modules` 使用现有的 AppService 模块合同，并且与渲染存储无关。
 
 ```json
 {
@@ -34,48 +30,25 @@ module contract and is independent of the render store.
 }
 ```
 
-Omitting `data` renders the current runtime page data. The reuse flag changes
-only the source of render bytes; template, style, View-script, component,
-layout and renderer checks still apply. The existing nested
-`{"frame":{"templateId":"…","useSessionResources":true}}` form also works.
-The flag must appear in the same object as `templateId` or `template_id`.
+省略 `data` 会使得当前运行时页面数据失效。重用标志只改变渲染字节的来源；模板、样式、View-脚本、组件、布局和渲染器检查仍然生效。现有的嵌套形式 `{"frame":{"templateId":"…","useSessionResources":true}}` 也有效。该标志必须出现在与 `templateId` 或 `template_id` 相同的对象中。
 
-Selection rules are explicit:
+选择规则是明确的：
 
-| Request | Result |
+| 请求 | 结果 |
 | --- | --- |
-| Flag omitted or `false`, valid `blobs` | Existing explicit-byte rendering; a successful commit installs its store. |
-| Flag omitted or `false`, no `blobs` | `ERR_RENDER`, even if a previous store exists. |
-| Flag `true`, verified nonempty store | Render with that session's store. |
-| Flag `true`, any `blobs` property | `ERR_INVALID_REQUEST`, including `blobs: null` or `{}`. |
-| Flag present with a nonboolean value | `ERR_INVALID_REQUEST`. |
-| Flag `true`, empty, unverified or invalidated store | `ERR_RENDER`. |
-| Flag `true`, raw frame with no manifest template | `ERR_INVALID_REQUEST`. |
+| 标志被省略或为 `false`，有效的 `blobs` | 现有显式字节渲染；一次成功的提交会安装其存储。 |
+| 标志被省略或为 `false`，没有 `blobs` | `ERR_RENDER`，即使之前存在存储。 |
+| 标志 `true`，已验证存储非空 | 使用该会话的存储进行渲染。 |
+| 标志 `true`，任何 `blobs` 属性 | `ERR_INVALID_REQUEST`，包括 `blobs: null` 或 `{}`。 |
+| 包含非布尔值的标志 | `ERR_INVALID_REQUEST`。 |
+| 标志为 `true`、空、未验证或已失效的存储 | `ERR_RENDER`。 |
+| 标志 `true`，原始帧且无清单模板 | `ERR_INVALID_REQUEST`。 |
 
-Flag and resource checks precede component hooks and frame publication.
-Supplying invalid hashes or an incomplete explicit candidate fails without
-falling back to earlier bytes. The previous published frame and accepted store
-remain available. Explicit candidate bytes replace the store only after the
-renderer accepts their generated frame. As with other render commits, errors
-from ready hooks after publication are reported separately with
-`committed: true`; the accepted frame and its resource store remain installed.
+标志和资源检查在组件钩子和帧发布之前进行。
+提供无效的哈希值或不完整的显式候选值将无法回退到前面的字节。上一版发布的帧和已验收的存储仍可获取。显式候选字节只有在渲染器验收其生成的帧后才会替换存储。与其他渲染提交一样，发布后在钩子中出现的错误将单独报告为 `committed: true`；已验收的帧及其资源存储仍保持安装状态。
 
-`replace_manifest` retains the previous frame but invalidates resource reuse
-when manifest metadata changes. A successful render with explicit bytes must
-revalidate and install resources for the replacement manifest. Replacing the
-manifest with an identical value preserves authorization. A failed replacement
-does not change authorization. Session destruction releases its store when the
-last internal render handle drops; new sessions never inherit authorization.
+`replace_manifest` 保留前一帧，但当清单元数据变更时会取消资源复用。显式字节的渲染成功必须重新验证并为替换清单安装资源。使用相同值替换清单可保留授权。替换失败不会改变授权。会话销毁在内部渲染句柄全部消失时释放其存储；新会话不会继承授权。
 
-Development preview uses the candidate session's resource store and never
-borrows the live session's authorization. Its first render normally supplies
-explicit bytes. A successful preview can reuse its own accepted store for
-subsequent preview renders without changing the live store or frame.
+开发预览使用候选会话的资源存储，从不借用实时会话的授权。其首次渲染通常提供显式字节。一次成功的预览可以在后续预览渲染中重用自己已验收的存储，而无需更改实时存储或帧。
 
-`session_render_resources` integration tests exercise the public bridge with
-native QuickJS and V8 when enabled: first frame from preload, real Page.setData,
-explicit seeding, invalid selections before hooks, failed candidates, session
-isolation, manifest replacement and development preview isolation. Internal
-tests also reject an unverified nonempty map and assert that selecting a store
-retains `Arc` identity. These are runtime contract checks; they do not establish
-official DevTools parity, GPU behavior, device behavior or performance budgets.
+`session_render_resources` 集成测试在启用原生 QuickJS 和 V8 时验证公共桥接：预加载的第一帧、真实的 Page.setData、显式初始化、钩子之前无效的选择、失败的候选、会话隔离、清单替换和开发预览隔离。内部测试还拒绝未经验证的非空映射，并断言选择存储时保留 `Arc` 身份。这些是运行时合同检查；它们不建立官方 DevTools 一致性、GPU 行为、设备行为或性能预算。

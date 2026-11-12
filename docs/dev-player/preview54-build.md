@@ -1,4 +1,8 @@
+<a id="preview54-build-and-diagnostics"></a>
 # preview.5.4 构建与诊断
+
+**简体中文** · [English](preview54-build.en.md)
+
 
 本代源码 SDK／运行库版本为 `0.1.0-preview.5.4`，Player 为 `0.1.0-preview.5.4+13`，C ABI 仍为 1。
 

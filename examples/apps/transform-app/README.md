@@ -1,8 +1,10 @@
-# Transform interaction mini-program
+<a id="transform-interaction-mini-program"></a>
+# 转换交互小程序
 
-This native mini-program drives typed 2D transforms through real Page handlers,
-`setData`, WXSS, selector queries, coordinate input, and sandbox storage. It uses
-the pinned `vendor/weapp-vite` builder and has no bundled runtime dependency.
+**简体中文** · [English](README.en.md)
+
+
+这个原生小程序通过真实页面处理器，驱动 typed 2D 变换，支持 `setData`、WXSS、选择器查询、坐标输入和沙箱存储。它使用固定绑定的 `vendor/weapp-vite` 构建工具，没有捆绑运行时依赖。
 
 ```sh
 pnpm --dir vendor/weapp-vite exec wv build \
@@ -14,38 +16,22 @@ cargo run -p container-simulator -- \
   dev --project examples/apps/transform-app --surface web
 ```
 
-The stage starts at page coordinate `(0, 0)` and is `320 × 280` CSS pixels.
-Use a viewport at least 320 pixels wide. Coordinates are page/client logical
-pixels, not physical device pixels. Navigation chrome is outside this contract.
+舞台从页面坐标 `(0, 0)` 开始，大小为 `320 × 280` CSS 像素。
+视口宽度至少为 320 像素。坐标是页面/客户端逻辑像素，而非物理设备像素。导航栏位于此合同之外。
 
-| Phase | Action | `#box` bounding rectangle `(left, top, width, height)` | Interior sample |
+| 阶段 | 操作 | `#box` 边界矩形 `(left, top, width, height)` | 内部样本 |
 | --- | --- | --- | --- |
-| small | Initial | `(134, 104, 52, 32)` | `(150, 112)` blue |
-| large | Tap `(150, 112)` on `#box`, or `#toggle-size` | `(114, 94, 92, 52)` | `(150, 112)` green |
-| small again | Tap `(150, 112)` | `(134, 104, 52, 32)` | `(150, 112)` blue |
-| rotated small | Tap `#cycle-transform` once | `(134, 136, 32, 52)` | `(150, 160)` blue |
-| no transform | Tap `#cycle-transform` again | `(160, 120, 52, 32)` | `(176, 136)` blue |
-| reset | Tap `#reset` | `(134, 104, 52, 32)` | `(150, 112)` blue |
+| 小 | 初始 | `(134, 104, 52, 32)` | `(150, 112)` 蓝色 |
+| 大号 | 在 `#box` 上点击 `(150, 112)`，或点击 `#toggle-size` | `(114, 94, 92, 52)` | `(150, 112)` 绿色 |
+| 更小一些 | 点击 `(150, 112)` | `(134, 104, 52, 32)` | `(150, 112)` 蓝色 |
+| 旋转小 | 点击 `#cycle-transform` 一次 | `(134, 136, 32, 52)` | `(150, 160)` 蓝色 |
+| 无变换 | 再次点击 `#cycle-transform` | `(160, 120, 52, 32)` | `(176, 136)` 蓝色 |
+| 重置 | 点击 `#reset` | `(134, 104, 52, 32)` | `(150, 112)` 蓝色 |
 
-The content size is `40 × 20` or `80 × 40`; padding and border add 12 pixels to
-each dimension. The `-50%` translation uses that final border box. Initial red
-border sample: `(134, 116)`. Initial yellow corner: `(138, 108)`. White outside
-sample: `(132, 112)`. Control centers are `(52, 22)`, `(148, 22)`, `(244, 22)`.
-The static order probes have rectangles `(60, 220, 40, 10)` in red and
-`(210, 220, 40, 10)` in blue, distinguishing translate/scale function order.
+内容大小为 `40 × 20` 或 `80 × 40`；边距和边框为每个维度增加 12 像素。`-50%` 的平移使用最终的边框盒。初始红色边框示例：`(134, 116)`。初始黄色角点：`(138, 108)`。白色外部示例：`(132, 112)`。控制中心坐标为 `(52, 22)`、`(148, 22)`、`(244, 22)`。静态顺序探测器有红色矩形 `(60, 220, 40, 10)` 和蓝色矩形 `(210, 220, 40, 10)`，用于区分平移/缩放函数的顺序。
 
-`data.taps` counts only size changes; `data.lastTarget` records the actual event
-target, and tapping the yellow corner targets `corner` before bubbling to the
-box handler. Each accepted size/mode/reset change writes `transform-app-state`
-with `{large,width,height,mode,transform,taps,lastTarget}`. `onInspect` queries
-the accepted `#box` geometry and copies the saved value into `data.persisted`.
-It can be called explicitly after the host publishes a new frame; a selector
-query inside the `setData` callback can still observe the previously published
-frame until that host boundary completes. `data.lifecycle` records App/Page
-hooks and is independent of the visual transform state.
+`data.taps` 仅记录尺寸变化；`data.lastTarget` 记录实际的事件目标，点击黄色角落会将目标设为 `corner`，在冒泡到框处理器之前。每次接受尺寸/模式/重置变化都会写入 `transform-app-state`，内容为 `{large,width,height,mode,transform,taps,lastTarget}`。`onInspect` 查询已接受的 `#box` 几何信息，并将保存的值复制到 `data.persisted`。它可以在宿主发布新帧后显式调用；`setData` 回调中的选择器查询仍可观察到之前发布的帧，直到该宿主边界完成。`data.lifecycle` 记录应用/页面钩子，与视觉变换状态无关。
 
-The fixed official target is DevTools `2.02.2608080` / library `3.17.3`.
-Opening a built fixture, a local pixel check, or CanvasKit replay does not by
-itself establish official visual parity, a physical GPU run, or device parity.
-Official automation must use a real authorized AppID and the repository's
-single-window machine lease and owned-resource cleanup rules.
+固定的官方目标是 DevTools `2.02.2608080` / 库 `3.17.3`。
+打开一个预构建的测试用例、进行本地像素检查，或 CanvasKit 重放本身并不能确立官方的视觉一致性，也无法实现物理 GPU 运行或设备级一致性。
+官方自动化必须使用真实的授权 AppID，并遵循仓库中单窗口机器租用和自有资源清理规则。

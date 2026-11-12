@@ -1,77 +1,34 @@
-# HarmonyOS BLE central and GATT
+<a id="harmonyos-ble-central-and-gatt"></a>
+# HarmonyOS BLE 中心端和 GATT
 
-`HarmonyBluetoothApis.ets` uses the official OpenHarmony API24 Bluetooth access
-and BLE APIs. `Index.ets` recreates this adapter for each internal owner, before
-host-service configuration, and the module declares the in-use
-`ohos.permission.ACCESS_BLUETOOTH` permission.
+**简体中文** · [English](BLUETOOTH.en.md)
 
-The installed API set comprises adapter open/close/state; discovery start/stop;
-discovered and owned connected devices; GATT connect/disconnect, services,
-characteristics, RSSI, read, write and notification configuration; negotiated
-MTU get/set; and the corresponding adapter/device/connection/value/MTU
-subscriptions. Peripheral/server mode is not installed or advertised.
 
-Opening the adapter first asks for application consent using the trusted
-application and publisher identity, then requests the actual OS permission.
-The grant belongs to this account's application owner and is not persisted or
-shared with another application. A closed/replaced owner asks again. The
-adapter never enables system Bluetooth silently. Consent denial, OS denial,
-Bluetooth switched off and an absent installed capability remain distinct
-outcomes. Pending consent or OS permission cannot start resources after
-backgrounding, cancellation or owner revocation.
+`HarmonyBluetoothApis.ets` 使用官方 OpenHarmony API24 的蓝牙访问和 BLE API。`Index.ets` 在宿主服务配置之前为每个内部所有者重建此适配器，并且该模块声明了正在使用的 `ohos.permission.ACCESS_BLUETOOTH` 权限。
 
-The OS scanner is process-wide. This implementation grants one exclusive
-scanner lease across container instances. Another container receives an
-explicit busy failure and cannot replace filters or stop that scanner. A
-later scan starts only after the previous native scanner and listener have
-retired. Discovery filters normalize 16/32/128-bit UUIDs; raw advertising
-fields supply service UUIDs, service data and exact manufacturer bytes when
-the SDK's optional decoded fields are absent.
+已安装的 API 集包含适配器的打开/关闭/状态；发现的启动/停止；已发现并拥有的连接设备；GATT 连接/断开、服务、特征值、RSSI、读取、写入和通知配置；协商的 MTU 获取/设置；以及相应的适配器/设备/连接/值/MTU 订阅。未安装或广播外围/服务器模式。
 
-Each GATT client has an exact owner, connection generation and sequential
-operation queue. Connect succeeds after the platform's connected callback.
-MTU changes succeed after the actual `BLEMtuChange` callback; requesting a
-size alone does not imply negotiation succeeded. Writes are bounded by both
-the negotiated `MTU - 3` and the 512-byte characteristic limit. Read results,
-notifications, service data and manufacturer data use the protocol's binary
-envelopes without text conversion. Discovery retains at most 256 devices;
-one raw advertisement is limited to 64 KiB and one service value to 512 bytes.
+首先打开适配器会使用可信的应用和发布者身份请求应用授权，然后请求实际的系统权限。该授权属于该账户应用所有者的权限，不会被持久化，也不会与其他应用共享。当所有者关闭或更换时，需要重新请求授权。适配器从不会在无声状态下启用系统蓝牙。授权拒绝、系统拒绝、蓝牙已关闭以及未安装所需功能均是不同的最终结果。在后台运行、取消或所有者撤销后，若尚未获得授权或系统权限，则无法启动资源。
 
-Platform callbacks only enqueue through `HarmonyHostServices`. Its owning
-ArkTS executor drains records into N-API and QuickJS; callbacks never enter JS
-directly. Queue backpressure stops the exact scanner or GATT producer.
-Backgrounding, revocation, adapter shutdown and owner close stop discovery and
-retire all GATT clients. Cancelling an in-flight GATT operation retires that
-client because the SDK has no independent command-cancellation primitive.
-Cleanup unregisters listeners, disconnects, calls the native client's `close`,
-then waits for outstanding SDK promises. A failed native close or undrained
-operation retains the cleanup barrier for retry and cannot release the old
-account owner as if cleanup succeeded.
+OS 扫描器是进程级的。该实现在一个容器实例中授予一个独占的扫描租约。另一个容器将收到明确的忙失败，无法替换过滤器或停止该扫描器。下一次扫描只有在之前的原生扫描器和监听器退出后才会启动。发现过滤器对 16/32/128 位 UUID 进行归一化；原始广告字段提供服务 UUID、服务数据以及确切的制造商字节，当 SDK 的可选解码字段缺失时。
 
-Run the lifecycle contracts with:
+每个 GATT 客户端都有一个确切的所有者、连接生成号和顺序操作队列。连接成功后，平台的连接回调函数才会返回。MTU 变更在实际 `BLEMtuChange` 回调之后成功；仅请求大小并不表示协商已成功。写操作受协商的 `MTU - 3` 和 512 字节特征限制的共同约束。读取结果、通知、服务数据和制造商数据使用协议的二进制信封，不进行文本转换。发现最多保留 256 个设备；单个原始广告数据限制为 64 KiB，单个服务值限制为 512 字节。
+
+平台回调仅通过 `HarmonyHostServices` 进行入队。其所属的 ArkTS 执行器将记录传递给 N-API 和 QuickJS；回调永远不会直接进入 JS。队列背压会停止精确扫描器或 GATT 生产者。后台化、撤销、适配器关闭和所有者关闭会停止发现，并退役所有 GATT 客户端。取消正在进行的 GATT 操作会退役该客户端，因为 SDK 没有独立的命令取消原语。清理操作会注销监听器、断开连接、调用原生客户端的 `close`，然后等待未完成的 SDK 承诺。原生关闭失败或未完成的操作会保留清理屏障以供重试，并且无法像清理成功一样释放旧账户所有者。
+
+使用以下生命周期合约运行：
 
 ```sh
 node --test scripts/harmony-bluetooth-lifecycle.test.mjs
 ```
 
-These tests execute the production ArkTS owner after type stripping against
-finite, observable SDK callbacks. They cover late permission, owner-thread
-delivery, obsolete scan cancellation, two-container scanner isolation, GATT
-ordering, exact binary values, MTU negotiation/cancellation, a native read
-still draining during revocation, and retry after a native cleanup failure.
-They verify lifetime behavior and do not constitute physical-device evidence.
+这些测试在类型剥离后，对生产环境的 ArkTS 所有者进行执行，并针对有限的、可观察的 SDK 回调函数进行测试。它们涵盖了延迟权限、所有者线程传递、已废弃的扫描取消、多容器扫描器隔离、GATT 顺序、精确的二进制值、MTU 协商/取消、在撤销期间原生读取仍持续进行，以及原生清理失败后的重试。这些测试验证了生命周期行为，不构成物理设备证据。
 
-The official API24 compiler produced an unsigned HAP on 2026-11-02, with the
-source hashes and artifact receipt retained under
-[`docs/host-services/evidence/2026-11-02-harmony-ble`](../../../docs/archived-evidence.md).
-The HAP SHA-256 is
-`7f3ae87b808637011e82b4190e5665f972ae1913d500b56d7e051cdcd44836c0`.
-SDK warnings include the existing unverified N-API module, throwable platform
-APIs and deprecated dialog helpers; packaging succeeded without signing.
+官方 API24 编译器于 2026-11-02 生成了未签名的 HAP，其源码哈希和构件回执保留在
+[`docs/host-services/evidence/2026-11-02-harmony-ble`](../../../docs/archived-evidence.md)。
+HAP 的 SHA-256 值为
+`7f3ae87b808637011e82b4190e5665f972ae1913d500b56d7e051cdcd44836c0`。
+SDK 警告包括现有的未经验证的 N-API 模块、可抛出的平台 API 以及已弃用的对话辅助工具；打包成功但未签名。
 
-Physical BLE discovery, pairing/system authorization UI, service enumeration,
-peripheral-specific read/write and MTU behavior, notification traffic, device
-disconnect, permission revocation and background/resume remain **pending
-device acceptance**. An API24 build and the finite-callback tests do not mark
-those cases as accepted. BLE needs an actual supported radio and peripheral;
-an unavailable radio is reported explicitly.
+物理 BLE 发现、配对/系统授权 UI、服务枚举、
+外围设备特定的读/写和 MTU 行为、通知流量、设备断开、权限撤销和后台/恢复保持**待设备验收**。一个 API24 构建和有限回调测试并未将这些情况标记为已验收。BLE 需要实际支持的无线电和外围设备；不可用的无线电会明确报告。

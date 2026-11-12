@@ -1,4 +1,8 @@
+<a id="harmony-wi-fi-access"></a>
 # Harmony Wi-Fi 接入
+
+**简体中文** · [English](WIFI.en.md)
+
 
 API24 使用真实 `@ohos.wifiManager` STA 接口。默认不安装 Wi-Fi API；宿主在创建
 小程序 owner 前显式调用：

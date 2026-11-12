@@ -1,9 +1,14 @@
+<a id="live-document-v2-explicit-experiment-protocol"></a>
 # Live Document v2：显式实验协议
+
+**简体中文** · [English](browser-live-document-v2.en.md)
+
 
 这条路径为后续原生编辑 lease 提供稳定 Document、接收者身份和呈现事务。
 它明确协商 `nativeEditing:false`，准备到最终 ACK 期间通过原生 `inert` 冻结输入，
 不承诺焦点、撤销栈或中文 IME 跨更新连续。普通模拟器和 Worker 仍使用 v1。
 
+<a id="data-and-transactions"></a>
 ## 数据与事务
 
 仅新的 browser presentation owner 可以先发送 `view.live.enable`，payload 为
@@ -28,6 +33,7 @@
 不可逆发布后即使 ready 超时或 final 保留失败，结果仍携带 `committed:true` 和 key。
 客户端必须先接纳这份发布事实，保持输入关闭并报告错误，不能回滚已接受的 DOM。
 
+<a id="recipient-and-resource-ownership"></a>
 ## 接收者与资源所有权
 
 QuickJS/V8 在应用代码执行前保留私有 capture function，用私有 WeakMap 识别真实
@@ -50,6 +56,7 @@ scope 解析使用私有 own descriptor，应用覆写 `hasOwnProperty` 不改�
 这条校验仅接入显式 v2 owner，公开 v1 派发保持原边界。它不发放原生编辑 lease，
 也没有延后编辑队列、可信 source-edit acknowledgement 或更新中的焦点/IME 连续性。
 
+<a id="exact-final-and-capacity"></a>
 ## 精确 final 与容量
 
 prepare/permit/presented/abort 必须各占一个独立 owner turn；含任一 live operation
@@ -63,6 +70,7 @@ prepare/permit/presented/abort 必须各占一个独立 owner turn；含任一 l
 它还不是无限 watch 循环的生产保留策略。硬输入生命周期退休后，旧请求返回
 `ERR_CANCELLED`，不能跨 epoch 恢复执行；AppService 故障需要更换整个 session。
 
+<a id="runtime-verification-entry-point"></a>
 ## 运行验证入口
 
 ```bash

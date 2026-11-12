@@ -1,4 +1,8 @@
+<a id="performance-evidence-and-thresholds"></a>
 # 性能证据与门槛
+
+**简体中文** · [English](performance.en.md)
+
 
 性能门槛分为协议层和宿主层。`scripts/perf-baseline.mjs` 在所有 CI runner 上执行可重复的协议层基准：1000 节点参考应用元数据、10000 项批量 `setData`、批量 bridge envelope，并将提交 SHA、引擎、宿主和运行环境写入 `performance-report-v1` 报告。`scripts/check-performance-report.mjs` 会强制执行以下可测门槛：
 

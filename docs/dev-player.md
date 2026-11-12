@@ -1,4 +1,8 @@
+<a id="five-end-native-development-client"></a>
 # 五端原生开发客户端
+
+**简体中文** · [English](dev-player.en.md)
+
 
 Weapp Container Dev Player 使用 Flutter 提供连接、项目、日志和设置界面，小程序在设备本地通过原生 QuickJS＋Skia SDK 执行。Android、iOS、macOS、Windows、Linux 均有源工程；各平台安装、硬件 GPU、交互和性能是否通过，以[冻结验收清单](dev-player/gates-v1.json)及其逐项证据为准。
 
@@ -20,6 +24,7 @@ Weapp Container Dev Player 使用 Flutter 提供连接、项目、日志和设�
 
 这些是分项辅助观察，46 项冻结门禁仍为 40 项 unknown、6 项 blocked；尚未通过五端完整验收。
 
+<a id="interface-language"></a>
 ## 界面语言
 
 Player 默认使用**简体中文**，也支持 **English**。在项目／开发工具界面的“语言 / Language”入口切换后立即生效，并保存选择供下次启动恢复；不会根据系统语言自动改选。
@@ -30,6 +35,7 @@ Player 默认使用**简体中文**，也支持 **English**。在项目／开发
 
 后续[多分辨率、平板与折叠屏验收](archived-evidence.md)单独记录 Android Emulator 与 iOS Simulator 的真实项目交互及版本绑定。宿主 tabBar 和普通导航栏按实际无障碍字体行高扩展；内容区域和输入原点沿用同一测量结果。该历史版本的 128 项 Flutter 测试通过，历史语言验收仍绑定其原版本。旋转回调的窗口／胶囊原子性及原生 View 超时另列失败，不因界面测试通过而升级。
 
+<a id="start-up-build-and-device-services"></a>
 ## 启动构建与设备服务
 
 先按[模拟器文档](simulator.md#开发态监督器)准备固定版本的 `vendor/weapp-vite` 及其构建依赖。在开发电脑运行：
@@ -54,6 +60,7 @@ pnpm simulator:dev -- --project /absolute/project --surface devices \
 
 服务证书和已配对设备的 token 哈希保存在项目忽略目录 `.weapp-container/device-server/`。每个连接固定验证二维码携带的证书 SHA-256，无需更改系统 CA 或关闭 TLS 验证。设备凭据独立、可撤销，管理面板可撤销设备并关闭其 WSS。GitHub token 只用于构建机下载运行库；设备连接、pack、日志和安装包不携带它。
 
+<a id="prepare-and-start-the-player"></a>
 ## 准备和启动 Player
 
 固定 Flutter 为 **3.47.7**。当前源码要求 **preview.5.7 / ABI 1**，以及完整布局、导航准备、执行健康、开发操作收据和 prepared-restart 测量能力；只有 chrome 协议 1.0 不足以满足当前 Player。用户设备无需 Rust、Node、核心源码或 GitHub 登录；下列命令运行在构建机。
@@ -86,6 +93,7 @@ flutter run -d macos
 
 SDK 下载与安装缓存按已验证的版本、组件、平台、架构和 SHA-256 隔离。升级不会复用旧平台目录或覆盖旧缓存；包装层只在新安装通过后原子替换。包校验与默认归档重验采用同一寻址规则，损坏缓存或错误哈希仍明确失败。
 
+<a id="android-installation-requirements"></a>
 ### Android 安装要求
 
 当前 Player 要求 **Android 8.0 / API 26 或更高版本**，以及支持 `arm64-v8a` 或 `x86_64` 的 **64 位 Android 系统 ABI**。Android 7.x、`armeabi-v7a` 和 `armeabi` 不受支持。CPU 标称支持 64 位不等于已安装的 Android 系统能运行 64 位应用；部分设备使用 64 位 CPU 搭配 32 位系统，仍无法安装当前 APK。
@@ -127,6 +135,7 @@ Android、iOS、Windows、Linux 的工程、准备脚本和平台限制见 [Play
 
 iOS 真机需要 Apple Team、签名和 provisioning；APK 当前开发签名不代表生产签名。macOS notarization、Windows 签名、Linux AppImage 组装分别验收。没有证书时记录分发阻塞，不改变系统安全设置。构建脚本只记录编译，不能据此报告安装或首帧通过。
 
+<a id="mobile-installer-already-generated"></a>
 ### 已生成的移动安装包
 
 以下包表与发布失败为 preview.3 历史记录，保留原字节与结论。当前 App17 的安装包身份和限定验收见[阶段记录](archived-evidence.md)，不能使用下表旧包替代。
@@ -151,6 +160,7 @@ xcrun simctl install <已启动的模拟器-UDID> /absolute/player-extracted/Run
 
 Android 可在 Android Studio 的 Device Manager 选择目标 Emulator，再将 APK 拖入其窗口；手机安装另需用户的设备授权。Player 启动后，在 Tools & console 粘贴构建服务打印的连接，或使用相机扫描配对码。安装和配对不会授予 GitHub 访问权限。
 
+<a id="download-run-and-hot-update"></a>
 ## 下载、运行和热更新
 
 连接协议见[设备协议 v1](dev-player/protocol-v1.md)。Player 只下载缺失 CAS blob，校验原始 manifest 哈希、规范化 root、精确引用/尺寸和 blob SHA-256，再原子发布本地 generation。两个下载 worker、每 pack 256 MiB/10,000 blob、单 blob 256 MiB、缓存 1 GiB 上限均为显式边界，超限保留已运行版本。
@@ -163,6 +173,7 @@ SDK 的 `pack.devReload.protocolVersion="1.0"` 是必需能力。共享分类器
 
 “清除下载包”先关闭 session，只移除当前项目下载缓存，保留 wx storage；“清除项目 wx storage”走原生命令并等待持久化，当前页面内存直到重启才改变。各设备的 storage key 按认证服务和项目身份隔离。
 
+<a id="logs-checks-and-performance-boundaries"></a>
 ## 日志、检查和性能边界
 
 Player 显式启用 `devDiagnostics:true`，从真实业务 console 接收有界日志；普通 SDK session 默认关闭此采集。候选启动日志仅在 pack 接受后展示，失效候选不会污染当前项目。电脑面板按 deviceId 展示连接阶段及上报记录；本地日志/错误会裁剪并隐去连接串和设备凭据。
@@ -173,6 +184,7 @@ Player 显式启用 `devDiagnostics:true`，从真实业务 console 接收有界
 
 业务网络从设备直接发出。手机上的 `localhost` 指手机本身；电脑开发后端应绑定可访问接口，并让小程序使用电脑 LAN/VPN 地址。Player 不改写 URL，不代理任意网络，也不提供公网中继。
 
+<a id="acceptance-and-delivery"></a>
 ## 验收与交付
 
 本轮已记录一组[辅助验证证据](archived-evidence.md)：`78663746` App 在官方 iOS Simulator 中显示参考小程序，实际点击使页面及组件计数变化；WXML generation 2 保留计数，JS generation 3 重启并重置计数，旋转后页面收到 `onResize`。这些观察绑定原 App/native/SDK 与原始截图，不能据此升级真机、硬件驱动、屏幕呈现时间戳或 FPS 验收。旧 UI 的长构建错误导致 RenderFlex 溢出，失败截图完整保留，不算“旧预览仍可用”通过。
@@ -187,6 +199,7 @@ macOS 签名、Windows/Linux 真实窗口与安装、LAN/VPN、物理设备、�
 
 冻结清单分协议、macOS、移动端、Windows/Linux、五端联调四阶段；只有源绑定的相应证据才能改变状态。Rust/Flutter/Node 单测不能替代真机、窗口、驱动、安装、签名或性能，preview.2 报告不能绑定新源码。本轮不升级微信 near-parity 或七宿主双渲染完成状态。
 
+<a id="preview5-correctness-milestone"></a>
 ## preview.5 正确性里程碑
 
 本轮完整布局事务、目标导航测量、执行健康与开发更新收据见 [P0 实施与验收](dev-player/p0-preview5.md)。新源码必须使用匹配的 preview.5 二进制和 SDK；版本声明不代表已经完成发布或设备验收，具体状态以该页及 source-bound 回执为准。preview.4 原始产物与失败证据继续保留。

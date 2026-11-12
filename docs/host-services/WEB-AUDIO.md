@@ -1,9 +1,14 @@
+<a id="web-audio-access-and-resource-ownership"></a>
 # Web 音频接入与资源归属
+
+**简体中文** · [English](WEB-AUDIO.en.md)
+
 
 `BrowserHostServices` 使用浏览器实际 `Audio` 解码器实现 `wx.createInnerAudioContext`。
 每个 owner 最多 8 个 context；每次替换 `src` 都创建新的解码器。旧解码器的事件、
 播放算法、来源拉取及 URL 仍属于旧 source incarnation，不能进入新 source 或新账号。
 
+<a id="three-sources-of-origin"></a>
 ## 三类来源
 
 - `https://` / `http://`：只允许宿主配置的 `allowedOrigins`。通过显式
@@ -32,6 +37,7 @@ guest JS、不改变 presentation；成功的 `native.api-resource` 响应只传
 调用完全相同。已取消、结算、过期或撤销 owner 的调用不能继续读取资源；知道 asset
 哈希不能获得读取权限。包的内容完整性不替代宿主对发行者的安装认证。
 
+<a id="playback-and-recycling"></a>
 ## 播放与回收
 
 `src/startTime/autoplay/loop/volume/playbackRate` 按 facade 的属性缓存合同提交，
@@ -49,6 +55,7 @@ source、终止加载及移除 listener 不重复执行；失败的准确 URL/�
 取消。已 take 的新调用保留在 owner backlog，完成传输失败不会使其丢失。handler 的
 取消对象保留到最后一次 native take，覆盖原生成功而 guest 尚未收到结果的窗口。
 
+<a id="verification-boundary"></a>
 ## 验证边界
 
 `browser-audio-lifecycle.test.mjs` 覆盖真实 loopback HTTP、来源更换、晚到文件 URL、
@@ -56,12 +63,13 @@ source、终止加载及移除 listener 不重复执行；失败的准确 URL/�
 验证包内 API 资源权限。浏览器探针另行记录实际 Audio 解码/播放及 WASM/Worker 链路。
 这些记录均不等于物理扬声器、麦克风、移动浏览器后台策略或七端设备验收。
 
+<a id="browser-probe-reproduction"></a>
 ## 浏览器探针复现
 
 先完成包含新 WASM 与 probe 的 Web 构建，再为该构建生成独立 fixture；输出目录必须不存在：
 
 ```sh
-rtk proxy node scripts/create-host-services-audio-fixture.mjs \
+node scripts/create-host-services-audio-fixture.mjs \
   --pack examples/hosts/android/app/src/main/assets/portable-pack \
   --out /absolute/path/to/web-build/audio-probe
 ```

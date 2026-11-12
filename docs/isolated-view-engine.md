@@ -1,226 +1,74 @@
-# Isolated View engine
+<a id="isolated-view-engine"></a>
+# 隔离的视图引擎
 
-An explicit [modern JS/TS View profile](modern-view.md) is also available.
-Schema v2 packs declare its compiler/ABI, source maps and verified source closure.
-It uses a separate realm with standard JavaScript semantics; the WXS dialect
-and function-argument copy contract below apply to the legacy profile.
+**简体中文** · [English](isolated-view-engine.en.md)
 
-`container-core::ViewEngine` is a separate batched execution boundary implemented
-by `QuickJsViewEngine` and `V8ViewEngine`. It supports isolated expression and
-whole-document WXML/WXS evaluation. A native-enabled `Session` owns this View
-realm separately from AppService and submits page/component render frontiers
-through it. Declared, verified WXS modules are loaded into this realm only.
-Legacy WXS without a trustworthy module graph remains explicitly unsupported;
-an unavailable selected native provider returns `ERR_ENGINE`.
 
-The packer's WXS graph pass parses source with pinned Acorn Script grammar
-through ECMAScript 2020. It distinguishes executable loader references from
-division, regex, strings and comments, without transforming the original bytes.
-This graph acceptance policy is separate from WXS dialect conformance and is
-not a reflection sandbox. Native `require` resolves only declared dependency
-edges, including when source obtains the loader indirectly.
+还提供了一个明确的[现代 JS/TS 视图配置](modern-view.md)。
+Schema v2 包声明其编译器/ABI、源映射和已验证的源代码闭包。
+它使用独立的运行时，具有标准 JavaScript 语义；以下 WXS 语言方言和函数参数复制契约适用于旧版配置。
 
-Portable packs also carry optional `viewCompilation` metadata. Compiler
-`weapp-container-wxs` version `1.0.0`, helper ABI `1.0`, lowers both WXS module
-code and WXML expressions into separate content-addressed executables. Module
-records bind `id`, `sourceSha256`, `executableSha256` and the hygienic `helper`
-binding. Document records bind `documentId`, `wxmlAst` and each expression's
-`source`, `shorthand`, `executableSha256` and `helper`. The original WXS source
-blobs and WXML AST remain unchanged; compiler identity and executable hashes
-belong to the manifest integrity root and runtime program/reload identity.
-Hosts preload this complete verified resource closure in the initialization
-batch. Missing, changed or unsupported compilation metadata fails explicitly.
+`container-core::ViewEngine` 是由 `QuickJsViewEngine` 和 `V8ViewEngine` 实现的一个独立的批处理执行边界。它支持隔离表达式和整个文档 WXML/WXS 的评估。一个原生启用的 `Session` 会独立于 AppService 拥有此视图域，并通过该域提交页面/组件的渲染前沿。仅加载已声明和验证的 WXS 模块。旧版 WXS 由于缺乏可信的模块图，仍明确不支持；若选定的原生提供者不可用，则返回 `ERR_ENGINE`。
 
-The lexical helper implements property reads, captured method receivers,
-invocation and writes without replacing native prototype constructors. In
-compiled code an inherited standard `constructor` reads as `Number`, `String`,
-`Boolean`, `Object`, `Function`, `Array`, `Date` or `RegExp`. Own properties,
-inherited overrides and getters remain observable. Native Array methods retain
-their normal species behavior. The ABI preserves argument order, receiver,
-strict/sloppy writes, compound/update/delete timing and `for-in` property writes;
-raw property keys are converted separately at native read and write boundaries.
-WXML binds the helper inside an inner lexical function so its data scope cannot
-intercept the binding. Direct `ViewEngine` inputs without compilation metadata
-retain ECMAScript property semantics; they do not implicitly acquire this dialect.
+打包工具的WXS图遍历阶段使用固定Acorn Script语法树解析源代码，依据ECMAScript 2020规范。它将可执行加载器引用与分隔符、正则表达式、字符串和注释区分开来，且不转换原始字节。此图的验收策略与WXS方言合规性无关，也不是反射沙箱。原生`require`仅解析声明的依赖边，包括源代码通过间接方式获取加载器的情况。
 
-This is a versioned admitted syntax subset, not a security sandbox or complete
-official WXS compiler. Unsupported lowering forms return
-`ERR_UNSUPPORTED_WXS_SYNTAX`: lexical `eval`/`Function`, `with`, imports,
-optional operations, async/generators, tagged templates, classes, destructuring,
-spread/rest and `for-of`. Graph restrictions remain an additional requirement
-for packaged WXS. Reflection and all unobserved dialect differences remain
-outside a proven compatibility claim.
+可移植包还携带可选的 `viewCompilation` 元数据。编译器
+`weapp-container-wxs` 版本 `1.0.0`，辅助 ABI `1.0`，将 WXS 模块代码和 WXML 表达式分别编译为独立的、基于内容地址的可执行文件。模块记录绑定 `id`、`sourceSha256`、`executableSha256` 以及干净的 `helper` 绑定。文档记录绑定 `documentId`、`wxmlAst` 以及每个表达式的 `source`、`shorthand`、`executableSha256` 和 `helper`。原始的 WXS 源代码块和 WXML AST 保持不变；编译器身份和可执行文件哈希值属于清单完整性根和运行时程序/重载身份。宿主在初始化批次中预先加载此完整的验证资源闭包。缺少、变更或不支持的编译元数据将明确失败。
 
-Each adapter owns a new native runtime/isolate and context. It does not install
-the AppService bootstrap, `wx`, `App`, `Page`, `Component`, `getApp`, host
-providers, storage or timers. View calls never drain either View or AppService
-microtasks. The existing AppService engine API is unchanged; V8 platform
-initialization is shared once per process, while isolates remain separate.
+词法辅助程序实现了属性读取、捕获的方法接收器、调用和写入，而不会替换原生原型构造函数。在编译代码中，继承的标准 `constructor` 会读取为 `Number`、`String`、`Boolean`、`Object`、`Function`、`Array`、`Date` 或 `RegExp`。自身属性、继承的重写和getter保持可观察性。原生数组方法保留其正常的 species 行为。ABI 保持了参数顺序、接收器、严格/宽松写入、复合/更新/删除操作的时机以及 `for-in` 属性写入；原始属性键在原生读取和写入边界处分别独立转换。WXML 在内部的词法函数中绑定该辅助程序，因此其数据作用域无法拦截绑定。没有编译元数据的直接 `ViewEngine` 输入保留 ECMAScript 属性语义；它们不会隐式获得该方言。
 
-## Batch contract
+这是一个版本化的允许语法子集，不是一个安全沙箱或完整的官方 WXS 编译器。不支持的降级形式将返回 `ERR_UNSUPPORTED_WXS_SYNTAX`：词法 `eval`/`Function`、`with`、导入、可选操作、异步/生成器、标记模板、类、解构、扩展运算符/剩余参数和 `for-of`。图结构限制仍然是打包 WXS 的额外要求。反射以及所有未观察到的方言差异仍超出已验证的兼容性声明范围。
 
-- `load_modules` validates a complete module graph and compiles every factory
-  before replacing the registry. Factories execute only when a lexical alias
-  is first read. A rejected load leaves the previous registry intact.
-- `evaluate_batch` compiles full expressions and validates unique occurrence
-  IDs, document bindings and all tasks before invoking module code. Expressions
-  retain JavaScript short circuiting and intermediate values. This is not
-  expression-string caching or eager extraction of individual function calls.
-- `render_batch` accepts a document graph and page/component tasks. Each task
-  transfers its data once; WXML branches, loops, template data and includes
-  execute in order inside the View realm, returning a complete evaluated AST.
-  It does not call Rust once per expression or node. Document paths, lexical
-  bindings, source ASTs, dependency edges and expression syntax are checked
-  before stateful module execution. Named templates use their declaring
-  document's WXS aliases; includes retain the caller's data and switch lexical
-  document. Raw inline WXS text is validated against the loaded source and is
-  never scanned as WXML binding text.
-- Evaluated ASTs retain typed `boundValues`, repeat keys, `keyScope` and
-  UTF-8-length-based `sourceSite` identities. Every evaluated node also has a
-  typed `lexicalOrigin.documentId`, generated from its evaluation environment
-  and validated against the submitted document registry. Includes and imported
-  named templates use their declaring document; projected slots preserve their
-  origin. This origin is independent of component configuration and event
-  ownership, and is never inferred by parsing a `sourceSite`. Values produced by bindings are
-  never evaluated again as source. Only JSON data can enter attribute values;
-  unsupported objects, functions and non-finite numbers fail explicitly at
-  that boundary. Intermediate values stay inside View until consumed.
-- Modules use a `(scope_id, module_id)` cache. Each page/component instance must
-  supply its own scope ID. A scope can render several documents with distinct
-  aliases; `(scope_id, document_id)` bindings remain fixed until module reload.
-  Inline module IDs must match both declaring document and alias.
-- `release_scopes` validates the full list before releasing exactly those
-  caches and document bindings. Other page/component instances retain their
-  module state. Releasing an unknown scope is harmless; duplicate IDs are an
-  invalid batch. Expression and document evaluation share the same cache.
-- `require` accepts declared relative `.wxs` dependencies only. Cache entries
-  precede initialization to support cycles and partial exports. A failed module
-  entry is removed for retry; successful dependency entries remain cached.
-  Falsy `module.exports` and replacement versus `exports` rebinding are distinct.
-- Every call through an exported/returned function copies its entire argument
-  graph once. Aliases inside a call survive; data mutations do not leak to a
-  later call. The receiver unwraps to the original module object so stateful
-  methods retain identity. Explicit data receivers copy with the argument graph,
-  including aliases between the receiver and arguments. Nested/frozen exports and returned functions stay
-  inside the same membrane. Native `call`, `apply` and `bind` preserve this
-  boundary, while custom function properties retain their own implementation.
-- Final results use recursive `ViewValue` tags. `undefined`, null, NaN,
-  infinities and negative zero survive; repeated references in an acyclic graph
-  are accepted. Functions, cycles, promises/thenables, symbols, bigint and
-  non-data objects fail explicitly. No user `toJSON` method is invoked.
-- A failed evaluation returns no partial result batch. Module state may already
-  have changed; callers must commit only a complete successful frame.
-  This API alone does not implement transactional rollback of arbitrary scripts.
+每个适配器拥有一个新原生运行时/隔离区和上下文。它不安装 AppService 启动程序、`wx`、`App`、`Page`、`Component`、`getApp`、宿主提供者、存储或定时器。视图调用永远不会消耗视图或 AppService 微任务。现有的 AppService 引擎 API 保持不变；V8 平台初始化在进程级别共享，而隔离区保持独立。
 
-`register_documents` prepares an immutable `ViewDocumentProgram` and returns an
-opaque, process-local handle. `render_registered_batch` then transfers that
-handle's private token and the current tasks, without retransmitting the static
-AST or recompiling unchanged expression wrappers. The runtime registers every
-participating profile before executing any stateful task, using the same total
-batch deadline. It still validates dynamic tasks, complete results and lexical
-provenance; the public `render_batch` boundary continues to validate its full
-external input. No function results are cached and call order is unchanged.
+<a id="batch-contract"></a>
+## 批量合约
 
-Each realm retains one active document registry. Successful replacement,
-module reload, reset or disposal revokes its previous handles; another realm's
-handle is rejected before entering JavaScript. An ordinary, proven preflight
-rejection preserves the previous registry. Timeout, cancellation or an
-unexpected VM/receipt failure requires a fresh realm. A registration accepts at
-most 4,096 documents and 16 MiB of encoded static input. This is an input bound,
-not a total heap limit; the separate expression cache retains its existing
-4,096-entry bound. Provider timings distinguish registration from warm renders
-and report their input byte counts.
+- `load_modules` 验证完整的模块图，并在替换注册表之前编译每个工厂。工厂仅在首次读取词法别名时执行。加载被拒绝时，保持之前的注册表不变。
+- `evaluate_batch` 编译完整表达式，并验证唯一出现的 ID、文档绑定以及所有任务，然后调用模块代码。表达式保留 JavaScript 的短路求值和中间值。这并非表达式-字符串缓存，也不是提前提取单个函数调用。
+- `render_batch` 接受文档图和页面/组件任务。每个任务仅传输一次数据；WXML 分支、循环、模板数据和包含内容在 View 域内按顺序执行，返回完整的评估 AST。它不会为每个表达式或节点调用一次 Rust。在状态模块执行前，会检查文档路径、词法绑定、源 AST、依赖边和表达式语法。命名模板使用其声明文档的 WXS 别名；包含内容保留调用者的数据并切换词法文档。原始内联 WXS 文本会与已加载的源进行验证，且永远不会被当作 WXML 绑定文本解析。
+- 评估的 AST 保留带类型 `boundValues`、重复键、`keyScope` 以及基于 UTF-8 长度的 `sourceSite` 身份。每个评估节点还具有带类型的 `lexicalOrigin.documentId`，由其评估环境生成，并与提交的文档注册表进行验证。包含和导入的命名模板使用其声明文档；投影槽保留其来源。该来源与组件配置和事件所有权无关，且不会通过解析 `sourceSite` 推断得出。绑定产生的值不会再次作为源进行评估。只有 JSON 数据可以进入属性值；不支持的对象、函数和非有限数值在该边界处明确失败。中间值在被消耗前一直保留在 View 中。
+- 模块使用 `(scope_id, module_id)` 缓存。每个页面/组件实例必须提供自己的 scope ID。一个 scope 可以渲染多个具有不同别名的文档；`(scope_id, document_id)` 绑定在模块重新加载前保持固定。内联模块 ID 必须同时匹配声明文档和别名。
+- `release_scopes` 在释放确切的缓存和文档绑定前会验证完整列表。其他页面/组件实例保留其模块状态。释放未知 scope 是无害的；重复 ID 是无效批次。表达式和文档评估共享相同的缓存。
+- `require` 仅接受声明的相对 `.wxs` 依赖。缓存条目在初始化前存在，以支持循环和部分导出。模块条目失败时将被移除以供重试；成功的依赖条目将保持缓存。假值 `module.exports` 与 `exports` 重绑定是不同的。
+- 通过导出/返回函数的每次调用都会复制其整个参数图。调用内部的别名会存活；数据突变不会泄露到后续调用中。接收方会解包到原始模块对象，因此状态方法保持身份。显式的数据接收方会与参数图一起复制，包括接收方与参数之间的别名。嵌套/冻结导出和返回函数会保持在同一个膜内。原生的 `call`、`apply` 和 `bind` 保留此边界，而自定义函数属性保留其自身的实现。
+- 最终结果使用递归 `ViewValue` 标签。`undefined`、null、NaN、无穷大和负零值得以保留；在无环图中重复引用是被接受的。函数、循环、承诺/thenables、符号、bigint 和非数据对象会明确失败。不会调用用户 `toJSON` 方法。
+- 评估失败时不会返回部分结果批次。模块状态可能已经改变；调用方必须仅提交完整成功的帧。该 API 本身并不能实现任意脚本的事务性回滚。
 
-The native transport uses intrinsic JSON APIs and immutable bootstrap
-entrypoints. A shared guard rejects recursive calls into those entrypoints;
-modules cannot replace the registry from inside an evaluation. Transport
-intrinsics are captured and relevant constructors/prototypes are frozen.
-`Function.prototype` remains writable because transport methods were captured
-before execution. Internal error codes are branded privately, so a module
-throwing `{code: 'ERR_TIMEOUT'}` is an execution exception, not a native timeout.
+`register_documents` 创建一个不可变的 `ViewDocumentProgram` 并返回一个透明的、进程本地句柄。`render_registered_batch` 然后传递该句柄的私有令牌和当前任务，而不会重新传输静态 AST 或重新编译未更改的表达式包装器。运行时在执行任何有状态任务之前，会为每个参与的配置文件进行注册，使用相同的总批处理截止时间。它仍会验证动态任务、完整结果和词法来源；公共 `render_batch` 边界继续验证其完整的外部输入。没有函数结果被缓存，调用顺序保持不变。
 
-## Budgets and disposal
+每个作用域保留一个活动的文档注册表。成功替换、模块重新加载、重置或销毁会撤销其之前的句柄；在进入 JavaScript 之前，其他作用域的句柄将被拒绝。一次普通的、经过验证的预飞行拒绝会保留之前的注册表。超时、取消或意外的 VM/回执失败需要创建一个新的作用域。一个注册会接受最多 4,096 个文档和 16 MiB 的编码静态输入。这是一个输入限制，而不是总堆内存限制；单独的表达式缓存保留其原有的 4,096 项限制。提供者时序会区分注册和预热渲染，并报告其输入字节数。
 
-`ViewExecutionBudget` supplies one monotonic duration and an atomic cancellation
-flag per batch. It covers input encoding, compilation, require, execution,
-accessors, exception conversion, output encoding and Rust decoding. The default
-is 50 ms; callers can choose a different budget. QuickJS checks a native
-interrupt handler and completion time. V8 uses a thread-safe termination handle;
-each watchdog is cancelled and joined before returning, preventing a late
-interrupt from reaching another turn. V8 also prohibits `Atomics.wait`.
+原生传输使用内置的 JSON API 和不可变的启动入口点。一个共享的保护程序会拒绝递归调用到这些入口点；模块无法在评估过程中替换注册表。传输内联被捕获，相关的构造函数/原型被冻结。`Function.prototype` 保持可写，因为传输方法在执行前已被捕获。内部错误码被私有标记，因此模块抛出 `{code: 'ERR_TIMEOUT'}` 是执行异常，而不是原生超时。
 
-`SessionConfig.view_execution` exposes the typed `ViewExecutionPolicy` with
-`batch_timeout_ms`, defaulting to 50 when omitted. Explicit limits must be
-between 1 and 86,400,000 ms. The policy also bounds cold View program preparation;
-it does not remove initialization, transport or mixed-profile work from the
-existing shared batch deadline. The effective allowance remains the minimum of
-this limit, the remaining AppService host turn and a supplied bridge deadline.
-It neither enables an unavailable engine nor changes AppService execution
-policy. Non-performance fixtures may explicitly choose finite extra headroom;
-that does not change production defaults or establish latency acceptance.
+<a id="budgets-and-disposal"></a>
+## 预算与处置
 
-Timeout/cancellation discards the entire View realm. Later operations return
-`ERR_VIEW_REQUIRES_RESET`; `reset` creates a fresh realm with no modules or
-caches. `dispose` releases it explicitly. AppService state is independent.
-These budgets use cooperative engine interrupts and completion checks; Rust
-serialization, compilation and native builtins do not constitute a hard realtime
-or operating-system sandbox guarantee. Native engines remain thread-affine.
+`ViewExecutionBudget` 为每个批次提供一个单调时长和一个原子取消标志。它涵盖输入编码、编译、要求、执行、访问器、异常转换、输出编码和 Rust 解码。默认值为 50 毫秒；调用者可以选择不同的预算。QuickJS 检查原生中断处理程序和完成时间。V8 使用线程安全的终止句柄；每个看门狗在返回前都会被取消并加入，防止晚到的中断传递到下一轮。V8 还禁止使用 `Atomics.wait`。
 
-### Optional native batch diagnostics
+`SessionConfig.view_execution`暴露出带类型 `ViewExecutionPolicy`，包含 `batch_timeout_ms`，若省略则默认为 50。显式限制必须在 1 到 86,400,000 毫秒之间。该策略还限制了冷 View 程序的准备过程；它不会移除初始化、传输或混合配置的工作，这些工作仍按现有共享批处理截止时间处理。实际允许的时长保持为该限制、剩余 AppService 宿主轮次和提供的桥接截止时间中的最小值。它既不会启用不可用的引擎，也不会更改 AppService 执行策略。非性能测试组件可明确选择有限的额外缓冲时间；这不会改变生产环境的默认值或建立延迟验收。
 
-The `container-core/view-batch-diagnostics` Cargo feature adds an optional
-`lastBatch` record to provider timings on Android, Linux, macOS and iOS.
-QuickJS and V8 also forward this feature. It is disabled by default. Unsupported
-platforms and failed clock samples report unavailable fields rather than zero.
-The record contains only a closed operation/profile/engine identity, a
-thread-local sequence, native owner-thread ID, monotonic/boottime anchors,
-thread CPU samples and a stable error code. All u64 values cross JSON as
-decimal strings. No guest script, data, path, error message or stack is included.
+超时/取消会丢弃整个 View 域。后续操作将返回 `ERR_VIEW_REQUIRES_RESET`；`reset` 会创建一个不含模块或缓存的新域。`dispose` 会显式释放该域。AppService 状态相互独立。
+这些预算使用协作式引擎中断和完成检查；Rust 序列化、编译和原生内置函数不构成硬实时或操作系统沙箱保证。原生引擎保持线程绑定。
 
-`android-view-atrace` additionally enables an Android ATrace RAII section when
-the platform trace facility is actually enabled. It does not start a trace or
-grant permissions. Sections close on the owner thread, including early returns;
-they never move to the V8 watchdog thread. Diagnostics neither arm nor extend a
-deadline, clear cancellation, change a result, nor revive a poisoned realm.
+<a id="optional-native-batch-diagnostics"></a>
+### 可选的本地批量诊断
 
-Wall time and thread CPU are separate observations. Their difference alone
-does not identify GC, scheduling, OS suspension or virtual-machine host pauses.
-Use matching owner/batch and clock anchors with a separately bound platform
-trace before attributing a real timeout. Failed clock samples remain null;
-instrumented builds need their own source/binary and overhead evidence.
+`container-core/view-batch-diagnostics` Cargo 特性在 Android、Linux、macOS 和 iOS 上为提供者时长添加一个可选的 `lastBatch` 记录。QuickJS 和 V8 也转发此特性。该特性默认禁用。不支持的平台和时钟样本失败情况会报告不可用字段，而不是零值。该记录仅包含一个闭合的操作/配置/引擎身份、线程本地序列、原生拥有线程 ID、单调/启动时间锚点、线程 CPU 样本和一个稳定的错误码。所有 u64 值在 JSON 中以十进制字符串形式交叉表示。不包含任何 guest 脚本、数据、路径、错误消息或堆栈。
 
-Native features are required. Stub constructors return `ERR_ENGINE`; they do
-not substitute another engine. The isolated WXS realm now exposes the
-`getDate(...args)` and `getRegExp(pattern, flags)` helpers in both native
-engines. The latter accepts only the documented `g/i/m` flags; invalid or
-duplicate flags fail the complete evaluation batch. The helpers are immutable
-realm globals available to module factories and WXML expressions; captured
-constructors and frozen prototypes preserve them if module code replaces a
-global constructor. They return the engine's native Date/RegExp objects for use
-inside a WXS call; an opaque object returned directly to Rust, or passed as an
-argument across the exported-function membrane, is rejected at the transport
-boundary instead of being silently serialized. No async checkpoint
-is provided. Promise results are rejected, and internally queued jobs are not
-run. Compiled module and WXML expressions use the constructor-string ABI above;
-raw direct View calls retain ECMAScript behavior. Argument coercion edge cases,
-the complete WXS dialect and official observable semantics still need versioned
-DevTools evidence. Native JavaScript prototype constructor values remain intact.
+`android-view-atrace` 还在平台追踪功能实际启用时，启用一个 Android ATrace RAII 区段。它不会启动追踪或授予权限。区段在拥有线程上关闭，包括早期返回；它们永远不会转移到 V8 监控线程。诊断既不会触发超时，也不会延长超时，不会清除取消，不会更改结果，也不会复活被污染的运行时。
 
-The public [WXS datatype reference](https://developers.weixin.qq.com/miniprogram/dev/reference/wxs/06datatype.html)
-documents these helpers and the constructor-string behavior. It is a public
-reference, not a version-pinned observation of DevTools `2.02.2608080` / SDK
-`3.17.3`. Local engine tests exercise UTC getters/setters, RegExp state,
-intrinsic replacement, flag rejection and the existing opaque-value boundary;
-date-string parsing, local timezones, locale output and exact official errors
-remain unverified against that runtime. The official constructor/datatype oracle
-is still `unknown`; neither public documentation nor local engine results change
-that status.
+墙时间与线程 CPU 是独立的观测。它们的差异本身并不能确定垃圾回收、调度、操作系统挂起或虚拟机宿主暂停。在归因真实超时之前，必须使用匹配的拥有者/批次和时钟锚点，并配合一个单独绑定的平台追踪。失败的时钟样本将保持为空；带有监控功能的构建需要其自身的源码/二进制文件和开销证据。
 
-## Session integration and validation
+原生特性是必需的。空构造函数返回 `ERR_ENGINE`；它们不能替代其他引擎。隔离的 WXS 域现在在所有原生引擎中暴露 `getDate(...args)` 和 `getRegExp(pattern, flags)` 辅助函数。后者仅接受文档中规定的 `g/i/m` 标志；无效或重复的标志将导致整个评估批次失败。这些辅助函数是不可变的域全局变量，可供模块工厂和 WXML 表达式使用；捕获的构造函数和冻结的原型在模块代码替换全局构造函数时会保留这些变量。它们返回引擎的原生 Date/RegExp 对象，供 WXS 调用内部使用；直接传递给 Rust 的不透明对象，或通过导出函数膜传递的参数，在传输边界会被拒绝，而不是被静默序列化。没有提供异步检查点。Promise 结果会被拒绝，内部排队的任务也不会执行。编译后的模块和 WXML 表达式使用上述构造函数字符串 ABI；原始的直接 View 调用保留 ECMAScript 行为。参数类型转换的边界情况、完整的 WXS 语言方言以及官方的可观测语义仍需版本化的 DevTools 证据支持。原生 JavaScript 原型构造函数值保持不变。
 
-Both engine crates include the identical contract tests from
-`crates/container-core/tests/support/view_engine.rs`, in addition to native
-isolation, cancellation, timeout, getter, reset and microtask tests:
+公共 [WXS 数据类型参考](https://developers.weixin.qq.com/miniprogram/dev/reference/wxs/06datatype.html)
+说明了这些辅助函数和构造函数-字符串行为。它是一个公共参考，而非对 DevTools `2.02.2608080` / SDK `3.17.3` 版本的锁定观察。本地引擎测试验证了 UTC 获取/设置、正则表达式状态、内置替换、标志拒绝以及现有不透明值边界；日期字符串解析、本地时区、本地化输出和精确的官方错误仍未与该运行时进行验证。官方构造函数/数据类型权威值仍为 `unknown`；无论是公共文档还是本地引擎结果，均未改变这一状态。
+
+<a id="session-integration-and-validation"></a>
+## 会话集成和验证
+
+两个引擎 crates 均包含来自 `crates/container-core/tests/support/view_engine.rs` 的相同合同测试，以及原生隔离、取消、超时、获取器、重置和微任务测试：
 
 ```sh
 cargo test -p container-engine-quickjs -p container-engine-v8 --locked \
@@ -233,100 +81,26 @@ cargo test -p container-runtime --test session_view --locked \
   --features quickjs-native,v8-native
 ```
 
-The shared render contract lives in
-`crates/container-core/tests/support/view_render.rs`. The runtime's
-`tests/view_render_conformance.rs` compares parsed WXML with the current Rust
-IR evaluator, including keyed reorders and slot projection. This is an
-auxiliary compatibility baseline, not an official semantic oracle. In
-particular, the current template-data caller fallback is preserved and named
-explicitly in that comparison; it does not prove official scope isolation.
-Native JavaScript property access, the WXS language dialect and official
-module/call ordering still need versioned DevTools evidence.
-Native object spread currently accepts more values than the Rust evaluator.
-A bare `wx:key` is a literal own property name on an object item, including
-keywords and punctuation; it is not compiled as JavaScript. A primitive item
-with a bare key produces a null key; use `*this` for the item value. The existing
-dotted loop-scope expression extension is retained and compiled, but is not an
-official compatibility claim. Neither input validation nor a retained frame
-constitutes script-state rollback.
+共享的渲染合约位于
+`crates/container-core/tests/support/view_render.rs`。运行时的
+`tests/view_render_conformance.rs` 将解析的 WXML 与当前 Rust IR 评估器进行对比，包括键值重排和插槽投影。这只是一个辅助兼容性基准，不是正式的语义预言机。特别是，当前模板数据调用者的回退方案被保留，并在该对比中明确命名；它并不能证明官方作用域隔离。原生 JavaScript 属性访问、WXS 语言方言以及官方模块/调用顺序仍需版本化的 DevTools 证据支持。
+原生对象展开目前接受的值比 Rust 评估器更多。
+裸 `wx:key` 是对象项中的一个字面量自身属性名，包括关键字和标点符号；它不会被编译为 JavaScript。一个带有裸键的原始项会产生空键；使用 `*this` 作为项值。现有的点号循环作用域表达式扩展被保留并编译，但并不构成正式的兼容性声明。输入验证或保留帧本身都不构成脚本状态回滚。
 
-`pnpm runtime:wxs-dialect:smoke` packs a raw mini-program fixture and reads its
-actual WXML dataset on native QuickJS and V8. It compares all eight constructor
-names, computed/own reads, native Array methods, inline/external WXS, WXML-global
-reads and `for-in` writes. Its report preserves source and executable hashes,
-compiler identity and both traces. This remains auxiliary evidence, not an
-official oracle, a `weapp-vite` output regression or host/GPU/performance evidence.
+`pnpm runtime:wxs-dialect:smoke` 包装了一个原始的小程序测试用例，并在原生 QuickJS 和 V8 上读取其实际的 WXML 数据集。它比较了八个构造函数名称、计算属性/自身读取、原生 Array 方法、内联/外部 WXS、WXML 全局读取以及 `for-in` 写入。其报告保留了源码和可执行哈希值、编译器身份以及两条追踪日志。这仍属于辅助证据，而非官方权威结果，也不是 `weapp-vite` 输出的回归测试或宿主/GPU/性能相关证据。
 
-Session verifies module content and its declared dependency graph before
-AppService startup, and prepares each unchanged View program once. Page roots
-and each pending component frontier cross the native boundary as whole-document
-batches. Receipts, task identities, ASTs and lexical origins must all validate
-before any result ticket is published. Leases are recorded before execution,
-including calls that fail after changing native state. Confirmed page/component
-disposal releases its exact View scopes; hidden/cached pages retain theirs.
-Timeout, cancellation, malformed receipts or uncertain release lock the View
-realm until the host replaces the session. Session never silently resets that
-heap or falls back to Rust evaluation. The featureless QuickJS protocol test
-boundary still uses the explicit Rust evaluator for documents without WXS.
+会话在 AppService 启动前验证模块内容及其声明的依赖关系图，并为每个未更改的视图程序进行一次准备。页面根节点和每个待处理组件的前沿以整个文档批次的形式跨越原生边界。回执、任务标识、AST 和词法来源必须全部验证通过，才可发布任何结果票据。在执行前记录租约，包括在更改原生状态后失败的调用。已确认的页面/组件销毁会释放其精确的视图作用域；隐藏/缓存的页面保留其作用域。超时、取消、格式错误的回执或不确定的释放会锁定视图域，直到宿主替换会话。会话不会静默地重置该堆，也不会回退到 Rust 评估。没有 WXS 的文档，其功能空洞的 QuickJS 协议测试边界仍使用显式的 Rust 评估器。
 
-Session retains the latest document work per concrete
-page/component occurrence. Preparation and the first frame share that work;
-component discovery and lifecycle flags do not create new data inputs. An
-A → B → A sequence is three updates, and a failed input remains failed until
-its data/program changes or an explicit retry is permitted. Candidate previews
-own copies of this work, not copies of the native heap. Managed and declarative components use one
-occurrence planner: keyed identities, declaring-component resolution, slot
-projection and retained work share the same traversal. Unused light content
-does not allocate occurrences; successful plans release removed work. Direct
-manifest rendering before `page.push` owns a separate session cache. The
-declarative path retains its transparent custom-host representation and does
-not run component JavaScript lifecycles. It remains a headless presentation
-contract, not evidence of official host geometry or lifecycle equivalence.
+会话按具体页面/组件实例保留最新的文档工作。准备阶段和第一帧共享该工作；组件发现和生命周期标志不会产生新的数据输入。A → B → A 序列包含三个更新，直到其数据/程序发生变化或显式重试被允许前，失败的输入保持失败状态。候选预览拥有该工作的独立副本，而不是原生堆的副本。管理型和声明型组件使用一个实例规划器：键值身份、声明组件解析、槽位投影和保留工作共享相同的遍历过程。未使用的轻量内容不会分配实例；成功计划会释放已移除的工作。在 `page.push` 之前直接渲染清单会拥有独立的会话缓存。声明式路径保留其透明的自定义宿主表示，不会运行组件的 JavaScript 生命周期。它仍保持无头呈现合约，而不是官方宿主几何或生命周期等效性的证据。
 
-Managed reconciliation preserves work and the primary error when recovery
-also fails. Confirmed disposal advances the durable checkpoint before relation
-publication, so later failures cannot restore detached scopes. Possible scopes
-are owned before calling the engine, including calls that mutate JavaScript but
-fail before returning snapshots. Complete batch receipts validate unique scope
-and instance identities, snapshots and requested-scope coverage. Disposal also
-acknowledges every requested scope, including those already absent during retry;
-a transport success or partial response alone cannot release ownership.
-An unacknowledged mutation or failed cleanup
-invalidates that managed page: render/lifecycle discovery cannot replay it,
-and the host must restart the session. Ownership is retained for teardown;
-AppService is still callable for diagnostics and disposal. This does not roll
-back JavaScript state or freeze all AppService inputs.
-Teardown order uses stored parent relations and prepared sibling order;
-scope identifiers remain opaque, including when a new nested occurrence was
-prepared after its parent's siblings.
-Successful prepare receipts also retain exact parent binding inputs, separately
-from defaulted properties and component-local data. Changed inputs settle in a
-batch before descendant discovery, preventing a rejected update's surviving
-JavaScript state from transiently recreating an already disposed child.
+管理性回滚在恢复失败时仍保留工作和主要错误。确认销毁会在关系发布前推进持久化检查点，因此后续故障无法恢复已脱离的范围。在调用引擎之前，已拥有可能的范围，包括那些修改 JavaScript 但失败于返回快照之前的调用。完整的批处理回执验证唯一范围和实例身份、快照以及请求范围的覆盖情况。销毁还确认了每个请求的范围，包括在重试期间已不存在的范围；仅凭传输成功或部分响应无法释放所有权。未确认的突变或清理失败将使该管理页面失效：渲染/生命周期发现无法重新播放它，宿主必须重启会话。拆卸时仍保留所有权；AppService 仍可被调用用于诊断和销毁。这不会回滚 JavaScript 状态或冻结所有 AppService 输入。
+拆卸顺序使用存储的父关系和准备的兄弟顺序；范围标识符保持不可见，包括在父级兄弟之后准备了新的嵌套实例时。成功的准备回执也保留精确的父绑定输入，与默认属性和组件本地数据分开。变更输入在子发现前批量确认，防止被拒绝更新的 JavaScript 状态临时重新创建已销毁的子项。
 
-After successful cleanup of a rejected component frontier, a bounded failure
-memo retains the rejected parent input and surviving component snapshots. Idle
-discovery returns the original error without recreating disposed transient
-components or rerunning their WXS. Changed parent data/program or surviving
-component inputs permits a new attempt; no transient native heap is retained.
+在成功清理了被拒绝的组件前沿后，有界故障记录保留了被拒绝的父输入和存活组件的快照。空闲发现会返回原始错误，而不会重新创建已处置的临时组件或重新运行其 WXS。如果父数据/程序或存活组件输入发生变更，则可尝试新的操作；不会保留任何临时原生堆。
 
-Compiled View packs require a session restart whenever compiler/ABI identity or
-an executable module changes. When WXS state exists, document program, WXML or
-lexical binding changes also restart. Without WXS state, changed document
-expressions can be validated in an isolated presentation candidate and preserve
-the session. Style/asset previews may reuse live cached ASTs;
-uncached executable work is rejected. Documents without WXS may evaluate in an
-isolated candidate realm. No preview executes speculative code in the live
-View heap, and no cache copy claims to clone arbitrary native state.
+编译视图包在编译器/ABI标识或可执行模块发生变化时，需要重新启动会话。当存在WXS状态时，文档程序、WXML或词法绑定发生变化也会导致重新启动。没有WXS状态时，变更的文档表达式可以在独立的呈现候选环境中进行验证并保持会话。样式/资源预览可以重用实时缓存的AST；未缓存的可执行工作将被拒绝。没有WXS的文档可以在独立的候选域中进行求值。预览不会在实时视图堆中执行推测性代码，且没有缓存副本会声称克隆任意原生状态。
 
-Live manifest replacement rejects changes to execution/configuration inputs
-at the Session boundary as well as in the simulator classifier. Presentation
-reload validates before publication. Once `render.commit` publishes a frame,
-its response includes `committed: true`; ready-hook/effect failures follow as
-error diagnostics and cannot roll the manifest back behind those pixels.
-Rejected render responses include `committed: false`. Script effects and
-component lifecycle calls are not a rollback transaction.
+实时清单替换在会话边界以及模拟器分类器中拒绝修改执行/配置输入。
+呈现重载在发布前会进行验证。一旦 `render.commit` 发布一帧，其响应将包含 `committed: true`；ready-hook/effect 失败将作为错误诊断，且无法在这些像素之后回滚清单。被拒绝的渲染响应包含 `committed: false`。脚本效果和组件生命周期调用不是回滚事务。
 
-Local native and Session tests do not establish official DevTools, WXS dialect
-equivalence, shared-template WXS HMR,
-GPU/device, seven-host, performance or near-parity acceptance.
+本地原生和会话测试并未建立官方 DevTools、WXS 语法的等效性，共享模板 WXS HMR、GPU/设备、七宿主、性能或近似验收标准。

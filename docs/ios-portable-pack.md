@@ -1,18 +1,17 @@
-# iOS portable-pack embedding
+<a id="ios-portable-pack-embedding"></a>
+# iOS 可移植包嵌入
 
-Both iOS examples use `examples/hosts/ios/Sources/WeappContainerHost`:
+**简体中文** · [English](ios-portable-pack.en.md)
 
-- `Bridge.swift` owns a thread-affine Rust session and imports the C header.
-- `PortablePack.swift` reads a bundle/filesystem pack and verifies it before
-  calling the host. It has no UIKit, Metal, Rust or simulator dependency.
-- `ContainerSession.swift` owns live input, timer pumping, navigation-aware
-  rendering, foreground transitions and final unload. Its runtime protocol
-  extends the loader protocol and can be exercised without UIKit or Rust.
-- `WeappContainerView.swift` embeds that session in a UIKit `UIView` backed by
-  `CAMetalLayer`, using `MetalSnapshotPresenter` for direct Rust Skia output.
-- `WeappContainerSmoke` bundles a checked-in reference pack through SwiftPM.
-- `ios-app` compiles the same sources directly with the iOS SDK and copies a
-  selected pack into its `.app/portable-pack` before signing.
+
+Both iOS 示例都使用 `examples/hosts/ios/Sources/WeappContainerHost`：
+
+- `Bridge.swift` 管理一个线程相关的 Rust 会话，并导入 C 头文件。
+- `PortablePack.swift` 读取一个包或文件系统包，并在调用主机之前进行验证。它不依赖 UIKit、Metal、Rust 或模拟器。
+- `ContainerSession.swift` 管理实时输入、定时器泵送、导航感知的渲染、前台过渡和最终卸载。其运行时协议扩展了加载器协议，并且可以在没有 UIKit 或 Rust 的情况下进行测试。
+- `WeappContainerView.swift` 将该会话嵌入到一个基于 UIKit 的 `UIView` 中，该 `UIView` 由 `CAMetalLayer` 支持，并使用 `MetalSnapshotPresenter` 实现对 Rust Skia 的直接输出。
+- `WeappContainerSmoke` 通过 SwiftPM 打包一个签入仓库的参考包。
+- `ios-app` 使用 iOS SDK 直接编译相同源码，并将选定的包复制到其 `.app/portable-pack` 中，然后进行签名。
 
 ```swift
 let directory = Bundle.main.bundleURL.appendingPathComponent("portable-pack")
@@ -22,8 +21,7 @@ let started = try pack.start(on: host, width: 375, height: 667)
 // Keep the host on this thread. Inspect started.diagnostics as well as frames.
 ```
 
-For an interactive app, create `WeappContainerView` on the UIKit main thread
-and keep it as the sole owner of its session:
+对于一个交互式应用，在 UIKit 主线程中创建 `WeappContainerView`，并将其作为会话的唯一拥有者：
 
 ```swift
 let pack = try WeappPortablePack(directory: directory)
@@ -42,152 +40,57 @@ NSLayoutConstraint.activate([
 // try miniProgram.close()
 ```
 
-Supply the intended logical startup size so `App`/`Page` initialization sees
-that viewport. Subsequent layout uses rounded logical UIKit points for the
-runtime and physical pixels for the Metal drawable. The view resizes and
-renders the existing session rather than loading another app. It requires
-the native Rust host and a Metal backend; unavailable native rendering is an
-error. A temporarily unavailable drawable remains dirty and is retried.
+提供预期的逻辑启动大小，以便 `App`/`Page` 初始化能够看到该视口。后续的布局使用运行时的四舍五入逻辑 UIKit 像素和 Metal 可绘制表面的物理像素。视图会调整大小并渲染现有会话，而不是加载另一个应用。它需要原生的 Rust 宿主和 Metal 后端；如果缺少原生渲染，则会报错。临时不可用的可绘制表面将保持脏状态并会被重试。
 
-Before the host first becomes foreground-active, an absent or inactive
-window only pauses input and the display pump. Initial launch already called
-`App.onShow`; initial window attachment and activation preserve that state
-without a hide/show pair. After that first activation, window removal and
-app/own-scene deactivation send the corresponding hide transition;
-reattachment/activation resumes the same session. Successful command-buffer
-completion triggers `onPresented`; a submitted frame alone is not a completed
-presentation.
-`close()` invalidates the display link, removes observers, cancels input,
-drains/detaches Metal and unloads the native session. Cleanup continues if a
-hook or an earlier cleanup step throws. Explicit close is idempotent;
-deinitialization also releases owned resources on the main queue.
+在宿主首次变为前台激活之前，一个缺失或不活跃的窗口仅会暂停输入和显示泵。初始启动时已调用 `App.onShow`；初始窗口附加和激活会保持该状态，而无需隐藏/显示配对操作。在第一次激活之后，窗口移除和应用/自身场景的去激活会触发相应的隐藏过渡；重新附加/激活会恢复相同的会话。成功完成命令缓冲区会触发 `onPresented`；仅提交一帧并不等同于完成呈现。
 
-Applications with a custom surface can instead own
-`WeappContainerSession(pack:runtime:engine:sessionID:route:width:height:)`.
-Call `pointer`, `setForeground`, `resize` and `pollTimers` on its creating
-thread, and drain/detach the custom surface before `session.close()`. A failed
-runtime transaction records a diagnostic and stops subsequent input/timer
-work. Lifecycle unload is attempted before native release, even after a
-failed transaction. Do not mutate its native host through a second owner.
-The session itself sends `touchcancel` before hiding, resizing or unloading;
-custom surface owners do not need a second cancellation implementation.
-`onOperation` and `onDiagnostic` observers run after the complete surrounding
-transaction settles, including acknowledgement validation and publication.
-An observer may close the session at that point without unloading beneath a
-pending render. These observation callbacks report completed work, rather
-than providing an input or lifecycle injection point.
+`close()` 会失效显示链接，移除观察者，取消输入，清空/解绑 Metal 并卸载原生会话。如果钩子或更早的清理步骤抛出异常，清理操作将继续。显式关闭是幂等的；去初始化也会释放主队列上所拥有的资源。
 
-The session's timer input is **Unix-epoch nanoseconds**, obtained with
-`WeappContainerSession.clockNowNs()`. `CADisplayLink.timestamp`, device uptime
-and time since session creation use a different epoch. Touch event
-`timeStamp` intentionally uses UIKit's monotonic milliseconds instead.
-Each tick reads lightweight native page/revision metadata. A changed route,
-page identity or View revision renders using live page data, including JS
-navigation, `setData` and deferred ready/observer effects. An empty timer
-batch can still trigger that dirty render; an unchanged tick does not.
-Subsequent manifest frames use `useSessionResources: true` to reuse the
-session's verified resources without retransmitting their bytes. The
-initial render supplies explicit blobs. Current-route rendering selects
-app, page and recursively used component styles in manifest order.
+具有自定义绘制表面的应用程序可以拥有
+`WeappContainerSession(pack:runtime:engine:sessionID:route:width:height:)`。
+在其创建线程上调用 `pointer`、`setForeground`、`resize` 和 `pollTimers`，在 `session.close()` 之前 draining/detach 自定义绘制表面。运行时事务失败会记录诊断信息并停止后续输入和定时器工作。在原生释放之前会尝试生命周期卸载，即使事务失败也是如此。不要通过第二个所有者来修改其原生宿主。
+会话本身在隐藏、调整大小或卸载前会发送 `touchcancel`；自定义绘制表面的所有者无需实现第二次取消操作。
+`onOperation` 和 `onDiagnostic` 观察者在完整周围事务完成之后运行，包括确认验证和发布。观察者可以在该点关闭会话，而无需在待渲染之前卸载。这些观察回调报告已完成的工作，而不是提供输入或生命周期注入点。
 
-Input currently supports one pointer, `touchstart`/`touchmove`/`touchend`/
-`touchcancel`, and an end-plus-tap batch for an unmoved contact lasting at
-most 500 ms. A second contact cancels the gesture. Coordinates and tap slop
-use logical points; the runtime derives targets, datasets and propagation
-from the committed tree. An identified contact keeps its down-time node,
-listener, dataset and component route across moves. Page transitions, target
-removal and viewport changes cancel that contact; a delayed end or tap cannot
-select a replacement target. The runtime and both native engines test this
-as a local contract; fixed-baseline WeChat equivalence is still unverified.
-Multi-touch, long-press, native scrolling, keyboard/text-input composition
-and a UIKit accessibility tree are not implemented by this view. Full iOS
-display/safe-area/orientation observations are also not supplied by its
-viewport-only resize boundary. These remain separate implementation and
-conformance work.
+会话的定时器输入是**Unix 时间戳纳秒**，通过 `WeappContainerSession.clockNowNs()` 获取。`CADisplayLink.timestamp`、设备启动时间以及会话创建以来的时间使用不同的时间起点。触摸事件的 `timeStamp` 故意使用 UIKit 的单调毫秒时间。每次 tick 读取轻量级的原生页面/版本元数据。当路由、页面身份或视图版本发生变更时，将使用实时页面数据进行渲染，包括 JS 导航、`setData` 以及延迟的就绪/观察器效果。即使定时器批次为空，仍可能触发该脏渲染；若 tick 未发生变更，则不会触发。后续的清单帧使用 `useSessionResources: true` 以复用会话已验证的资源，而无需重新传输其字节。初始渲染提供明确的二进制数据块。当前路由的渲染按清单顺序选择应用、页面以及递归使用的组件样式。
 
-`scripts/ios-app-smoke` also supports `WEAPP_CONTAINER_IOS_BUILD_ONLY=1`.
-It creates a signed app and a versioned `build-product.json` receipt before
-any simulator command. This lets the official XCUITest runner own subsequent
-installation, OS input, launch and cleanup. The verification-only
-`WEAPP_CONTAINER_IOS_UI_OBSERVATION=1` build exposes one accessibility anchor
-with bounded read-only session/page metadata. Normal embedding builds do not
-expose page data. The observation uses `weapp_container_ios_host_inspect_state`
-as one immutable batch, without entering JS, polling timers or traversing
-nodes through FFI. The lightweight production `session_state` pump remains
-separate and does not serialize application data.
+输入目前支持一个指针，`touchstart`/`touchmove`/`touchend`/`touchcancel`，以及一个持续最多 500 毫秒且未移动的接触的结束加点击批次。第二个接触会取消该手势。坐标和点击容差使用逻辑点；运行时从已提交的树中获取目标、数据集和传播信息。已识别的接触在移动过程中保持其按下时间节点、监听器、数据集和组件路径。页面切换、目标移除和视口变化会取消该接触；延迟结束或点击无法选择替代目标。运行时和两个原生引擎均将此作为本地合约进行测试；固定基准的微信等效性仍未经验证。多点触控、长按、原生滚动、键盘/文本输入组合以及 UIKit 可访问性树均未由该视图实现。其仅提供视口大小的边界，也未提供完整的 iOS 显示/安全区域/方向观察功能。这些功能仍为独立的实现和合规性工作。
 
-The loader checks UTF-8/schema v1, SHA-256 integrity root, protocol major,
-all module/View script/template/style/asset references and asset sizes.
-Missing/corrupt blobs and symlinks escaping the pack fail before the loaded
-session is touched. The Rust runtime additionally validates its complete
-schema, dependencies, capabilities, WXML/WXSS and supported View semantics.
-The Swift canonicalizer supports the current v1 metadata numeric domain:
-non-negative integers up to `Number.MAX_SAFE_INTEGER` (schema version and
-resource byte sizes). Floating, negative or larger numeric metadata is
-explicitly rejected; this is not a general RFC 8785/ECMAScript numeric
-canonicalizer. WXML/WXSS expression data stays in hashed blobs and is not
-subject to that manifest-metadata restriction.
+`scripts/ios-app-smoke` 也支持 `WEAPP_CONTAINER_IOS_BUILD_ONLY=1`。
+它在任何模拟器命令之前创建一个签名应用和版本化的 `build-product.json` 回执。这使得官方 XCUITest 运行器可以自行执行后续的安装、操作系统输入、启动和清理操作。仅用于验证的 `WEAPP_CONTAINER_IOS_UI_OBSERVATION=1` 构建会暴露一个可访问的锚点，并提供有界只读的会话/页面元数据。普通嵌入式构建不会暴露页面数据。观察功能使用 `weapp_container_ios_host_inspect_state` 作为一个不可变批次，不进入 JS，不使用轮询定时器，也不通过 FFI 遍历节点。轻量级生产版 `session_state` 泵保持独立，且不会序列化应用程序数据。
 
-The checked-in fixture was rebuilt from the renamed reference app using an
-available compiler archive without Git provenance. Its `compiler.commit` is
-honestly `unknown`; it does not prove a pinned upstream compiler build.
-Rebuild it with the repository's verified submodule before a reproducibility
-or release gate.
+加载器检查 UTF-8/模式 v1、SHA-256 完整性根、协议主版本，所有模块/视图脚本/模板/样式/资产引用和资产大小。缺失或损坏的 blob 文件以及逃逸打包的符号链接在会话加载之前就会失败。Rust 运行时还验证其完整模式、依赖项、能力、WXML/WXSS 以及支持的视图语义。Swift 标准化器支持当前 v1 元数据数值域：非负整数，最大值为 `Number.MAX_SAFE_INTEGER`（模式版本和资源字节大小）。浮点数、负数或更大的数值元数据会被明确拒绝；这并非通用的 RFC 8785/ECMAScript 数值标准化器。WXML/WXSS 表达式数据保留在哈希 blob 中，不受该清单-元数据限制。
 
-Declared WXS and compiled expression blobs use the runtime's isolated View
-engine. Byte transport alone does not prove WXS semantics or official parity.
+已检出的测试组件使用可用的编译器归档文件（无 Git 来源）从重命名的参考应用重建而成。其 `compiler.commit` 确实为 `unknown`；它无法证明使用了固定版本的上游编译器构建。在可重现性或发布门禁之前，必须使用仓库中已验证的子模块重新构建它。
 
-Startup sends complete JSON batches in this order:
+声明的 WXS 和编译后的表达式数据块使用运行时的隔离视图引擎。仅凭字节传输无法证明 WXS 语义或官方一致性。
 
-1. Load manifest through the C ABI.
-2. `app.init` with all modules, verified blobs and launch options.
-3. `app.lifecycle` with `launch`.
-4. `page.push` for the selected route.
-5. `render.commit` with that route's template, styles, blobs and viewport.
+启动会按此顺序发送完整的 JSON 批量：
 
-The render request omits `data`, preserving the current page state produced
-by JS registration, `onLoad` and `setData`. A supplied route must exist and
-have a matching template; the loader does not substitute a synthetic frame.
-Each response must be correlated by session/operation/request ID, have response kind
-and acknowledge success. `app.init` must report a real engine provider;
-`render.commit` must explicitly acknowledge publication. Structured runtime
-errors retain their `ERR_*` code. Errors after an accepted frame are returned
-in startup diagnostics; the example apps record them as a startup failure.
+1. 通过 C ABI 加载清单。
+2. 使用 `app.init` 加载所有模块、已验证的二进制文件和启动选项。
+3. 使用 `app.lifecycle` 与 `launch` 操作。
+4. 使用 `page.push` 推送选定的路由。
+5. 使用 `render.commit` 提交该路由的模板、样式、二进制文件和视口。
 
-The original C ABI defaults to QuickJS. The additive
-`weapp_container_ios_host_load_manifest_with_config` accepts a JSON
-`SessionConfig`. In Swift, use `pack.start(on: host, engine: "v8", sessionID:
-"my-session")` with a staticlib built using `v8-native`. Missing providers fail
-with `ERR_ENGINE`; no fallback occurs. Custom legacy runtime implementations
-may keep their existing loader, but must implement the configured overload to
-support non-default engine/session settings. Selection alone does not establish
-V8/iOS execution coverage.
+渲染请求省略了 `data`，保留了由 JS 注册、`onLoad` 和 `setData` 产生的当前页面状态。提供的路由必须存在且具有匹配的模板；加载器不会替换合成帧。每个响应都必须通过会话/操作/请求 ID 进行关联，包含响应类型并确认成功。`app.init` 必须报告一个真实的引擎提供者；`render.commit` 必须明确确认发布。结构化运行时错误保留其 `ERR_*` 代码。在已接受帧之后发生的错误将出现在启动诊断中；示例应用会将其记录为启动失败。
 
-The native Swift host receives the logical viewport before `app.init`, so
-window-information APIs and media queries used during `onLoad` see the same
-dimensions as rendering. Its geometry-aware overload is additive; existing
-custom runtime implementations retain their configured loader.
+原始的C ABI默认使用QuickJS。添加函数`weapp_container_ios_host_load_manifest_with_config`接受一个JSON格式的`SessionConfig`。在Swift中，使用`pack.start(on: host, engine: "v8", sessionID:
+"my-session")`，并使用`v8-native`构建的静态库。缺少提供者将报错`ERR_ENGINE`，不会发生回退。自定义的旧版运行时实现可以保留其现有的加载器，但必须实现配置的重载以支持非默认的引擎/会话设置。仅选择本身并不能确立V8/iOS的执行覆盖。
 
-The additive native session boundary provides:
+原生 Swift 宿主在 `app.init` 之前接收到逻辑视口，因此在 `onLoad` 期间使用的窗口信息 API 和媒体查询看到的尺寸与渲染尺寸一致。其几何感知的重载是累加的；现有的自定义运行时实现保留其配置的加载器。
 
-- `weapp_container_ios_host_resize_viewport`: logical width/height and one
-  resize-effect bridge batch; frame publication remains a separate commit.
-- `weapp_container_ios_host_poll_timers`: one complete batch for an absolute
-  Unix-epoch nanosecond observation.
-- `weapp_container_ios_host_session_state`: only
-  `{schemaVersion:1, sessionId, viewport:{width,height}, page:{id,route}|null,
-  frameId:number|null, viewRevision:number}`. It contains no view tree or pixel data, and reports
-  the last accepted frame even if the viewport has since changed.
-- `weapp_container_ios_host_unload`: idempotent native release, preserving the
-  reusable host handle. Send `app.lifecycle(unload)` first to invoke hooks.
+可添加的原生会话边界提供：
 
-Swift `WeappContainerHost` exposes these as `resize`, `pollTimers`,
-`sessionState` and `unload` and conforms to `WeappContainerSessionRuntime`.
-All returned FFI buffers are copied and freed within each Swift call.
-Unloaded sessions reject state, resize, timer and dispatch operations;
-capability discovery and a subsequent manifest load remain available.
+- `weapp_container_ios_host_resize_viewport`：逻辑宽度/高度和一个resize效果桥接批处理；帧发布仍作为一个独立的提交。
+- `weapp_container_ios_host_poll_timers`：一个绝对Unix纪元纳秒观测的完整批处理。
+- `weapp_container_ios_host_session_state`：仅包含 `{schemaVersion:1, sessionId, viewport:{width,height}, page:{id,route}|null,
+  frameId:number|null, viewRevision:number}`。它不包含视图树或像素数据，并且即使视口已更改，也会报告最后接受的帧。
+- `weapp_container_ios_host_unload`：幂等的原生释放，保留可重用的主机句柄。首先发送 `app.lifecycle(unload)` 以调用钩子。
 
-From the repository root:
+Swift `WeappContainerHost` 暴露了这些功能为 `resize`、`pollTimers`、`sessionState` 和 `unload`，并符合 `WeappContainerSessionRuntime`。所有返回的 FFI 缓冲区都在每次 Swift 调用中被复制并释放。已卸载的会话会拒绝状态、重尺寸、定时器和分发操作；能力发现以及后续的清单加载仍可使用。
+
+从仓库根目录：
 
 ```sh
 node scripts/sync-ios-portable-pack.mjs --source artifacts/reference-app/pack
@@ -198,69 +101,26 @@ scripts/test-ios-container-session
 swift build --package-path examples/hosts/ios --target WeappContainerHost
 ```
 
-The sync script uses the packer's canonical JSON implementation, validates
-all sources before writing, publishes a staged directory with recovery of
-the previous destination on publication failure, and supports exact-byte
-`--check`. `--destination` is available for app build output directories.
-The Swift tests run against actual packed reference bytes and a recording
-runtime, covering startup order, data preservation, integrity failures,
-engine errors, correlation, publication acknowledgement and diagnostics.
-Session tests use a recording runtime to cover input batches, resize,
-current-route rendering, lifecycle, timers, error suspension and unload.
-These Swift tests do not execute the native JS engine or establish
-device/GPU evidence. Rust host tests cover the native metadata/resize/unload
-boundary; a macOS library build checks imports and conditional compilation,
-while UIKit and real presentation require the iOS SDK and runtime gate.
+同步脚本使用打包器的规范 JSON 实现，写入前验证所有源，发布时会发布一个暂存目录，并在发布失败时恢复之前的目标准备位置，支持精确字节 `--check`。`--destination` 选项可用于应用程序构建输出目录。
+Swift 测试针对实际打包的参考字节和录制运行时进行，涵盖启动顺序、数据保留、完整性故障、引擎错误、相关性、发布确认和诊断。
+会话测试使用录制运行时，涵盖输入批次、缩放、当前路由渲染、生命周期、定时器、错误挂起和卸载。
+这些 Swift 测试不执行原生 JS 引擎，也不建立设备/GPU 证据。Rust 宿主测试涵盖原生元数据/缩放/卸载边界；macOS 库构建检查导入和条件编译，而 UIKit 和真实呈现需要 iOS SDK 和运行时门禁。
 
-The bundled fixture was rebuilt from `examples/apps/reference-app` after the
-Weapp Container rename. Its route is `pages/home/index` and its integrity root is
-`6da28a3a2e7194893d61209ba4b5f83afc5d72d429ba3fc9f6140106fcc9d8a1`.
-That local build used an available non-Git compiler archive, so the manifest
-records `compiler.commit: "unknown"`. The pack is a loader/development fixture;
-it does not satisfy the pinned-upstream reproducible-build gate. Refresh it
-with a verified fixed-commit compiler before using it as release evidence.
+捆绑的测试用例是在 Weapp Container 重命名后，从 `examples/apps/reference-app` 重建的。其路由为 `pages/home/index`，完整性根为 `6da28a3a2e7194893d61209ba4b5f83afc5d72d429ba3fc9f6140106fcc9d8a1`。该本地构建使用了可用的非 Git 编译器归档文件，因此清单记录了 `compiler.commit: "unknown"`。该包是一个加载器/开发测试用例；它不满足固定上游可重现构建门禁。在将其作为发布证据使用前，请使用已验证的固定提交编译器刷新它。
 
-When intentionally running an official simulator smoke:
+当故意运行官方模拟器烟雾时：
 
 ```sh
 WEAPP_CONTAINER_IOS_PACK=/absolute/path/to/pack scripts/ios-app-smoke
 WEAPP_CONTAINER_IOS_PACK=/absolute/path/to/pack scripts/ios-embedding-smoke
 ```
 
-That script builds Rust and UIKit, installs only its task bundle on an
-already booted simulator, and reads its app-owned evidence file. A passing
-surface probe requires an accepted pack-backed frame, a direct Rust Skia
-Metal render and successful command-buffer completion. It does not imply
-hardware acceleration on a simulator, performance acceptance, real-device
-coverage or semantic equality with WeChat DevTools.
+该脚本编译 Rust 和 UIKit，仅在已启动的模拟器上安装其任务包，并读取其应用拥有的证据文件。通过表面探针需要一个已验收的基于包的帧、直接的 Rust Skia Metal 渲染以及命令缓冲区的成功完成。这并不意味着模拟器上启用硬件加速、性能验收、真实设备覆盖或与微信开发者工具在语义上的等价性。
 
-`ios-embedding-smoke` selects the interactive `WeappContainerView` example
-instead of the original one-frame smoke. Its first completed frame records
-`source: "ios-skia-metal-embedding"` and `sessionOpen: true`; it does not
-claim an already detached surface. Later batches enter a bounded
-`embedding-trace.json` copied before the task app is removed. A first-frame
-pass does not prove continuous OS touch input or scheduled timer behavior.
-The original smoke continues to require successful Metal detach. Both
-scripts clean up their own app; the embedding controller can be reused in
-an application's own persistent UIKit lifecycle.
+`ios-embedding-smoke` 选择交互式 `WeappContainerView` 示例，而不是原始的单帧烟雾。其第一个完成的帧记录了 `source: "ios-skia-metal-embedding"` 和 `sessionOpen: true`；它没有声称已经断开的绘制表面。后续批次进入一个有界限的 `embedding-trace.json`，该文件在任务应用被移除前已复制。首次帧通过并不能证明持续的 OS 触摸输入或定时器行为。原始烟雾仍需要成功的 Metal 断开。两个脚本都会清理自身应用；嵌入控制器可以在应用自身的持久 UIKit 生命周期中复用。
 
-`WEAPP_CONTAINER_IOS_ENGINE=quickjs|v8` selects matching Cargo and runtime
-configuration. `WEAPP_CONTAINER_IOS_SIMULATOR_UDID` selects a booted simulator;
-the script refuses ambiguous automatic selection. Build receipts bind source
-before/after compilation to the actual signed executable SHA-256. Uncommitted
-sources remain `unknown`, and source changes during compilation fail. The
-resulting `execution-evidence.json` binds the target, engine, session, manifest,
-requests/responses, snapshot and Metal frame for the shared conformance matrix.
+`WEAPP_CONTAINER_IOS_ENGINE=quickjs|v8` 选择匹配的 Cargo 和运行时配置。`WEAPP_CONTAINER_IOS_SIMULATOR_UDID` 选择已启动的模拟器；脚本拒绝模糊的自动选择。构建回执将编译前/后的源代码绑定到实际签名可执行文件的 SHA-256。未提交的源代码保持为 `unknown`，编译过程中源代码的变更将失败。生成的 `execution-evidence.json` 将目标、引擎、会话、清单、请求/响应、快照以及 Metal 帧绑定到共享一致性矩阵中。
 
-The local build may warn if cached QuickJS C objects were compiled with an iOS
-SDK deployment target newer than the Swift app's declared minimum. A successful
-link alone does not prove that declared minimum OS is supported; deployment-target
-alignment and execution on that OS remain a separate gate.
+本地构建可能会警告，如果缓存的 QuickJS C 对象是使用比 Swift 应用声明的最低版本更新的 iOS SDK 部署目标编译的。仅成功链接并不能证明已支持声明的最低操作系统；部署目标对齐和在该操作系统上的执行仍是一个独立的门槛。
 
-The smoke uses a unique bundle identifier and run directory by default. An
-explicit bundle identifier must be absent on the selected booted simulator;
-existing apps are preserved. `resources.json` records installation/launch
-ownership and PID. Cleanup queries that exact bundle/PID, distinguishes a
-natural exit from a live owned process, uninstalls its bundle and writes
-`cleanup.json`. Identity changes and cleanup failures are reported and fail
-the command; the borrowed simulator and unrelated apps stay running.
+烟雾使用默认的唯一捆绑标识符和运行目录。所选的启动模拟器上必须没有显式的捆绑标识符；现有应用得以保留。`resources.json` 记录安装/启动的所有权和进程 ID（PID）。清理查询会精确匹配捆绑标识符/PID，区分正常退出和持续拥有进程的情况，卸载其捆绑包，并写入 `cleanup.json`。身份变更和清理失败将被报告并导致命令失败；借来的模拟器和无关应用将继续运行。

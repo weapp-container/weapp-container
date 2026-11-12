@@ -1,4 +1,8 @@
+<a id="browser-dev-http-control-client"></a>
 # 浏览器开发态 HTTP 控制客户端
+
+**简体中文** · [English](browser-control-http.en.md)
+
 
 `crates/container-simulator/src/browser-dev-http-control.mjs` 提供
 `BrowserDevHttpControl`，供受信任的本机 owner 接入现有
@@ -20,6 +24,7 @@ typed snapshot，不占用命令 ledger、serial、final 或 ACK；响应仍受 
 客户端 header 不授予权限。底层客户端不负责 owner、预览选举与 Worker 关闭关联；
 `serve_browser_dev` 和普通 CLI 的显式 Browser profile 复用同一个 runner 接通这些边界；详见[开发循环](browser-dev-loop.md)。
 
+<a id="explicit-server-side-access"></a>
 ## 显式服务端接入
 
 先创建 `WebSurface::bind_resource_only`，再于首次 accept 前调用
@@ -59,6 +64,7 @@ header 上限 16 KiB，invoke／replay body 上限 64 KiB，ACK body 上限 129 
 交付、Worker 关闭或监督器清理完成。listener 端口直到 drop 这个 surface 才释放；有意
 放弃交付时也只能 drop 所属 surface，再在原 supervisor 上重试退出。
 
+<a id="original-result-and-ack"></a>
 ## 原始结果与 ACK
 
 `invoke(request, {signal})` 只允许一次，网络失败或实际工作容量不足也不能再次 invoke。
@@ -82,6 +88,7 @@ manager 完整采纳并保留结果后才调用
 ACK body 可以超过 64 KiB，服务端须单独设置有界上限；内部原请求仍受 64 KiB 限制。
 ACK 自身不退休服务端 tombstone，不证明 Worker 关闭或当前画面已呈现。
 
+<a id="optional-prefix-retirement-protocol-10"></a>
 ## 可选前缀退休协议 1.0
 
 `BrowserDevOwner::enable_control_retirement()` 在首次命令前显式开启，重复开启或已有
@@ -130,6 +137,7 @@ Stop 必须继续原关闭流程，transport drain 仍等待已登记的实际�
 采用、失败记账及通知；它不启动重试或新请求。HTTP drain 可能早于 manager 工作启动或
 结果采用，不能单独作为读取 ACK pending 状态的屏障。
 
+<a id="capacity-and-closure"></a>
 ## 容量与关闭
 
 原 entry Map 依据校验后的 command 固定 normal/cleanup 身份；首次接纳就预收最大
@@ -137,8 +145,8 @@ final 的保留费用。实际工作使用独立预算，不允许 normal 或 AC
 
 | 工作 | 默认在途数 | 默认逻辑字节预算 | 保留 entry 上限 |
 | --- | --- | --- | --- |
-| normal invoke | 8 | 16 MiB | 512 |
-| cleanup invoke | 2 | 4 MiB | 128 |
+| 正常调用 | 8 | 16 MiB | 512 |
+| 清理调用 | 2 | 4 MiB | 128 |
 | exact replay/recovery | 2 | 4 MiB | 不创建 entry |
 | ACK | 8 | 4 MiB | 不创建 entry |
 | prefix retirement | 2 | 256 KiB | 每 lane 一个未决事务及最近回执 |
@@ -158,6 +166,7 @@ fetch、hash、reader cancellation 与 relay 清理。忽略取消的适配器�
 清理失败返回 `closed:false`，不会伪造成功。调用方须先关闭实际 Worker manager，
 再等待 transport；传输关闭不是 owner close 或服务端 body borrower 排空证明。
 
+<a id="serial-owner-library-entry-point"></a>
 ## 串行 owner 库入口
 
 `browser_dev_owner::BrowserDevOwner` 将原 `DevSupervisor`、coordinator 与
@@ -194,6 +203,7 @@ manager 报告的关联接受，不是服务端独立观察 Worker termination �
 Worker 的精确关闭，再停止 HTTP admission；过早停止会阻断后续 cleanup／ACK。
 listener drop 和 socket drain 仍不证明 Worker 已关闭。
 
+<a id="actual-identity-in-closing-receipts"></a>
 ## 关闭回执中的实际身份
 
 `outcome: "closed"` 的 `receipt` 是版本化的 `BrowserWorkerCloseReceipt`：
@@ -223,6 +233,7 @@ tombstone；空 ledger 或已退休的 compacted entry 不阻塞。Queued、Exec
 停服必须同时满足原 owner 的 `try_shutdown` 成功、该门禁通过，以及原 HTTP 队列实际
 排空；固定宽限时间或 socket 断开不能代替这些条件。
 
+<a id="trusted-development-ui-service-seam"></a>
 ## 可信开发 UI 服务接缝
 
 原 owner 启用控制后，可在同一 resource-only surface 首次 accept 前调用
@@ -248,6 +259,7 @@ deadline、连接上限和 writer。响应使用 no-store、nosniff、same-origi
 no-referrer 和 `frame-ancestors 'none'`，不添加 wildcard CORS。测试该服务接缝不代表
 浏览器 bootstrap、Worker 或呈现门禁已通过；CLI 仍需单独接线。
 
+<a id="scope-of-execution-evidence"></a>
 ## 执行证据范围
 
 `scripts/test-browser-dev-http-control.mjs` 使用受控 fetch/stream 测试字节、容量、

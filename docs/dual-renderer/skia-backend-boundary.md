@@ -1,10 +1,15 @@
+<a id="skia-page-backend-and-passive-host-observation-boundary"></a>
 # Skia 页面后端与被动宿主观察边界
+
+**简体中文** · [English](skia-backend-boundary.en.md)
+
 
 `container-runtime::render_backend` 在 owner thread 内管理 Skia 页面准备和接受。
 Session 负责 AppService/View 求值、页面与资源授权、滚动状态协调、输入 provenance、
 呈现权限、ready 和 effects；后端不接收 `&mut Session` 回调，不执行 JS，也不拥有窗口。
 公开 bridge、ViewDocument schema、宿主 ABI 和各渲染模式的呈现语义保持原有边界。
 
+<a id="preparation-and-acceptance"></a>
 ## 准备与接受
 
 1. Session 验证 manifest、目标、模板和资源，捕获页面输入快照。
@@ -28,6 +33,7 @@ Session 继续决定最终 ACK、重复 ACK、页面切换、输入 lifetime 和
 manifest 资源。开发预览在 detached Session 接受自己的候选，不能发布 live 页面输入证明。
 manifest 更换时后端清空可复用 decode cache；旧 accepted frame 的 Arc 像素仍有效。
 
+<a id="actual-frame-preparation-by-renderer"></a>
 ## Renderer 的实际画面准备
 
 `SkiaRenderer::prepare_page_frame` 独占借用当前 renderer，在返回候选前完成帧、图片和目标校验，以及 Raster 的实际绘制与像素读回。`PreparedPageFrame::accept` 只移动已经准备的页面字段和更新标记；返回的 `AcceptedPageFrame` 持有被替换的旧帧、像素、图片和 surface。共同发布的调用方须将 receipt 保留到 Web store 解锁后再释放，不能在发布锁内销毁旧页面资源。Canvas、字体和 GPU context 始终属于原 renderer；真实绘制产生的独立字体缓存增长不回滚。
@@ -36,6 +42,7 @@ manifest 更换时后端清空可复用 decode cache；旧 accepted frame 的 Ar
 
 此接口仅完成 renderer 层；上层 `PreparedSkiaFrame`、有应用 hook 的逻辑 resize、Web reservation 和倍率专用候选的资源释放尚未合并成共同事务。不能把 renderer 候选的失败原子性推广为 JS 状态回滚或完整 resize 验收。
 
+<a id="dom-and-subsequent-work"></a>
 ## DOM 与后续工作
 
 DOM 的 raw stylesheet graph、浏览器布局、geometry、permit 与最终 ACK 路径保持独立，
@@ -48,6 +55,7 @@ DOM 的 raw stylesheet graph、浏览器布局、geometry、permit 与最终 ACK
 - SkiaRenderer 继续通过显式 `ensure/ensure_mut` 按需创建，没有隐式 `Deref` 初始化。普通 DOM、被动状态读取、空截图、detach/reset 与独立 Canvas 不创建页面对象；模式和 feature 支持仍在加载前校验。CanvasService 在首次页面初始化时整体移动到 renderer，保留同一 history/snapshot/font/cache/lock；之后当前 renderer 是唯一所有者。整体替换 renderer 后不得复活退休 store。这是对象与能力边界的改进，不据此宣称性能收益。
 - backend-neutral receipt/coordinator、全宿主 WebView 适配、GPU/真机与性能门禁不由该代码重构证明。
 
+<a id="accepted-frames-are-not-presentation-authorization"></a>
 ## 已接受帧不是呈现授权
 
 `AcceptedPageObservation` 只描述同一个 renderer 的已接受 revision、frame、
@@ -62,6 +70,7 @@ target 只在提交成功时发布，staging、失败、Canvas 与 diagnostic ca
 pending ready 与 observer geometry 授权，避免替换对象复用相同数字 revision 时继承旧凭据。
 替换对象的被动 frame/target 观察仍有效；Raster 保留既有同步语义，外部呈现须由正常提交重新授权。
 
+<a id="development-mode-scaling-transactions"></a>
 ## 开发态倍率事务
 
 `validate_skia_render_target` 与 `stage_skia_render_target` 不创建页面对象，不改变已接受 target，
@@ -81,6 +90,7 @@ Canvas、字体、GPU context 与计数器不被回滚。无当前 scene 时只�
 
 该事务仅覆盖倍率/FPS 等不改变逻辑几何的设置。完整[宿主环境镜像](host-environment.md)已提供进入应用代码前的可信修复；逻辑 resize 的回调导航失效、Provider 几何恢复与画面共同接受仍待联合接线。Raster 的精确回执已有[显式运行时 API](dev-raster-presentation.md)，Web owner／binary／RAF 接线尚未启用；不能从这个边界推导完整回滚或 GPU 验收。
 
+<a id="verification-entry"></a>
 ## 验证入口
 
 本 checkpoint 的 `9354c828` 通过格式、严格 Clippy 及完整 workspace（2173 通过、0 失败、11 忽略，75 项必选全通过），三组独立源码绑定的浏览器回归通过。Skia 完成两次 context 恢复；40 项检查按 liveContextIds 筛选的 context 及 activeContext，其 finish/readPixels/整页 RGBA 上传均为 0，完整生命周期另记录 19 次退役 finish、0 readPixels、0 整页 RGBA 上传。两者不能混为全生命周期零同步。原始命令、忽略项、失败及清理记录见[本次证据](../archived-evidence.md)。驱动为 SwiftShader；逻辑 resize 补偿、font mutation、硬件/性能及其他宿主验收仍待完成。

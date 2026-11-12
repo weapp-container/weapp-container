@@ -1,33 +1,22 @@
-# Reference mini-program
+<a id="reference-mini-program"></a>
+# 参考小程序
 
-This is the small app used by the simulator and host embedding examples. It
-exercises app and page lifecycle hooks, query data, WXML bindings, WXSS layout,
-events and `setData`.
+**简体中文** · [English](README.en.md)
 
-`data.lifecycleTrace` records callbacks executed by the App and Page themselves.
-The initial trace is `app:launch → app:show → page:load → page:show → page:ready`;
-background/resume adds `app:hide → page:hide → app:show → page:show`.
-`onResize` also copies the actual `wx.getWindowInfo()` result into
-`data.windowInfo`. `moduleScopeHostInfo` captures window, device, system and
-settings APIs before `App(...)` executes; `resizeHostInfo` captures them inside
-the resize callback, `tapHostInfo` captures them on a real page tap, and
-`showHostInfo` captures them during page foreground callbacks.
-Android verification compares these snapshots with independent `adb shell wm
-size` and `wm density` observations, including density changes and restoration
-of any pre-existing display overrides. A density change while paused also checks
-that the new snapshot is available before `onShow`. Host labels alone do not prove these
-callbacks ran or that the initial JS cache was installed before module loading.
-The combined callback order is a runtime regression contract; the separate
-existing DevTools App/Page traces do not yet prove the combined background
-order on the fixed official baseline.
 
-The native `components/managed-counter` example receives an object-valued
-`config` property, keeps its own counter, and renders page-owned slot content.
-Click `#component-increment` to update only the component count; click the
-slotted `#component-slot` text to update the page count through its page handler.
-The original page controls and IDs remain available for simulator smoke tests.
+这是模拟器和宿主嵌入示例中使用的简易应用。它测试了应用和页面的生命周期钩子、查询数据、WXML 绑定、WXSS 布局、事件以及 `setData`。
 
-Build it from the repository root with the fixed `weapp-vite` submodule:
+`data.lifecycleTrace` 记录了 App 和页面自身执行的回调。
+初始追踪为：`app:launch → app:show → page:load → page:show → page:ready`；
+后台/恢复阶段增加：`app:hide → page:hide → app:show → page:show`。
+`onResize` 同时将实际的 `wx.getWindowInfo()` 返回值复制到 `data.windowInfo`。`moduleScopeHostInfo` 在 `App(...)` 执行前捕获窗口、设备、系统和设置 API；`resizeHostInfo` 在重置回调中捕获这些信息，`tapHostInfo` 在真实页面点击时捕获，`showHostInfo` 在页面前景回调期间捕获。
+Android 验证会将这些快照与独立的 `adb shell wm
+size` 和 `wm density` 观测结果进行对比，包括密度变化以及任何预先存在的显示覆盖的恢复。在暂停期间发生密度变化时，也会在 `onShow` 之前检查新快照是否可用。仅凭宿主标签无法证明这些回调已执行，或初始 JS 缓存在模块加载前已安装。
+这些回调的组合顺序构成运行时回归契约；现有的独立 DevTools App/Page 追踪尚不足以证明在固定官方基准下背景流程的组合顺序。
+
+原生 `components/managed-counter` 示例接收一个对象值的 `config` 属性，维护自身的计数器，并渲染页面拥有的插槽内容。点击 `#component-increment` 仅更新组件计数；点击插槽中的 `#component-slot` 文本内容，通过页面处理器更新页面计数。原始的页面控件和 ID 仍可用于模拟器烟雾测试。
+
+从仓库根目录使用固定的 `weapp-vite` 子模块构建：
 
 ```sh
 pnpm --dir vendor/weapp-vite exec wv build \
@@ -38,6 +27,5 @@ pnpm container:pack -- examples/apps/reference-app/dist \
   --compiler-commit "$(git -C vendor/weapp-vite rev-parse HEAD)"
 ```
 
-The resulting `artifacts/reference-app/pack` directory contains
-`manifest.json` and `blobs/sha256`. It is the portable input shared by the
-headless simulator and the native embedding example.
+生成的 `artifacts/reference-app/pack` 目录包含
+`manifest.json` 和 `blobs/sha256`。它是无头模拟器和原生嵌入示例共享的可移植输入。

@@ -1,9 +1,14 @@
+<a id="rust-build-and-disk-space"></a>
 # Rust 构建与磁盘空间
+
+**简体中文** · [English](rust-build-cache.en.md)
+
 
 本仓库包含 QuickJS、V8、Skia、多平台原生库和大量测试程序。调试信息、增量编译、
 不同 feature/平台的依赖以及静态链接产物都会增加 `target` 的大小。worktree 共享 Git
 对象库，但默认不会共享 Cargo 构建目录；每个实验另建一个 `target` 会继续放大占用。
 
+<a id="daily-development"></a>
 ## 日常开发
 
 workspace 与三个独立 Rust 示例（desktop、desktop-metal、embed-runner）的 dev/test
@@ -23,6 +28,7 @@ cargo test -p container-ir --locked
 或 `RUSTC_WRAPPER` 全局注入严格证据构建；WASM 构建会记录这些输入，并将自定义构建环境
 标为 `partial`，不能当作默认源码构建通过。
 
+<a id="stable-caching-and-explicit-path"></a>
 ## 稳定缓存与显式路径
 
 普通 Cargo 命令默认使用当前 workspace 的 `target/`。SDK 原生构建和 native host
@@ -53,6 +59,7 @@ pnpm sdk:build:native -- --target aarch64-apple-darwin --profile dev
 库或程序。连续任务可复用相同根；toolchain、target、profile 和 feature 变化仍可能产生
 新的编译产物。长期缓存不要放进按运行次数命名的证据目录。
 
+<a id="wasm-temporary-cache-lifecycle"></a>
 ## WASM 临时缓存的生命周期
 
 `build:web-wasm` 默认使用本次新输出目录中的 `cargo-target`。构建完成、失败或取消后，
@@ -70,6 +77,7 @@ pnpm build:web-wasm -- --pack artifacts/reference --out-dir artifacts/web-run-1 
 `cargoCache` 字段记录路径、所有权、保留策略及清理结果。缓存路径被替换、清理失败或无法
 确认进程结束时，报告会暴露失败，不会为了省空间删除归属不明的路径。
 
+<a id="periodic-maintenance"></a>
 ## 定期维护
 
 查看开发缓存的实际大小，避免长期保留用不到的平台和 feature 组合：

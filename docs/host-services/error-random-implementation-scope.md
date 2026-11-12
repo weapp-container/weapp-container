@@ -1,4 +1,8 @@
+<a id="scope-of-implementation-for-random-values-and-private-error-listeners"></a>
 # 随机值与私有错误监听的实现范围
+
+**简体中文** · [English](error-random-implementation-scope.en.md)
+
 
 固定口径为微信基础库3.17.3、miniprogram-api-typings@5.2.3、1265 API×七端=8855单元。本批候选基于6f9b66e3，在已交付5ea63a0d上合入。最终精确产品为`2c9aeb1d9352da1f9bb79893ee848360170f777a`，完整冻结与Web产物凭据见文末；以下保留原始开发验证时间线与实现范围。
 

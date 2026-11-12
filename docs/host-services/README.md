@@ -1,4 +1,8 @@
+<a id="host-capability-protocol-and-acceptance-ledger"></a>
 # 宿主能力协议与验收台账
+
+**简体中文** · [English](README.en.md)
+
 
 语义基线固定为微信基础库 **3.17.3**，类型输入固定为
 `miniprogram-api-typings@5.2.3`。清单记录每份输入声明的 SHA-256，不从在线最新版
@@ -28,7 +32,7 @@ node scripts/generate-host-services-matrix.mjs --check
 平台依据的限制记录在 [platform-constraints.json](./platform-constraints.json)，
 逐项进入矩阵。部分参数不可用时保留独立的 `parameterLimit`，不把整个 API 判为不适用。
 
-来源身份的复核方式见 [API 来源审定](./source-review.md)。原始构建日志保存在
+来源身份的复核方式见 [API 来源审定](source-review.md)。原始构建日志保存在
 [私有历史档案](../archived-evidence.md)，公开矩阵的 `evidence` 不引用缺失的旧文件。
 当前公开验收账本没有可分发的实际验收报告，所有平台均无
 `implementedAndAccepted` 单元格。下文提到的旧执行记录只描述历史，不是当前源码的验收凭据。
@@ -59,7 +63,7 @@ node scripts/generate-host-services-matrix.mjs --check
 引用绑定源码、产物、日志与清理记录的报告。生成器验证这些证据后才允许升级状态，
 不从旧构建记录自动导入验收结果。历史台账曾记录 Web Base64 链路，以及 `wx.canIUse`、`wx.getWindowInfo`、
 `wx.getSystemSetting`、`wx.getAppBaseInfo`、`wx.getDeviceInfo` 的有限参数范围；这些原始证据未随公开源码分发，当前台账不保留其已验收评级。真实 SDK、硬件和商户证据仍需分别提供。格式和检查规则见
-[ACCEPTANCE.md](./ACCEPTANCE.md)。
+[ACCEPTANCE.md](ACCEPTANCE.md)。
 
 Android/iOS/鸿蒙台账从实际适配器的 `supportedApis` 和注册语句读取；桌面从
 公共文件/授权实现及各 OS 的实际注册语句读取；Web 从具体实现可注册的功能分支
@@ -80,6 +84,7 @@ Android/iOS/鸿蒙台账从实际适配器的 `supportedApis` 和注册语句读
 编译时是否找到 `libcurl>=7.85`；WSS 另需至少 8.16、实际链接的 WebSocket 符号及
 TLS 协议支持。实际安装 API 必须以运行时能力协商为准。
 
+<a id="registration-and-execution-boundary"></a>
 ## 注册与执行边界
 
 `registerApiHandler` 仅接收清单中 `owner:host` 的条目。导航、页面栈、布局、
@@ -107,6 +112,7 @@ Web 二进制存储具备 owner 作用域、引用计数、过期、传出失效
 关闭对应生产者，传感器等最新值事件允许合并。公开协议版本不匹配时明确拒绝，
 不会静默降级到旧 runtime。
 
+<a id="web-access"></a>
 ## Web 接入
 
 [`BrowserHostServices`](../../examples/hosts/web-wasm/browser-host-services.mjs)
@@ -130,8 +136,8 @@ await native.close()
 await session.close()
 ```
 
-Web 音频来源、取消和包内资源合同见 [WEB-AUDIO.md](./WEB-AUDIO.md)；蓝牙的显式
-设备授权与独占 handoff 见 [WEB-BLUETOOTH.md](./WEB-BLUETOOTH.md)。
+Web 音频来源、取消和包内资源合同见 [WEB-AUDIO.md](WEB-AUDIO.md)；蓝牙的显式
+设备授权与独占 handoff 见 [WEB-BLUETOOTH.md](WEB-BLUETOOTH.md)。
 
 这里的 `trustedInstallation` 必须来自宿主已验证发行者的安装记录，绑定实际 pack。
 内容哈希只验证完整性；不能用 guest 上传的 appId/publisherId 声明替代安装认证。
@@ -176,6 +182,7 @@ Web 具体限制是能力协商的一部分：
 - 权限结果独立于接口存在性；安全上下文、用户激活、操作系统授权、设备和浏览器
   均可能进一步限制调用。后台关闭资源，不注册后台定位能力。
 
+<a id="native-integration-and-build-boundary"></a>
 ## 原生接入与构建边界
 
 鸿蒙 `HarmonyHostServices` 在 ArkTS owner 线程统一 drain NAPI 完成、事件和取消；
@@ -244,6 +251,7 @@ Flutter 三个桌面插件共享原生 Registry，通过可注入的设备工厂
 准备分发包时三个平台都校验并复制 Desktop wrapper archive 和公开 device header，
 macOS CocoaPods、Windows/Linux CMake 显式链接对应系统依赖。
 
+<a id="reproducible-verification-and-tangible-evidence"></a>
 ## 可复现验证与真实证据
 
 ```sh
@@ -289,4 +297,4 @@ host 只验证协议和生命周期。设备、相机、支付 SDK 与七端产�
 Web 录音要求真实编码器支持请求的格式和参数，完整文件写入私有持久目录后才发布 Stop；
 详见 [录音协议证据](../archived-evidence.md)。
 后续 WAV 后端按实际格式协商，并使用有界 AudioWorklet PCM 与 RIFF 文件，接入与验收
-边界见 [Web 录音说明](./WEB-RECORDER.md)。历史证据继续绑定原源码版本。
+边界见 [Web 录音说明](WEB-RECORDER.md)。历史证据继续绑定原源码版本。

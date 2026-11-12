@@ -1,13 +1,19 @@
+<a id="browser-development-state-construction-resources"></a>
 # 浏览器开发态构建资源
+
+**简体中文** · [English](browser-dev-artifacts.en.md)
+
 
 这层实现将构建、可发布性与运行时准备分开。静态 Worker 产品已有真实执行证据；普通开发 CLI 的显式 `webview + browser + web + quickjs` 已复用同一个受管 runner，其他 Browser 组合仍明确拒绝。受管 stage、原 owner 的资源租约、认证控制和实验开发 UI 已通过独立 `serve_browser_dev` example 接线；最终 r5 已执行真实浏览器 bootstrap、watch、失败保留和精确关闭，证据与静态产品结果分别记录。实验入口及限制见 [Browser 开发循环](browser-dev-loop.md)。
 
+<a id="pack-consumer"></a>
 ## Pack 消费者
 
 `DevConfig.pack_consumer` 默认为 `LocalRuntime`，保留 remote 模拟器行为。`BrowserWorker` 仅生成不可变 portable pack，复用本机模式的 manifest integrity root 与 blob 校验，发出 `DevEvent::PortableReady`。它不创建 native JS 引擎、会话或画面，`pump_runtime` 不执行工作。V8 在 watcher 启动前返回 `ERR_ENGINE`。
 
 `PortablePackReport` 包含 pack 路径、manifest/root/compiler、路由和独立的 publication token。编译失败或新输入不会删除最后有效 pack。相同字节恢复可复用 generation，但必须获得新 token，旧完成结果仍失效。
 
+<a id="static-runtime-preparation-of-supervisor"></a>
 ## 监督器的静态 runtime 准备
 
 嵌入方可为 `BrowserWorker` 设置 `DevConfig.browser_runtime = Some(BrowserRuntimePreparation { producer_directory, expected })`。`expected` 必须在启动消费者前从已完成的 Worker producer 记录独立选定，包含原报告 SHA-256、source commit、source inventory SHA-256 和 renderer。原 producer 须为 canonical 目录，并与项目、输出及临时准备根分离；错误配置在启动 watcher 前拒绝。默认 `None` 不创建这一资源链，也不改变原 pack-only 或 remote 路径。
@@ -29,6 +35,7 @@ pin 文件采用 `{ "expected": { "reportSha256": "…", "sourceCommit": "…", 
 
 调用 `check_portable_publication(&mut self, &report)` 后才可提供或激活新站点。它不受日常 watch 防抖限制，立即观测 receipt、源配置和现代 View 依赖；无待处理构建时也比对 raw 输入，合法 raw 修改必须等待新编译 receipt。返回的诊断事件须送入现有 overlay／历史流。它只证明检查时刻的新鲜度，不锁定文件系统、不暂停现有 Worker、不授予运行或输入权限。待处理 modern 构建自行验证完整依赖闭包，避免把新纯计算依赖误认为必须重建上游产物。
 
+<a id="reusable-runtime"></a>
 ## 可复用 runtime
 
 `scripts/browser-dev-artifacts.mjs` 提供三个内部构建 API：
@@ -49,6 +56,7 @@ pin 文件采用 `{ "expected": { "reportSha256": "…", "sourceCommit": "…", 
 
 pack generation 的计数与 token 使用精确十进制 u64 字符串，避免浏览器 Number 精度损失。生成结果固定为 `publication: not-authorized`、`runtime: not-run`、`presentation: not-run`；Rust source barrier、预览租约、实际 Worker ready 和最终呈现 ACK 各自验收。构建失败保留旧 pack 与运行实例；旧 Worker 关闭后的新启动失败不能声称保留旧 JS heap。
 
+<a id="release-and-control-receipts"></a>
 ## 发布与控制回执
 
 `browser_dev_coordinator` 只维护一个 stage、offer、activation、可能执行中的 owner 及 close。它不读文件、不启动 Worker，也不释放资源。`accept_portable` 与 `finish_stage` 要求来自立即执行的 supervisor check 的 approval；接入 owner loop 时，`issueActivation`、`beginActivation` 和 `startOwner` 前同样必须立即检查源输入，不能仅依靠 watch 防抖或之前的许可。
@@ -59,6 +67,7 @@ pack generation 的计数与 token 使用精确十进制 u64 字符串，避免�
 
 停止后仍允许精确 owner 清理。正常控制序号耗尽时使用独立 `terminalCleanupRevision` 排序清理状态，不能重新授予启动权限。浏览器的 ready、呈现与清理记录均标记为 `browser-reported`；控制 final 只确认协调器接受了该报告，不能作为独立设备证据。
 
+<a id="limited-tool-operations"></a>
 ## 有限工具作业
 
 `browser_dev_artifact_job` 使用已编译进模拟器的五成员 Node 工具快照，执行单次 retain 或 stage。脚本、入口与完整静态依赖在私有目录内校验，应用 pack 和 retained runtime 是另外校验的数据输入。作业不执行 Cargo、应用 JS、Worker、浏览器或服务。请求最多 2 MiB、结果最多 16 MiB；输出只能是本作业独占目录内的 `output`，不能由 HTTP 请求指定清理路径。
@@ -69,6 +78,7 @@ pack generation 的计数与 token 使用精确十进制 u64 字符串，避免�
 
 作业 `poll` 的进程退出检查不阻塞；完成后的有界文件读取仍是同步 I/O，不能宣称整个作业轮询完全非阻塞。现有受管作业、generation、共享工具和断连后仍被 HTTP body 持有的 artifact lease 继续保留原 aggregate 费用；HTTP wire 与回复由 surface 单独记账。单作业上限、aggregate 逻辑预留和 HTTP 预算各有边界，不能互相替代或视作 RSS 证明。
 
+<a id="rust-static-runtime-receipt"></a>
 ## Rust 静态 runtime 回执
 
 `browser_dev_runtime_receipt` 在轮询作业前，将 `PendingRuntimeReceipt` 绑定到实际作业的文件 owner、原始请求字节哈希和独立 producer pin。它消费该作业的真实 completion，核对退出／停止状态、原始 result、bundle 和 report 字节，以及固定消费者闭包的完整资源清单。result 中的目录只用于比较，不能授权读取其他目录；来源 inventory 仍由固定 Node helper 按原 recipe 验证，Rust 不重新序列化它来生成 pin。
@@ -79,6 +89,7 @@ pack generation 的计数与 token 使用精确十进制 u64 字符串，避免�
 
 真实 producer 的独立集成入口为 `crates/container-simulator/tests/retained_runtime.rs`。默认测试将其标为 ignored；必须显式运行 `--ignored --exact independently_pinned_worker_runtime_is_retained_and_cleaned --test-threads=1`。入口要求 `WEAPP_CONTAINER_RETAINED_RUNTIME_` 前缀的 `BUILD_SITE`、`REPORT_SHA256`、`SOURCE_COMMIT`、`SOURCE_SHA256`、`RENDERER`、`NODE_BIN`、`EVIDENCE_PARENT` 和 `PIN_AUTHORITY`，显式运行缺失参数时失败。预期 pin 应在启动消费者之前从独立 producer 执行记录选定，不能从待验证目录或当前子进程回填。入口保留原字节证据，验证真实 Node 作业和 body 借用的清理屏障；只有实际执行结果才能标记该项通过。
 
+<a id="browser-owner-and-drawing-resources"></a>
 ## 浏览器 owner 与绘制资源
 
 `browser-dev-owner-manager.mjs` 在 metadata admission 后、关闭旧 owner 前准备实际绘制资源。DOM 页面跳过 CanvasKit；外部帧路径通过同一个 admission loader 校验六份固定资源、初始化 CanvasKit 并验证临时字体的创建和释放。静态 preparation lease 不包含 owner 权限，只有真实 `WorkerWebSession` 的匹配 loadResult 才能借出独立绘制 lease。
@@ -87,6 +98,7 @@ loader 对等待者、静态 lease、owner lease、字体复制字节和初始�
 
 manager 保留精确控制请求及原 final，处理取消、迟到结果与不确定关闭。替换只有在旧 owner 的真实关闭 barrier 通过后才能启动新 owner。运行时 ready 与接受当前呈现分别报告；HTTP 成功、已创建 Worker、已产生 frame 或截图都不能替代呈现确认。manager 本身仍不承担页面和 HTTP 服务；新增 `BrowserDevApplication`、认证 HTTP 客户端与 opt-in `WebSurface` UI 将它接入开发循环；普通 CLI 复用该 runner，并未另建 owner 或放宽 artifact 准入。
 
+<a id="experimental-development-page-and-delivery-boundary"></a>
 ## 实验开发页面与交付边界
 
 受信任本机启动方可在原 resource-only loopback surface 首次 accept 前启用控制和
@@ -106,6 +118,7 @@ watch。页面刷新、崩溃或丢失后，新页面无法恢复原 manager、W
 没有 takeover 或断连自动释放。应在原页面停止并完成原 owner、ledger ACK 和 HTTP
 drain 后再新开服务。启动步骤、预算及当前验证状态见 [Browser 开发循环](browser-dev-loop.md)。
 
+<a id="verification"></a>
 ## 验证
 
 Node 合同包含 bundle pin／闭包重验、两个 pack 复用一个 runtime、错误与旧 generation、输出父 symlink、已有目标保留、超限输入，以及在 validator 开始时修改原输入仍使用捕获字节。Rust 合同验证不编译 native 引擎仍可产出 pack、V8 预拒绝、来源 token、无 receipt 的 modern/raw 修改和清理。真实 producer 复用另记录精确来源，不把 synthetic WASM 合同当作真实构建、浏览器、GPU、watch 或设备证据。

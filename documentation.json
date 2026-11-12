@@ -1,0 +1,3483 @@
+{
+  "schemaVersion": 1,
+  "repository": "weapp-container/weapp-container",
+  "defaultLocale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "pages": [
+    {
+      "id": ".github/PULL_REQUEST_TEMPLATE",
+      "zh": ".github/PULL_REQUEST_TEMPLATE.md",
+      "en": ".github/PULL_REQUEST_TEMPLATE.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": ".github/PULL_REQUEST_TEMPLATE.md"
+      },
+      "reviewedChineseSummary": "问题与变化；验证；关联",
+      "reviewedChineseSha256": "b79e958f56c46459d3eefbdb4eb34c932ef9f773143dd1573a3ebce760b6ea7e",
+      "legacyHeadingIds": [
+        "关联",
+        "问题与变化",
+        "验证"
+      ]
+    },
+    {
+      "id": "CODE_OF_CONDUCT",
+      "zh": "CODE_OF_CONDUCT.md",
+      "en": "CODE_OF_CONDUCT.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "CODE_OF_CONDUCT.md"
+      },
+      "reviewedChineseSummary": "行为准则",
+      "reviewedChineseSha256": "2a16ac12767d2889f8119e026c3857e84093220d70525664c7ffabec2f0bc07a",
+      "legacyHeadingIds": [
+        "行为准则"
+      ]
+    },
+    {
+      "id": "CONTRIBUTING",
+      "zh": "CONTRIBUTING.md",
+      "en": "CONTRIBUTING.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "CONTRIBUTING.md"
+      },
+      "reviewedChineseSummary": "参与贡献",
+      "reviewedChineseSha256": "be70275ce51d00e7ee592e1b9093ec9b6f2186cda3f09d293295bcb9388b3070",
+      "legacyHeadingIds": [
+        "参与贡献"
+      ]
+    },
+    {
+      "id": "README",
+      "zh": "README.md",
+      "en": "README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "README.md"
+      },
+      "reviewedChineseSummary": "Weapp Container；选择你的入口；从源码开始；可选：使用 weapp-vite 开发示例；目录与接入；检查；许可与历史",
+      "reviewedChineseSha256": "c2bc1d6bbd378f0248321e79d75135eaabbea435156fa810745cb74c1f1621b9",
+      "legacyHeadingIds": [
+        "weapp-container",
+        "从源码开始",
+        "检查",
+        "目录与接入",
+        "许可与历史"
+      ]
+    },
+    {
+      "id": "SECURITY",
+      "zh": "SECURITY.md",
+      "en": "SECURITY.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "SECURITY.md"
+      },
+      "reviewedChineseSummary": "安全问题报告",
+      "reviewedChineseSha256": "51b388e81f0c8e4a2d5b23dd97097fb057d2cd236ad542bcdf5e7437111e809b",
+      "legacyHeadingIds": [
+        "安全问题报告"
+      ]
+    },
+    {
+      "id": "apps/dev-player/README",
+      "zh": "apps/dev-player/README.md",
+      "en": "apps/dev-player/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "apps/dev-player/README.md"
+      },
+      "reviewedChineseSummary": "Weapp 容器开发玩家；宿主服务；准备并运行；连接项目；接口语言；小程序窗口；更新和诊断语义；测试",
+      "reviewedChineseSha256": "fe57130107c3ddcc2e074f2e85144748ab7f8fea5606cbe4a293b75c4e47fb07",
+      "legacyHeadingIds": [
+        "connect-a-project",
+        "host-services",
+        "interface-language",
+        "mini-program-window",
+        "prepare-and-run",
+        "tests",
+        "update-and-diagnostics-semantics",
+        "weapp-container-dev-player"
+      ]
+    },
+    {
+      "id": "assets/brand/README",
+      "zh": "assets/brand/README.md",
+      "en": "assets/brand/README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "assets/brand/README.md"
+      },
+      "reviewedChineseSummary": "Weapp 容器品牌资产；文件；配色",
+      "reviewedChineseSha256": "70e40ac2cd8e5f69d68ba20eb2942a3bec047d0129cdd28d0f644ad5d4ded457",
+      "legacyHeadingIds": [
+        "files",
+        "palette",
+        "weapp-container-brand-assets"
+      ]
+    },
+    {
+      "id": "crates/container-engine-quickjs/README",
+      "zh": "crates/container-engine-quickjs/README.md",
+      "en": "crates/container-engine-quickjs/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-engine-quickjs/README.md"
+      },
+      "reviewedChineseSummary": "container-engine-quickjs",
+      "reviewedChineseSha256": "6f5141ee317d95ad447ff1b373b39798f5d4cbe6e98a85e09dbfb537888f5f91",
+      "legacyHeadingIds": [
+        "container-engine-quickjs"
+      ]
+    },
+    {
+      "id": "crates/container-engine-v8/README",
+      "zh": "crates/container-engine-v8/README.md",
+      "en": "crates/container-engine-v8/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-engine-v8/README.md"
+      },
+      "reviewedChineseSummary": "container-engine-v8",
+      "reviewedChineseSha256": "405f392984430acc4cd731eb9fd78b4f75ffdd9e21dac0ebd53f9bbfb342ffe9",
+      "legacyHeadingIds": [
+        "container-engine-v8"
+      ]
+    },
+    {
+      "id": "crates/container-host-android/README",
+      "zh": "crates/container-host-android/README.md",
+      "en": "crates/container-host-android/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-android/README.md"
+      },
+      "reviewedChineseSummary": "container-host-android",
+      "reviewedChineseSha256": "b4cafee79dfea0b539e62638ede60b6d508bb8e38ec53552116e0d4525301c00",
+      "legacyHeadingIds": [
+        "container-host-android"
+      ]
+    },
+    {
+      "id": "crates/container-host-common/README",
+      "zh": "crates/container-host-common/README.md",
+      "en": "crates/container-host-common/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-common/README.md"
+      },
+      "reviewedChineseSummary": "container-host-common",
+      "reviewedChineseSha256": "10238f9f5bfa7d4dbf4d88278cc1f1e25b1a95944f21439732e96124a000858d",
+      "legacyHeadingIds": [
+        "container-host-common"
+      ]
+    },
+    {
+      "id": "crates/container-host-desktop/README",
+      "zh": "crates/container-host-desktop/README.md",
+      "en": "crates/container-host-desktop/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-desktop/README.md"
+      },
+      "reviewedChineseSummary": "container-host-desktop；可选的桌面开发窗口",
+      "reviewedChineseSha256": "f87158e798b5192abd24f611a87be000d405dcac2252248e3af5edde035d7bda",
+      "legacyHeadingIds": [
+        "container-host-desktop",
+        "optional-desktop-development-window"
+      ]
+    },
+    {
+      "id": "crates/container-host-harmony/README",
+      "zh": "crates/container-host-harmony/README.md",
+      "en": "crates/container-host-harmony/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-harmony/README.md"
+      },
+      "reviewedChineseSummary": "container-host-harmony",
+      "reviewedChineseSha256": "b1f71fa6f979abc892355f499fa250c59388ce68d03eb186a42213da601930a2",
+      "legacyHeadingIds": [
+        "container-host-harmony"
+      ]
+    },
+    {
+      "id": "crates/container-host-ios/README",
+      "zh": "crates/container-host-ios/README.md",
+      "en": "crates/container-host-ios/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-ios/README.md"
+      },
+      "reviewedChineseSummary": "container-host-ios",
+      "reviewedChineseSha256": "495e3b841c65bc69cb329a3707aac08acbad4df88ef01c5835a48be80aede3bf",
+      "legacyHeadingIds": [
+        "container-host-ios"
+      ]
+    },
+    {
+      "id": "crates/container-host-web/README",
+      "zh": "crates/container-host-web/README.md",
+      "en": "crates/container-host-web/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-web/README.md"
+      },
+      "reviewedChineseSummary": "container-host-web",
+      "reviewedChineseSha256": "60642f936235b3adb0a082bfd2137b9df7bc9aada397aa8f5e2eb33929df80cc",
+      "legacyHeadingIds": [
+        "container-host-web"
+      ]
+    },
+    {
+      "id": "crates/container-ir/README",
+      "zh": "crates/container-ir/README.md",
+      "en": "crates/container-ir/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-ir/README.md"
+      },
+      "reviewedChineseSummary": "container-ir；WXSS blob 版本；边界声明和级联；显式边界",
+      "reviewedChineseSha256": "2ae5941befe3f50cc8ce4be698a7537bd50f291e3a7b28e592c3d89089c1b8e1",
+      "legacyHeadingIds": [
+        "border-declarations-and-cascade",
+        "container-ir",
+        "explicit-boundaries",
+        "wxss-blob-versions"
+      ]
+    },
+    {
+      "id": "crates/container-render-skia/README",
+      "zh": "crates/container-render-skia/README.md",
+      "en": "crates/container-render-skia/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-render-skia/README.md"
+      },
+      "reviewedChineseSummary": "container-render-skia；图像资源；WXSS 布局合约；Canvas 批量执行；原生字体所有权",
+      "reviewedChineseSha256": "bf068933fba6e23781e54f95163abe0494b597b1b1c57b14700e1a44613776f3",
+      "legacyHeadingIds": [
+        "canvas-batch-execution",
+        "container-render-skia",
+        "image-resources",
+        "native-font-ownership",
+        "wxss-layout-contract"
+      ]
+    },
+    {
+      "id": "crates/container-runtime/README",
+      "zh": "crates/container-runtime/README.md",
+      "en": "crates/container-runtime/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-runtime/README.md"
+      },
+      "reviewedChineseSummary": "container-runtime；异步 SDK 宿主合约",
+      "reviewedChineseSha256": "5c5f26b402baef5bad59c28d23413ed5a54f3d3ac0382c05c32805db369cd674",
+      "legacyHeadingIds": [
+        "asynchronous-sdk-host-contract",
+        "container-runtime"
+      ]
+    },
+    {
+      "id": "crates/container-sdk-ffi/README",
+      "zh": "crates/container-sdk-ffi/README.md",
+      "en": "crates/container-sdk-ffi/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-sdk-ffi/README.md"
+      },
+      "reviewedChineseSummary": "Weapp 容器 C ABI v1",
+      "reviewedChineseSha256": "028e2c3dd372e65be0b5aa1ab67e8a772480e0d46f39b4413413711845cb0123",
+      "legacyHeadingIds": [
+        "weapp-container-c-abi-v1"
+      ]
+    },
+    {
+      "id": "crates/container-sdk/README",
+      "zh": "crates/container-sdk/README.md",
+      "en": "crates/container-sdk/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-sdk/README.md"
+      },
+      "reviewedChineseSummary": "container-sdk；宿主导航chrome",
+      "reviewedChineseSha256": "773eef6f10ed7d7fc31105deb25e55502c6b801c5b667b1ee5a213cdb433672c",
+      "legacyHeadingIds": [
+        "container-sdk",
+        "host-navigation-chrome"
+      ]
+    },
+    {
+      "id": "crates/container-simulator/README",
+      "zh": "crates/container-simulator/README.md",
+      "en": "crates/container-simulator/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-simulator/README.md"
+      },
+      "reviewedChineseSummary": "container-simulator；浏览器运行时嵌入准备；CLI；开发模式；本地 GPU 场景呈现；网页解析和呈现；嵌入 API",
+      "reviewedChineseSha256": "4e51a1e4e24e4d40b5a76776ac86c238c741dc2e474bd5069dce8c9150e16179",
+      "legacyHeadingIds": [
+        "browser-runtime-preparation-for-embedding",
+        "cli",
+        "container-simulator",
+        "development-mode",
+        "embedding-api",
+        "local-gpu-scene-presentation",
+        "web-resolution-and-presentation"
+      ]
+    },
+    {
+      "id": "docs/README",
+      "zh": "docs/README.md",
+      "en": "docs/README.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/README.md"
+      },
+      "reviewedChineseSummary": "文档索引；接入与开发；实现与协议；兼容性、发行与协作",
+      "reviewedChineseSha256": "7375bf5d920c0ef887f73b53dc780ec90a1cf820ff4fa070fb7f4cda8014b7c7",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/api-runtime-conformance",
+      "zh": "docs/api-runtime-conformance.md",
+      "en": "docs/api-runtime-conformance.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/api-runtime-conformance.md"
+      },
+      "reviewedChineseSummary": "AppService API 语义回归；存储；发布选项；设备快照；定时器；能力与错误合约；共享；临时 UI 与页面控件",
+      "reviewedChineseSha256": "5f2b10e0f815d55c1e9e6fc10c6d1789580f856d7a1d2b268d64442685d7976a",
+      "legacyHeadingIds": [
+        "animation",
+        "appservice-api-语义回归",
+        "canvas-2d",
+        "capability-and-error-contract",
+        "component-custom-events",
+        "conformance-ids",
+        "device-snapshot",
+        "host-provider-apis",
+        "intersection-and-media-query-observers",
+        "launch-options",
+        "module-and-page-lifecycle",
+        "name",
+        "selector-query",
+        "sharing",
+        "storage",
+        "timers",
+        "transient-ui-and-page-controls",
+        "wxml-component-slots",
+        "wxss-and-inline-style-rendering"
+      ]
+    },
+    {
+      "id": "docs/appservice-execution",
+      "zh": "docs/appservice-execution.md",
+      "en": "docs/appservice-execution.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/appservice-execution.md"
+      },
+      "reviewedChineseSummary": "AppService 执行时限",
+      "reviewedChineseSha256": "4ffa70905fe65281608a0435e6356e98932445ed36af29399bd4da9d45e31259",
+      "legacyHeadingIds": [
+        "appservice-执行时限"
+      ]
+    },
+    {
+      "id": "docs/architecture",
+      "zh": "docs/architecture.md",
+      "en": "docs/architecture.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/architecture.md"
+      },
+      "reviewedChineseSummary": "容器架构；版本与边界",
+      "reviewedChineseSha256": "718ad698e1e558a46b6152a46436b2463e0a5d95b6024715bbc1f753fdb82e50",
+      "legacyHeadingIds": [
+        "容器架构",
+        "版本与边界"
+      ]
+    },
+    {
+      "id": "docs/archived-evidence",
+      "zh": "docs/archived-evidence.md",
+      "en": "docs/archived-evidence.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/archived-evidence.md"
+      },
+      "reviewedChineseSummary": "历史证据与公开源码",
+      "reviewedChineseSha256": "809615c3a4274832d63144e4daae6dc5d378fcd541743d15214718b59ef7c2c3",
+      "legacyHeadingIds": [
+        "历史证据与公开源码"
+      ]
+    },
+    {
+      "id": "docs/browser-worker-transport",
+      "zh": "docs/browser-worker-transport.md",
+      "en": "docs/browser-worker-transport.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/browser-worker-transport.md"
+      },
+      "reviewedChineseSummary": "浏览器 Worker 传输；所有权与执行边界；封装与关联机制；操作；默认准入预算；事件交付与背压；取消与关闭；未来页面集成",
+      "reviewedChineseSha256": "7f293c24fa9fe2f26a85502c7f39d0e229a6c0d85c5961c4784fb0e73e5fa796",
+      "legacyHeadingIds": [
+        "browser-worker-transport",
+        "cancellation-and-closing",
+        "default-admission-budgets",
+        "envelope-and-correlation",
+        "event-delivery-and-backpressure",
+        "future-page-integration",
+        "operations",
+        "ownership-and-execution-boundary"
+      ]
+    },
+    {
+      "id": "docs/capability-matrix",
+      "zh": "docs/capability-matrix.md",
+      "en": "docs/capability-matrix.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/capability-matrix.md"
+      },
+      "reviewedChineseSummary": "宿主能力矩阵；API 级别",
+      "reviewedChineseSha256": "c43f6e998b9b290719957741973778ccebaa97e9deda39d96e1733f979d4e340",
+      "legacyHeadingIds": [
+        "api-级别",
+        "宿主能力矩阵"
+      ]
+    },
+    {
+      "id": "docs/clean-room-and-evidence",
+      "zh": "docs/clean-room-and-evidence.md",
+      "en": "docs/clean-room-and-evidence.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/clean-room-and-evidence.md"
+      },
+      "reviewedChineseSummary": "Clean-room 与证据记录",
+      "reviewedChineseSha256": "5b38c0960c19bdef1cf4ed887a4b28d50e7987fda3a7a19d6e106752b60d2780",
+      "legacyHeadingIds": [
+        "clean-room-与证据记录"
+      ]
+    },
+    {
+      "id": "docs/compositing",
+      "zh": "docs/compositing.md",
+      "en": "docs/compositing.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/compositing.md"
+      },
+      "reviewedChineseSummary": "透明度与子树合成；属性解析；布局和输入；各绘制路径与资源限制；本地回归；开发态真实产物与辅助 CSS oracle",
+      "reviewedChineseSha256": "299dcda033e8ef9e158401c2f9bda85ee4d839a084d4ca18da263c2ceccb40f2",
+      "legacyHeadingIds": [
+        "各绘制路径与资源限制",
+        "属性解析",
+        "布局和输入",
+        "开发态真实产物与辅助-css-oracle",
+        "本地回归",
+        "透明度与子树合成"
+      ]
+    },
+    {
+      "id": "docs/conformance/README",
+      "zh": "docs/conformance/README.md",
+      "en": "docs/conformance/README.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/conformance/README.md"
+      },
+      "reviewedChineseSummary": "兼容验证；验证层级；常用入口",
+      "reviewedChineseSha256": "1f997a65bfe0e682dc2dded2c1a0afaa21c39b778a8f0b7b31441369bed3dc9b",
+      "legacyHeadingIds": [
+        "兼容验证",
+        "常用入口",
+        "验证层级"
+      ]
+    },
+    {
+      "id": "docs/conformance/compiler-build",
+      "zh": "docs/conformance/compiler-build.md",
+      "en": "docs/conformance/compiler-build.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/conformance/compiler-build.md"
+      },
+      "reviewedChineseSummary": "固定编译器的构建来源",
+      "reviewedChineseSha256": "dca9f4159861b0135f000fb58a29b4890ffab053245f3af25971772af6cc0253",
+      "legacyHeadingIds": [
+        "固定编译器的构建来源"
+      ]
+    },
+    {
+      "id": "docs/conformance/reviewed-producer-revisions",
+      "zh": "docs/conformance/reviewed-producer-revisions.md",
+      "en": "docs/conformance/reviewed-producer-revisions.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/conformance/reviewed-producer-revisions.md"
+      },
+      "reviewedChineseSummary": "已审核的生产者修订版",
+      "reviewedChineseSha256": "03e2c49b2fe8cf19c8a88a9a83d6a9daa0e1aaaf6ef2ed90f47f97f83e4837a9",
+      "legacyHeadingIds": [
+        "reviewed-producer-revisions"
+      ]
+    },
+    {
+      "id": "docs/dev-player",
+      "zh": "docs/dev-player.md",
+      "en": "docs/dev-player.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dev-player.md"
+      },
+      "reviewedChineseSummary": "五端原生开发客户端；界面语言；启动构建与设备服务；准备和启动 Player；Android 安装要求；已生成的移动安装包；下载、运行和热更新",
+      "reviewedChineseSha256": "57e75d116ea978076e3408ccb2f93c6832439522c193b14ccba5f872f3b3c2f4",
+      "legacyHeadingIds": [
+        "android-安装要求",
+        "preview5-正确性里程碑",
+        "下载运行和热更新",
+        "五端原生开发客户端",
+        "准备和启动-player",
+        "启动构建与设备服务",
+        "已生成的移动安装包",
+        "日志检查和性能边界",
+        "界面语言",
+        "验收与交付"
+      ]
+    },
+    {
+      "id": "docs/dev-player/chrome",
+      "zh": "docs/dev-player/chrome.md",
+      "en": "docs/dev-player/chrome.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dev-player/chrome.md"
+      },
+      "reviewedChineseSummary": "小程序宿主 Chrome；导航与胶囊；几何与 SDK 协商；重现和证据；预览.4 执行结果（2026-10-29）",
+      "reviewedChineseSha256": "d28c3d03373e6a03099d8ed31c1dae6dd78825ff8dd4e1ad0b495de73c9c46b0",
+      "legacyHeadingIds": [
+        "geometry-and-sdk-negotiation",
+        "mini-program-host-chrome",
+        "navigation-and-capsule",
+        "preview4-execution-results-2026-10-29",
+        "reproduction-and-evidence"
+      ]
+    },
+    {
+      "id": "docs/dev-player/p0-preview5",
+      "zh": "docs/dev-player/p0-preview5.md",
+      "en": "docs/dev-player/p0-preview5.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dev-player/p0-preview5.md"
+      },
+      "reviewedChineseSummary": "Dev Player preview.5：布局、导航与故障恢复；2026-11-02 阶段状态；App16 失败与 App17 故障实例退出修复；App15 实际结果与后续诊断；preview.5.6 / App16 源码准备；App14 实测与 App15 恢复事务修正；App14 早期源码准备记录；App12 当前设备结果",
+      "reviewedChineseSha256": "a09d7b31c604c2d8dff0bbae7f9c43f9fb65b6ee1ceb303801e22542e7b021bf",
+      "legacyHeadingIds": [
+        "2026-11-02-阶段状态",
+        "app11-本地与包装层前置验证",
+        "app11-设备结果与-preview53-原生修正",
+        "app12-当前设备结果",
+        "app13-实际构建与保留失败",
+        "app14-实测与-app15-恢复事务修正",
+        "app14-早期源码准备记录",
+        "app15-实际结果与后续诊断",
+        "app16-失败与-app17-故障实例退出修复",
+        "build-10-实测失败与-build-11-修复",
+        "dev-player-preview5布局导航与故障恢复",
+        "preview5-首次安装后的真实失败",
+        "preview51-分发与首次交互结果",
+        "preview53-运行库分发与-app12-准备",
+        "preview54-静态文档注册与本地门禁",
+        "preview56--app16-源码准备",
+        "公共契约和兼容边界",
+        "实施清单",
+        "当前验证状态",
+        "正常超时与后续修正边界"
+      ]
+    },
+    {
+      "id": "docs/dev-player/preview54-build",
+      "zh": "docs/dev-player/preview54-build.md",
+      "en": "docs/dev-player/preview54-build.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dev-player/preview54-build.md"
+      },
+      "reviewedChineseSummary": "preview.5.4 构建与诊断",
+      "reviewedChineseSha256": "378d5bd87fd276a390de19ec6a044f0b1d18b1f7c4cad2f150caffee5e84b984",
+      "legacyHeadingIds": [
+        "preview54-构建与诊断"
+      ]
+    },
+    {
+      "id": "docs/dev-player/protocol-v1",
+      "zh": "docs/dev-player/protocol-v1.md",
+      "en": "docs/dev-player/protocol-v1.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dev-player/protocol-v1.md"
+      },
+      "reviewedChineseSummary": "Dev Player 设备协议 v1；身份、TLS 与配对；产物发布与 HTTPS；WSS 更新与报告；只读 source-map 定位；本机管理面；reload、失败和退出",
+      "reviewedChineseSha256": "dbde714727beb3eac10534d5b516aa77fc3115a67b861163c5f217aca7be2332",
+      "legacyHeadingIds": [
+        "dev-player-设备协议-v1",
+        "reload失败和退出",
+        "wss-更新与报告",
+        "产物发布与-https",
+        "只读-source-map-定位",
+        "本机管理面",
+        "身份tls-与配对"
+      ]
+    },
+    {
+      "id": "docs/dev-raster-http",
+      "zh": "docs/dev-raster-http.md",
+      "en": "docs/dev-raster-http.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dev-raster-http.md"
+      },
+      "reviewedChineseSummary": "显式开发者位图 HTTP 所有者；显式入口；实际连接与通道；限制与清理",
+      "reviewedChineseSha256": "87e8bd5920def123b549d0ad2a6b1d31fe583408fb164d862de7c0fed658a221",
+      "legacyHeadingIds": [
+        "actual-connection-and-wire",
+        "explicit-developer-raster-http-owner",
+        "explicit-entry",
+        "limits-and-cleanup"
+      ]
+    },
+    {
+      "id": "docs/dom-consumed-input",
+      "zh": "docs/dom-consumed-input.md",
+      "en": "docs/dom-consumed-input.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dom-consumed-input.md"
+      },
+      "reviewedChineseSummary": "DOM 准备消耗输入元数据",
+      "reviewedChineseSha256": "4941a28768386bf119e4ec47c4a3b67765561b3a589130f200f3d2d9f02ec23b",
+      "legacyHeadingIds": [
+        "dom-preparation-consumed-input-metadata"
+      ]
+    },
+    {
+      "id": "docs/dom-phased-transactions",
+      "zh": "docs/dom-phased-transactions.md",
+      "en": "docs/dom-phased-transactions.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dom-phased-transactions.md"
+      },
+      "reviewedChineseSummary": "DOM 阶段性事务和资源释放协议；分离 API；严格默认值与传统兼容性；精确的呈现器合约；超时和失败语义；验证所有权",
+      "reviewedChineseSha256": "fee9cdb802a47daf45c70730560dcf5b4afdf75d906994f8f3f93ad52a48211f",
+      "legacyHeadingIds": [
+        "dom-phased-transactions-and-resource-release-contract",
+        "exact-presenter-contract",
+        "split-api",
+        "strict-default-versus-legacy-compatibility",
+        "timeout-and-failure-semantics",
+        "validation-ownership"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/README",
+      "zh": "docs/dual-renderer/README.md",
+      "en": "docs/dual-renderer/README.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/README.md"
+      },
+      "reviewedChineseSummary": "七宿主双渲染 goal 与冻结验收清单；冻结基线；实施阶段与完成条件；证据与性能规则；源码与证据归档分离",
+      "reviewedChineseSha256": "8e788c6e70b0f8c3c679ed74dbac40254b45bfdd6865af514020569f1951efe6",
+      "legacyHeadingIds": [
+        "七宿主双渲染-goal-与冻结验收清单",
+        "冻结基线",
+        "实施阶段与完成条件",
+        "源码与证据归档分离",
+        "证据与性能规则"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-consuming-stage",
+      "zh": "docs/dual-renderer/browser-consuming-stage.md",
+      "en": "docs/dual-renderer/browser-consuming-stage.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-consuming-stage.md"
+      },
+      "reviewedChineseSummary": "受管 portable 到静态站点",
+      "reviewedChineseSha256": "74f294a41855a532d5c4dd7ca9d38ad141b78982261af421d21d5ca0994f9963",
+      "legacyHeadingIds": [
+        "受管-portable-到静态站点"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-control-ack",
+      "zh": "docs/dual-renderer/browser-control-ack.md",
+      "en": "docs/dual-renderer/browser-control-ack.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-control-ack.md"
+      },
+      "reviewedChineseSummary": "浏览器开发态控制 final ACK；原账本入口；Manager 的可选采纳接口；接线与验证边界",
+      "reviewedChineseSha256": "45c7a906ad11e94785d1b22b7fea8580c8a5904ea3a86ef3f93b4b2d7dd5cd92",
+      "legacyHeadingIds": [
+        "manager-的可选采纳接口",
+        "原账本入口",
+        "接线与验证边界",
+        "浏览器开发态控制-final-ack"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-control-http",
+      "zh": "docs/dual-renderer/browser-control-http.md",
+      "en": "docs/dual-renderer/browser-control-http.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-control-http.md"
+      },
+      "reviewedChineseSummary": "浏览器开发态 HTTP 控制客户端；显式服务端接入；原始结果与 ACK；可选前缀退休协议 1.0；容量与关闭；串行 owner 库入口；关闭回执中的实际身份",
+      "reviewedChineseSha256": "5896036eb78fdffad709e09595edbcc5c51e24bce7702bdb40ed19848c1c236c",
+      "legacyHeadingIds": [
+        "串行-owner-库入口",
+        "关闭回执中的实际身份",
+        "原始结果与-ack",
+        "可信开发-ui-服务接缝",
+        "可选前缀退休协议-10",
+        "容量与关闭",
+        "执行证据范围",
+        "显式服务端接入",
+        "浏览器开发态-http-控制客户端"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-dev-artifacts",
+      "zh": "docs/dual-renderer/browser-dev-artifacts.md",
+      "en": "docs/dual-renderer/browser-dev-artifacts.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-dev-artifacts.md"
+      },
+      "reviewedChineseSummary": "浏览器开发态构建资源；Pack 消费者；监督器的静态 runtime 准备；可复用 runtime；发布与控制回执；有限工具作业；Rust 静态 runtime 回执",
+      "reviewedChineseSha256": "2bb1332d54adbae8e7c1d49a0d702573161b684beb1b7fad22e74f5dc51acbcc",
+      "legacyHeadingIds": [
+        "pack-消费者",
+        "rust-静态-runtime-回执",
+        "发布与控制回执",
+        "可复用-runtime",
+        "实验开发页面与交付边界",
+        "有限工具作业",
+        "浏览器-owner-与绘制资源",
+        "浏览器开发态构建资源",
+        "监督器的静态-runtime-准备",
+        "验证"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-dev-loop",
+      "zh": "docs/dual-renderer/browser-dev-loop.md",
+      "en": "docs/dual-renderer/browser-dev-loop.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-dev-loop.md"
+      },
+      "reviewedChineseSummary": "浏览器开发循环；实施与重验状态；启动；独立 producer 身份；页面与真实 watch；停止与资源归属；有界记录与显式回收",
+      "reviewedChineseSha256": "99e657800331a2a47fbf0898bad550314366ea92402e1fdbb789dac454695335",
+      "legacyHeadingIds": [
+        "dom-smoke-的当前画面与退休证据",
+        "停止与资源归属",
+        "启动",
+        "实施与重验状态",
+        "报告与待验证范围",
+        "有界记录与显式回收",
+        "浏览器开发循环",
+        "独立-producer-身份",
+        "页面与真实-watch"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-live-consumption",
+      "zh": "docs/dual-renderer/browser-live-consumption.md",
+      "en": "docs/dual-renderer/browser-live-consumption.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-live-consumption.md"
+      },
+      "reviewedChineseSummary": "Live Document 2.1 显式消费；协商与请求身份；纯元数据消费；客户端结算与清理；验证入口",
+      "reviewedChineseSha256": "32edebeb6d3aa257233cadccb39b21abd42bee9096e63ed0a4bcfefc51b751d9",
+      "legacyHeadingIds": [
+        "live-document-21-显式消费",
+        "协商与请求身份",
+        "客户端结算与清理",
+        "纯元数据消费",
+        "验证入口"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-live-document-v2",
+      "zh": "docs/dual-renderer/browser-live-document-v2.md",
+      "en": "docs/dual-renderer/browser-live-document-v2.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-live-document-v2.md"
+      },
+      "reviewedChineseSummary": "Live Document v2：显式实验协议；数据与事务；接收者与资源所有权；精确 final 与容量；运行验证入口",
+      "reviewedChineseSha256": "f171d90355b7c60d899596f10aae130affcb813f80d242df36c6ef0153fccee2",
+      "legacyHeadingIds": [
+        "live-document-v2显式实验协议",
+        "接收者与资源所有权",
+        "数据与事务",
+        "精确-final-与容量",
+        "运行验证入口"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-presentation",
+      "zh": "docs/dual-renderer/browser-presentation.md",
+      "en": "docs/dual-renderer/browser-presentation.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-presentation.md"
+      },
+      "reviewedChineseSummary": "浏览器呈现 v1；拥有与交易；开发预览拥有；输入与退役；资源与剩余适配器；运行协议示例；开发监督器集成",
+      "reviewedChineseSha256": "98dec9d761559dd41200f7344be3eb83644ebc146ae5f732f554cdd049af682b",
+      "legacyHeadingIds": [
+        "browser-presentation-v1",
+        "development-preview-ownership",
+        "development-supervisor-integration",
+        "input-and-retirement",
+        "ownership-and-transaction",
+        "resources-and-remaining-adapters",
+        "running-the-protocol-example"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-selector-queries",
+      "zh": "docs/dual-renderer/browser-selector-queries.md",
+      "en": "docs/dual-renderer/browser-selector-queries.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-selector-queries.md"
+      },
+      "reviewedChineseSummary": "DOM SelectorQuery（partial 实现与证据边界）；协商与启动；查询协议 v1.0；支持范围与预算；验证状态；显式真实 Worker 查询 smoke 入口",
+      "reviewedChineseSha256": "2359289f74f5252b8393b99a7ecdcd1d5281b66a6300d72eeba328b657caa671",
+      "legacyHeadingIds": [
+        "dom-selectorquerypartial-实现与证据边界",
+        "协商与启动",
+        "支持范围与预算",
+        "显式真实-worker-查询-smoke-入口",
+        "查询协议-v10",
+        "验证状态"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-source-preparation",
+      "zh": "docs/dual-renderer/browser-source-preparation.md",
+      "en": "docs/dual-renderer/browser-source-preparation.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-source-preparation.md"
+      },
+      "reviewedChineseSummary": "浏览器开发态的受管构建输入；数据和资源归属；后续执行门禁",
+      "reviewedChineseSha256": "8595d4863757883a7e7abd44aa5b704335181224edf4bca20dbe217f26d344ce",
+      "legacyHeadingIds": [
+        "后续执行门禁",
+        "数据和资源归属",
+        "浏览器开发态的受管构建输入"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/browser-static-http",
+      "zh": "docs/dual-renderer/browser-static-http.md",
+      "en": "docs/dual-renderer/browser-static-http.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/browser-static-http.md"
+      },
+      "reviewedChineseSummary": "静态站点的原租约 HTTP 传输；运行示例；URL 和请求边界；Owner loop 与退出；固定站点与证据含义",
+      "reviewedChineseSha256": "8904f6a78dc7293420e15ddcf30e4a38873295ca5f62cd3460fa76cbe3ac942a",
+      "legacyHeadingIds": [
+        "owner-loop-与退出",
+        "url-和请求边界",
+        "固定站点与证据含义",
+        "运行示例",
+        "静态站点的原租约-http-传输"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/dev-raster-browser-client",
+      "zh": "docs/dual-renderer/dev-raster-browser-client.md",
+      "en": "docs/dual-renderer/dev-raster-browser-client.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/dev-raster-browser-client.md"
+      },
+      "reviewedChineseSummary": "有票位的位图浏览器原语",
+      "reviewedChineseSha256": "3b0be87624db117bd02b5098666c27a471ae94be896a5fc4ffbeb313b21f8944",
+      "legacyHeadingIds": [
+        "ticketed-raster-browser-primitives"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/dev-raster-presentation",
+      "zh": "docs/dual-renderer/dev-raster-presentation.md",
+      "en": "docs/dual-renderer/dev-raster-presentation.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/dev-raster-presentation.md"
+      },
+      "reviewedChineseSummary": "开发态 Raster 呈现所有权",
+      "reviewedChineseSha256": "5059ccd012f197042ffc4ec8c8d4b1bcf95c8658e1b50ce4217e1f3c282a88e4",
+      "legacyHeadingIds": [
+        "开发态-raster-呈现所有权"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/dev-raster-preview-manager",
+      "zh": "docs/dual-renderer/dev-raster-preview-manager.md",
+      "en": "docs/dual-renderer/dev-raster-preview-manager.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/dev-raster-preview-manager.md"
+      },
+      "reviewedChineseSummary": "显式栅格预览连接管理器；实际连接与最终心跳；帧、只读镜像和输入；验证边界",
+      "reviewedChineseSha256": "1474086593340e0a7d94a8011b904a82580ec59a610a7efc1940ec298beba256",
+      "legacyHeadingIds": [
+        "actual-connection-and-final-heartbeat",
+        "explicit-raster-preview-connection-manager",
+        "frames-readonly-mirrors-and-input",
+        "validation-boundary"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/dev-raster-simulator-policy",
+      "zh": "docs/dual-renderer/dev-raster-simulator-policy.md",
+      "en": "docs/dual-renderer/dev-raster-simulator-policy.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/dev-raster-simulator-policy.md"
+      },
+      "reviewedChineseSummary": "开发者位图模拟器构建与重载",
+      "reviewedChineseSha256": "8222899f4222c802f73f8f1a54b4e7260078491256fa48c1b7404ea52db55403",
+      "legacyHeadingIds": [
+        "developer-raster-simulator-construction-and-reload"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/dom-button",
+      "zh": "docs/dual-renderer/dom-button.md",
+      "en": "docs/dual-renderer/dom-button.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/dom-button.md"
+      },
+      "reviewedChineseSummary": "DOM button 基础适配；支持边界；浏览器、事件和样式；验证范围；可选真实浏览器 fixture",
+      "reviewedChineseSha256": "a7d8fd0e8635312fdc44f35aa1e4327aed826da7a430e649a544f3b2f99dbb8a",
+      "legacyHeadingIds": [
+        "dom-button-基础适配",
+        "可选真实浏览器-fixture",
+        "支持边界",
+        "浏览器事件和样式",
+        "验证范围"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/dom-text-controls",
+      "zh": "docs/dual-renderer/dom-text-controls.md",
+      "en": "docs/dual-renderer/dom-text-controls.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/dom-text-controls.md"
+      },
+      "reviewedChineseSummary": "DOM input／textarea 基础适配；属性与内容；编辑状态与候选事务；输入与键盘事件；原生 IME 的明确限制；验证与证据",
+      "reviewedChineseSha256": "7b6835e4f96ee7ab0a8d55784685fa3e9b588a450a7ce4f98eb813ea6fa9e841",
+      "legacyHeadingIds": [
+        "dom-inputtextarea-基础适配",
+        "原生-ime-的明确限制",
+        "属性与内容",
+        "编辑状态与候选事务",
+        "输入与键盘事件",
+        "验证与证据"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/host-environment",
+      "zh": "docs/dual-renderer/host-environment.md",
+      "en": "docs/dual-renderer/host-environment.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/host-environment.md"
+      },
+      "reviewedChineseSummary": "AppService 宿主环境安装；业务状态与效果消费；Dirty gate 与失败",
+      "reviewedChineseSha256": "2b63d26038b6267db28353aef133fd4e7556c48a2b574cba3ec3c129aefde846",
+      "legacyHeadingIds": [
+        "appservice-宿主环境安装",
+        "dirty-gate-与失败",
+        "业务状态与效果消费"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/implementation-status",
+      "zh": "docs/dual-renderer/implementation-status.md",
+      "en": "docs/dual-renderer/implementation-status.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/implementation-status.md"
+      },
+      "reviewedChineseSummary": "双渲染实施进度；当前可运行路径；DOM 文本控件基础里程碑；Worker 原生输入生命周期接收加固；已实现的 DOM 事务边界；Worker 呈现基础边界；浏览器开发态构建边界",
+      "reviewedChineseSha256": "251b559ca856df2cfecd2e6182e170ab2a7d9bc5da28c7cb90242f82457151d0",
+      "legacyHeadingIds": [
+        "canvas-批处理与开发诊断",
+        "dom-文本控件基础里程碑",
+        "worker-原生输入生命周期接收加固",
+        "worker-呈现基础边界",
+        "双渲染实施进度",
+        "受管输入与静态站点",
+        "实验-browser-开发循环真实有限-watch-已验证",
+        "尚未交付的必需范围",
+        "已实现的-dom-事务边界",
+        "当前可运行路径",
+        "本地验证记录",
+        "浏览器开发态构建边界",
+        "静态站点的-http-传输"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/input-causal-diagnostics",
+      "zh": "docs/dual-renderer/input-causal-diagnostics.md",
+      "en": "docs/dual-renderer/input-causal-diagnostics.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/input-causal-diagnostics.md"
+      },
+      "reviewedChineseSummary": "Web 输入因果诊断 v1；显式启用；关联与时钟；有界性与诊断隔离；Remote 和旧 UI；验证边界",
+      "reviewedChineseSha256": "a3933739a009ec77f7579edb9f0e319c612dda9cfc043c45f7719c320b5e87ba",
+      "legacyHeadingIds": [
+        "remote-和旧-ui",
+        "web-输入因果诊断-v1",
+        "关联与时钟",
+        "显式启用",
+        "有界性与诊断隔离",
+        "验证边界"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/native-editing-continuity",
+      "zh": "docs/dual-renderer/native-editing-continuity.md",
+      "en": "docs/dual-renderer/native-editing-continuity.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/native-editing-continuity.md"
+      },
+      "reviewedChineseSummary": "原生编辑连续性：后续协议与实现设计；问题与选择；三个独立生命周期；显式协商与 v1 保持；草案 API 与事务顺序；稳定 surface 与 typed reconciliation；编辑 lease 的发放、期限与队列",
+      "reviewedChineseSha256": "e42ca743b93db8e7a2096b4f031f0d192c337c960ca85dc5f1d3da7e70c2b57e",
+      "legacyHeadingIds": [
+        "native-defaults焦点与受控状态冲突",
+        "三个独立生命周期",
+        "具体实现接缝",
+        "原生编辑连续性后续协议与实现设计",
+        "实施后的真实-ime-证据要求",
+        "显式协商与-v1-保持",
+        "状态转换回滚与清理",
+        "稳定-surface-与-typed-reconciliation",
+        "编辑-lease-的发放期限与队列",
+        "草案-api-与事务顺序",
+        "问题与选择"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/raster-publication-observations",
+      "zh": "docs/dual-renderer/raster-publication-observations.md",
+      "en": "docs/dual-renderer/raster-publication-observations.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/raster-publication-observations.md"
+      },
+      "reviewedChineseSummary": "借用栅格发布事实",
+      "reviewedChineseSha256": "91615002141831ebd236e431cbbd2a5f7043c971f0a71f5da521172af08830de",
+      "legacyHeadingIds": [
+        "borrowed-raster-publication-facts"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/skia-backend-boundary",
+      "zh": "docs/dual-renderer/skia-backend-boundary.md",
+      "en": "docs/dual-renderer/skia-backend-boundary.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/skia-backend-boundary.md"
+      },
+      "reviewedChineseSummary": "Skia 页面后端与被动宿主观察边界；准备与接受；Renderer 的实际画面准备；DOM 与后续工作；已接受帧不是呈现授权；开发态倍率事务；验证入口",
+      "reviewedChineseSha256": "139d7756511a88ac3fb1526f974a60c1d529bc7fb43bfb4f89c7fb6e345d2a0e",
+      "legacyHeadingIds": [
+        "dom-与后续工作",
+        "renderer-的实际画面准备",
+        "skia-页面后端与被动宿主观察边界",
+        "准备与接受",
+        "已接受帧不是呈现授权",
+        "开发态倍率事务",
+        "验证入口"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/sse-preview-binding",
+      "zh": "docs/dual-renderer/sse-preview-binding.md",
+      "en": "docs/dual-renderer/sse-preview-binding.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/sse-preview-binding.md"
+      },
+      "reviewedChineseSummary": "实际的SSE连接及预览退役",
+      "reviewedChineseSha256": "492f48de465c6cabe7b1ad228fdcd61c07d67775f9ed860075c0bc8170925f2e",
+      "legacyHeadingIds": [
+        "actual-sse-connections-and-preview-retirement"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/web-frame-reservation",
+      "zh": "docs/dual-renderer/web-frame-reservation.md",
+      "en": "docs/dual-renderer/web-frame-reservation.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/web-frame-reservation.md"
+      },
+      "reviewedChineseSummary": "Web 画面容量预留；容量与释放；验证范围",
+      "reviewedChineseSha256": "6a2b45202ba9f90ab9d86cda8979b389f1c11537020b3017482eec2f2b443d9f",
+      "legacyHeadingIds": [
+        "web-画面容量预留",
+        "容量与释放",
+        "验证范围"
+      ]
+    },
+    {
+      "id": "docs/dual-renderer/web-preview-owner",
+      "zh": "docs/dual-renderer/web-preview-owner.md",
+      "en": "docs/dual-renderer/web-preview-owner.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/dual-renderer/web-preview-owner.md"
+      },
+      "reviewedChineseSummary": "共享网页预览所有权；DOM 所有者退役",
+      "reviewedChineseSha256": "88c4bfaf470174eaca3aee54740f83608b71665e7ce3ae95e1a884dd0d6e45d6",
+      "legacyHeadingIds": [
+        "dom-owner-retirement",
+        "shared-web-preview-ownership"
+      ]
+    },
+    {
+      "id": "docs/event-metadata",
+      "zh": "docs/event-metadata.md",
+      "en": "docs/event-metadata.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/event-metadata.md"
+      },
+      "reviewedChineseSummary": "Dataset 与事件 mark",
+      "reviewedChineseSha256": "2e234f262a3fdb883d677055fbfeb0f74d0559125f9d154ba9c472171de08247",
+      "legacyHeadingIds": [
+        "dataset-与事件-mark"
+      ]
+    },
+    {
+      "id": "docs/external-frame-consumed-input",
+      "zh": "docs/external-frame-consumed-input.md",
+      "en": "docs/external-frame-consumed-input.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/external-frame-consumed-input.md"
+      },
+      "reviewedChineseSummary": "外部帧消耗输入来源",
+      "reviewedChineseSha256": "3912cb777628d416a7a44ead0de864e94459800be2862ccebf8007e7934e47d4",
+      "legacyHeadingIds": [
+        "external-frame-consumed-input-provenance"
+      ]
+    },
+    {
+      "id": "docs/host-services/ACCEPTANCE",
+      "zh": "docs/host-services/ACCEPTANCE.md",
+      "en": "docs/host-services/ACCEPTANCE.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/ACCEPTANCE.md"
+      },
+      "reviewedChineseSummary": "API 责任和验收记录；实现和验收是分开的；文件；合同范围；报告封存和来源追溯；当前基线",
+      "reviewedChineseSha256": "83e86d5f6158305729b614bdf732562bb96a23f944bd853902c5f1c028f7cde6",
+      "legacyHeadingIds": [
+        "api-responsibilities-and-acceptance-ledger",
+        "contract-scopes",
+        "current-baseline",
+        "files",
+        "implementation-and-acceptance-are-separate",
+        "report-sealing-and-provenance"
+      ]
+    },
+    {
+      "id": "docs/host-services/INTEGRATION",
+      "zh": "docs/host-services/INTEGRATION.md",
+      "en": "docs/host-services/INTEGRATION.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/INTEGRATION.md"
+      },
+      "reviewedChineseSummary": "宿主接入指南；安装和账号；Web 参考身份后端；换号与资源清理；文件、事件与原生组件；支付与示例",
+      "reviewedChineseSha256": "efeb3a29369c9f2f1f1588211ca8915fd91c8418114a22e5ad733d14f49ad27a",
+      "legacyHeadingIds": [
+        "web-参考身份后端",
+        "安装和账号",
+        "宿主接入指南",
+        "换号与资源清理",
+        "支付与示例",
+        "文件事件与原生组件"
+      ]
+    },
+    {
+      "id": "docs/host-services/README",
+      "zh": "docs/host-services/README.md",
+      "en": "docs/host-services/README.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/README.md"
+      },
+      "reviewedChineseSummary": "宿主能力协议与验收台账；注册与执行边界；Web 接入；原生接入与构建边界；可复现验证与真实证据",
+      "reviewedChineseSha256": "a619e71f3e050fbe659c22470373e54712a3027406a7e83d35a6135e97461612",
+      "legacyHeadingIds": [
+        "web-接入",
+        "原生接入与构建边界",
+        "可复现验证与真实证据",
+        "宿主能力协议与验收台账",
+        "注册与执行边界"
+      ]
+    },
+    {
+      "id": "docs/host-services/WEB-AUDIO",
+      "zh": "docs/host-services/WEB-AUDIO.md",
+      "en": "docs/host-services/WEB-AUDIO.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/WEB-AUDIO.md"
+      },
+      "reviewedChineseSummary": "Web 音频接入与资源归属；三类来源；播放与回收；验证边界；浏览器探针复现",
+      "reviewedChineseSha256": "099889ba9e944c777657fa78598aec08ab30a005cb106f8ccb4f0483e73e7650",
+      "legacyHeadingIds": [
+        "web-音频接入与资源归属",
+        "三类来源",
+        "播放与回收",
+        "浏览器探针复现",
+        "验证边界"
+      ]
+    },
+    {
+      "id": "docs/host-services/WEB-BLUETOOTH",
+      "zh": "docs/host-services/WEB-BLUETOOTH.md",
+      "en": "docs/host-services/WEB-BLUETOOTH.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/WEB-BLUETOOTH.md"
+      },
+      "reviewedChineseSummary": "Web Bluetooth：宿主授权的 GATT 子集",
+      "reviewedChineseSha256": "c93d8c6f372f73b40612774b9be38748ba86af130e6bc885ad71f6c6eeac2216",
+      "legacyHeadingIds": [
+        "web-bluetooth宿主授权的-gatt-子集"
+      ]
+    },
+    {
+      "id": "docs/host-services/WEB-NFC",
+      "zh": "docs/host-services/WEB-NFC.md",
+      "en": "docs/host-services/WEB-NFC.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/WEB-NFC.md"
+      },
+      "reviewedChineseSummary": "Web NFC 与冻结 wx NFC 合同",
+      "reviewedChineseSha256": "34362b6578f127c70f3a12f533b029309be55c1c084679476c35858bf991af93",
+      "legacyHeadingIds": [
+        "web-nfc-与冻结-wx-nfc-合同"
+      ]
+    },
+    {
+      "id": "docs/host-services/WEB-RECORDER",
+      "zh": "docs/host-services/WEB-RECORDER.md",
+      "en": "docs/host-services/WEB-RECORDER.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/WEB-RECORDER.md"
+      },
+      "reviewedChineseSummary": "Web 录音格式与资源归属；格式协商；有界 PCM 与完成顺序；复现与验收边界；Worker 二进制传输",
+      "reviewedChineseSha256": "3d0d781a305841836366c1c16a92f47811e55304cb5bbdd3a7443118808a873d",
+      "legacyHeadingIds": [
+        "web-录音格式与资源归属",
+        "worker-二进制传输",
+        "复现与验收边界",
+        "有界-pcm-与完成顺序",
+        "格式协商"
+      ]
+    },
+    {
+      "id": "docs/host-services/canvas-affine-clip-scope",
+      "zh": "docs/host-services/canvas-affine-clip-scope.md",
+      "en": "docs/host-services/canvas-affine-clip-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/canvas-affine-clip-scope.md"
+      },
+      "reviewedChineseSummary": "Canvas 仿射矩阵与当前路径裁剪；实现边界；每项剩余范围；验证与产物范围",
+      "reviewedChineseSha256": "32153558b4cf8a8ad16b67168ebfd7a8d68128077169ed28954225feb72f4515",
+      "legacyHeadingIds": [
+        "canvas-仿射矩阵与当前路径裁剪",
+        "实现边界",
+        "每项剩余范围",
+        "验证与产物范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/canvas-animation-media-query-scope",
+      "zh": "docs/host-services/canvas-animation-media-query-scope.md",
+      "en": "docs/host-services/canvas-animation-media-query-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/canvas-animation-media-query-scope.md"
+      },
+      "reviewedChineseSummary": "Canvas、Animation 与 MediaQueryObserver 实现范围；画布；动画；MediaQueryObserver；产物与验收",
+      "reviewedChineseSha256": "a70e5b35f9d0b8dd88ecfc983826c626fb87ab1fe9b158120d76bdc171bb79d6",
+      "legacyHeadingIds": [
+        "animation",
+        "canvas",
+        "canvasanimation-与-mediaqueryobserver-实现范围",
+        "mediaqueryobserver",
+        "产物与验收"
+      ]
+    },
+    {
+      "id": "docs/host-services/canvas-arcto-scope",
+      "zh": "docs/host-services/canvas-arcto-scope.md",
+      "en": "docs/host-services/canvas-arcto-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/canvas-arcto-scope.md"
+      },
+      "reviewedChineseSummary": "CanvasContext.arcTo 实现范围",
+      "reviewedChineseSha256": "e4718ff7f8ce691964367be3044a8a4e08971fda431233c73651e62853966431",
+      "legacyHeadingIds": [
+        "canvascontextarcto-实现范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/canvas-owned-stroke-scope",
+      "zh": "docs/host-services/canvas-owned-stroke-scope.md",
+      "en": "docs/host-services/canvas-owned-stroke-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/canvas-owned-stroke-scope.md"
+      },
+      "reviewedChineseSummary": "Canvas stroke 状态与页面绘制；验证与剩余范围",
+      "reviewedChineseSha256": "d48f144a2bec0739f87aac1b972002f57252898b403ebf30cddbfb390a8ce611",
+      "legacyHeadingIds": [
+        "canvas-stroke-状态与页面绘制",
+        "验证与剩余范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/consent-revocation-design",
+      "zh": "docs/host-services/consent-revocation-design.md",
+      "en": "docs/host-services/consent-revocation-design.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/consent-revocation-design.md"
+      },
+      "reviewedChineseSummary": "资料、手机号授权撤回与迟到结果隔离；现有根因和已有边界；持久授权域与执行 owner；协议版本和旧客户端门禁；后端原子 revision 与确认 challenge；数据和有效期；v2 路径和字段",
+      "reviewedChineseSha256": "3326c4c21b63bea01ae5cf03a67ad4b996e096d85986cfbad2cb7cfda2a4d507",
+      "legacyHeadingIds": [
+        "grant-事务",
+        "revoke--deny-事务",
+        "v2-路径和字段",
+        "协议版本和旧客户端门禁",
+        "受影响的客户端路径",
+        "后端原子-revision-与确认-challenge",
+        "实施依赖与待决项",
+        "宿主异步检查与一次结算",
+        "持久授权域与执行-owner",
+        "数据和有效期",
+        "现有根因和已有边界",
+        "资料手机号授权撤回与迟到结果隔离",
+        "验收在真实响应生成后设置-gate"
+      ]
+    },
+    {
+      "id": "docs/host-services/consent-runtime-wire-proposal",
+      "zh": "docs/host-services/consent-runtime-wire-proposal.md",
+      "en": "docs/host-services/consent-runtime-wire-proposal.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/consent-runtime-wire-proposal.md"
+      },
+      "reviewedChineseSummary": "Consent revocation 1.0：下一批运行时与 SDK wire 提案；0. 下一次最小完整实现批次（先不改各 SDK 版本）；1. 必须保持的边界；2. 现有源码归属与为什么不能只修改 current()；3. 版本协商与严格配置；4. 域、数字与 runtime 内部 authority；5. Call context、protected API 与 completion wire；6. 最小新增 host-only 命令合同",
+      "reviewedChineseSha256": "eff8e3dbad8d5bdb8e38e710e0185d2051743b459fdbd45a41056f934e5901cb",
+      "legacyHeadingIds": [
+        "0-下一次最小完整实现批次先不改各-sdk-版本",
+        "1-必须保持的边界",
+        "10-最小保持系统边界的实现顺序",
+        "11-此批必须写出的可复现断言",
+        "12-明确保留的跨进程设备范围",
+        "2-现有源码归属与为什么不能只修改-current",
+        "3-版本协商与严格配置",
+        "4-域数字与-runtime-内部-authority",
+        "5-call-contextprotected-api-与-completion-wire",
+        "6-最小新增-host-only-命令合同",
+        "61-初始化与-observation",
+        "62-本次-ui-grant-的登记与接纳",
+        "63-撤回与可查询终态",
+        "7-最终交付-claim微任务与原子性",
+        "71-已核对的-turncheckpoint-可复用性与死锁约束",
+        "72-strict-同步身份快照的逐次原生-gate",
+        "8-owner-ack-与-snapshotevent-清理",
+        "9-重建与sdkworker重放",
+        "consent-revocation-10下一批运行时与-sdk-wire-提案"
+      ]
+    },
+    {
+      "id": "docs/host-services/error-random-implementation-scope",
+      "zh": "docs/host-services/error-random-implementation-scope.md",
+      "en": "docs/host-services/error-random-implementation-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/error-random-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "随机值与私有错误监听的实现范围",
+      "reviewedChineseSha256": "67d3f5f3198b88454af3a96e9c652c805d558425e49e702debb6addab7f6a933",
+      "legacyHeadingIds": [
+        "随机值与私有错误监听的实现范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/event-channel-implementation-scope",
+      "zh": "docs/host-services/event-channel-implementation-scope.md",
+      "en": "docs/host-services/event-channel-implementation-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/event-channel-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "EventChannel 与 Console 分组的实现范围",
+      "reviewedChineseSha256": "99ae214e7cd84cad4fc0fdba389aa7ed0b2fec063f6d8fe6064a23eba3755310",
+      "legacyHeadingIds": [
+        "eventchannel-与-console-分组的实现范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/finite-notification-cleanup-scope",
+      "zh": "docs/host-services/finite-notification-cleanup-scope.md",
+      "en": "docs/host-services/finite-notification-cleanup-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/finite-notification-cleanup-scope.md"
+      },
+      "reviewedChineseSummary": "十组通知的私有回调与清理范围",
+      "reviewedChineseSha256": "b23ecd32432446c3accf4680e1f80c3504774e8aa55b9ae71bdb610f95091528",
+      "legacyHeadingIds": [
+        "十组通知的私有回调与清理范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/intersection-stats-timestamp-scope",
+      "zh": "docs/host-services/intersection-stats-timestamp-scope.md",
+      "en": "docs/host-services/intersection-stats-timestamp-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/intersection-stats-timestamp-scope.md"
+      },
+      "reviewedChineseSummary": "Intersection 清理与 Stats 时间戳的实现范围；Intersection 的私有订阅生命周期；Stats 的真实时间戳快照；已验证与交付边界",
+      "reviewedChineseSha256": "e0c9247195639a9b92ed1a8cd0598e90a1458e3b0243cea03559d37fed567f38",
+      "legacyHeadingIds": [
+        "intersection-清理与-stats-时间戳的实现范围",
+        "intersection-的私有订阅生命周期",
+        "stats-的真实时间戳快照",
+        "已验证与交付边界"
+      ]
+    },
+    {
+      "id": "docs/host-services/log-buffer-codec-implementation-scope",
+      "zh": "docs/host-services/log-buffer-codec-implementation-scope.md",
+      "en": "docs/host-services/log-buffer-codec-implementation-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/log-buffer-codec-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "LogManager、BufferURL 与文件编码实现范围；Session 持有的 LogManager 日志；BufferURL 的不可变字节 owner 与图像消费；生命周期通知的独立准入；文件文本编码与 UTF-16 边界；已取得的验证与未决门禁",
+      "reviewedChineseSha256": "90cdbf19d4459a8e122ed3611a9f277e887f22aa62503b9f7a2cd7af52f85447",
+      "legacyHeadingIds": [
+        "bufferurl-的不可变字节-owner-与图像消费",
+        "logmanagerbufferurl-与文件编码实现范围",
+        "session-持有的-logmanager-日志",
+        "已取得的验证与未决门禁",
+        "文件文本编码与-utf-16-边界",
+        "生命周期通知的独立准入"
+      ]
+    },
+    {
+      "id": "docs/host-services/nexttick-scheduler-implementation-scope",
+      "zh": "docs/host-services/nexttick-scheduler-implementation-scope.md",
+      "en": "docs/host-services/nexttick-scheduler-implementation-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/nexttick-scheduler-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "nextTick 与 idle 调度实现范围",
+      "reviewedChineseSha256": "d1ed05ba63dd18ac121ba2f07427667590331565ce4a18d0264c3f2124db67b4",
+      "legacyHeadingIds": [
+        "nexttick-与-idle-调度实现范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/numeric-animation-playback-scope",
+      "zh": "docs/host-services/numeric-animation-playback-scope.md",
+      "en": "docs/host-services/numeric-animation-playback-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/numeric-animation-playback-scope.md"
+      },
+      "reviewedChineseSummary": "数值 Animation 播放实现范围；时间线与数值范围；绑定、重播与 owner；时钟、呈现与生命周期；最终验证范围",
+      "reviewedChineseSha256": "614e357e72b6f3a250028906497eb79cd7117b0275b34ca2406479b5eb9d3f14",
+      "legacyHeadingIds": [
+        "数值-animation-播放实现范围",
+        "时钟呈现与生命周期",
+        "时间线与数值范围",
+        "最终验证范围",
+        "绑定重播与-owner"
+      ]
+    },
+    {
+      "id": "docs/host-services/object-notification-cleanup-scope",
+      "zh": "docs/host-services/object-notification-cleanup-scope.md",
+      "en": "docs/host-services/object-notification-cleanup-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/object-notification-cleanup-scope.md"
+      },
+      "reviewedChineseSummary": "TCP/UDP 对象监听移除的实现范围；单一回调所有者与真实取消；对象生命周期和结算故障；实际验证与首轮失败；来源、产物与验收边界",
+      "reviewedChineseSha256": "916258224964586f8e36d1ec9aba8764a5e590f0eded6ef35f1d06e3360c4ccf",
+      "legacyHeadingIds": [
+        "tcpudp-对象监听移除的实现范围",
+        "单一回调所有者与真实取消",
+        "实际验证与首轮失败",
+        "对象生命周期和结算故障",
+        "来源产物与验收边界"
+      ]
+    },
+    {
+      "id": "docs/host-services/ordinary-notification-cleanup-scope",
+      "zh": "docs/host-services/ordinary-notification-cleanup-scope.md",
+      "en": "docs/host-services/ordinary-notification-cleanup-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/ordinary-notification-cleanup-scope.md"
+      },
+      "reviewedChineseSummary": "二十组应用与设备通知的私有清理",
+      "reviewedChineseSha256": "0fdca145e0c45a63905ebd8fee53e775321f9898f706d23ccbdd3f1279fd6ffb",
+      "legacyHeadingIds": [
+        "二十组应用与设备通知的私有清理"
+      ]
+    },
+    {
+      "id": "docs/host-services/performance-audio-checkpoint-2026-11-05",
+      "zh": "docs/host-services/performance-audio-checkpoint-2026-11-05.md",
+      "en": "docs/host-services/performance-audio-checkpoint-2026-11-05.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/performance-audio-checkpoint-2026-11-05.md"
+      },
+      "reviewedChineseSummary": "性能和内音频源检查点 — 2026-11-05",
+      "reviewedChineseSha256": "edef481f05323f047c603f2e9f415ec7c7f24f20ba91b5afcc46cc7247547701",
+      "legacyHeadingIds": [
+        "performance-and-inneraudio-source-checkpoint--2026-11-05"
+      ]
+    },
+    {
+      "id": "docs/host-services/performance-disconnect-accounting-scope",
+      "zh": "docs/host-services/performance-disconnect-accounting-scope.md",
+      "en": "docs/host-services/performance-disconnect-accounting-scope.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/performance-disconnect-accounting-scope.md"
+      },
+      "reviewedChineseSummary": "PerformanceObserver.disconnect 实现登记范围",
+      "reviewedChineseSha256": "56edb5ebc2c1751f464ad286a91ec2fd60e737b9184c9066e53c1a1f79d8af31",
+      "legacyHeadingIds": [
+        "performanceobserverdisconnect-实现登记范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/performance-implementation-scope",
+      "zh": "docs/host-services/performance-implementation-scope.md",
+      "en": "docs/host-services/performance-implementation-scope.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/performance-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "性能实现范围",
+      "reviewedChineseSha256": "5241635e853a8809fc8bc978924cdfb6a2bb8cb1e0cd3fa8cc8b3ecabafd4abe",
+      "legacyHeadingIds": [
+        "performance-implementation-scope"
+      ]
+    },
+    {
+      "id": "docs/host-services/rejection-window-implementation-scope",
+      "zh": "docs/host-services/rejection-window-implementation-scope.md",
+      "en": "docs/host-services/rejection-window-implementation-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/rejection-window-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "未处理拒绝与窗口通知的实现范围",
+      "reviewedChineseSha256": "d76c5288e7fef62f099e0d3653f17a99b51ed6efc2f1632f004f80ea357d47e0",
+      "legacyHeadingIds": [
+        "未处理拒绝与窗口通知的实现范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/route-transactions-stats-scope",
+      "zh": "docs/host-services/route-transactions-stats-scope.md",
+      "en": "docs/host-services/route-transactions-stats-scope.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/route-transactions-stats-scope.md"
+      },
+      "reviewedChineseSummary": "路由事务与私有能力策略的实现范围；已有 Stats.size 和 Unix mode 的合同补验；组合清点与最终冻结",
+      "reviewedChineseSha256": "de028a71b93f1ee45361952888b603f04e4cbb624beb3c1607006f802cd531bd",
+      "legacyHeadingIds": [
+        "已有-statssize-和-unix-mode-的合同补验",
+        "组合清点与最终冻结",
+        "路由事务与私有能力策略的实现范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/runtime-cleanup-implementation-scope",
+      "zh": "docs/host-services/runtime-cleanup-implementation-scope.md",
+      "en": "docs/host-services/runtime-cleanup-implementation-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/runtime-cleanup-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "私有运行时清理方法的实现范围",
+      "reviewedChineseSha256": "1076a0d1d7024baf00f5901ee59e4118cb894d2ab14b71fde05ab32fdbf527df",
+      "legacyHeadingIds": [
+        "私有运行时清理方法的实现范围"
+      ]
+    },
+    {
+      "id": "docs/host-services/selector-stats-scope",
+      "zh": "docs/host-services/selector-stats-scope.md",
+      "en": "docs/host-services/selector-stats-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/selector-stats-scope.md"
+      },
+      "reviewedChineseSummary": "Selector 私有调用链与 Stats 接收边界；Selector 的请求与生命周期；基本几何及保留范围；Stats 方法与 producer 分开记账；真实浏览器的有限证据",
+      "reviewedChineseSha256": "33142e059a8d514d44482618a5d6bbe8bb50d0bfedcf75191b5f34a0f938067a",
+      "legacyHeadingIds": [
+        "selector-的请求与生命周期",
+        "selector-私有调用链与-stats-接收边界",
+        "stats-方法与-producer-分开记账",
+        "基本几何及保留范围",
+        "真实浏览器的有限证据"
+      ]
+    },
+    {
+      "id": "docs/host-services/source-review",
+      "zh": "docs/host-services/source-review.md",
+      "en": "docs/host-services/source-review.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/source-review.md"
+      },
+      "reviewedChineseSummary": "API 来源审定；2026-11-12 复核范围；后续更新",
+      "reviewedChineseSha256": "fbedf20d2b715c616b3cca8211de773b776b74b4c6dd95943d24aa611d797b9e",
+      "legacyHeadingIds": [
+        "2026-11-12-复核范围",
+        "api-来源审定",
+        "后续更新"
+      ]
+    },
+    {
+      "id": "docs/host-services/storage-lifecycle-scope",
+      "zh": "docs/host-services/storage-lifecycle-scope.md",
+      "en": "docs/host-services/storage-lifecycle-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/storage-lifecycle-scope.md"
+      },
+      "reviewedChineseSummary": "Storage 事务与应用生命周期通知的实现范围；源码清点变化；存储从本地成功到宿主提交；存储限制；生命周期的接收者与收尾；验证与未验收边界",
+      "reviewedChineseSha256": "df1ad6a6236960c495c54e4c0131515782c163bbc8deacc2fd2e4c42400ede0c",
+      "legacyHeadingIds": [
+        "storage-事务与应用生命周期通知的实现范围",
+        "存储从本地成功到宿主提交",
+        "存储限制",
+        "源码清点变化",
+        "生命周期的接收者与收尾",
+        "验证与未验收边界"
+      ]
+    },
+    {
+      "id": "docs/host-services/synchronous-file-descriptors",
+      "zh": "docs/host-services/synchronous-file-descriptors.md",
+      "en": "docs/host-services/synchronous-file-descriptors.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/synchronous-file-descriptors.md"
+      },
+      "reviewedChineseSummary": "受管同步文件句柄的实现范围；显式限制与未验收项",
+      "reviewedChineseSha256": "513cd392db40a497ef1c1b14d0a198eeff9d44ef4a30c100a060ea1e5320480e",
+      "legacyHeadingIds": [
+        "受管同步文件句柄的实现范围",
+        "显式限制与未验收项"
+      ]
+    },
+    {
+      "id": "docs/host-services/tabbar-implementation-scope",
+      "zh": "docs/host-services/tabbar-implementation-scope.md",
+      "en": "docs/host-services/tabbar-implementation-scope.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/tabbar-implementation-scope.md"
+      },
+      "reviewedChineseSummary": "动态系统 TabBar 的实现范围；状态与调用边界；默认拒绝与真实 presenter；验证与未闭合范围",
+      "reviewedChineseSha256": "da3e091a8645494993136efe302715885b639e6718cd3f4cf69f150748db1004",
+      "legacyHeadingIds": [
+        "动态系统-tabbar-的实现范围",
+        "状态与调用边界",
+        "验证与未闭合范围",
+        "默认拒绝与真实-presenter"
+      ]
+    },
+    {
+      "id": "docs/host-services/web-consent-v2-integration-map",
+      "zh": "docs/host-services/web-consent-v2-integration-map.md",
+      "en": "docs/host-services/web-consent-v2-integration-map.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-services/web-consent-v2-integration-map.md"
+      },
+      "reviewedChineseSummary": "贡献变更说明模板。",
+      "reviewedChineseSha256": "f168de4e01322f4733f2497162e736dd5806563f9da1efc84adf88c404a496cd",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/host-validation",
+      "zh": "docs/host-validation.md",
+      "en": "docs/host-validation.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/host-validation.md"
+      },
+      "reviewedChineseSummary": "主机验证边界；手动 CI；本地检查；原生应用集成骨架；后续设备验收所需证据",
+      "reviewedChineseSha256": "ae768da425827e12ae42862e3ac6e45f4b11c23f8414b039a0a1872af07d36ba",
+      "legacyHeadingIds": [
+        "evidence-required-for-a-future-device-gate",
+        "host-validation-boundary",
+        "local-checks",
+        "native-app-integration-skeletons",
+        "手动-ci"
+      ]
+    },
+    {
+      "id": "docs/images",
+      "zh": "docs/images.md",
+      "en": "docs/images.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/images.md"
+      },
+      "reviewedChineseSummary": "包装的图像",
+      "reviewedChineseSha256": "80fc4de1cc12df55f4ddf4cb5e8da364da768df0dd292b71eee060798aa5e6ef",
+      "legacyHeadingIds": [
+        "packaged-images"
+      ]
+    },
+    {
+      "id": "docs/ios-portable-pack",
+      "zh": "docs/ios-portable-pack.md",
+      "en": "docs/ios-portable-pack.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/ios-portable-pack.md"
+      },
+      "reviewedChineseSummary": "iOS 可移植包嵌入",
+      "reviewedChineseSha256": "49c95a3675aa237da782fe96a4243dda1e5f024e8f9175be904bf258ee1ce230",
+      "legacyHeadingIds": [
+        "ios-portable-pack-embedding"
+      ]
+    },
+    {
+      "id": "docs/isolated-view-engine",
+      "zh": "docs/isolated-view-engine.md",
+      "en": "docs/isolated-view-engine.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/isolated-view-engine.md"
+      },
+      "reviewedChineseSummary": "隔离的视图引擎；批量合约；预算与处置；可选的本地批量诊断；会话集成和验证",
+      "reviewedChineseSha256": "bb4050d62583cef8b3e06d7cd09ba7608237a4cf676c3c6774e93d63d753d2e7",
+      "legacyHeadingIds": [
+        "batch-contract",
+        "budgets-and-disposal",
+        "isolated-view-engine",
+        "optional-native-batch-diagnostics",
+        "session-integration-and-validation"
+      ]
+    },
+    {
+      "id": "docs/layout-flow",
+      "zh": "docs/layout-flow.md",
+      "en": "docs/layout-flow.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/layout-flow.md"
+      },
+      "reviewedChineseSummary": "Block / Flex 布局约定",
+      "reviewedChineseSha256": "916ffca49e9a40a067651ccb6292a54c949499486af9c16de1ddfa5ec7f74e27",
+      "legacyHeadingIds": [
+        "block--flex-布局约定"
+      ]
+    },
+    {
+      "id": "docs/licensing",
+      "zh": "docs/licensing.md",
+      "en": "docs/licensing.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/licensing.md"
+      },
+      "reviewedChineseSummary": "许可说明；构建和分发；历史副本",
+      "reviewedChineseSha256": "8ca2ebd79f1fedc9d1582923bba8b6a198092f242fe500efa08e07bd5ff282a2",
+      "legacyHeadingIds": [
+        "历史副本",
+        "构建和分发",
+        "许可说明"
+      ]
+    },
+    {
+      "id": "docs/modern-view",
+      "zh": "docs/modern-view.md",
+      "en": "docs/modern-view.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/modern-view.md"
+      },
+      "reviewedChineseSummary": "现代 JS/TS View；直接开发；选择文档与模块；数据和执行边界；Pack 与宿主；验证；CI 专项验证",
+      "reviewedChineseSha256": "b0364d41b9c3ef907db98f32bc20c7c77ff775917ebf79e22bd35882398bb7cc",
+      "legacyHeadingIds": [
+        "ci-专项验证",
+        "pack-与宿主",
+        "数据和执行边界",
+        "现代-jsts-view",
+        "直接开发",
+        "选择文档与模块",
+        "验证"
+      ]
+    },
+    {
+      "id": "docs/mpcore-conformance",
+      "zh": "docs/mpcore-conformance.md",
+      "en": "docs/mpcore-conformance.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/mpcore-conformance.md"
+      },
+      "reviewedChineseSummary": "mpcore / DevTools 兼容性；运行；真实 DevTools 门禁；本机真实 IDE 观察（2026-10-17）",
+      "reviewedChineseSha256": "c73bdc457a208b192fa5c0128780db816ff0d084fd7cab44ed090d0254232be9",
+      "legacyHeadingIds": [
+        "mpcore--devtools-conformance",
+        "本机真实-ide-观察2026-10-17",
+        "真实-devtools-门禁",
+        "运行"
+      ]
+    },
+    {
+      "id": "docs/pack-execution-evidence",
+      "zh": "docs/pack-execution-evidence.md",
+      "en": "docs/pack-execution-evidence.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/pack-execution-evidence.md"
+      },
+      "reviewedChineseSummary": "可携式包执行证据 v1",
+      "reviewedChineseSha256": "4e399c517d4887a13cc12bf303a974594dc9de5aa339a379467613a2d30d2fb1",
+      "legacyHeadingIds": [
+        "portable-pack-execution-evidence-v1"
+      ]
+    },
+    {
+      "id": "docs/performance",
+      "zh": "docs/performance.md",
+      "en": "docs/performance.en.md",
+      "section": "validation",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/performance.md"
+      },
+      "reviewedChineseSummary": "性能证据与门槛",
+      "reviewedChineseSha256": "eeb17bbbae366229702cc1089a9558509b37a25e6a9fcb30de62f33aecb2730d",
+      "legacyHeadingIds": [
+        "性能证据与门槛"
+      ]
+    },
+    {
+      "id": "docs/platform-runtime-artifacts",
+      "zh": "docs/platform-runtime-artifacts.md",
+      "en": "docs/platform-runtime-artifacts.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/platform-runtime-artifacts.md"
+      },
+      "reviewedChineseSummary": "Web 与 Harmony 独立产物；构建输入；从归档全新安装",
+      "reviewedChineseSha256": "4639b75445d784e730729f8408deb1038b293b539f8c530d4a8269c361d14183",
+      "legacyHeadingIds": [
+        "web-与-harmony-独立产物",
+        "从归档全新安装",
+        "构建输入"
+      ]
+    },
+    {
+      "id": "docs/public-source-policy",
+      "zh": "docs/public-source-policy.md",
+      "en": "docs/public-source-policy.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/public-source-policy.md"
+      },
+      "reviewedChineseSummary": "公开源码发行边界；提交检查",
+      "reviewedChineseSha256": "d8dfda1fabec6558b80b53d22c9ce71eac23bfe09ffec39c46fd98a96762ce3f",
+      "legacyHeadingIds": [
+        "公开源码发行边界",
+        "提交检查"
+      ]
+    },
+    {
+      "id": "docs/render-density-performance",
+      "zh": "docs/render-density-performance.md",
+      "en": "docs/render-density-performance.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/render-density-performance.md"
+      },
+      "reviewedChineseSummary": "渲染密度、帧传输与诊断",
+      "reviewedChineseSha256": "e760ea1a71a7030d1f22102d3f43d57b887b4214f313158a8baa01de602dc46b",
+      "legacyHeadingIds": [
+        "渲染密度帧传输与诊断"
+      ]
+    },
+    {
+      "id": "docs/render-resource-store",
+      "zh": "docs/render-resource-store.md",
+      "en": "docs/render-resource-store.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/render-resource-store.md"
+      },
+      "reviewedChineseSummary": "会话渲染资源",
+      "reviewedChineseSha256": "a9b83eab31b92896b364173dff6d70e9b54ded6482f2d066dc7c504f5d9012a3",
+      "legacyHeadingIds": [
+        "session-render-resources"
+      ]
+    },
+    {
+      "id": "docs/renderer-profiles",
+      "zh": "docs/renderer-profiles.md",
+      "en": "docs/renderer-profiles.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/renderer-profiles.md"
+      },
+      "reviewedChineseSummary": "渲染器配置文件和与布局无关的视图文档",
+      "reviewedChineseSha256": "c8101bf1db4474a11d58762d16f30e2c7a9cd331839aba08682e437d31dedeb1",
+      "legacyHeadingIds": [
+        "renderer-profiles-and-layout-independent-view-documents"
+      ]
+    },
+    {
+      "id": "docs/renderer-target-scaling",
+      "zh": "docs/renderer-target-scaling.md",
+      "en": "docs/renderer-target-scaling.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/renderer-target-scaling.md"
+      },
+      "reviewedChineseSummary": "逻辑帧和物理渲染目标",
+      "reviewedChineseSha256": "f5b3ddf83330099203758513c0c4896c334a220baac0fc4eba30edfda98182da",
+      "legacyHeadingIds": [
+        "logical-frames-and-physical-render-targets"
+      ]
+    },
+    {
+      "id": "docs/runtime-artifacts-migration",
+      "zh": "docs/runtime-artifacts-migration.md",
+      "en": "docs/runtime-artifacts-migration.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/runtime-artifacts-migration.md"
+      },
+      "reviewedChineseSummary": "运行库发行入口迁移；历史 pin 审计",
+      "reviewedChineseSha256": "a729caabab42ae4fb418cec880bcc395a85f481a7bbf268815f11419d4ac38fc",
+      "legacyHeadingIds": [
+        "历史-pin-审计",
+        "运行库发行入口迁移"
+      ]
+    },
+    {
+      "id": "docs/rust-build-cache",
+      "zh": "docs/rust-build-cache.md",
+      "en": "docs/rust-build-cache.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/rust-build-cache.md"
+      },
+      "reviewedChineseSummary": "Rust 构建与磁盘空间；日常开发；稳定缓存与显式路径；WASM 临时缓存的生命周期；定期维护",
+      "reviewedChineseSha256": "22361594e63f5c1a04ddc2f5ae945e61a27cf7e017a33e292c93984655b920b5",
+      "legacyHeadingIds": [
+        "rust-构建与磁盘空间",
+        "wasm-临时缓存的生命周期",
+        "定期维护",
+        "日常开发",
+        "稳定缓存与显式路径"
+      ]
+    },
+    {
+      "id": "docs/scrolling",
+      "zh": "docs/scrolling.md",
+      "en": "docs/scrolling.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/scrolling.md"
+      },
+      "reviewedChineseSummary": "会话滚动",
+      "reviewedChineseSha256": "2f494229e7b7acefa62daa82ac3087661d5dc934d8b5fe08f2709b1bc12e29e0",
+      "legacyHeadingIds": [
+        "session-scrolling"
+      ]
+    },
+    {
+      "id": "docs/sdk-android-archive-consumer",
+      "zh": "docs/sdk-android-archive-consumer.md",
+      "en": "docs/sdk-android-archive-consumer.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/sdk-android-archive-consumer.md"
+      },
+      "reviewedChineseSummary": "Android SDK 归档的独立消费者",
+      "reviewedChineseSha256": "0137e99cf9916694579a66886f39a8996b80b0b4b7e5486f3178af07e1893c5b",
+      "legacyHeadingIds": [
+        "android-sdk-归档的独立消费者"
+      ]
+    },
+    {
+      "id": "docs/sdk-react-native-archive-consumer",
+      "zh": "docs/sdk-react-native-archive-consumer.md",
+      "en": "docs/sdk-react-native-archive-consumer.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/sdk-react-native-archive-consumer.md"
+      },
+      "reviewedChineseSummary": "React Native 从精确归档安装",
+      "reviewedChineseSha256": "d2d72f5ed0cb0fd7aba841c590635ef953eb108ce95e39ebdf241ac8fd685ec4",
+      "legacyHeadingIds": [
+        "react-native-从精确归档安装"
+      ]
+    },
+    {
+      "id": "docs/sdk-repositories",
+      "zh": "docs/sdk-repositories.md",
+      "en": "docs/sdk-repositories.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/sdk-repositories.md"
+      },
+      "reviewedChineseSummary": "SDK 仓库和源码构建；当前源码构建；预编译包和兼容性",
+      "reviewedChineseSha256": "64c88988a07d0a5ba7711189f0813059c70b742f3253aa273e200f3c4d62ec9a",
+      "legacyHeadingIds": [
+        "sdk-仓库和源码构建",
+        "当前源码构建",
+        "预编译包和兼容性"
+      ]
+    },
+    {
+      "id": "docs/sdk-source-build",
+      "zh": "docs/sdk-source-build.md",
+      "en": "docs/sdk-source-build.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/sdk-source-build.md"
+      },
+      "reviewedChineseSummary": "从公开源码构建 SDK；1. 准备干净的 checkout；2. 构建原生 SDK；3. Flutter 与 React Native 的原生输入；4. 打包自己的小程序；5. 验证与故障定位",
+      "reviewedChineseSha256": "d4f60d64548ac9f1bf0d3f3313ad78d59331956c37d4d1ee05260307f2afa07b",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/simulator",
+      "zh": "docs/simulator.md",
+      "en": "docs/simulator.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/simulator.md"
+      },
+      "reviewedChineseSummary": "Weapp Container 模拟器；快速运行；DOM 文本编辑示例；组件关系开发示例；开发态监督器；自定义组件执行子集；JSONL 调试脚本；App 植入边界",
+      "reviewedChineseSha256": "e95cdd9c77948965d5749de2f0b398895fdce12a6be5cb001c3e21a0c32035bb",
+      "legacyHeadingIds": [
+        "app-植入边界",
+        "dom-文本编辑示例",
+        "jsonl-调试脚本",
+        "weapp-container-模拟器",
+        "开发态监督器",
+        "开头的行会被忽略每行都会进入-normalized-tracetrace-同时记录输入",
+        "快速运行",
+        "组件关系开发示例",
+        "自定义组件执行子集",
+        "证据边界"
+      ]
+    },
+    {
+      "id": "docs/stacking-contexts",
+      "zh": "docs/stacking-contexts.md",
+      "en": "docs/stacking-contexts.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/stacking-contexts.md"
+      },
+      "reviewedChineseSummary": "层叠、绘制顺序与输入；Typed 与旧 frame 的边界；Context 与 paint phase；三种关系与共享计划；Clip、absolute 与 fixed；验证与尚未达到的边界",
+      "reviewedChineseSha256": "a01eeeba5354edf4d85f8d7b990a0f67111df7c5b58755c483c3edeaa5fed4b5",
+      "legacyHeadingIds": [
+        "clipabsolute-与-fixed",
+        "context-与-paint-phase",
+        "typed-与旧-frame-的边界",
+        "三种关系与共享计划",
+        "层叠绘制顺序与输入",
+        "验证与尚未达到的边界"
+      ]
+    },
+    {
+      "id": "docs/transforms",
+      "zh": "docs/transforms.md",
+      "en": "docs/transforms.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/transforms.md"
+      },
+      "reviewedChineseSummary": "WXSS 2D 变换",
+      "reviewedChineseSha256": "d8e69eb2180684aeb70297206a492f4c3b7972aea63816459e1f27b6b8ac6bf5",
+      "legacyHeadingIds": [
+        "wxss-2d-变换"
+      ]
+    },
+    {
+      "id": "docs/typography",
+      "zh": "docs/typography.md",
+      "en": "docs/typography.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/typography.md"
+      },
+      "reviewedChineseSummary": "移动帧中的字体排版",
+      "reviewedChineseSha256": "4c068114903efcca1f5890660cc7597a4f874f24e544394dded46215374c60c6",
+      "legacyHeadingIds": [
+        "typography-in-the-portable-frame"
+      ]
+    },
+    {
+      "id": "docs/visibility",
+      "zh": "docs/visibility.md",
+      "en": "docs/visibility.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/visibility.md"
+      },
+      "reviewedChineseSummary": "WXSS 可见性",
+      "reviewedChineseSha256": "73a9303fe6a8c7b1642a671e91c15e21ff0504c897c3242172da3857f12e74d9",
+      "legacyHeadingIds": [
+        "wxss-visibility"
+      ]
+    },
+    {
+      "id": "docs/weapp-vite-matrix",
+      "zh": "docs/weapp-vite-matrix.md",
+      "en": "docs/weapp-vite-matrix.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/weapp-vite-matrix.md"
+      },
+      "reviewedChineseSummary": "weapp-vite 产物矩阵验证；运行方式；目标契约；CI 约束",
+      "reviewedChineseSha256": "3ccbf2fce8f1a9a552de51ed8816d175f57ec908f46691d311e62c31a206a7bd",
+      "legacyHeadingIds": [
+        "ci-约束",
+        "weapp-vite-产物矩阵验证",
+        "目标契约",
+        "运行方式"
+      ]
+    },
+    {
+      "id": "docs/worker-admission-loader",
+      "zh": "docs/worker-admission-loader.md",
+      "en": "docs/worker-admission-loader.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-admission-loader.md"
+      },
+      "reviewedChineseSummary": "工作者静态准入和绘制资源租用；固定绘图加载器；取消、缓存和租约边界；现有配置生成器不一致；候选检查和剩余集成",
+      "reviewedChineseSha256": "62799d0f90fee466d8245489e239cfd77139c5079856fde1fd74975f2bbf2514",
+      "legacyHeadingIds": [
+        "cancellation-cache-and-lease-boundary",
+        "candidate-checks-and-remaining-integration",
+        "existing-configuration-producer-discrepancy",
+        "pinned-drawing-loader",
+        "worker-static-admission-and-drawing-resource-leases"
+      ]
+    },
+    {
+      "id": "docs/worker-dom-adapter",
+      "zh": "docs/worker-dom-adapter.md",
+      "en": "docs/worker-dom-adapter.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-dom-adapter.md"
+      },
+      "reviewedChineseSummary": "工作区 DOM 调度器适配器（候选合同）；所有权和构造；调度器方法；资源最后使用；范围和验证",
+      "reviewedChineseSha256": "eb68a067d8d8ccd07302cdef53a1242560ca0bf77be7b7df855c471977cc5784",
+      "legacyHeadingIds": [
+        "ownership-and-construction",
+        "resource-last-use",
+        "scheduler-methods",
+        "scope-and-validation",
+        "worker-dom-scheduler-adapter-candidate-contract"
+      ]
+    },
+    {
+      "id": "docs/worker-external-presentation",
+      "zh": "docs/worker-external-presentation.md",
+      "en": "docs/worker-external-presentation.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-external-presentation.md"
+      },
+      "reviewedChineseSummary": "工作者外部呈现合同 1.0；显式协商；克隆时帧事实；与修订绑定的物理目标；真正的最终确认回执；接收端集成和证据限制",
+      "reviewedChineseSha256": "4437f272112474b70149dd8bd4b57729e0baad450005f3a74b71877d50737805",
+      "legacyHeadingIds": [
+        "clone-time-frame-facts",
+        "explicit-negotiation",
+        "genuine-final-ack",
+        "receiver-integration-and-evidence-limits",
+        "revision-bound-physical-target",
+        "worker-external-presentation-contract-10"
+      ]
+    },
+    {
+      "id": "docs/worker-ordered-observations",
+      "zh": "docs/worker-ordered-observations.md",
+      "en": "docs/worker-ordered-observations.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-ordered-observations.md"
+      },
+      "reviewedChineseSummary": "工作者有序观察 1.0；协商和向后兼容性；一个所有者通道，原始序列；逻辑生成和原生生命周期；硬/软无效调用位置清单；DOM 生成准入；作者验证和限制",
+      "reviewedChineseSha256": "42d6590e2eb52fba56e2d2ae1c9ffba0201a35dbf14e8d1dc45d4c575b916685",
+      "legacyHeadingIds": [
+        "authored-verification-and-limits",
+        "dom-generation-admission",
+        "hardsoft-invalidation-call-site-inventory",
+        "logical-generation-and-native-lifetime",
+        "negotiation-and-legacy-compatibility",
+        "one-owner-lane-original-sequences",
+        "worker-ordered-observations-10"
+      ]
+    },
+    {
+      "id": "docs/worker-presentation-scheduler",
+      "zh": "docs/worker-presentation-scheduler.md",
+      "en": "docs/worker-presentation-scheduler.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-presentation-scheduler.md"
+      },
+      "reviewedChineseSummary": "工作程序呈现调度器；范围和明确的集成阻塞因素；公共 API；适配器阶段和证明；合并、故障和调度；稳定关闭和有限取消合约；确定性合同测试和证据限制；已验证帧的所有权",
+      "reviewedChineseSha256": "fca5ea4b3e465081ed3e7020d4a085972d6bc0db530dcdc1b6340bf10d2cac90",
+      "legacyHeadingIds": [
+        "adapter-phases-and-proof",
+        "coalescing-failure-and-scheduling",
+        "deterministic-contract-tests-and-evidence-limits",
+        "public-api",
+        "scope-and-explicit-integration-blockers",
+        "stable-close-and-finite-cancellation-contract",
+        "validated-frame-ownership",
+        "worker-presentation-scheduler"
+      ]
+    },
+    {
+      "id": "docs/worker-presenter-transactions",
+      "zh": "docs/worker-presenter-transactions.md",
+      "en": "docs/worker-presenter-transactions.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-presenter-transactions.md"
+      },
+      "reviewedChineseSummary": "工作呈现器事务（显式 1.0 光入）；条目；身份和数据流；交易和清理；源合同和证据限制",
+      "reviewedChineseSha256": "98af45e6079180e382134c7c6dcc5fc8ad3de8281d77c086f88653d4155f93a3",
+      "legacyHeadingIds": [
+        "entry",
+        "identity-and-data-flow",
+        "source-contracts-and-evidence-limits",
+        "transaction-and-cleanup",
+        "worker-presenter-transactions-explicit-10-opt-in"
+      ]
+    },
+    {
+      "id": "docs/worker-renderer-transition-protocol",
+      "zh": "docs/worker-renderer-transition-protocol.md",
+      "en": "docs/worker-renderer-transition-protocol.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-renderer-transition-protocol.md"
+      },
+      "reviewedChineseSummary": "工作渲染器转换（协议片断）；协商和身份；所有者线程状态机；演示和输入屏障；剩余的产品工作和证据边界；可信原生交错定义",
+      "reviewedChineseSha256": "8b3e10b97adebb7e1ccfc2cd24e6dc3877c0e4df7a416ea12a89dd041fb185d6",
+      "legacyHeadingIds": [
+        "negotiation-and-identities",
+        "owner-thread-state-machine",
+        "presentation-and-input-fences",
+        "remaining-product-work-and-evidence-boundary",
+        "trusted-native-interleaving-definitions",
+        "worker-renderer-transitions-protocol-slice"
+      ]
+    },
+    {
+      "id": "docs/worker-surface-recovery",
+      "zh": "docs/worker-surface-recovery.md",
+      "en": "docs/worker-surface-recovery.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-surface-recovery.md"
+      },
+      "reviewedChineseSummary": "工作者外部绘制表面恢复 1.0；显式加载和宿主/WASM协商；丢失、实际耗尽和精确预期输入；所有 RPC 最终值和准入；克隆证明在本地取消后仍存在；两个明确的结果；新版发布，准备好的钩子和输入权限；污染、重试和关闭",
+      "reviewedChineseSha256": "e61a01c38d80754dffc1f995aceda7fe9a09dee45ebab81ac7f30ef421206e06",
+      "legacyHeadingIds": [
+        "clone-proof-survives-local-cancellation",
+        "dirtiness-retry-and-close",
+        "explicit-load-and-hostwasm-negotiation",
+        "loss-actual-drain-and-exact-expected-input",
+        "new-publication-ready-hooks-and-input-authority",
+        "owned-rpc-finals-and-admission",
+        "two-explicit-outcomes",
+        "validation-boundary",
+        "worker-external-surface-recovery-10"
+      ]
+    },
+    {
+      "id": "docs/worker-web-session",
+      "zh": "docs/worker-web-session.md",
+      "en": "docs/worker-web-session.en.md",
+      "section": "runtime",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/worker-web-session.md"
+      },
+      "reviewedChineseSummary": "WorkerWebSession 所有者；入学与所有权；效果发生之前的时间顺序观测；演示、指标和输入；稳定闭合并保持门关着；完整表面与宿主布局；完整的表面和宿主布局",
+      "reviewedChineseSha256": "0b3b0bf1ae7e012c45aa82fb03d974d236de0548dd423417026d498d6bef849e",
+      "legacyHeadingIds": [
+        "admission-and-ownership",
+        "full-surface-and-host-layout",
+        "ordered-observations-before-effects",
+        "presentation-metrics-and-input",
+        "stable-close-and-remaining-gates",
+        "workerwebsession-owner",
+        "完整表面与宿主布局"
+      ]
+    },
+    {
+      "id": "docs/wxss-borders",
+      "zh": "docs/wxss-borders.md",
+      "en": "docs/wxss-borders.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/wxss-borders.md"
+      },
+      "reviewedChineseSummary": "WXSS 边框和盒子约束；级联和使用值；一个几何体用于布局、绘制和输入；证据和待办工作",
+      "reviewedChineseSha256": "c755e4c9c78aaf3f872ca79d86116543ec5d68397205741f386d9446e83d9ac6",
+      "legacyHeadingIds": [
+        "cascade-and-used-values",
+        "evidence-and-remaining-work",
+        "one-geometry-for-layout-paint-and-input",
+        "wxss-border-and-box-contract"
+      ]
+    },
+    {
+      "id": "docs/wxss-ir",
+      "zh": "docs/wxss-ir.md",
+      "en": "docs/wxss-ir.en.md",
+      "section": "rendering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/wxss-ir.md"
+      },
+      "reviewedChineseSummary": "WXSS IR 和条件级联；版本 2 源代码结构；运行时评估；传统和剩余的边界；重现原生示例",
+      "reviewedChineseSha256": "cce7be0c4d59d2efb72907b6dbbf1e910fc9e5ea17d3dbfc65c7c597be66bf25",
+      "legacyHeadingIds": [
+        "legacy-and-remaining-boundaries",
+        "reproduce-the-native-sample",
+        "runtime-evaluation",
+        "version-2-source-structure",
+        "wxss-ir-and-conditional-cascade"
+      ]
+    },
+    {
+      "id": "examples/apps/dataset-values-app/README",
+      "zh": "examples/apps/dataset-values-app/README.md",
+      "en": "examples/apps/dataset-values-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/dataset-values-app/README.md"
+      },
+      "reviewedChineseSummary": "数据集和标记固定装置",
+      "reviewedChineseSha256": "7f491f400e35acf57881613bc726240cc2f7337f3c8f3be6eea42855fbbfead4",
+      "legacyHeadingIds": [
+        "dataset-and-mark-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/dual-renderer-app/README",
+      "zh": "examples/apps/dual-renderer-app/README.md",
+      "en": "examples/apps/dual-renderer-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/dual-renderer-app/README.md"
+      },
+      "reviewedChineseSummary": "双渲染开发示例；构建与 renderer 配置；当前验证范围",
+      "reviewedChineseSha256": "d48d44970a19a8375cb1f7c289741c270a27b5c7471cde6c80776c7477f6038f",
+      "legacyHeadingIds": [
+        "双渲染开发示例",
+        "当前验证范围",
+        "构建与-renderer-配置"
+      ]
+    },
+    {
+      "id": "examples/apps/embed-runner/README",
+      "zh": "examples/apps/embed-runner/README.md",
+      "en": "examples/apps/embed-runner/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/embed-runner/README.md"
+      },
+      "reviewedChineseSummary": "应用嵌入示例",
+      "reviewedChineseSha256": "4b3274afe386fbcf8e31ae9abd0a1f81db4401ef59bd226b05d4f9267b421853",
+      "legacyHeadingIds": [
+        "app-embedding-example"
+      ]
+    },
+    {
+      "id": "examples/apps/flex-layout-app/README",
+      "zh": "examples/apps/flex-layout-app/README.md",
+      "en": "examples/apps/flex-layout-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/flex-layout-app/README.md"
+      },
+      "reviewedChineseSummary": "Flex 布局测试 fixture",
+      "reviewedChineseSha256": "b5b61548522f024458ec270bc9da1d61b5fc2e25fed2660d335cda85be875ad0",
+      "legacyHeadingIds": [
+        "flex-layout-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/flex-order-app/README",
+      "zh": "examples/apps/flex-order-app/README.md",
+      "en": "examples/apps/flex-order-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/flex-order-app/README.md"
+      },
+      "reviewedChineseSummary": "Flex 订单固定装置",
+      "reviewedChineseSha256": "b324836595e1d4145d8ed9b0db500d0bfc94347b121c9b4af602cdbac5994b6e",
+      "legacyHeadingIds": [
+        "flex-order-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/group-opacity-app/README",
+      "zh": "examples/apps/group-opacity-app/README.md",
+      "en": "examples/apps/group-opacity-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/group-opacity-app/README.md"
+      },
+      "reviewedChineseSummary": "组透明度测试fixture",
+      "reviewedChineseSha256": "60322390481a46872893745eb9f4eaf49dee431a7cd86bb16a5972463abe9460",
+      "legacyHeadingIds": [
+        "group-opacity-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/host-services-app/README",
+      "zh": "examples/apps/host-services-app/README.md",
+      "en": "examples/apps/host-services-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/host-services-app/README.md"
+      },
+      "reviewedChineseSummary": "宿主账号与参考支付示例",
+      "reviewedChineseSha256": "82052c4e1cd1890df6e7e7157323a94a7bb78899cacf2ba491b078dc475dc8da",
+      "legacyHeadingIds": [
+        "宿主账号与参考支付示例"
+      ]
+    },
+    {
+      "id": "examples/apps/ios-interaction-app/README",
+      "zh": "examples/apps/ios-interaction-app/README.md",
+      "en": "examples/apps/ios-interaction-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/ios-interaction-app/README.md"
+      },
+      "reviewedChineseSummary": "iOS 交互固定装置",
+      "reviewedChineseSha256": "f38179b0a3ee589b5fd93884799e73fae1ea459357abb4947b6d4914c82d2ba8",
+      "legacyHeadingIds": [
+        "ios-interaction-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/modern-view-app/README",
+      "zh": "examples/apps/modern-view-app/README.md",
+      "en": "examples/apps/modern-view-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/modern-view-app/README.md"
+      },
+      "reviewedChineseSummary": "现代同步 View 示例",
+      "reviewedChineseSha256": "a658d7a409d4450899268f5dc8e4546969eb929ef9216ea12c8883e5c9684adb",
+      "legacyHeadingIds": [
+        "modern-synchronous-view-example"
+      ]
+    },
+    {
+      "id": "examples/apps/player-chrome-app/README",
+      "zh": "examples/apps/player-chrome-app/README.md",
+      "en": "examples/apps/player-chrome-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/player-chrome-app/README.md"
+      },
+      "reviewedChineseSummary": "Dev Player chrome 修复工具",
+      "reviewedChineseSha256": "b9827eca54bcb22021012d6b719ff4762903eaf80690c50615310369ad4fe3d3",
+      "legacyHeadingIds": [
+        "dev-player-chrome-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/player-correctness-app/README",
+      "zh": "examples/apps/player-correctness-app/README.md",
+      "en": "examples/apps/player-correctness-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/player-correctness-app/README.md"
+      },
+      "reviewedChineseSummary": "开发播放器正确性测试套件（预览版.5 源码）",
+      "reviewedChineseSha256": "e126e9827c362dce286d4ef75499d6f4d1b347fa3b955cb69e4492d615adbbb8",
+      "legacyHeadingIds": [
+        "dev-player-correctness-fixture-preview5-source"
+      ]
+    },
+    {
+      "id": "examples/apps/reference-app/README",
+      "zh": "examples/apps/reference-app/README.md",
+      "en": "examples/apps/reference-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/reference-app/README.md"
+      },
+      "reviewedChineseSummary": "参考小程序",
+      "reviewedChineseSha256": "db222b593bad623edc4e734d776913c0e8536e2fc7f0a6e32a25c901184b7f3c",
+      "legacyHeadingIds": [
+        "reference-mini-program"
+      ]
+    },
+    {
+      "id": "examples/apps/scroll-contract-app/README",
+      "zh": "examples/apps/scroll-contract-app/README.md",
+      "en": "examples/apps/scroll-contract-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/scroll-contract-app/README.md"
+      },
+      "reviewedChineseSummary": "Weapp 容器滚动测试fixture",
+      "reviewedChineseSha256": "b9fd276000954d44948855fa9b1b5b86356f2cddfaa7c29a4b2c12c1b52f995e",
+      "legacyHeadingIds": [
+        "weapp-container-scrolling-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/style-conditions-app/README",
+      "zh": "examples/apps/style-conditions-app/README.md",
+      "en": "examples/apps/style-conditions-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/style-conditions-app/README.md"
+      },
+      "reviewedChineseSummary": "WXSS 条件固定装置",
+      "reviewedChineseSha256": "a5a39508f1395ad27b036332f29619e8949119a18459ca2e962c6c6f5ee890d4",
+      "legacyHeadingIds": [
+        "wxss-condition-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/text-controls-app/README",
+      "zh": "examples/apps/text-controls-app/README.md",
+      "en": "examples/apps/text-controls-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/text-controls-app/README.md"
+      },
+      "reviewedChineseSummary": "DOM 文本编辑开发示例；单独构建；当前边界",
+      "reviewedChineseSha256": "db214ed113f3af03f3ba89bc05a83e87375f2869b078db8eb9a4e31ca45206fd",
+      "legacyHeadingIds": [
+        "dom-文本编辑开发示例",
+        "单独构建",
+        "当前边界"
+      ]
+    },
+    {
+      "id": "examples/apps/text-flow-app/README",
+      "zh": "examples/apps/text-flow-app/README.md",
+      "en": "examples/apps/text-flow-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/text-flow-app/README.md"
+      },
+      "reviewedChineseSummary": "文本流固定装置",
+      "reviewedChineseSha256": "87ec201083ecf0330c4fd0665edd58d29ccdeda333bfe625f0fff39122374901",
+      "legacyHeadingIds": [
+        "text-flow-fixture"
+      ]
+    },
+    {
+      "id": "examples/apps/transform-app/README",
+      "zh": "examples/apps/transform-app/README.md",
+      "en": "examples/apps/transform-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/transform-app/README.md"
+      },
+      "reviewedChineseSummary": "转换交互小程序",
+      "reviewedChineseSha256": "104797b6fe557b23ee9ac3ede8c1a885a39e2ad1a68326759aa9399d8cdf074a",
+      "legacyHeadingIds": [
+        "transform-interaction-mini-program"
+      ]
+    },
+    {
+      "id": "examples/apps/typography-app/README",
+      "zh": "examples/apps/typography-app/README.md",
+      "en": "examples/apps/typography-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/typography-app/README.md"
+      },
+      "reviewedChineseSummary": "字体固定装置",
+      "reviewedChineseSha256": "f5e46755cc195e0424f0c7e79397fcb57c0beeab877aa988856b181728ecbffc",
+      "legacyHeadingIds": [
+        "typography-fixture"
+      ]
+    },
+    {
+      "id": "examples/hosts/android/README",
+      "zh": "examples/hosts/android/README.md",
+      "en": "examples/hosts/android/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/android/README.md"
+      },
+      "reviewedChineseSummary": "Android 宿主示例",
+      "reviewedChineseSha256": "fb9be2172048904072265c061ce20fb9727012d09f97a669bf9a112c50cb0ddf",
+      "legacyHeadingIds": [
+        "android-host-sample"
+      ]
+    },
+    {
+      "id": "examples/hosts/conformance-desktop/README",
+      "zh": "examples/hosts/conformance-desktop/README.md",
+      "en": "examples/hosts/conformance-desktop/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/conformance-desktop/README.md"
+      },
+      "reviewedChineseSummary": "原生桌面兼容宿主",
+      "reviewedChineseSha256": "250cc31ab1839b99c0f6757ca8546bc88d357316cd4f791e7599f7172110280b",
+      "legacyHeadingIds": [
+        "native-desktop-conformance-host"
+      ]
+    },
+    {
+      "id": "examples/hosts/conformance-web/README",
+      "zh": "examples/hosts/conformance-web/README.md",
+      "en": "examples/hosts/conformance-web/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/conformance-web/README.md"
+      },
+      "reviewedChineseSummary": "网页兼容性诊断",
+      "reviewedChineseSha256": "260960b1e345060565b61e9b6d920f711f549aa52f52f827759051f2a86f88de",
+      "legacyHeadingIds": [
+        "web-conformance-diagnostics"
+      ]
+    },
+    {
+      "id": "examples/hosts/desktop-metal/README",
+      "zh": "examples/hosts/desktop-metal/README.md",
+      "en": "examples/hosts/desktop-metal/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/desktop-metal/README.md"
+      },
+      "reviewedChineseSummary": "桌面 Skia Metal 绘制表面烟雾",
+      "reviewedChineseSha256": "77c4f35ebb5620539d0ff181b14f242a54b5a4e08a442d7899e2b66b6146f9b8",
+      "legacyHeadingIds": [
+        "desktop-skia-metal-surface-smoke"
+      ]
+    },
+    {
+      "id": "examples/hosts/desktop/README",
+      "zh": "examples/hosts/desktop/README.md",
+      "en": "examples/hosts/desktop/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/desktop/README.md"
+      },
+      "reviewedChineseSummary": "桌面原生表面烟雾",
+      "reviewedChineseSha256": "3872e0a8678859d0717d760a5e801dddd96dd4d619064176b624b5a2894cc34a",
+      "legacyHeadingIds": [
+        "desktop-native-surface-smoke"
+      ]
+    },
+    {
+      "id": "examples/hosts/harmony/ACCOUNTS",
+      "zh": "examples/hosts/harmony/ACCOUNTS.md",
+      "en": "examples/hosts/harmony/ACCOUNTS.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/harmony/ACCOUNTS.md"
+      },
+      "reviewedChineseSummary": "Harmony 账户执行边界；可信应用和原生拥有者；稳定的控制器，新的会话；真正的清理和保留的失败；后端、权限和用户命名空间；验证边界",
+      "reviewedChineseSha256": "1e60e8e5571968620e0518d83d65f79126863e8baec935109b548d7c5f4f7d7f",
+      "legacyHeadingIds": [
+        "backend-grants-and-user-namespaces",
+        "harmony-account-execution-boundary",
+        "real-cleanup-and-retained-failure",
+        "stable-controller-fresh-session",
+        "trusted-application-and-native-owner",
+        "validation-boundary"
+      ]
+    },
+    {
+      "id": "examples/hosts/harmony/BLUETOOTH",
+      "zh": "examples/hosts/harmony/BLUETOOTH.md",
+      "en": "examples/hosts/harmony/BLUETOOTH.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/harmony/BLUETOOTH.md"
+      },
+      "reviewedChineseSummary": "HarmonyOS BLE 中心端和 GATT",
+      "reviewedChineseSha256": "be17b473f5dc791e0c5dcb45ae0143ceebee23d2e0fd79661346c23da82dbebc",
+      "legacyHeadingIds": [
+        "harmonyos-ble-central-and-gatt"
+      ]
+    },
+    {
+      "id": "examples/hosts/harmony/NFC",
+      "zh": "examples/hosts/harmony/NFC.md",
+      "en": "examples/hosts/harmony/NFC.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/harmony/NFC.md"
+      },
+      "reviewedChineseSummary": "API24 NFC 标签适配器",
+      "reviewedChineseSha256": "04a80f2777dcc1db744db83f9ab74709cc435223c397a8640e53030f6d43da27",
+      "legacyHeadingIds": [
+        "api24-nfc-标签适配器"
+      ]
+    },
+    {
+      "id": "examples/hosts/harmony/README",
+      "zh": "examples/hosts/harmony/README.md",
+      "en": "examples/hosts/harmony/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/harmony/README.md"
+      },
+      "reviewedChineseSummary": "HarmonyOS 宿主示例",
+      "reviewedChineseSha256": "e271f261e3efacc32d8950559d9ad5f6c27af79b3f65c72d462de9f990dde30a",
+      "legacyHeadingIds": [
+        "harmonyos-host-sample"
+      ]
+    },
+    {
+      "id": "examples/hosts/harmony/RECORDER",
+      "zh": "examples/hosts/harmony/RECORDER.md",
+      "en": "examples/hosts/harmony/RECORDER.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/harmony/RECORDER.md"
+      },
+      "reviewedChineseSummary": "HarmonyOS RecorderManager",
+      "reviewedChineseSha256": "50600fdc2b1589f5c72d79df7898f3dac34ad9fac2c0d7ac6628f544694b2bce",
+      "legacyHeadingIds": [
+        "harmonyos-recordermanager"
+      ]
+    },
+    {
+      "id": "examples/hosts/harmony/REFERENCE_HOST",
+      "zh": "examples/hosts/harmony/REFERENCE_HOST.md",
+      "en": "examples/hosts/harmony/REFERENCE_HOST.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/harmony/REFERENCE_HOST.md"
+      },
+      "reviewedChineseSummary": "Harmony 参考账户和支付宿主；引用服务和可信范围；信息披露和取消；原生 HTTP 所有权；显式支付通道；可重现的证据",
+      "reviewedChineseSha256": "570babe46abf0099d1925234576d112a636d2e5ac608ac9df8545e70c79db1c1",
+      "legacyHeadingIds": [
+        "disclosure-and-cancellation",
+        "explicit-payment-channels",
+        "harmony-reference-account-and-payment-host",
+        "native-http-ownership",
+        "reference-service-and-trusted-scope",
+        "reproducible-evidence"
+      ]
+    },
+    {
+      "id": "examples/hosts/harmony/WIFI",
+      "zh": "examples/hosts/harmony/WIFI.md",
+      "en": "examples/hosts/harmony/WIFI.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/harmony/WIFI.md"
+      },
+      "reviewedChineseSummary": "Harmony Wi-Fi 接入",
+      "reviewedChineseSha256": "5412397efa0d84c716e0f9c7976041990c23c014c1029e9307f5be8b9001ce2e",
+      "legacyHeadingIds": [
+        "harmony-wi-fi-接入"
+      ]
+    },
+    {
+      "id": "examples/hosts/ios-app/README",
+      "zh": "examples/hosts/ios-app/README.md",
+      "en": "examples/hosts/ios-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/ios-app/README.md"
+      },
+      "reviewedChineseSummary": "iOS 嵌入和 Metal 绘制表面示例",
+      "reviewedChineseSha256": "b7e15d00232cf620ed52f97f81a0ea3994ba71daf6b6494c61075d403ecd618e",
+      "legacyHeadingIds": [
+        "ios-embedding-and-metal-surface-examples"
+      ]
+    },
+    {
+      "id": "examples/hosts/ios-ui-tests/README",
+      "zh": "examples/hosts/ios-ui-tests/README.md",
+      "en": "examples/hosts/ios-ui-tests/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/ios-ui-tests/README.md"
+      },
+      "reviewedChineseSummary": "iOS 嵌入 UI 交互",
+      "reviewedChineseSha256": "a26d4401b75fc2a549841bc5f681685a03e7c697be2ef6d85bd0aae7fc8203d1",
+      "legacyHeadingIds": [
+        "ios-embedding-ui-interaction"
+      ]
+    },
+    {
+      "id": "examples/hosts/ios/README",
+      "zh": "examples/hosts/ios/README.md",
+      "en": "examples/hosts/ios/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/ios/README.md"
+      },
+      "reviewedChineseSummary": "iOS 宿主示例",
+      "reviewedChineseSha256": "dac03ec88f644c1a654154ca0fac58091f40e4f36cea509245c904b6d2ebf311",
+      "legacyHeadingIds": [
+        "ios-host-sample"
+      ]
+    },
+    {
+      "id": "examples/hosts/web-wasm/DOM-PRESENTER",
+      "zh": "examples/hosts/web-wasm/DOM-PRESENTER.md",
+      "en": "examples/hosts/web-wasm/DOM-PRESENTER.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/web-wasm/DOM-PRESENTER.md"
+      },
+      "reviewedChineseSummary": "浏览器 DOM 呈现器边界",
+      "reviewedChineseSha256": "4eaa79d5c631e53dd9b7ad5590a62e15028960c7316b7e0eae87d70acb9db626",
+      "legacyHeadingIds": [
+        "browser-dom-presenter-boundary"
+      ]
+    },
+    {
+      "id": "examples/hosts/web-wasm/README",
+      "zh": "examples/hosts/web-wasm/README.md",
+      "en": "examples/hosts/web-wasm/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/web-wasm/README.md"
+      },
+      "reviewedChineseSummary": "Weapp 容器浏览器 Worker 以及传统嵌入示例；默认工作程序产品入口；默认入口合同和浏览器烟雾；显式旧版导入和详细集成说明；CanvasKit 帧呈现器",
+      "reviewedChineseSha256": "b68a19c344970965a9c2a8b64496237a622d5099306a28dbdec838d93ff0ab8a",
+      "legacyHeadingIds": [
+        "canvaskit-frame-presenter",
+        "default-entry-contracts-and-browser-smoke",
+        "default-worker-product-entry",
+        "explicit-legacy-import-and-detailed-integration-notes",
+        "weapp-container-browser-worker-and-legacy-embedding-examples"
+      ]
+    },
+    {
+      "id": "examples/hosts/web-wasm/reference-identity-client",
+      "zh": "examples/hosts/web-wasm/reference-identity-client.md",
+      "en": "examples/hosts/web-wasm/reference-identity-client.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/web-wasm/reference-identity-client.md"
+      },
+      "reviewedChineseSummary": "Web 宿主参考身份客户端",
+      "reviewedChineseSha256": "4fbe6bbbe04395484f82c232c6e34ce908d1bbc9b2193ef6aa6ce081ea20b002",
+      "legacyHeadingIds": [
+        "web-宿主参考身份客户端"
+      ]
+    },
+    {
+      "id": "examples/hosts/web/README",
+      "zh": "examples/hosts/web/README.md",
+      "en": "examples/hosts/web/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/hosts/web/README.md"
+      },
+      "reviewedChineseSummary": "Web 嵌入示例",
+      "reviewedChineseSha256": "47eaab1f879c7fcc6385cdbf9ffc0fae12675c7ea5388f47d5cccb7f9efd73f1",
+      "legacyHeadingIds": [
+        "web-embedding-example"
+      ]
+    },
+    {
+      "id": "examples/sdk/flutter/README",
+      "zh": "examples/sdk/flutter/README.md",
+      "en": "examples/sdk/flutter/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/sdk/flutter/README.md"
+      },
+      "reviewedChineseSummary": "Flutter SDK 消费者",
+      "reviewedChineseSha256": "37115e5be261b3f26af7536aa446958b1f82fc5d45d608702b2cfd7355fb0d68",
+      "legacyHeadingIds": [
+        "flutter-sdk-consumer"
+      ]
+    },
+    {
+      "id": "examples/sdk/ios/README",
+      "zh": "examples/sdk/ios/README.md",
+      "en": "examples/sdk/ios/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/sdk/ios/README.md"
+      },
+      "reviewedChineseSummary": "独立的 UIKit 消费者",
+      "reviewedChineseSha256": "57305be4d242ad24794eb1d33d59804a702b22ed59c57792da713461e31ebb8f",
+      "legacyHeadingIds": [
+        "independent-uikit-consumer"
+      ]
+    },
+    {
+      "id": "examples/sdk/react-native/README",
+      "zh": "examples/sdk/react-native/README.md",
+      "en": "examples/sdk/react-native/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/sdk/react-native/README.md"
+      },
+      "reviewedChineseSummary": "独立的 React Native 消费者",
+      "reviewedChineseSha256": "677f7fdaa16577648ae3d9b291c9b3f3121fc0912ea5965bcf5114e96f041057",
+      "legacyHeadingIds": [
+        "independent-react-native-consumer"
+      ]
+    },
+    {
+      "id": "examples/sdk/react-native/host/README",
+      "zh": "examples/sdk/react-native/host/README.md",
+      "en": "examples/sdk/react-native/host/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/sdk/react-native/host/README.md"
+      },
+      "reviewedChineseSummary": "本地宿主集成验收",
+      "reviewedChineseSha256": "65281c5349e6f54e0710758a17f31a3a7a15f8813b3935e5440c812b28a612b3",
+      "legacyHeadingIds": [
+        "native-host-integration-acceptance"
+      ]
+    },
+    {
+      "id": "scripts/dev-player-ios-p0/README",
+      "zh": "scripts/dev-player-ios-p0/README.md",
+      "en": "scripts/dev-player-ios-p0/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "scripts/dev-player-ios-p0/README.md"
+      },
+      "reviewedChineseSummary": "iOS P0 运行器；显式模拟器安装程序元数据策略；所有设备的执行",
+      "reviewedChineseSha256": "e1e4ae94a56e28100f3cb0164223bdc2361d07560d4d31fa6b4ab4f6f314736f",
+      "legacyHeadingIds": [
+        "explicit-simulator-installer-metadata-policy",
+        "ios-p0-runner",
+        "owned-device-execution"
+      ]
+    },
+    {
+      "id": "sdk/README",
+      "zh": "sdk/README.md",
+      "en": "sdk/README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "sdk/README.md"
+      },
+      "reviewedChineseSummary": "SDK 集成",
+      "reviewedChineseSha256": "d186193a3a3178a634bb299820f1b93e2d34ed9e4172eb23a03c5fc81c08fd71",
+      "legacyHeadingIds": [
+        "sdk-integration"
+      ]
+    },
+    {
+      "id": "tools/container-manifest/README",
+      "zh": "tools/container-manifest/README.md",
+      "en": "tools/container-manifest/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "tools/container-manifest/README.md"
+      },
+      "reviewedChineseSummary": "`container-manifest`；CLI；库 API；仅容器的现代视图；能力覆盖",
+      "reviewedChineseSha256": "6475d3379ca62d8809fe000977aad10d207e387780bbf1fbeb725e22a3fd87f5",
+      "legacyHeadingIds": [
+        "capability-overrides",
+        "cli",
+        "container-manifest",
+        "container-only-modern-view",
+        "library-api"
+      ]
+    },
+    {
+      "id": "tools/documentation/README",
+      "zh": "tools/documentation/README.md",
+      "en": "tools/documentation/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "tools/documentation/README.md"
+      },
+      "reviewedChineseSummary": "双语文档维护；更新一组文档；网站快照；检查与测试",
+      "reviewedChineseSha256": "6c0d12dd12a6cd4a1076e912f2a09d959772638769da314e76d1708cc7c5a64e",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "tools/host-services-reference/README",
+      "zh": "tools/host-services-reference/README.md",
+      "en": "tools/host-services-reference/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "tools/host-services-reference/README.md"
+      },
+      "reviewedChineseSummary": "宿主账号与支付参考后端；本地业务示例服务；启动和配置；严格 v2 授权协议；信任与账号生命周期；HTTP 合同；支付与 native 对接",
+      "reviewedChineseSha256": "e79fbb15441ea0e19b03457b10364036e119651e06e442c7e48209e3eac7974a",
+      "legacyHeadingIds": [
+        "http-合同",
+        "严格-v2-授权协议",
+        "信任与账号生命周期",
+        "启动和配置",
+        "宿主账号与支付参考后端",
+        "支付与-native-对接",
+        "本地业务示例服务",
+        "验证范围"
+      ]
+    },
+    {
+      "id": "tools/runtime-artifacts/README",
+      "zh": "tools/runtime-artifacts/README.md",
+      "en": "tools/runtime-artifacts/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "tools/runtime-artifacts/README.md"
+      },
+      "reviewedChineseSummary": "运行库发行工具；构建与打包；验证与发布；历史兼容",
+      "reviewedChineseSha256": "08664bbd1117c55fd6a520166ed057ffcbe22e5421e87c98c835d0833426efa0",
+      "legacyHeadingIds": [
+        "历史兼容",
+        "构建与打包",
+        "运行库发行工具",
+        "验证与发布"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "path": "apps/dev-player/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md",
+      "reason": "Upstream Flutter image asset template instructions.",
+      "sha256": "a985b626c4f7546a8ba392d135e9226c3547c8e2b46895f5f2bdf40d7b14ef9f"
+    },
+    {
+      "path": "conformance/fixtures/component-relations/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "cc59caec39f16eab41adf36f3a809826aaed7d4b7d9fb2b04fbad77d3d0405ab"
+    },
+    {
+      "path": "conformance/fixtures/isolated-view-render/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "18c8a0ce031affefd94b20c9e130d0083c43ea880e394a89cf06252779382835"
+    },
+    {
+      "path": "conformance/fixtures/wxs-dialect/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "78db5f3a0077fc3ba1209e58eaf79888576275b9a13b83e17eaa0af01c3641e7"
+    },
+    {
+      "path": "conformance/fixtures/wxs-execution-oracle/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "c995da4e977b5bc6d30014dafde81cbe0034f3ad79accc7d371b79e2000212dc"
+    },
+    {
+      "path": "conformance/fixtures/wxs-graph/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "d80ca47c77fceaf9748c20bcecc65cbc971d1f149a2d26f56a14ee17386a01f1"
+    },
+    {
+      "path": "conformance/recipes/fixtures/issue1058/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "de1e16004153d91bd83e8837597726e4fd808949bc253d8293f3a32f72695968"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/README.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "23e8164069dd259336bdadc2be391b7580f18240c7fa0b214fed43ecda28f114"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domelementtype/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "1eacf8172e22edf9bcf707613d6f6cf3a4c9d5f5e6be5964fa706e10efd579e2"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domhandler/node_modules/domelementtype/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "1eacf8172e22edf9bcf707613d6f6cf3a4c9d5f5e6be5964fa706e10efd579e2"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domhandler/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "e20eeb1fedc04bae8cb9fcbedc7816d51727a5b09176605b5abada0ecdc0a56e"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/dom-serializer/README.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "ea6997d19831dba6a8239ab1063b8cee2bd4628e2f24356ba6b1ba15376b6aab"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/dom-serializer/node_modules/domelementtype/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "1eacf8172e22edf9bcf707613d6f6cf3a4c9d5f5e6be5964fa706e10efd579e2"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/dom-serializer/node_modules/domhandler/node_modules/domelementtype/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "1eacf8172e22edf9bcf707613d6f6cf3a4c9d5f5e6be5964fa706e10efd579e2"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/dom-serializer/node_modules/domhandler/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "e20eeb1fedc04bae8cb9fcbedc7816d51727a5b09176605b5abada0ecdc0a56e"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/dom-serializer/node_modules/entities/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "ec0f59ca389c284d126a24bae2b5f28dc7e2a6244e50d6ce28baea1b2f3518f6"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/domelementtype/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "1eacf8172e22edf9bcf707613d6f6cf3a4c9d5f5e6be5964fa706e10efd579e2"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/domhandler/node_modules/domelementtype/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "1eacf8172e22edf9bcf707613d6f6cf3a4c9d5f5e6be5964fa706e10efd579e2"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/node_modules/domhandler/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "e20eeb1fedc04bae8cb9fcbedc7816d51727a5b09176605b5abada0ecdc0a56e"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/domutils/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "3dbddc0bcdb271cd7697a0e42cdd67c35e858e060d52563ebe106a07e83903a8"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/htmlparser2/node_modules/entities/readme.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "ec0f59ca389c284d126a24bae2b5f28dc7e2a6244e50d6ce28baea1b2f3518f6"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/postcss/README.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "92b501afb100c2e7f186dc3e45d5064ee47efeed91705c2cbf2f9ffd1fa7c6eb"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/postcss/node_modules/nanoid/README.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "54449254570e72b9eac5e3fafa9232eccffcc2f1de403a4dae02b2ffabee720f"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/postcss/node_modules/picocolors/README.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "5027b2836551ea0f91fa27b97335de905e24e1459d590eacfa45c0156962b70c"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/postcss/node_modules/source-map-js/README.md",
+      "reason": "Third-party dependency documentation, retained in its original language.",
+      "sha256": "8e1a57daf01cd2fc8969ecd0afeae51d1c05c7c79e9413ea82016a0f65e97646"
+    },
+    {
+      "path": "scripts/fixtures/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "f9f7f29443d1df2e5aa9565328e8d48ee4a520192edd76413f6ffc2bdfee1ecd"
+    },
+    {
+      "path": "scripts/fixtures/player-correctness-startup-failure/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "f9c96ec4dd0d845c257cd009e1718c6954cdbb1887ee31417be6605507ee94db"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "956aecd8b1dfb42d9e10562f7d68d19cc78111b903c9d59aa13d57d3ee8145b4"
+    },
+    {
+      "path": "scripts/fixtures/worker-dual-renderer/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "3d5b48cd7dec8a02fde5b3a031e5f1c4ec86a798a646605b1cf9f77caf65aaeb"
+    },
+    {
+      "path": "sdk/licenses/objc2-encode-4.1.0/LICENSE.md",
+      "reason": "Original license or third-party notice; legal text is not translated.",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54"
+    },
+    {
+      "path": "tools/container-manifest/test/fixtures/modern-esm-conformance/README.md",
+      "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
+      "sha256": "b57711e753a1e4ccf0b40e2db4df4bedd762f377205e6fd9390555a695eb43cd"
+    },
+    {
+      "path": "tools/runtime-artifacts/THIRD-PARTY-NOTICES.md",
+      "reason": "Original license or third-party notice; legal text is not translated.",
+      "sha256": "33987d6e12dd5cefd49c139535a1d95e00b9dc9bedfc0404f76cb9d3524360d8"
+    }
+  ],
+  "assets": [
+    {
+      "path": "assets/brand/weapp-container-mark.svg",
+      "sha256": "fc2a231269890624c732118d3939a56eae858cb7e435ecc1c224f8c62b07f8db"
+    }
+  ]
+}

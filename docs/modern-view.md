@@ -1,9 +1,14 @@
+<a id="modern-jsts-view"></a>
 # 现代 JS/TS View
+
+**简体中文** · [English](modern-view.en.md)
+
 
 现代 View 是容器显式开启的同步 ES2022 执行模式。原有 `.wxs` 继续使用
 [WXS 兼容路径](isolated-view-engine.md)，两者分别创建独立 QuickJS/V8 realm。
 现代模块使用标准 JS 属性、构造函数和对象身份语义，不经过 WXS helper 或逐函数参数复制。
 
+<a id="direct-development"></a>
 ## 直接开发
 
 在仓库根目录准备依赖后运行：
@@ -25,6 +30,7 @@ private fields、Map/Set、generator、enum、转为字符串的 BigInt，以及
 编辑 `view/format.view.ts` 可以触发现代源码单独更新。现代可执行程序变化会重启会话，
 编译失败保留最近成功的 generation，并显示诊断。
 
+<a id="select-document-and-module"></a>
 ## 选择文档与模块
 
 项目根目录的 `container.config.json` 映射的是 **wv 产出 WXML 路径**：
@@ -62,6 +68,7 @@ WXML 使用 `{{fmt.format(value)}}`。无需添加 `<wxs>`；现代文档不能�
 async/await、Promise 任务调度、动态 import、顶层 await、装饰器、namespace、TSX 暂不支持。
 网络、定时器和宿主能力由 AppService 承担。这些语言限制不构成不可信代码的安全沙箱。
 
+<a id="data-and-execution-boundary"></a>
 ## 数据和执行边界
 
 每个页面/组件批次只复制一次数据。现代函数可以修改本批快照，后续表达式会观察到修改；
@@ -78,6 +85,7 @@ JS 内部仍使用 UTF-16；渲染输出中的孤立 surrogate 会明确返回
 错误报告和清理。两种 profile 按整文档 frontier 分组，使用同一总 deadline 和取消标记，
 不会逐节点或逐函数往返 Rust。超时、取消或无法确认的清理要求重启 session。
 
+<a id="pack-and-host"></a>
 ## Pack 与宿主
 
 独立打包：
@@ -101,6 +109,7 @@ ABI `1.0` 和 target `es2022`；纯旧模式继续使用 schema v1。旧 runtime
 双引擎和宿主测试验收，官方 WXS 兼容性仍单独依赖真实 DevTools oracle。
 开发机测试不代表七宿主、GPU、真机或 near-parity 发布门禁通过。
 
+<a id="verification"></a>
 ## 验证
 
 ```sh
@@ -140,6 +149,7 @@ pnpm modern:view:perf --samples 1000 --out-dir artifacts/modern-view-performance
 整个测试进程；测试二进制大小仅作诊断，不能当作生产 runtime 增量包体。
 开发机上的相对回归检查不替代真实 DevTools、GPU、设备和各宿主的绝对性能验收。
 
+<a id="ci-special-verification"></a>
 ## CI 专项验证
 
 [`modern-view` workflow](../.github/workflows/modern-view.yml) 与 `container-ci` 都只接受

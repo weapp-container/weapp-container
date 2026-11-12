@@ -1,4 +1,8 @@
+<a id="transparency-and-subtree-compositing"></a>
 # 透明度与子树合成
+
+**简体中文** · [English](compositing.en.md)
+
 
 `opacity` 对节点已经绘制完成的整棵子树生效。节点自己的背景、边框、文本、图片
 与后代先按绘制顺序合成到透明图层，再将图层按该节点的透明度合成到父图层。
@@ -10,6 +14,7 @@ primitive 上；那样会让已经被遮住的红色重新出现在交叠区域�
 情况下，子节点的可见贡献约为 `.25`。如果父节点还有不透明背景，必须先将子组
 合成到这个背景上，再处理父组透明度，不能直接把所有 primitive 的 alpha 乘为 `.25`。
 
+<a id="attribute-parsing"></a>
 ## 属性解析
 
 WXSS 在级联之前校验 `opacity`，再将有效声明解析到统一 `RenderNode.opacity`：
@@ -33,6 +38,7 @@ WXSS 在级联之前校验 `opacity`，再将有效声明解析到统一 `Render
 数值。它不执行 WXSS 值裁剪；例如直接提交 `opacity:2` 会返回 `ERR_RENDER`。
 无效帧不会替换已经接受的 frame、snapshot、selector 几何或输入命中树。
 
+<a id="layout-and-input"></a>
 ## 布局和输入
 
 `opacity:0` 跳过像素绘制与透明图层分配，节点与后代仍参与布局、selector 查询
@@ -43,6 +49,7 @@ contact 不会仅因目标或祖先变透明而取消；移除节点、页面卸
 合成边界不改变 WXML 文档顺序、事件父链、Flex order 或现有兄弟绘制次序。
 viewport-fixed 后代仍属于祖先透明度组；它脱离的是祖先滚动和 overflow clip。
 
+<a id="various-rendering-paths-and-resource-limitations"></a>
 ## 各绘制路径与资源限制
 
 软件 renderer 使用预乘 RGBA8 图层，原生 Skia 和 Web CanvasKit 使用独立
@@ -69,6 +76,7 @@ save-layer。各路径均先绘制完整子树，再以 SrcOver 合成到父目�
 跨祖先的 z-index、blend mode、filter、backdrop-filter 等仍有独立缺口。本轮结果
 也不构成 GPU、七宿主、真实设备或性能门槛通过。
 
+<a id="local-regression"></a>
 ## 本地回归
 
 `crates/container-runtime/tests/group_opacity.rs` 使用真实 CommonJS `App` / `Page`
@@ -111,6 +119,7 @@ Chromium HTML/CSS 对照另外保存截图、完整 RGBA、语义与像素状态
 因其本机光栅化舍入而出现差分，不能改写为通过，也不能替代微信最终 oracle。
 
 
+<a id="development-time-true-product-and-auxiliary-css-oracle"></a>
 ## 开发态真实产物与辅助 CSS oracle
 
 `style-opacity-group-001` 关联上述 runtime contract、renderer/CanvasKit 单测，以及

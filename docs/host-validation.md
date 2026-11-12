@@ -1,10 +1,15 @@
-# Host validation boundary
+<a id="host-validation-boundary"></a>
+# 主机验证边界
+
+**简体中文** · [English](host-validation.en.md)
+
 
 GitHub Actions 的 `container-ci` 与 `modern-view` 两个 workflow 都只接受手动运行，
 push 和 pull request 不会自动启动。CI 验证所选的构建、协议、语义或浏览器场景；
 Android、iOS、HarmonyOS 以及真实桌面 GPU/窗口验证仍需要各自的官方 SDK、模拟器或真机。
 未选择的组保持未执行，不能由一次绿色的部分运行推断全部门禁通过。
 
+<a id="manual-ci"></a>
 ## 手动 CI
 
 在仓库的 **Actions → container-ci → Run workflow** 中选择分支和 `scope`。
@@ -50,7 +55,8 @@ gh workflow run ci.yml -f scope=full
 手动选组、构建成功、headless 测试和工具链检测均不会授予新的官方 DevTools、GPU、
 模拟器、真机或 near-parity 通过状态，既有证据与冻结门禁的边界保持不变。
 
-## Local checks
+<a id="local-checks"></a>
+## 本地检查
 
 ```bash
 node scripts/check-toolchain.mjs --json
@@ -192,7 +198,8 @@ surface）。调用方应在创建原生窗口、`CAMetalLayer`、GLES/Vulkan �
 真正接管 GPU context。该查询只是一条能力协商边界，不会把 `skia-raster` 或
 `software-fallback` 变成移动 GPU 证据。
 
-## Native app integration skeletons
+<a id="native-app-integration-skeletons"></a>
+## 原生应用集成骨架
 
 `examples/hosts/android`、`examples/hosts/ios` 和 `examples/hosts/harmony`
 分别提供 JNI/CMake、Swift Package/C header、ArkTS/N-API/CMake 的最小入口。
@@ -216,8 +223,7 @@ cargo build -p container-host-harmony --features harmony --target aarch64-unknow
 swift build --package-path examples/hosts/ios
 ```
 
-The Android sample can assemble its JNI shared library with the generated
-Rust artifact when an Android Gradle Plugin/Gradle installation is available:
+Android 示例可以在可用 Android Gradle Plugin/Gradle 安装时，使用生成的 Rust 产物来编译其 JNI 共享库：
 
 ```sh
 # Run from the repository root; supply your installed Gradle executable.
@@ -226,8 +232,7 @@ gradle --project-dir examples/hosts/android :app:assembleDebug \
   -PweappContainerAndroidRustLib="$PWD/target/aarch64-linux-android/debug/libcontainer_host_android.so"
 ```
 
-The iOS package check builds the `WeappContainerHost` library product. The
-optional simulator smoke executable links the matching staticlib explicitly:
+iOS 包装检查会构建 `WeappContainerHost` 库产品。可选的模拟器烟雾可执行文件会显式链接相应的静态库：
 
 ```sh
 # Run from the repository root.
@@ -356,7 +361,8 @@ texture 直接交给 Rust Skia Ganesh，并要求 `source: "ios-skia-metal-app"`
 conformance 或性能门禁。没有 UIView/window 的 standalone smoke 如果 `nextDrawable()`
 不可用，会保留 `surfaceProbe.status: "blocked"`，要求嵌入 app 传入 view-backed layer。
 
-## Evidence required for a future device gate
+<a id="evidence-required-for-a-future-device-gate"></a>
+## 后续设备验收所需证据
 
 在发布前运行聚合门禁检查。它只接受完整的 DevTools case index、六平台构建矩阵、
 移动端真实 runtime/GPU 证据、七宿主×双引擎性能报告和结构完整的 evidence ledger；

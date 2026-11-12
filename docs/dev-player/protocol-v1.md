@@ -1,9 +1,14 @@
+<a id="dev-player-device-protocol-v1"></a>
 # Dev Player 设备协议 v1
+
+**简体中文** · [English](protocol-v1.en.md)
+
 
 本协议独立于业务 bridge 和 SDK C ABI。当前 wire version 为 `"1.0"`，仅服务 LAN/已有 VPN。客户端本地执行 QuickJS＋Skia；协议传输构建产物、控制和诊断，不传帧，不运行任意远程 JS。当前双方要求精确版本 `1.0`，不兼容返回 `ERR_PROTOCOL_VERSION`；不能静默降级。
 
 源定义为 `scripts/device-dev-server.mjs`、`scripts/lib/device-dev/`、`apps/dev-player/lib/src/protocol.dart` 和 `pack_store.dart`。本文件记录该实现契约，不表示五端已实测通过。
 
+<a id="identity-tls-and-pairing"></a>
 ## 身份、TLS 与配对
 
 服务默认 `https://<LAN-IP>:5180`，最低 TLS 1.2。项目忽略目录 `.weapp-container/device-server/identity.json` 保存自签名 EC 证书、私钥和稳定 `serverId`；`devices.json` 保存设备 token 哈希和期限。私钥不进入 pack。证书到期明确失败；更换证书必须重新配对，不能放宽 pin。
@@ -30,6 +35,7 @@ weapp-container://connect?endpoint=https%3A%2F%2F192.168.1.20%3A5180&fingerprint
 
 设备凭据 30 天有效，服务仅保存哈希。客户端使用 OS secure store；不可用时显式显示 memory-only，不伪装持久化成功。设备所有后续 HTTP/WSS 请求携带 `Authorization: Bearer <deviceToken>`。撤销后新请求拒绝、现有 WSS 关闭；凭据不放 URL。重新配对同 deviceId 替换旧凭据。
 
+<a id="artifact-publication-and-https"></a>
 ## 产物发布与 HTTPS
 
 Rust `DevSupervisor` 是唯一 watcher 和构建所有者。portable publication 完成后，经匿名 stdin 向 sidecar 提交成功收据；sidecar 再校验目录归属、manifest 原始 SHA-256、规范化完整性 root 及所有 blob。URL 不能选任意文件。构建失败只发送诊断，当前 generation 不变。
@@ -66,6 +72,7 @@ generation 是正十进制字符串，不用 JSON 浮点表示身份；服务仅
 
 服务限制 manifest 8 MiB、descriptor 2 MiB、pack 256 MiB、10,000 blob。Player 限制单 blob 256 MiB，两个并发下载 worker，项目下载缓存上限 1 GiB。客户端只下载缺失 CAS，重新校验缓存字节、完整引用图及资源尺寸；不信任本地 receipt 自称有效。所有资源就绪后 staging 原子发布，原生 SDK 再验证。迟到下载、服务 run 变化、后台或 project 切换使旧任务失效，失败不改变已接受包。
 
+<a id="wss-updates-and-reporting"></a>
 ## WSS 更新与报告
 
 服务器先发送：
@@ -92,6 +99,7 @@ generation 是正十进制字符串，不用 JSON 浮点表示身份；服务仅
 
 `started` 是原生候选被接受。当前 Player 在 SDK generation、有效 frameRevision、inputEnabled 和实际 gpuSurface 匹配后发送 `diagnostic`，其 `code=NATIVE_FRAME_ACKNOWLEDGED`、`presentationStage` 和 `screenPresented:false` 明确 ACK 边界。macOS 为 `flutter-texture-consumed`，只证明 Flutter 消费了 GPU 纹理；其他当前适配器为 `native-frame-acknowledged`。这些信息不能证明最终屏幕呈现时间或实际 FPS，因此当前 Player 不发送 `presented`。协议保留 `presented` 供具备额外显示收据的后续客户端使用。旧/迟到收据不能恢复输入；GPU 暂停后的重试必须等待新 frameRevision。服务展示的报告是设备声明，网络日志不能替代硬件显示与交互证据。
 
+<a id="read-only-source-map-localization"></a>
 ### 只读 source-map 定位
 
 `error|diagnostic|log` 可在 `details.stack` 或 `details.error.stack` 携带原始栈，也可用 `details.error.{file,line,column}` 报告位置（行、列从 1 开始）。服务保留原始 `details`，仅在管理面历史中新增 `sourceMapping`，包含 `version: "1.0"`、`status: mapped|partial|unmapped`、`frames`、可选 `mappedStack` 及失败 `reason`。它不接受读文件、下载 URL 或执行 JS 的命令。
@@ -102,6 +110,7 @@ generation 是正十进制字符串，不用 JSON 浮点表示身份；服务仅
 
 map 仅从已校验 CAS 读取，打开时禁止 symlink，限制读取长度并再次校验 SHA-256；编译后保持只读缓存，随最多三个 generation 一起淘汰。每代最多 128 份 map、每份 2 MiB、总计 8 MiB、100,000 行和 100,000 segment；每份最多 4,096 source 和 16,384 name。单次栈最多 16 KiB、64 个位置，超限明确标记 budget，禁止部分猜测。支持普通 source-map v3 与 VLQ，拒绝 indexed map、非空 `sourceRoot`、绝对路径、URL 和逃出项目标签空间的路径。modern source 必须在 manifest allowlist 或是受限 virtual ID。`sourcesContent`、names 和 map 的 `file` 不展示、不作为别名；源码断点调试仍未提供。
 
+<a id="native-management-face"></a>
 ## 本机管理面
 
 管理 HTTP 仅绑定 `127.0.0.1`，默认 5179，与 TLS 设备端口分开。`GET /` 生成页面与每次进程随机管理 secret，其余接口要求 bearer、精确 Host 和同源 Origin：
@@ -123,6 +132,7 @@ iOS 的布局测量取消使用闭合 `{schemaVersion:1, reason}` 细节传播�
 
 `state.viewExecutionMetrics` 可携带文档注册计数、输入字节及 opt-in 原生 `lastBatch`。原生时钟和线程身份保持十进制字符串，无法测量的值保持 `null`，不填充虚构的零。独立可选 `lastBatchBreakdown` 版本 1 必须匹配相邻 `lastBatch` 的引擎、profile、操作、批次和线程身份；其 QuickJS 阶段分别记录 context 调用、原生 JSON stringify API、UTF-8 复制、最终 deadline 检查和 poisoned realm 销毁，以及实际输出字节。阶段允许嵌套，不能相加；stringify API 含包装层 Value 释放，不能声称纯序列化 CPU 时间。现代 profile 的私有 writer 属于执行阶段，V8 不填充 QuickJS 阶段。关闭诊断时省略该可选字段，原 `lastBatch` v1 字段不变；完整约定见 SDK 契约 `PREVIEW5.md`。这些指标仍受原有页面／状态共享预算约束。诊断和指标不改变健康状态、输入权限、开发操作结果或实际呈现状态。断点调试尚未提供；本地与 WSS/HTTP 测试不替代真实设备的数据检查、错误定位和性能验收。
 
+<a id="reload-failure-and-exit"></a>
 ## reload、失败和退出
 
 SDK `pack.devReload.protocolVersion="1.0"` 是必需能力；旧库明确拒绝。共享分类器决定 `inPlace|restart`。保状态只覆盖确认安全的 View/资源变化；结构/脚本变化完整重启并保留持久存储。下载、验证和启动接受前失败保留当前实例。接受后的 GPU 失败暂停输入并允许重试/上一包，上一包重新启动，不保证旧 JS heap 恢复。

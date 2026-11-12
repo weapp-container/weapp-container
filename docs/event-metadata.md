@@ -1,4 +1,8 @@
+<a id="dataset-and-event-mark"></a>
 # Dataset 与事件 mark
+
+**简体中文** · [English](event-metadata.en.md)
+
 
 WXML 的字符串 `attrs` 与绑定结果 `boundValues` 是两条不同的数据通道。
 事件元数据优先读取已经求值的 `boundValues`，只有未绑定的属性才使用原始字符串。

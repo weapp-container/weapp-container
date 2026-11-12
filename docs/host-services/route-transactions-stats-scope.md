@@ -1,4 +1,8 @@
+<a id="implementation-scope-of-routing-transactions-and-private-capability-policies"></a>
 # 路由事务与私有能力策略的实现范围
+
+**简体中文** · [English](route-transactions-stats-scope.en.md)
+
 
 固定口径为微信基础库3.17.3、miniprogram-api-typings@5.2.3、1265 API×七端=8855单元。产品基线为0469bbec，前批交付元数据为7ea21463。本批组合源码已完成有限原生补验，完整冻结、精确提交绑定和新Web产物仍待完成。源码测试不作为公开SDK或设备验收。
 
@@ -17,6 +21,7 @@ Node验证使用真实production bootstrap组合，但native callback为显式te
 Stats补验的实际组合源码仍以7ea21463为HEAD、未提交源码验证，不能重标为0469已冻结执行。root的runtime stats16 passed/2 ignored、Harmony stat2 passed、route Node16 passed均通过，886项相关输入前后相同。16项runtime包含历史timestamp/predicate回归，不是16项新增测试；超大sparse两个明确ignored，不称实际大文件通过。没有新增设备、微信oracle、商户或生产发布凭据。
 
 
+<a id="existing-statssize-and-unix-mode-contract-verification"></a>
 ## 已有 Stats.size 和 Unix mode 的合同补验
 
 本批没有修改size/Unix mode生产转换。statSync/fstatSync原本从单份真实Metadata取得size: u64和Unix完整mode: u32，JSON保持整数wire，JS获得可写的普通Number快照。两属性与producer的递归/路径/编码、异步fstat、symlink政策分开判断；赋值只修改返回对象，不truncate/chmod，也不创建host outbox。
@@ -25,8 +30,9 @@ Stats补验的实际组合源码仍以7ea21463为HEAD、未提交源码验证，
 
 固定5.2.3属性签名均为可写number，对应st_size/st_mode。独立合同和实际证据复核支持纠正size六native、mode五Unix native共11格已有漏计。这是返回属性的漏计纠正，不是新增11项平台实现。Windows mode仍依据isDirectory返回固定040700/100600，缺完整真实类型/权限快照，继续Partial；Web没有原生持久同步安装，不由此晋级。其他OS/公开SDK/物理设备的验收仍pending。
 
+<a id="composite-counting-and-final-freeze"></a>
 ## 组合清点与最终冻结
 
 与7ea21463的固定8855单元比较，恰35格missing→partial（五route方法×七端），11格partial→available（Stats已有属性），其他实现分类不变。138个完整cell对象改变，8717个完整对象不变；旧navigation/EventChannel/unload真实经过route事务的provenance也增加，不能把source-only变更称新增功能。全部status/coverage不变，accepted0、N/A87。当前available1441（16.27%）/partial1007/requiresHostService86/missing6321，距7084差5643。相对初始1292净增149；本批available净增11全属已有漏计纠正。
 
-组合清点、矩阵和IO回归159项通过；格式检查通过。最终产品`6f9b66e3`的完整41阶段及前后绑定、新Web producer/direct与Worker release/严格归档/空目录安装及独立字节校验均通过。完整[冻结证据](../archived-evidence.md)保留`ad266b0a`首轮失败、稳定V8回调所有权和fixture/golden修复及最终真实执行；1191个gzip载荷复制后raw/gzip哈希复核通过。没有浏览器、公开SDK或设备验收。SDK源码/gitlink本批未改。独立80%goal保持active，父全量验收goal保持paused且未完成。
+组合清点、矩阵和IO回归159项通过；格式检查通过。最终产品`6f9b66e3`的完整41阶段及前后绑定、新Web producer/direct与Worker release/严格归档/空目录安装及独立字节校验均通过。完整[冻结证据](../archived-evidence.md)保留`ad266b0a`首轮失败、稳定V8回调所有权和fixture/golden修复及最终真实执行；1191个gzip载荷复制后raw/gzip哈希复核通过。没有浏览器、公开SDK或设备验收。SDK源码/gitlink本批未改。独立80%目标仍未完成，父全量验收goal保持paused且未完成。

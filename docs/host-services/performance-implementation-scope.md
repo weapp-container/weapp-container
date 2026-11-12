@@ -1,66 +1,27 @@
-# Performance implementation scope
+<a id="performance-implementation-scope"></a>
+# 性能实现范围
 
-The runtime implements synchronous `wx.getPerformance()` and its realm-owned
-`Performance`, `PerformanceObserver` and observer `EntryList` objects against
-the locked `miniprogram-api-typings@5.2.3` API shape. This is a partial metric
-scope; it is not complete WeChat performance compatibility or device acceptance.
+**简体中文** · [English](performance-implementation-scope.en.md)
 
-Both real engines use a captured native monotonic clock in milliseconds:
-`std::time::Instant` on native hosts and `web_time::Instant` in QuickJS/WASM.
-Time zero is the AppService engine's performance-clock installation, after VM
-creation and before trusted bootstrap execution. The temporary clock global is
-removed before application code. Guest `Date.now`, `Math.max`, Promise species
-and replacement clock globals do not control the private measurements.
 
-Implemented measurements:
+运行时实现了同步的 `wx.getPerformance()` 以及其所属作用域的 `Performance`、`PerformanceObserver` 和观察器 `EntryList` 对象，对应锁定的 `miniprogram-api-typings@5.2.3` API 结构。这是一个部分指标范围；它并不能完全保证微信性能兼容性或设备验收。
 
-- `script/evaluateScript` surrounds successful execution through the runtime's
-  named-module evaluator. `fileList` contains the actual evaluated manifest
-  path. Nested dependencies have separate samples. Failed evaluation produces
-  no completed-script sample. Legacy unnamed module loading and compilation
-  before factory execution are not measured.
-- `navigation/appLaunch` records elapsed time from this clock origin to the
-  first successful `onLaunch` lifecycle return. Its path is the actual launch
-  argument when supplied, captured before the application hook can mutate it.
-  This scope excludes package I/O, native VM creation,
-  and subsequent rendering; it must not be used as an end-to-end cold-launch
-  benchmark. Repeated hook invocations do not invent a second launch.
+两者都使用捕获的原生单调时钟（单位为毫秒）：
+原生宿主使用 `std::time::Instant`，QuickJS/WASM 中使用 `web_time::Instant`。
+时间零点是 AppService 引擎性能时钟的安装时刻，发生在虚拟机创建之后、可信启动执行之前。在应用程序代码之前，临时时钟全局变量会被移除。Guest 端的 `Date.now`、`Math.max`、Promise 种类以及替换的时钟全局变量不会控制私有测量。
 
-Route processing, render/first paint, resource timing and package downloading
-are not instrumented. They do not appear in `supportedEntryTypes`; attempting
-to observe them fails with `ERR_UNSUPPORTED_CAPABILITY`. Script `moduleName`
-is omitted until the runtime supplies verified package ownership. A future
-runtime implementation must supply actual start/end boundaries and fields
-before claiming those scopes.
+已实现的测量：
 
-The timeline defaults to 30 entries. `setBufferSize` accepts integer sizes from
-0 through 4096 and immediately keeps the newest entries when shrinking; size 0
-disables timeline retention while active observers still receive new samples.
-All lists are sorted by measured start time. Public snapshots copy entry
-records and file lists, including each call on a retained observer `EntryList`.
-Internal queues and metric records have isolated prototypes. Public snapshots
-retain normal Array interfaces, with indices and entry fields created as own
-data properties so guest prototype setters cannot corrupt collection or skip
-a neighbouring observer. Measurement failures are reported as diagnostics;
-they preserve the application hook or module evaluator's actual result or
-exception.
+- `script/evaluateScript` 通过运行时的命名模块求值器包裹成功的执行过程。`fileList` 包含实际求值的清单路径。嵌套依赖项有独立的样本。求值失败不会产生完成的脚本样本。旧版无名模块的加载和编译在工厂执行前未被测量。
+- `navigation/appLaunch` 记录从该时钟原点到首次成功返回 `onLaunch` 生命周期的经过时间。其路径是实际传入的启动参数，捕获时在应用钩子可以修改它之前。此范围不包括包 I/O、原生 VM 创建以及后续的渲染；它不得用于端到端冷启动基准测试。重复的钩子调用不会产生第二次启动。
 
-Observers accept exactly one of `type` and `entryTypes`; empty or unsupported
-filters are rejected without changing an existing subscription. Active
-observers are capped at 256, and each observer has a bounded 4096-entry queue.
-Overflow discards the oldest samples. Delivery batches run at the native
-microtask checkpoint. Disconnect/reobserve invalidates pending and detached
-batches, and a throwing callback does not skip another observer. Observers are
-global to the AppService realm and are collected when that native owner is
-destroyed; they do not move to a replacement engine after an account change.
+路由处理、渲染/首次绘制、资源计时和包下载
+未进行监控。它们不会出现在 `supportedEntryTypes` 中；尝试观测它们会失败，提示 `ERR_UNSUPPORTED_CAPABILITY`。脚本 `moduleName` 直到运行时提供已验证的包所有权前不会被加载。未来的运行时实现必须在声明这些时间段之前提供实际的开始/结束边界和字段。
 
-`getPerformance` and operations on existing Performance/Observer/EntryList handles obey
-the current capability gate. Turning the capability off drops pending observer
-delivery. `disconnect` always remains available for cleanup.
+时间线默认显示 30 个条目。`setBufferSize` 接受 0 到 4096 之间的整数大小，当缩小大小时会立即保留最新条目；大小为 0 时禁用时间线保留，但活动的观察者仍会收到新样本。所有列表均按测量的开始时间排序。公共快照会复制条目记录和文件列表，包括在保留观察器上每次调用 `EntryList`。内部队列和指标记录使用独立的原型。公共快照保留正常的 Array 接口，其索引和条目字段作为独立的数据属性创建，因此客体原型的设置函数无法破坏集合或跳过邻近的观察者。测量失败会作为诊断信息报告；它们保留应用程序钩子或模块求值器的实际结果或异常。
 
-The shared real QuickJS/V8 regression fixture covers synchronous filtering,
-native elapsed time, bounded buffering, snapshot isolation, checkpoint batching,
-disconnect races, unsupported metric rejection, failed modules, launch/owner
-isolation, capability revocation, guest prototype mutation and pre-hook launch
-path snapshots. These finite engine tests do not replace
-fresh-archive public SDK or seven-platform acceptance.
+观察者恰好接受 `type` 和 `entryTypes` 中的一个；空滤波器或不支持的滤波器会被拒绝，且不会改变现有订阅。活动观察者数量上限为 256，每个观察者有一个最多 4096 条目的队列。溢出时会丢弃最旧的样本。交付批次在原生微任务检查点运行。断开连接/重新观察会作废待处理和已分离的批次，抛出异常的回调不会跳过其他观察者。观察者在 AppService 域中是全局的，在该原生所有者被销毁时会被收集；在账户变更后不会转移到新引擎。
+
+`getPerformance` 以及对现有 Performance/Observer/EntryList 处理句柄的操作遵循当前能力门控。关闭能力将导致待交付的观察器消息丢失。`disconnect` 始终可用用于清理。
+
+共享的实时 QuickJS/V8 回归测试用例涵盖了同步过滤、原生耗时、有界缓冲、快照隔离、检查点批处理、断开连接竞争、不支持指标拒绝、失败模块、启动/拥有隔离、能力撤销、客体原型突变以及预钩启动路径快照。这些有限的引擎测试不能替代新鲜归档的公共 SDK 或七平台验收。

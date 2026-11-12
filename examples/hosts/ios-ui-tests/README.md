@@ -1,18 +1,12 @@
-# iOS embedding UI interaction
+<a id="ios-embedding-ui-interaction"></a>
+# iOS 嵌入 UI 交互
 
-This target exercises a real Weapp Container embedding App through Apple's
-XCUITest runner. The coordinator builds the App without launching it, asks
-`xcodebuild build-for-testing` to generate the UI runner and its XCTest bootstrap,
-then runs one serial `test-without-building` sequence on an explicitly selected,
-already booted simulator.
+**简体中文** · [English](README.en.md)
 
-Simulator execution keeps the official generated `TestHostPath`, `TestBundlePath`
-and dependent runner products, with `UseUITargetAppProvidedByTests = true`.
-`UseDestinationArtifacts` is a device-only option and is not used. The test
-controls its App through `XCUIApplication(bundleIdentifier:)`, using the unique
-AUT identity passed by the coordinator. Both AUT and runner must be absent before
-the coordinator installs and records them. Xcode may reinstall that same owned
-runner during `test-without-building`; it cannot select an unrelated App.
+
+该目标通过 Apple 的 XCUITest 运行器嵌入了一个真实的 Weapp 容器应用。协调器在不启动应用的情况下构建应用，调用 `xcodebuild build-for-testing` 生成 UI 运行器及其 XCTest 启动文件，然后在显式选择的、已启动的模拟器上运行一个串行的 `test-without-building` 测试序列。
+
+模拟器执行会保留官方生成的 `TestHostPath`、`TestBundlePath` 及其依赖的运行器产品，且 `UseUITargetAppProvidedByTests = true`。`UseDestinationArtifacts` 是设备专用选项，不会被使用。测试通过 `XCUIApplication(bundleIdentifier:)` 控制其 App，使用协调器传递的唯一 AUT 识别身份。在协调器安装和记录之前，AUT 和运行器都必须不存在。Xcode 在 `test-without-building` 阶段可能会重新安装相同的运行器，但无法选择其他 App。
 
 ```sh
 scripts/ios-embedding-ui-smoke \
@@ -21,81 +15,46 @@ scripts/ios-embedding-ui-smoke \
   --engine quickjs
 ```
 
-Use a validated portable pack built from `examples/apps/ios-interaction-app`.
-The fixture's button occupies logical `(0, 0, 200, 80)`; the runner taps `(40, 40)`
-relative to the App's accessible surface. The fixture increments `count`,
-schedules a real JS timeout that increments `timerCount`, and queues a Promise
-microtask that increments `microtaskCount`. A separate explicit `--engine v8`
-invocation runs the identical sequence without engine fallback.
+使用从 `examples/apps/ios-interaction-app` 构建的经过验证的便携式包。
+固定件的按钮占据逻辑坐标 `(0, 0, 200, 80)`；运行器在应用的可访问绘制表面上相对位置 `(40, 40)` 处点击。固定件递增 `count`，安排一个真实的 JS 定时器来递增 `timerCount`，并排队一个 Promise 微任务来递增 `microtaskCount`。一个单独的显式 `--engine v8` 调用在没有引擎回退的情况下运行相同的序列。
 
-The source tree must be committed and clean for the existing build receipt gate.
-The selected simulator is borrowed: the harness does not boot, erase, shut down,
-or own it. Output defaults to a unique directory under
-`artifacts/ios-embedding-ui/`; `--out-dir` must select a new directory under
-`artifacts/`. `--timeout-seconds` bounds the single test (default 180, range
-30–900).
+源代码树必须已提交且干净，以通过现有的构建回执门控。
+所选的模拟器是借用的：工具包不会启动、擦除、关闭，或拥有它。输出默认位于 `artifacts/ios-embedding-ui/` 下的唯一目录中；`--out-dir` 必须选择位于 `artifacts/` 下的新目录。`--timeout-seconds` 限制单次测试的时长（默认 180 秒，范围 30–900 秒）。
 
-The runner performs these actions in order:
+运行器按以下顺序执行这些操作：
 
-1. Launch the uniquely installed App once and observe its first completed frame.
-2. Tap using `XCUICoordinate.tap` and wait for the count update.
-3. Wait for the real foreground JS timer and Promise microtask.
-4. Press Home with `XCUIDevice.press(.home)` and observe the App's background state.
-5. Resume using `XCUIApplication.activate`, preserving PID, session and page state.
-6. Change `XCUIDevice.orientation` and observe the actual surface resize.
-7. Restore the original orientation and logical viewport.
+1. 启动唯一安装的 App 一次，并观察其第一个完成的帧。
+2. 使用 `XCUICoordinate.tap` 点击，并等待计数更新。
+3. 等待真实的前台 JS 定时器和 Promise 微任务。
+4. 使用 `XCUIDevice.press(.home)` 按下主页键，并观察 App 的后台状态。
+5. 使用 `XCUIApplication.activate` 恢复，保持 PID、会话和页面状态。
+6. 更改 `XCUIDevice.orientation` 并观察实际绘制表面的缩放。
+7. 恢复原始方向和逻辑视口。
 
-Orientation evidence comes from the App's public
-`UIWindowScene.interfaceOrientation`, exposed read-only in the AX surface.
-The initial device sensor value is recorded separately and may be `unknown`;
-the harness never guesses the initial interface from screen dimensions. It maps
-portrait to device portrait, interface landscape-left to device landscape-right,
-and interface landscape-right to device landscape-left. Unknown or unsupported
-interface orientations fail explicitly. Rotation and restoration require the
-observed interface value, viewport geometry and completed presentation to agree;
-failure teardown attempts the same exact restoration.
+方向证据来自 App 的公共 `UIWindowScene.interfaceOrientation`，该属性在 AX 绘制表面中以只读形式暴露。
+初始设备传感器值是单独记录的，可能为 `unknown`；
+宿主从不根据屏幕尺寸猜测初始界面方向。它将 portrait 映射为设备 portrait，将 interface landscape-left 映射为设备 landscape-right，将 interface landscape-right 映射为设备 landscape-left。未知或不支持的界面方向会明确失败。旋转和恢复需要观察到的界面值、视口几何形状以及已完成的呈现一致；恢复失败时， teardown 会尝试完全相同的恢复操作。
 
-The runner records XCTest's failure count during teardown. Completion is
-accepted only after `xcodebuild test-without-building` exits successfully and
-the persisted report passes validation; `XCTestRun.hasSucceeded` is not final
-while teardown is still executing.
+运行器在销毁时记录XCTest的失败次数。只有在`xcodebuild test-without-building`成功退出且持久化的报告通过验证后，才会进行验收；在销毁过程仍在执行时，`XCTestRun.hasSucceeded`并不最终确定。
 
-The single `weapp-container-surface` accessibility element exposes read-only
-state. It cannot execute JavaScript, advance timers, inject events, or call the
-bridge. Its observations are accepted only together with successful official
-XCTest execution, OS screenshots and the App's native input/lifecycle/resize/
-render trace. No private HID events or hand-built XCTest bootstrap are used.
+单个 `weapp-container-surface` 可访问元素暴露了只读状态。它无法执行 JavaScript、高级定时器、注入事件或调用桥接。其观察结果必须与官方 XCTest 执行成功、操作系统截图以及应用的原生输入/生命周期/缩放/渲染追踪一同验收。不使用私有 HID 事件或手动构建的 XCTest 启动程序。
 
-Evidence includes:
+证据包括：
 
-- Original generated and configured `.xctestrun`, unmodified `.xcresult`, and
-  per-command logs with exit status, signal and SHA-256.
-- Signed App executable/build receipt, runner executable, test bundle and complete
-  App/runner resource fingerprints, checked again after execution.
-- The input portable pack's validated manifest root and blob identity against the
-  pack actually installed in the App.
-- Before/after hashes of Rust, Swift, harness and interaction fixture sources.
-- Seven OS screenshots and ordered UI receipt with the same target PID/session.
-- First Metal presentation evidence and native trace through the final observed
-  frame, with no dropped/truncated operation records.
-- Exact app/runner install acknowledgements, observed PIDs, cleanup receipts and
-  release of the per-simulator UI lease.
+- 原始生成并配置的 `.xctestrun` 文件，未修改的 `.xcresult` 文件，以及每条命令的日志，包含退出状态、信号和 SHA-256 值。
+- 签名的 App 可执行文件/构建回执、运行器可执行文件、测试包和完整 App/运行器资源指纹，在执行后再次验证。
+- 输入的可移植包的验证清单根和数据块身份，与实际安装到 App 中的包进行比对。
+- Rust、Swift、运行时和交互固定源文件的执行前后的哈希值。
+- 七张操作系统截图和按相同目标 PID/会话排序的 UI 回执。
+- 第一次 Metal 呈现证据和最终观察帧中的原生跟踪，无丢失或截断的操作记录。
+- App/运行器安装确认的精确记录、观察到的 PIDs、清理回执以及对每个模拟器 UI 会话的释放。
 
-Only acknowledged task-owned apps are eligible for cleanup. An ambiguous install
-or replacement PID is preserved and reported; cleanup of the other owned app is
-still attempted. The harness never steals a stale lease. SIGINT/SIGTERM cancel
-only the active command's process group before collecting evidence and cleaning
-the exact owned bundles. Existing output is never overwritten.
+只有被确认为任务拥有的应用才能被清理。如果安装或替换 PID 存在歧义，则保留并报告该信息；仍会尝试清理其他拥有的应用。运行时从不会窃取过期的租约。SIGINT/SIGTERM 仅在收集证据和清理确切拥有的包之前取消活动命令的进程组。现有输出永远不会被覆盖。
 
-Run the platform-independent contracts without Xcode or simulator access:
+在没有 Xcode 或模拟器访问的情况下运行平台无关的合约：
 
 ```sh
 node --test scripts/ios-ui-test-contracts.test.mjs
 ```
 
-A passing contract test is not a successful simulator run. A successful harness
-run establishes only the recorded official simulator OS interaction for that
-source, engine, pack and device. It does not certify background timer scheduling,
-physical-device GPU behavior, DevTools parity, all-platform conformance or
-performance acceptance. Existing runtime-only trace limitations remain intact;
-the separate UI report carries this interaction evidence.
+一个通过的合同测试并不能说明模拟器运行成功。一次成功的运行环境测试仅能确认该源码、引擎、包和设备对应的官方模拟器操作系统交互记录。它并不能证明后台定时器调度、物理设备GPU行为、DevTools一致性、跨平台兼容性或性能验收。现有的仅运行时轨迹限制依然存在；单独的UI报告将携带这些交互证据。

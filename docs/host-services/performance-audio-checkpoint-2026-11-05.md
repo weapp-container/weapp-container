@@ -1,13 +1,17 @@
-# Performance and InnerAudio source checkpoint — 2026-11-05
+<a id="performance-and-inneraudio-source-checkpoint--2026-11-05"></a>
+# 性能和内音频源检查点 — 2026-11-05
 
-Code commit: `77cb95cad79f582f646f443df417e893f368cea1`.
+**简体中文** · [English](performance-audio-checkpoint-2026-11-05.en.md)
 
-This checkpoint integrates the private Performance/module owner and runtime-owned InnerAudio listener removal from baseline `d3561c11a45ab25a113bd8d689abdd00963e86b9`.
 
-Performance samples now come from retained native module/App entry points, with private module records, independent member admission, copied query snapshots and a native lifetime fence. Replacing diagnostic globals cannot create trusted samples or revive a retired owner. Exact producer, metadata, timing and fixed-WeChat parity gaps remain open; query rows remain Partial.
+代码提交：`77cb95cad79f582f646f443df417e893f368cea1`。
 
-InnerAudio off methods remove the actual private subscription owner and cancel its creator before acknowledgement. Legacy SDK off declarations are accepted only for capability negotiation and never installed as native dispatch handlers. Destroy closes its callback receiver immediately; failed destroy keeps the native factory for later retirement without reopening listeners. Valid repeated typed retirement acknowledges absence; malformed object IDs remain rejected. Runtime-owned off keys publish Unsupported when the pack does not grant them.
+此检查点集成了私有性能/模块所有者和运行时拥有的内音频监听器移除功能，基线为 `d3561c11a45ab25a113bd8d689abdd00963e86b9`。
 
-The matrix update refreshes reviewed source identities and 84 Performance source/scope cells. All 8,855 implementation states and acceptance states are unchanged: 1,777 Available, 1,308 Partial, 86 RequiresHostService, 5,684 Missing; accepted 0 and platform-not-applicable 87. InnerAudio retains its existing 26 Available and 44 Missing cells. The proposed additional Audio credit is deferred.
+性能样本现在来自保留的原生模块/应用入口点，包含私有模块记录、独立成员准入、复制的查询快照和原生生命周期屏障。替换诊断全局变量无法创建可信样本或复活已退化的拥有者。精确的生产者、元数据、时序以及固定微信一致性差距仍存在；查询行仍为部分。
 
-Validation results and exact commands are recorded in [the checkpoint evidence](../archived-evidence.md). The final Node owner/audio suite passed 304 tests, the bootstrap/scheduler suite passed 570, the inventory/matrix suite passed 1,284, and real QuickJS/V8 Session integration passed 11 InnerAudio and 5 Performance tests. The five native capability policy tests and formatting passed. Node VM tests are composition evidence; native Session tests are engine evidence. This checkpoint adds no installed SDK/device/browser or WeChat oracle acceptance. The broader implementation goal remains paused.
+InnerAudio off 方法会移除实际的私有订阅所有者，并在确认前取消其创建者。旧版 SDK 的 off 声明仅用于能力协商，从不作为原生分发处理器安装。Destroy 立即关闭其回调接收器；销毁失败会保留原生工厂以供后续退役，而不会重新打开监听器。有效重复类型退役确认了其缺席；格式错误的对象 ID 仍会被拒绝。运行时拥有的 off 键在包未授予时会发布 Unsupported。
+
+矩阵更新刷新了已审核的源身份和84个性能源/范围单元。所有8,855个实施状态和验收状态均保持不变：1,777个可用，1,308个部分可用，86个需要宿主服务，5,684个缺失；已验收0个，平台不适用87个。InnerAudio保留其原有的26个可用和44个缺失单元。提议的额外音频信用被延期。
+
+验证结果和具体命令记录在 [检查点证据](../archived-evidence.md) 中。最终的 Node 所有者/音频套件通过了 304 个测试，启动/调度套件通过了 570 个，库存/矩阵套件通过了 1,284 个，而真实的 QuickJS/V8 会话集成通过了 11 个内音频和 5 个性能测试。五个原生能力策略测试和格式化均已通过。Node VM 测试是组合证据；原生会话测试是引擎证据。本检查点未增加任何已安装的 SDK/设备/浏览器或微信预言验收。更广泛的实现目标仍处于暂停状态。

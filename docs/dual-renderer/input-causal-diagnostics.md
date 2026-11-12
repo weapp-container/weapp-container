@@ -1,10 +1,15 @@
+<a id="web-input-causal-diagnostics-v1"></a>
 # Web 输入因果诊断 v1
+
+**简体中文** · [English](input-causal-diagnostics.en.md)
+
 
 该接口记录输入、原始 View clone、GPU 提交、canvas 替换和 runtime ACK 的独立事实，
 用于准备真实的 375×667、2× 测量。当前没有 compositor frame-flow、合成器呈现反馈
 或物理屏幕证据；所有报告始终为 `gate.status: "blocked"`，
 `inputToPresentP95Ms` 和滚动丢帧率保持 `null`。协议阶段耗时不能当作输入到屏幕耗时。
 
+<a id="explicit-enablement"></a>
 ## 显式启用
 
 Worker Skia owner 和开发 manager 接受可选的 `inputTiming: { version: "1.0" }`。
@@ -24,6 +29,7 @@ DOM Worker 显式启用时返回协议错误，不能静默换测量口径。
 业务 bridge envelope、事件、顺序和批量边界不变。一次原生 pointerup 产生的
 touchend/tap 共享一个 sample，不能重复计算成两次物理输入。
 
+<a id="association-and-clocking"></a>
 ## 关联与时钟
 
 每个样本绑定不可变 Worker owner/session、捕获时 page、模板 revision、surface generation、
@@ -49,6 +55,7 @@ Window 使用自己的单调时钟记录输入捕获和各阶段回执接收时�
 canvas swap、真实 runtime ACK received。canvas swap 的名字指 DOM 操作完成，
 不是 compositor display。迟到、失败、丢弃、重复、未知 receipt、owner 退休都保留为事实。
 
+<a id="boundedness-and-diagnostics-isolation"></a>
 ## 有界性与诊断隔离
 
 每个 owner 最多保存 512 个输入、64 个 frame、2048 个事件（上限 4096）。
@@ -74,6 +81,7 @@ canvas swap、真实 runtime ACK received。canvas swap 的名字指 DOM 操作�
 诊断不完整；该帧不产生因果候选。原始 clone 的 receipt 不因传输省略而被覆盖，
 后续有空间的 retained export 仍只能使用原始 receipt。
 
+<a id="remote-and-legacy-ui"></a>
 ## Remote 和旧 UI
 
 Remote raster/DOM 没有 native input→original-clone token，因此只保存独立输入批次
@@ -90,6 +98,7 @@ Remote raster/DOM 没有 native input→original-clone token，因此只保存�
 该脚本的历史 CPU/RAF 指标不能证明 Worker CanvasKit、GPU、合成器或物理显示通过。
 新的完整性能门禁必须另行获得因果像素、frame-flow 和呈现端点，并保存独立原始证据。
 
+<a id="verification-boundaries"></a>
 ## 验证边界
 
 Node 合同覆盖默认兼容、静态/实际协商、真实 Worker RPC 代码中的 request correlation、

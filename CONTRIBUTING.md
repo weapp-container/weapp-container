@@ -1,4 +1,8 @@
+<a id="contributing"></a>
 # 参与贡献
+
+**简体中文** · [English](CONTRIBUTING.en.md)
+
 
 请先阅读根目录 README、架构和对应模块说明。使用 Node.js 24.x、pnpm 10.15.1 和 Rust stable，递归初始化固定 submodule，运行 `pnpm install --frozen-lockfile`。
 

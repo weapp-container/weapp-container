@@ -1,6 +1,10 @@
-# Worker static admission and drawing-resource leases
+<a id="worker-static-admission-and-drawing-resource-leases"></a>
+# 工作者静态准入和绘制资源租用
 
-`worker-admission-loader.mjs` exports two product functions. Neither imports `app.mjs`, `pkg/`, AppService WASM or the runtime Worker, executes application modules, reads application blobs, or uses a runtime `/api` endpoint. `createWorkerAdmissionLoader(dependencies)` supplies an isolated service for explicit base URLs and finite fake-resource contracts.
+**简体中文** · [English](worker-admission-loader.en.md)
+
+
+`worker-admission-loader.mjs` 导出两个产品功能。其中任何一个都不导入 `app.mjs`、`pkg/`、AppService WASM 或运行时 Worker，不执行应用程序模块，不读取应用程序数据块，也不使用运行时的 `/api` 端点。`createWorkerAdmissionLoader(dependencies)` 提供一个独立的服务，用于显式的基础 URL 和有限的假资源合约。
 
 ```js
 import { admitWorkerPack, loadPinnedCanvasKit } from './worker-admission-loader.mjs'
@@ -16,15 +20,16 @@ const admission = await admitWorkerPack({
 // The Worker must independently verify the entire pack before app.init.
 ```
 
-The immutable result is `{version:'1.0', route, rendererPolicy, transportBackend, declaredProfile, effectiveProfile, manifest, provenance:{indexSha256,manifestSha256,integrityRoot,indexUrl,manifestUrl,downloadedBytes,blobsDownloaded:0}}`. `rendererPolicy` is explicit `{mode:'manifest'}` or `{mode:'force',profile:'skia'|'skyline-compat'|'webview'}`. Force preserves the independently reported declared profile. Only effective `webview` selects `browser-view`; the other profiles select `external-frame`. A missing requested route fails before any app executes. This result proves pinned metadata and policy admission, not full runtime conformance or successful application execution.
+不可变的结果是 `{version:'1.0', route, rendererPolicy, transportBackend, declaredProfile, effectiveProfile, manifest, provenance:{indexSha256,manifestSha256,integrityRoot,indexUrl,manifestUrl,downloadedBytes,blobsDownloaded:0}}`。`rendererPolicy` 显式为 `{mode:'manifest'}` 或 `{mode:'force',profile:'skia'|'skyline-compat'|'webview'}`。Force 保留独立报告的声明配置文件。只有有效 `webview` 选择 `browser-view`；其他配置文件选择 `external-frame`。缺失的请求路由在任何应用执行前都会失败。该结果证明了固定元数据和策略准入，而不是完整的运行时合规性或应用执行成功。
 
-Admission fetches only index and manifest. It verifies the mandatory expected SHA-256 of the exact index bytes, the manifest byte SHA-256, and the normalized UTF-8 JSON integrity root using UTF-8 key ordering. It validates schema/rendering declarations, canonical distinct routes, module-to-declared-blob references and index blob descriptors without downloading those blobs. The metadata read budgets are 2 MiB for the index and 8 MiB for the manifest; node/depth limits are 262,144/128. Declared blobs are limited to 16,384 and 128 MiB. Same-origin HTTP(S), no credentials/hash/redirects, and decoded `/api` exclusion apply to every descriptor, including unrequested blob URLs.
+准入仅获取索引和清单。它验证了索引字节的精确 SHA-256、清单字节的 SHA-256 以及使用 UTF-8 键排序的标准化 UTF-8 JSON 完整性根。它在不下载这些数据块的情况下，验证了模式/渲染声明、标准唯一路由、模块到声明数据块的引用以及索引数据块描述符。元数据读取预算为索引 2 MiB、清单 8 MiB；节点/深度限制为 262,144/128。声明的数据块限制为 16,384 和 128 MiB。所有描述符（包括未请求的数据块 URL）均适用相同源的 HTTP(S)、无凭据/哈希/重定向，以及排除 `/api` 解码路径。
 
-The caller obtains the expected index hash from trusted build/deployment metadata. Computing the expected pin from the same unverified response would discard this admission boundary. The independent Worker verification remains mandatory even after admission.
+调用方从可信的构建/部署元数据中获取预期的索引哈希。从同一未经验证的响应中计算预期的PIN将丢弃这一准入边界。即使在准入之后，独立的Worker验证仍必须执行。
 
-## Pinned drawing loader
+<a id="pinned-drawing-loader"></a>
+## 固定绘图加载器
 
-After the exact Worker load succeeds, an external owner may acquire drawing resources:
+在 Worker 加载精确成功后，外部拥有者可能获取绘制资源：
 
 ```js
 const lease = await loadPinnedCanvasKit({ owner, loadResult, rendererAssets, signal })
@@ -34,28 +39,31 @@ const lease = await loadPinnedCanvasKit({ owner, loadResult, rendererAssets, sig
 await lease.dispose()
 ```
 
-`owner` is `{workerEpoch,sessionId,packSha256,transportBackend:'external-frame'}`; `packSha256` identifies the verified pack **index**. `loadResult.pack.indexSha256`, `loadResult.state.sessionId`, both transport fields and the exact external-presentation four-field 1.0 descriptor must match. Browser-view owners cannot allocate the drawing module through this API.
+`owner` 是 `{workerEpoch,sessionId,packSha256,transportBackend:'external-frame'}`；`packSha256` 识别已验证的包 **索引**。`loadResult.pack.indexSha256`、`loadResult.state.sessionId`，以及传输字段和精确的外部呈现四字段 1.0 描述符必须匹配。浏览器视图所有者无法通过此 API 分配绘制模块。
 
-`rendererAssets` accepts the existing `schemaVersion:1, renderer:'canvaskit', fallback:'error'` runtime configuration: `canvaskit:{version:'0.42.0',variant:'full',javascript,wasm,license,package}` and `font:{binary,license}`. Each descriptor requires `{url,sha256,size}`. All six SHA-256/size pairs must equal the compiled pins copied from `renderer-dependency-pins.json`; a caller cannot select another executable or relabel a font. CanvasKit is version 0.42.0 full. Noto Sans SC comes from Google Fonts commit `a85815a42757630ce188fdad368c2dfc444d4773`. Both licenses and pinned `package.json` bytes verify before importing any drawing JS. Package metadata must independently name `canvaskit-wasm` 0.42.0. URL addresses may vary within the same-origin static boundary; integrity/version pins may not.
+`rendererAssets` 接受现有的 `schemaVersion:1, renderer:'canvaskit', fallback:'error'` 运行时配置：`canvaskit:{version:'0.42.0',variant:'full',javascript,wasm,license,package}` 和 `font:{binary,license}`。每个描述符都需要 `{url,sha256,size}`。所有六个 SHA-256/size 对必须等于从 `renderer-dependency-pins.json` 复制的编译 pins；调用方不能选择其他可执行文件或重命名字体。CanvasKit 版本为 0.42.0 完整版。Noto Sans SC 来自 Google Fonts 提交 `a85815a42757630ce188fdad368c2dfc444d4773`。许可证和钉住的 `package.json` 字节在导入任何绘制 JS 之前必须经过验证。包元数据必须独立地命名 `canvaskit-wasm` 0.42.0。在同一源域静态边界内，URL 地址可以变化；但完整性/版本 pins 不得变化。
 
-The renderer download budget is 32 MiB in total, with exact pinned per-resource lengths. Content-Length and actual streamed bytes are checked before allocation/continuation. For compressed HTTP responses, Content-Length describes encoded wire bytes; exact size/hash verification applies to the decoded stream returned by fetch, while the wire header remains within the total byte budget. Readers own their chunks, cancel incomplete streams and release locks; cleanup failures remain observable. The initializer may locate only `canvaskit.wasm`, resolved to already verified local Blob bytes. No fallback CDN or additional initializer resource is admitted.
+渲染器下载预算总共为 32 MiB，每个资源的精确固定长度已确定。在分配或继续之前，会检查 Content-Length 和实际流式传输的字节数。对于压缩的 HTTP 响应，Content-Length 描述的是编码后的传输字节；对 fetch 返回的解码流进行精确大小/哈希验证，而传输头仍包含在总字节预算内。读取者拥有自己的数据块，取消不完整的流并释放锁；清理失败仍可被观察到。初始化器只能定位 `canvaskit.wasm`，并将其解析为已验证的本地 Blob 字节。不接受备用 CDN 或额外的初始化资源。
 
-This function **does execute CanvasKit drawing JavaScript and its drawing WASM on the main thread**. That is a renderer dependency, not an AppService engine or an application execution path. This distinction does not establish GPU acceptance: the real adapter must still require its WebGL2 surface and real submission evidence.
+该函数**在主线程上执行 CanvasKit 绘图 JavaScript 及其绘图 WASM**。这属于渲染器依赖，而不是 AppService 引擎或应用程序执行路径。这种区别并不能证明 GPU 验收：真正的适配器仍需要求其 WebGL2 绘制表面和真实的提交证据。
 
-## Cancellation, cache and lease boundary
+<a id="cancellation-cache-and-lease-boundary"></a>
+## 取消、缓存和租约边界
 
-A service retains at most one successful pinned drawing-module/font cache. Concurrent callers share that initialization; one caller cancelling cannot abort another active caller. If all pending callers cancel, the service aborts resource fetches. A replacement initialization waits for the actual prior import/initializer and URL cleanup to settle. Dynamic import and CanvasKit initialization have no genuine abort primitive, so cancellation does not invent an early last-use barrier. An uncooperative injected fetch/import/initializer may keep the operation pending; this is reported as an incomplete barrier rather than false cleanup success.
+一个服务最多保留一个成功的固定绘图模块/字体缓存。多个调用者共享该初始化过程；一个调用者取消无法中止另一个活跃调用者。如果所有待处理调用者都取消，服务将中止资源获取操作。一个替换初始化会等待实际的先前导入/初始化器和URL清理操作完成。动态导入和CanvasKit初始化没有真正的中止原语，因此取消操作不会产生一个早期的最后使用屏障。一个不合作的注入获取/导入/初始化器可能会保持操作待处理；这种情况将被报告为不完整的屏障，而不是错误的清理成功。
 
-Temporary script/WASM Blob URLs remain live through actual import and initialization and are then revoked exactly once, including failure/abort. The default `locateFile` cannot fetch an unverified resource. A lease exposes `{version:'1.0', owner, provenance, CanvasKit, fontData, dispose}`. Font data is an independent owned ArrayBuffer copy; mutating one lease cannot corrupt the cached font or another lease. `dispose()` returns the same promise, drops that lease's references and invalidates subsequent getters. It never closes borrowed Worker/RPC/bridge resources or disposes another owner's surfaces. The owner must dispose the adapter's typefaces/surfaces before releasing this font/module lease.
+临时脚本/WASM Blob URL 在实际导入和初始化期间保持有效，之后将被精确撤销一次，包括失败或中止情况。默认的 `locateFile` 无法获取未经验证的资源。一个租约暴露了 `{version:'1.0', owner, provenance, CanvasKit, fontData, dispose}`。字体数据是独立拥有的 ArrayBuffer 复制；修改一个租约不会损坏缓存的字体或其他租约。`dispose()` 返回相同的承诺，释放该租约的引用并使后续获取操作无效。它从不关闭借来的 Worker/RPC/桥接资源，也不释放其他所有者的绘制表面。在释放此字体/模块租约前，所有者必须先销毁适配器的字体和绘制表面。
 
-The single service-level CanvasKit module/cache remains available for later sessions until its page/service is collected. Lease disposal does not claim deterministic unloading of browser ESM caches or a WebAssembly heap. Consumers retaining borrowed CanvasKit/font references can prolong their lifetime; the owner last-use contract still applies. Download/cache bounds are not host RSS, GPU memory, FPS or package-size acceptance. The candidate does not establish any of those performance gates.
+单个服务级 CanvasKit 模块/缓存将在其页面/服务被回收前持续可用。租约释放不会确定性地卸载浏览器 ESM 缓存或 WebAssembly 堆。保留借用的 CanvasKit/字体引用的消费者可以延长其生命周期；所有者最后使用协议仍然适用。下载/缓存限制并不等于宿主 RSS、GPU 内存、FPS 或包大小的验收。该候选方案并未建立任何这些性能门限。
 
-## Existing configuration producer discrepancy
+<a id="existing-configuration-producer-discrepancy"></a>
+## 现有配置生成器不一致
 
-The retained `artifacts/dual-renderer-dev-assets/runtime-config.json`, `prepare-canvaskit-dev` and native RendererAssets verifier already include the pinned CanvasKit package descriptor. The static `build-web-wasm::rendererRuntimeConfig` producer omitted that descriptor, despite its input stage already verifying and copying the file. The separate `worker-renderer-package-config.patch` adds the real fixed descriptor and a contract assertion. Integrate that producer patch with the new loader. The loader deliberately rejects the older incomplete configuration; it does not synthesize an unverified success or weaken its six-resource boundary. The retained configuration snapshot is evidence of its bytes only, not of a browser successfully loading the new implementation.
+保留的 `artifacts/dual-renderer-dev-assets/runtime-config.json`、`prepare-canvaskit-dev` 和原生 RendererAssets 验证器已经包含了锁定的 CanvasKit 包描述符。静态的 `build-web-wasm::rendererRuntimeConfig` 生成器遗漏了该描述符，尽管其输入阶段已经验证并复制了该文件。单独的 `worker-renderer-package-config.patch` 增加了真实的固定描述符和一个契约断言。将该生成器补丁与新加载器集成。加载器故意拒绝较旧的不完整配置；它不会合成未经验证的成功，也不会削弱其六资源边界。保留的配置快照仅证明其字节内容，而不证明浏览器成功加载了新实现。
 
-## Candidate checks and remaining integration
+<a id="candidate-checks-and-remaining-integration"></a>
+## 候选检查和剩余集成
 
-The accompanying Node cases are **unexecuted drafts**. Pack cases use real Node SHA-256 over tiny fixture metadata. Drawing cases deliberately inject a fake SHA provider, finite fake drawing module and fake Blob URLs; their large byte lengths exercise bounds and ownership, and do not prove the pinned vendor bytes, CanvasKit execution, a real browser, WebGL or performance. Drafts cover expected-index failure, route/force policy, Unicode canonicalization, roots, redirects/API/origin/size, stream abort/release, pin drift, independent font leases, import cancellation, peer-owner isolation and cleanup failure.
+随附的 Node 案例是 **未执行的草稿**。包案例使用真实的 Node SHA-256 哈希值，而非微小的固定元数据。绘制案例故意注入一个伪造的 SHA 提供者、有限的伪造绘制模块和伪造的 Blob URL；其庞大的字节长度用于测试边界和所有权，且无法证明锁定的厂商字节、CanvasKit 执行、真实浏览器、WebGL 或性能表现。草稿案例涵盖了预期索引失败、路由/强制策略、Unicode 标准化、根节点、重定向/API/来源/尺寸、流中止/释放、锁定漂移、独立字体租约、导入取消、同级所有者隔离以及清理失败。
 
-Root must integrate the product owner/entry, add new modules to the static packaging inventory, run these drafts and existing checks, rebuild the independently verified Worker exports, and obtain real retained-site/GPU/input/performance evidence. No test, build, formatter, browser, WASM operation or service replacement was run while authoring this candidate.
+Root 必须集成产品负责人/入口，将新模块添加到静态打包清单中，运行这些草案和现有检查，重新构建已独立验证的 Worker 导出内容，并获取真实的现场/GPU/输入/性能证据。在编写此候选方案时，未运行任何测试、构建、格式化、浏览器、WASM 操作或服务替换。
