@@ -3,6 +3,8 @@
 
 [简体中文](sdk-source-build.md) · **English**
 
+This guide uses the core repository’s pinned submodule set. The current core builder emits preview.6 and pins matching preview.6 SDK source. SDK main branches also contain preview.7 public distribution candidates; those require matching preview.7 runtimes. Updating submodules alone does not make this guide’s build artifacts compatible. Registry availability and device acceptance remain subject to each SDK README and the actual release records.
+
 
 This guide covers initial integration and SDK maintenance. Current source is public and does not require credentials for historical binary archives. Building, offline packaging, and device acceptance are separate steps. A successful build does not change a platform's acceptance status.
 

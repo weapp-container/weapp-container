@@ -2242,8 +2242,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/sdk-source-build.md"
       },
-      "reviewedChineseSummary": "从公开源码构建 SDK；1. 准备干净的 checkout；2. 构建原生 SDK；3. Flutter 与 React Native 的原生输入；4. 打包自己的小程序；5. 验证与故障定位",
-      "reviewedChineseSha256": "d4f60d64548ac9f1bf0d3f3313ad78d59331956c37d4d1ee05260307f2afa07b",
+      "reviewedChineseSummary": "明确核心固定 preview.6 源码与 SDK 主分支 preview.7 发行候选的版本边界；保留构建、许可和设备验收条件。",
+      "reviewedChineseSha256": "3a06f0bae6c70a277f58596aa00e45974dd7b4bedc8466d260d47bc09860ebd6",
       "legacyHeadingIds": []
     },
     {
