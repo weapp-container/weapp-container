@@ -577,8 +577,9 @@ test('custom builder owns receipts, receives documented args/env, and exits on c
   const marker = resolve(f.root, 'custom-args.json')
   writeFileSync(binary, `
     import { writeFileSync } from 'node:fs';
-    writeFileSync(process.env.TEST_MARKER, JSON.stringify({ args: process.argv.slice(2), session: process.env.WEAPP_CONTAINER_SIMULATOR_SESSION_ID }));
     writeFileSync(process.env.WEAPP_CONTAINER_SIMULATOR_RECEIPT_DIR + '/receipts/00000000000000000001.json', JSON.stringify({ protocolVersion: '1.0', sessionId: process.env.WEAPP_CONTAINER_SIMULATOR_SESSION_ID, sequence: 1, kind: 'building' }));
+    // The marker is a readiness barrier for both arguments and the receipt.
+    writeFileSync(process.env.TEST_MARKER, JSON.stringify({ args: process.argv.slice(2), session: process.env.WEAPP_CONTAINER_SIMULATOR_SESSION_ID }));
     setInterval(() => {}, 1000);
   `)
   const abort = new AbortController()
