@@ -7,7 +7,7 @@
 | 发行物 | 公开入口 | 验证 |
 |---|---|---|
 | Contract | [npm 0.1.0-preview.7.0](https://www.npmjs.com/package/@weapp-container/sdk-contract/v/0.1.0-preview.7.0) | preview 标签、匿名 tarball 字节一致、全新匿名安装、类型/工具导出、fixture 和 14 项公开锁验证通过；trusted publisher 已配置并查回 |
-| Flutter interface | [pub.dev 0.1.0-preview.7.0](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0) | 匿名归档字节一致；全新 hosted 依赖解析、静态分析和两种消息传输测试通过；仅 interface 完成 |
+| Flutter interface | [pub.dev 0.1.0-preview.7.0](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0) | 匿名归档字节一致；全新 hosted 依赖解析、静态分析和两种消息传输测试通过；GitHub OIDC 已配置；仅 interface 完成 |
 | 核心运行库 | [runtime-v0.1.0-preview.7.0](https://github.com/weapp-container/weapp-container/releases/tag/runtime-v0.1.0-preview.7.0) | 14 个归档匿名下载及 SHA-256 全通过；全新离线安装、缓存复验、错误哈希拒绝全通过 |
 | iOS | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-ios/releases/tag/v0.1.0-preview.7.0) | 双 ZIP 匿名下载；公开 SwiftPM 模拟器/真机目标构建；最终字节 arm64 模拟器交互 XCTest 通过 |
 | Desktop | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-desktop/releases/tag/v0.1.0-preview.7.0) | 三端归档匿名下载；公开 macOS/Linux/Windows CI 消费全部通过；本机 ARM/Rosetta 消费通过 |

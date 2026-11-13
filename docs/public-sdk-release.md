@@ -5,7 +5,7 @@ Status: partially published. ABI remains 1. Contract npm, the Flutter platform i
 | Distribution | Public entry | Verified scope |
 | --- | --- | --- |
 | Contract | [npm 0.1.0-preview.7.0](https://www.npmjs.com/package/@weapp-container/sdk-contract/v/0.1.0-preview.7.0) | preview tag, exact anonymous tarball bytes, fresh anonymous installation, TypeScript types, tool exports, authored fixture and all 14 public runtime pins; trusted publisher configured and read back |
-| Flutter interface | [pub.dev 0.1.0-preview.7.0](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0) | Exact anonymous archive bytes, fresh hosted resolution, static analysis and both JSON transport consumer tests; interface only |
+| Flutter interface | [pub.dev 0.1.0-preview.7.0](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0) | Exact anonymous archive bytes, fresh hosted resolution, static analysis and both JSON transport consumer tests; GitHub OIDC configured; interface only |
 | Core runtime | [runtime-v0.1.0-preview.7.0](https://github.com/weapp-container/weapp-container/releases/tag/runtime-v0.1.0-preview.7.0) | All 14 archives anonymously downloaded, size/SHA-256 checked, fresh offline installation and wrong-hash rejection passed |
 | iOS | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-ios/releases/tag/v0.1.0-preview.7.0) | Both ZIPs downloaded anonymously; remote SwiftPM simulator/device compilation; final arm64 simulator interaction acceptance |
 | Desktop | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-desktop/releases/tag/v0.1.0-preview.7.0) | Three archives downloaded anonymously; public macOS/Linux/Windows CI consumption and local arm64/Rosetta consumption |
