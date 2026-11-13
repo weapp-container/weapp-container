@@ -8,3 +8,5 @@ docs/sdk-migration/preview2-validation/** -text whitespace=-blank-at-eol,-blank-
 docs/dev-player/evidence/** -text whitespace=-blank-at-eol,-blank-at-eof
 # Content-addressed pack blobs must retain their exact bytes on every host.
 **/blobs/sha256/* -text
+# Reviewed upstream legal inputs retain their original whitespace and line endings.
+sdk/licenses/skia-bindings-0.153.3/** -text whitespace=-blank-at-eol,-blank-at-eof

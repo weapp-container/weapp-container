@@ -3515,6 +3515,11 @@
       "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54"
     },
     {
+      "path": "sdk/licenses/skia-bindings-0.153.3/skia/third_party/externals/libjpeg-turbo/LICENSE.md",
+      "reason": "Original license or third-party notice; legal text is not translated.",
+      "sha256": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430"
+    },
+    {
       "path": "tools/container-manifest/test/fixtures/modern-esm-conformance/README.md",
       "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
       "sha256": "b57711e753a1e4ccf0b40e2db4df4bedd762f377205e6fd9390555a695eb43cd"
