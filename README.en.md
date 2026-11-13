@@ -9,6 +9,8 @@ Embed mini-programs in your own applications. Weapp Container provides a Rust ru
 
 [Documentation](https://container.weapp.dev/en/docs/) · [Live demo](https://container.weapp.dev/en/demo/) · [Source documentation](docs/README.en.md) · [Contributing](CONTRIBUTING.en.md)
 
+[GitHub prerelease downloads](https://github.com/weapp-container/weapp-container/releases)
+
 [![Public source checks](https://github.com/weapp-container/weapp-container/actions/workflows/public-ci.yml/badge.svg)](https://github.com/weapp-container/weapp-container/actions/workflows/public-ci.yml)
 
 Start with a native mini-program directory or an existing framework build. Integration does not require weapp-vite. The packer produces a verified manifest, IR, and content-addressed resources; the runtime manages JavaScript execution, pages, navigation, storage, and host messaging. QuickJS is the primary engine. V8, Skia, and browser presentation paths depend on the selected configuration and host capabilities.

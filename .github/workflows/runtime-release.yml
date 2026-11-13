@@ -1,0 +1,265 @@
+name: Prepare runtime prerelease
+
+on:
+  workflow_run:
+    workflows: [Public native production]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      runtime_run_id:
+        description: Successful main production run with prepare_release enabled
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: runtime-release-${{ github.event.workflow_run.head_sha || inputs.runtime_run_id }}
+  cancel-in-progress: false
+
+jobs:
+  select:
+    if: github.repository == 'weapp-container/weapp-container' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    outputs:
+      enabled: ${{ steps.candidate.outputs.enabled }}
+      source: ${{ steps.candidate.outputs.source }}
+      version: ${{ steps.candidate.outputs.version }}
+    steps:
+      # workflow_run starts trusted default-branch code. The selector validates
+      # repository, workflow, main SHA, candidate marker and exact-SHA checks.
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Select successful production and wait for its checks
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUNTIME_RUN_ID: ${{ github.event.workflow_run.id || inputs.runtime_run_id }}
+          AUTOMATIC: ${{ github.event_name == 'workflow_run' }}
+        run: |
+          if [ "$AUTOMATIC" = true ]; then
+            node scripts/runtime-release.mjs select "$RUNTIME_RUN_ID" --automatic
+          else
+            node scripts/runtime-release.mjs select "$RUNTIME_RUN_ID"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: steps.candidate.outputs.enabled == 'true'
+        with:
+          name: selected-release-candidate
+          path: artifacts/release/candidate.json
+          retention-days: 30
+          if-no-files-found: error
+
+  wrappers:
+    needs: select
+    if: needs.select.outputs.enabled == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-22.04, platform: android }
+          - { os: xcode-27, platform: ios }
+          - { os: xcode-27, platform: macos, desktop: macos-universal }
+          - { os: ubuntu-22.04, platform: linux, desktop: linux-x64 }
+          - { os: windows-2022, platform: windows, desktop: windows-x64 }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - name: Enable long paths on Windows
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.select.outputs.source }}
+          persist-credentials: false
+      - name: Initialize the exact SDK and Contract commits
+        run: git submodule update --init sdk/contract sdk/android sdk/ios sdk/desktop
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: selected-release-candidate
+          path: artifacts/release
+      - name: Download the exact native producer receipts, binaries and licenses
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLATFORM: ${{ matrix.platform }}
+        run: node scripts/runtime-release.mjs stage "$PLATFORM"
+        shell: bash
+      - name: Create the pinned Contract acceptance pack
+        run: node sdk/contract/fixtures/make-acceptance-pack.mjs --out artifacts/acceptance-pack
+      - name: Select the recorded Apple toolchain
+        if: runner.os == 'macOS'
+        run: echo 'DEVELOPER_DIR=/Applications/Xcode_27.2.app/Contents/Developer' >> "$GITHUB_ENV"
+      - uses: actions/setup-java@v4
+        if: matrix.platform == 'android'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        if: matrix.platform == 'android'
+        with:
+          gradle-version: '8.9'
+      - uses: android-actions/setup-android@v3
+        if: matrix.platform == 'android'
+        with:
+          packages: platform-tools
+      - name: Install pinned Android build tools
+        if: matrix.platform == 'android'
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006' 'cmake;3.22.1'
+      - name: Build Android AAR and independent R8 consumer; verify ABIs and 16KB alignment
+        if: matrix.platform == 'android'
+        run: |
+          node sdk/android/tools/build.mjs --native-root artifacts/sdk/native --licenses-root artifacts/sdk/licenses --pack artifacts/acceptance-pack --out artifacts/android
+          mkdir -p artifacts/wrappers/android
+          cp -R artifacts/android/maven artifacts/wrappers/android/maven
+          cp artifacts/android/distribution.json artifacts/android/validation.json artifacts/wrappers/android/
+      - name: Build iOS XCFramework and Swift package
+        if: matrix.platform == 'ios'
+        run: node sdk/ios/tools/build.mjs --native-root artifacts/sdk/native --licenses-root artifacts/sdk/licenses --out artifacts/ios
+      - name: Compile staged SwiftPM consumer
+        if: matrix.platform == 'ios'
+        working-directory: artifacts/ios/WeappContainer
+        run: xcodebuild -scheme WeappContainer -destination 'generic/platform=iOS Simulator' -derivedDataPath ../../swift-consumer CODE_SIGNING_ALLOWED=NO
+      - name: Validate staged Pod without source substitution
+        if: matrix.platform == 'ios'
+        run: pod lib lint artifacts/ios/WeappContainer/WeappContainer.podspec --skip-tests --allow-warnings
+      - name: Stage validated iOS installation
+        if: matrix.platform == 'ios'
+        run: |
+          mkdir -p artifacts/wrappers
+          cp -R artifacts/ios/WeappContainer artifacts/wrappers/ios
+      - name: Install Linux native consumer prerequisites
+        if: matrix.platform == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev libepoxy-dev libfontconfig1-dev libcurl4-openssl-dev xvfb
+      - name: Build and execute installed Desktop consumer
+        if: matrix.desktop != ''
+        shell: bash
+        env:
+          DESKTOP_TARGET: ${{ matrix.desktop }}
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          command=(node sdk/desktop/tools/build.mjs --native-root artifacts/sdk/native --licenses-root artifacts/sdk/licenses --pack artifacts/acceptance-pack --target "$DESKTOP_TARGET" --verify --out artifacts/desktop)
+          if [ "$PLATFORM" = linux ]; then xvfb-run -a "${command[@]}"; else "${command[@]}"; fi
+          mkdir -p artifacts/wrappers
+          cp -R "artifacts/desktop/$DESKTOP_TARGET" "artifacts/wrappers/$PLATFORM"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-wrapper-${{ matrix.platform }}
+          path: artifacts/wrappers/${{ matrix.platform }}/
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: release-diagnostics-${{ matrix.platform }}
+          path: |
+            artifacts/android/validation.json
+            artifacts/ios/build.json
+            artifacts/ios/packaging-commands.json
+            artifacts/desktop/validation-*/
+          retention-days: 30
+
+  assemble:
+    needs: [select, wrappers]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.select.outputs.source }}
+          persist-credentials: false
+      - run: git submodule update --init sdk/contract
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: selected-release-candidate
+          path: artifacts/release
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-wrapper-*
+          path: artifacts/downloads/wrappers
+      - name: Stage successful wrapper installations
+        run: |
+          mkdir -p artifacts/wrappers
+          for platform in android ios macos linux windows; do
+            cp -R "artifacts/downloads/wrappers/release-wrapper-$platform" "artifacts/wrappers/$platform"
+          done
+      - name: Restore all nine original native inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/runtime-release.mjs stage all
+      - name: Assemble and independently install all 14 archives offline
+        run: node scripts/runtime-release.mjs assemble
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-runtime-release
+          path: artifacts/release/
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: complete-release-offline-validation
+          path: artifacts/offline/report.json
+          retention-days: 30
+
+  draft:
+    needs: [select, assemble]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    concurrency:
+      group: runtime-draft-${{ needs.select.outputs.version }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.select.outputs.source }}
+          persist-credentials: false
+      - run: git submodule update --init sdk/contract
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-runtime-release
+          path: artifacts/release
+      - name: Generate release notes from the verified candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/runtime-release.mjs notes
+      - name: Upload and verify a prerelease draft; leave publication to the owner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node tools/runtime-artifacts/tools/publish.mjs --release-dir artifacts/release/files --notes-file artifacts/release/notes.md --execute --draft-only > artifacts/release/draft.json
+          node --input-type=module <<'NODE'
+          import {readFileSync, appendFileSync} from 'node:fs';
+          const result = JSON.parse(readFileSync('artifacts/release/draft.json'));
+          if (result.status !== 'draft') throw Error('Expected an unpublished draft');
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Ready for manual publication\n\n[Review ${result.tag} and click Publish](${result.url})\n\n14 archives and 3 metadata assets verified. The release remains a draft.\n`);
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: runtime-release-draft-result
+          path: |
+            artifacts/release/draft.json
+            artifacts/release/notes.md
+          retention-days: 30

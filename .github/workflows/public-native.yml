@@ -3,6 +3,10 @@ name: Public native production
 on:
   workflow_dispatch:
     inputs:
+      prepare_release:
+        description: Prepare the complete GitHub prerelease draft after production (main only)
+        type: boolean
+        default: false
       suite:
         description: SDK validation group (full retains the complete platform matrix)
         type: choice
@@ -24,7 +28,35 @@ env:
   CARGO_INCREMENTAL: '0'
 
 jobs:
+  preflight:
+    name: Check release candidate before native compilation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Initialize the production-pinned SDK source
+        if: inputs.prepare_release
+        run: git submodule update --init sdk/contract sdk/android sdk/ios sdk/desktop
+      - name: Validate candidate versions, source inventories and unused tag
+        if: inputs.prepare_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/runtime-release.mjs prepare
+      - uses: actions/upload-artifact@v4
+        if: inputs.prepare_release
+        with:
+          name: release-candidate
+          path: artifacts/release/candidate.json
+          retention-days: 30
+          if-no-files-found: error
+
   contracts:
+    needs: preflight
     name: SDK contracts (${{ matrix.os }})
     timeout-minutes: 60
     strategy:
@@ -71,6 +103,7 @@ jobs:
         run: cargo test -p container-sdk -p container-sdk-ffi --no-default-features --features quickjs-native,skia-backend --locked -- --test-threads=1
 
   native:
+    needs: preflight
     name: Native SDK (${{ matrix.target }})
     # Independent builds start alongside contracts; packaging gates on both.
     if: inputs.suite == 'native' || inputs.suite == 'full'

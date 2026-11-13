@@ -154,7 +154,7 @@
     "runtime:package": "node tools/runtime-artifacts/tools/package-artifacts.mjs",
     "runtime:verify": "node tools/runtime-artifacts/tools/verify-offline.mjs",
     "runtime:publish": "node tools/runtime-artifacts/tools/publish.mjs",
-    "runtime:artifacts:test": "python3 -m unittest discover -s tools/runtime-artifacts/test -p 'test_*.py' -v && node --test tools/runtime-artifacts/test/*.test.mjs scripts/runtime-artifacts-migration.test.mjs",
+    "runtime:artifacts:test": "python3 -m unittest discover -s tools/runtime-artifacts/test -p 'test_*.py' -v && node --test tools/runtime-artifacts/test/*.test.mjs scripts/runtime-artifacts-migration.test.mjs scripts/runtime-release.test.mjs",
     "docs:workspace": "node tools/documentation/check-workspace.mjs"
   },
   "devDependencies": {

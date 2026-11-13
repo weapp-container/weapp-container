@@ -69,6 +69,22 @@ A distribution is recorded as published only after its registry entry exists, an
 4. Update current default runtime locks with the verified core manifest; retain historical locks under separate filenames. Pin iOS URLs/checksums with `--pin`, review and commit, then `--finalize` the original archives.
 5. Publish Contract, React Native, then Flutter platform interface, five platform packages and main package. Validate public consumers from fresh directories without GitHub authentication. Record build, simulator and physical-device results separately.
 
+
+<a id="automated-prerelease"></a>
+## Automated GitHub prereleases
+
+Manually dispatch **Public native production** from Actions on main with `prepare_release` enabled. With the switch disabled it still builds only the nine runtimes and creates no draft. Before enabling it, use PRs to coordinate the core `SDK_RELEASE_VERSION`, policy `runtimeVersion`, Android/iOS/Desktop package and native-input versions, Desktop version header and reviewed SDK source inventories. Commit each SDK and update the core submodule pins. Contract follows policy `contractVersion`; an unchanged interface need not advance with the runtime.
+
+`publishedRuntimeVersion` identifies the public version pinned consistently by all six SDKs, separately from the candidate `runtimeVersion`. Preserve published locks when preparing a candidate; never invent hashes for archives that have not been produced. Core tests continue checking exact public-lock closure across all six SDKs. The current public version already has a tag, so release preparation requires a new candidate version.
+
+Production preflight records the candidate, core commit and four fixed SDK commits. Uncoordinated versions, unreviewed source or an existing tag fail before native compilation. After successful production, **Prepare runtime prerelease** waits for public source, bilingual documentation and publication-security checks at the same main commit. It runs the pinned SDK tools for Android AAR/R8/16KB checks, iOS SwiftPM compilation and Pod lint, and installed Desktop consumers on all three OSes. It combines nine runtimes and five wrapper archives and verifies fresh offline installation, cache reuse and incorrect-hash rejection for all archives.
+
+It then creates a `runtime-v<version>` prerelease draft with 14 archives plus `manifest.json`, `provenance.json` and `SHA256SUMS`, checking GitHub asset sizes and SHA-256 digests. The Actions summary links the draft. **The repository owner reviews it and clicks Publish manually.** Prereleases do not become a stable Latest Release; find downloads in the [Releases list](https://github.com/weapp-container/weapp-container/releases).
+
+Retry the follow-up workflow with the original production `runtime_run_id`. Only successful runs from this repository's main branch with the release switch enabled and unexpired artifacts are accepted. Draft creation is serialized per version; existing drafts and tags are never overwritten. Interrupted uploads retain the draft for inspection. Do not rerun to overwrite assets; removing an unpublished draft after a fix requires manual review, and published corrections require a new version.
+
+After manual Publish, **Verify published runtime anonymously** downloads all 17 assets without authentication and rechecks all 14 offline installations. Its `published-runtime-verification` artifact contains the versioned lock and verification summary. Follow-up PRs copy the same manifest bytes into all six SDK versioned locks, verify that default downloaders still select a valid public lock, then advance core `publishedRuntimeVersion`. This workflow does not publish npm, Maven Central, pub.dev or CocoaPods packages, and compilation or software-rendered Desktop checks do not imply physical-device or hardware-GPU acceptance.
+
 <a id="authentication"></a>
 ## Publication authentication
 
