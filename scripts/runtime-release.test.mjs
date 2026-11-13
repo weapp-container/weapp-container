@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { RELEASE_REPOSITORY, RELEASE_SDKS, RELEASE_ARTIFACTS, REQUIRED_WORKFLOWS, assertCandidate, assertCompleteRelease,
+import { RELEASE_REPOSITORY, RELEASE_SDKS, RELEASE_ARTIFACTS, REQUIRED_WORKFLOWS, assertCandidate, assertCoreVersions, assertCompleteRelease,
   assertProductionRun, assertWrapperReceipt, checksReady, releaseNotes } from './lib/runtime-release.mjs';
 import { downloadAnonymousAsset } from './runtime-release-published.mjs';
 import { createHash } from 'node:crypto';
@@ -15,6 +15,17 @@ const candidate = () => ({ schemaVersion: 1, repository: RELEASE_REPOSITORY, pre
     { repository: `weapp-container/sdk-${sdk}`, commit: sdkSha, version: sdk === 'contract' ? policy.contractVersion : policy.runtimeVersion }])) });
 const production = () => ({ repository: { full_name: RELEASE_REPOSITORY }, head_repository: { full_name: RELEASE_REPOSITORY },
   head_branch: 'main', event: 'workflow_dispatch', path: '.github/workflows/public-native.yml', status: 'completed', conclusion: 'success', head_sha: sha, id: 123 });
+test('Rust package and lock versions agree before compiling a new C ABI candidate', async () => {
+  const crates = ['container-sdk', 'container-sdk-ffi'];
+  const manifests = Object.fromEntries(await Promise.all(crates.map(async crate => [crate,
+    await readFile(new URL(`../crates/${crate}/Cargo.toml`, import.meta.url), 'utf8')])));
+  const lock = await readFile(new URL('../Cargo.lock', import.meta.url), 'utf8');
+  assertCoreVersions(manifests, lock, policy.runtimeVersion);
+  for (const crate of crates) {
+    assert.throws(() => assertCoreVersions({ ...manifests, [crate]: manifests[crate].replace(policy.runtimeVersion, policy.publishedRuntimeVersion) }, lock, policy.runtimeVersion), /candidate version/);
+    assert.throws(() => assertCoreVersions(manifests, lock.replace(`name = "${crate}"\nversion = "${policy.runtimeVersion}"`, `name = "${crate}"\nversion = "${policy.publishedRuntimeVersion}"`), policy.runtimeVersion), /Cargo.lock version/);
+  }
+});
 function manifest() {
   return { artifacts: RELEASE_ARTIFACTS.map(([component, platform, arch], i) => ({ component, platform, arch, fileName: `archive-${i}.tar.gz`,
     ...(arch === 'universal' ? { architectures: platform === 'ios' ? ['arm64-device', 'arm64-simulator', 'x86_64-simulator'] : platform === 'android' ? ['arm64-v8a', 'x86_64'] : ['arm64', 'x86_64'] } : {}) })) };

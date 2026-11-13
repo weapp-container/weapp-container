@@ -14,6 +14,21 @@ export const RELEASE_ARTIFACTS = [
 const version = /^\d+\.\d+\.\d+-[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*$/;
 const commit = /^[a-f0-9]{40}$/;
 
+export function assertCoreVersions(manifests, lock, runtimeVersion) {
+  const crates = ['container-sdk', 'container-sdk-ffi'];
+  assert.deepEqual(Object.keys(manifests).sort(), crates.slice().sort());
+  const field = (text, name) => text.match(new RegExp(`^${name}\\s*=\\s*"([^"\\r\\n]+)"\\s*$`, 'm'))?.[1];
+  const packages = lock.split(/^\[\[package\]\]\s*$/m).slice(1);
+  for (const crate of crates) {
+    const section = manifests[crate].split(/^\[package\]\s*$/m)[1]?.split(/^\[/m)[0] ?? '';
+    assert.equal(field(section, 'name'), crate, 'Unexpected Rust package identity');
+    assert.equal(field(section, 'version'), runtimeVersion, `${crate} must build the candidate version returned by the C ABI`);
+    const entries = packages.filter(entry => field(entry, 'name') === crate);
+    assert.equal(entries.length, 1, `${crate} must have one Cargo.lock entry`);
+    assert.equal(field(entries[0], 'version'), runtimeVersion, `${crate} Cargo.lock version differs`);
+  }
+}
+
 export function assertCompleteRelease(manifest) {
   assert.equal(manifest.artifacts.length, RELEASE_ARTIFACTS.length, 'A release requires nine runtimes and five SDK archives');
   const identities = manifest.artifacts.map(item => [item.component, item.platform, item.arch].join('/'));

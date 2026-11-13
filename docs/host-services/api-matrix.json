@@ -1553,7 +1553,7 @@
       },
       "workspaceLock": {
         "path": "Cargo.lock",
-        "sha256": "d21372cda5f0ad56048ed301f51af961262d7e117a6493acb195ae3c1d8610a5"
+        "sha256": "010461656092c5f08cf8622efe1760837ef239067d66310fb7f31aa4890e5834"
       },
       "coreAssembly": {
         "path": "crates/container-core/src/lib.rs",
