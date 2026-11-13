@@ -1,0 +1,48 @@
+name: Verify published runtime anonymously
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published runtime-v prerelease tag to verify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-runtime-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.repository == 'weapp-container/weapp-container' && startsWith(github.event.release.tag_name || inputs.tag, 'runtime-v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
+      - run: git submodule update --init sdk/contract
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Download every public asset without credentials and verify offline installs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: node scripts/runtime-release-published.mjs "$RELEASE_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-runtime-verification
+          path: |
+            artifacts/published/verification-summary.json
+            artifacts/published/runtime-artifacts.*.lock.json
+            artifacts/published/offline.json
+          retention-days: 90
+          if-no-files-found: error

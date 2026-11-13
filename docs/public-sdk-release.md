@@ -69,6 +69,22 @@ Flutter 五个平台包候选均通过依赖解析、静态分析及零警告的
 4. 用实际核验的核心 manifest 更新当前默认运行库锁；历史锁使用独立文件名保留。用 `--pin` 固定 iOS URL/checksum、复核提交后对原始归档执行 `--finalize`。
 5. 依次发布 Contract、React Native、Flutter platform interface、五个平台包和主包。用无 GitHub 认证的全新目录验证公开消费者，分别记录构建、模拟器和真机结果。
 
+
+<a id="automated-prerelease"></a>
+## GitHub 预发布自动化
+
+在 Actions 手动启动 **Public native production**，选择 main 并启用 `prepare_release`。关闭该开关时仍只构建九个运行库，不创建草稿。开启前通过 PR 协调核心 `SDK_RELEASE_VERSION`、发行策略 `runtimeVersion`、Android/iOS/Desktop 的 package 与 native-input 版本、Desktop 版本头文件及 SDK 源码清单；提交各 SDK 后更新主仓库 submodule 指针。Contract 使用策略中的 `contractVersion`，接口未变更时无需随运行库升级。
+
+`publishedRuntimeVersion` 标识六个 SDK 已共同固定的公开版本，与候选 `runtimeVersion` 分开维护。准备新版本时保留已发布锁文件，不预填尚未生成的归档哈希；核心测试继续检查六个 SDK 的公开锁完全一致。当前公开版本已有 tag，必须准备新候选版本才能开启发行。
+
+生产预检保存候选版本、核心提交和四个 SDK 固定提交；版本不一致、源码未审核或标签已存在时在原生编译前失败。**Prepare runtime prerelease** 在生产成功后接续执行，等待同一 main 提交的公共源检查、双语文档和发布安全检查通过。它运行固定 SDK 工具，完成 Android AAR/R8/16KB 检查、iOS SwiftPM 编译与 Pod lint、三端 Desktop 消费者执行，然后汇总九个运行库与五个 SDK 包装归档，并对全部归档执行离线安装、缓存复验及错误哈希拒绝验证。
+
+验证通过后创建 `runtime-v<版本>` 的 prerelease 草稿，上传 14 个归档及 `manifest.json`、`provenance.json`、`SHA256SUMS`，核对 GitHub 服务端大小与 SHA-256。Actions 摘要提供草稿链接，**仓库所有者审核后手动点击 Publish**。预发布不会成为正式 Latest Release；全部下载见 [Releases 列表](https://github.com/weapp-container/weapp-container/releases)。
+
+如需重试，在后续工作流输入原生产 `runtime_run_id`；只接受本仓库 main 上、开启发行开关且产物未过期的成功生产。草稿同版本串行创建，已有草稿或标签时拒绝覆盖。上传中断保留草稿供人工检查；不要直接重跑覆盖资产。修复后清理未公开草稿需人工审核，已公开版本应使用新版本重发。
+
+手动 Publish 后，**Verify published runtime anonymously** 无认证下载全部 17 个资产并复验 14 个离线安装，在 `published-runtime-verification` 产物中提供版本化锁文件和验证摘要。通过后续 PR 将同一 manifest 原字节同步到六个 SDK 的版本化锁，核对默认下载器仍选择有效的公开锁，再更新核心 `publishedRuntimeVersion`。此流程不发布 npm、Maven Central、pub.dev 或 CocoaPods，也不把编译、桌面软件渲染验证描述为真机或硬件 GPU 验收。
+
 <a id="authentication"></a>
 ## 发布认证
 

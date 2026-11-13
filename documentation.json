@@ -63,8 +63,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "README.md"
       },
-      "reviewedChineseSummary": "Weapp Container；选择你的入口；从源码开始；可选：使用 weapp-vite 开发示例；目录与接入；检查；许可与历史；已复核 preview.7 公开发行、工具链与生命周期更新",
-      "reviewedChineseSha256": "0d3b307ad7bec9b396f177326ddeb96f51c5f6e3b19f463b9f808cca0555976e",
+      "reviewedChineseSummary": "增加 GitHub 预发布下载入口，保留现有平台与验证状态",
+      "reviewedChineseSha256": "09ad3ffb5057015d66ee26d0ffe2a53550441761846e9b855bfc439152620b0b",
       "legacyHeadingIds": [
         "weapp-container",
         "从源码开始",
@@ -564,6 +564,19 @@
       "legacyHeadingIds": [
         "reviewed-producer-revisions"
       ]
+    },
+    {
+      "id": "docs/desktop-architecture",
+      "zh": "docs/desktop-architecture.md",
+      "en": "docs/desktop-architecture.en.md",
+      "section": "architecture",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/desktop-architecture.md"
+      },
+      "reviewedChineseSummary": "说明独立桌面窗口、嵌入 SDK 与 Flutter 的架构边界，记录 GL 生命周期与后续平台验收优先级。",
+      "reviewedChineseSha256": "0ed7222fad02783f29b88934210f7575edef71660cfb95b06d676387316960fa",
+      "legacyHeadingIds": []
     },
     {
       "id": "docs/dev-player",
@@ -2044,6 +2057,18 @@
       ]
     },
     {
+      "id": "docs/plans/2026-11-13-runtime-prerelease-design",
+      "zh": "docs/plans/2026-11-13-runtime-prerelease-design.md",
+      "en": "docs/plans/2026-11-13-runtime-prerelease-design.en.md",
+      "section": "engineering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/plans/2026-11-13-runtime-prerelease-design.md"
+      },
+      "reviewedChineseSummary": "已批准的草稿发行架构、版本分离、iOS本地二进制及验证边界",
+      "reviewedChineseSha256": "0e0a6130fe8ea053e05e961927a510f5444bd0b993d52e2a37077862e60e05f4"
+    },
+    {
       "id": "docs/platform-runtime-artifacts",
       "zh": "docs/platform-runtime-artifacts.md",
       "en": "docs/platform-runtime-artifacts.en.md",
@@ -2059,6 +2084,32 @@
         "从归档全新安装",
         "构建输入"
       ]
+    },
+    {
+      "id": "docs/public-sdk-release",
+      "zh": "docs/public-sdk-release.md",
+      "en": "docs/public-sdk-release.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/public-sdk-release.md"
+      },
+      "reviewedChineseSummary": "复核手动启动、固定源码构建14归档、草稿人工发布、公开版本锁分离、失败重试及匿名复验流程",
+      "reviewedChineseSha256": "9ead7207bea891d07eb0ba82da615d967d5a86ad6fc6ffe2c3655be4a27f49e7",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/public-sdk-release.zh-CN",
+      "zh": "docs/public-sdk-release.zh-CN.md",
+      "en": "docs/public-sdk-release.zh-CN.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/public-sdk-release.zh-CN.md"
+      },
+      "reviewedChineseSummary": "公开发行入口、安装、逐平台验证与尚未完成的注册源发布",
+      "reviewedChineseSha256": "e63924cfe9c13d4626bb0dd999c6e6d267a1197ca0899b840c10184feafa0bea",
+      "legacyHeadingIds": []
     },
     {
       "id": "docs/public-source-policy",
@@ -3302,53 +3353,14 @@
         "repository": "weapp-container/weapp-container",
         "path": "tools/runtime-artifacts/README.md"
       },
-      "reviewedChineseSummary": "运行库发行工具；构建与打包；验证与发布；历史兼容",
-      "reviewedChineseSha256": "08664bbd1117c55fd6a520166ed057ffcbe22e5421e87c98c835d0833426efa0",
+      "reviewedChineseSummary": "复核草稿专用选项、完整14归档要求、旧CLI兼容及自动化入口",
+      "reviewedChineseSha256": "6b35bb0c448ba209b2bdedfb46c394e47d7be35f79f0e2b14088e9b10d3aa9ee",
       "legacyHeadingIds": [
         "历史兼容",
         "构建与打包",
         "运行库发行工具",
         "验证与发布"
       ]
-    },
-    {
-      "id": "docs/desktop-architecture",
-      "zh": "docs/desktop-architecture.md",
-      "en": "docs/desktop-architecture.en.md",
-      "section": "architecture",
-      "source": {
-        "repository": "weapp-container/weapp-container",
-        "path": "docs/desktop-architecture.md"
-      },
-      "reviewedChineseSummary": "说明独立桌面窗口、嵌入 SDK 与 Flutter 的架构边界，记录 GL 生命周期与后续平台验收优先级。",
-      "reviewedChineseSha256": "0ed7222fad02783f29b88934210f7575edef71660cfb95b06d676387316960fa",
-      "legacyHeadingIds": []
-    },
-    {
-      "id": "docs/public-sdk-release",
-      "zh": "docs/public-sdk-release.md",
-      "en": "docs/public-sdk-release.en.md",
-      "section": "tools",
-      "source": {
-        "repository": "weapp-container/weapp-container",
-        "path": "docs/public-sdk-release.md"
-      },
-      "reviewedChineseSummary": "已复核公开注册源状态、OIDC、匿名下载缓存验证、五个平台包预检及未完成的原生消费与账号接入。",
-      "reviewedChineseSha256": "71189bce52829b8c102678c71cb165d9871596ac7258019d0c5530de4c5d4ba3",
-      "legacyHeadingIds": []
-    },
-    {
-      "id": "docs/public-sdk-release.zh-CN",
-      "zh": "docs/public-sdk-release.zh-CN.md",
-      "en": "docs/public-sdk-release.zh-CN.en.md",
-      "section": "tools",
-      "source": {
-        "repository": "weapp-container/weapp-container",
-        "path": "docs/public-sdk-release.zh-CN.md"
-      },
-      "reviewedChineseSummary": "公开发行入口、安装、逐平台验证与尚未完成的注册源发布",
-      "reviewedChineseSha256": "e63924cfe9c13d4626bb0dd999c6e6d267a1197ca0899b840c10184feafa0bea",
-      "legacyHeadingIds": []
     }
   ],
   "excluded": [

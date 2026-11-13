@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { selectArtifact } from '../../../sdk/contract/tools/runtime-artifacts.mjs';
+import { assertCompleteRelease } from '../../../scripts/lib/runtime-release.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const policy = JSON.parse(await readFile(new URL('../policy.json', import.meta.url)));
@@ -26,7 +27,7 @@ async function json(directory, name) {
   return JSON.parse(await readFile(join(directory, name), 'utf8'));
 }
 
-export async function verifyRelease(directory) {
+export async function verifyRelease(directory, { complete = false } = {}) {
   const manifest = await json(directory, 'manifest.json'), provenance = await json(directory, 'provenance.json');
   assert.equal(manifest.runtimeVersion, policy.runtimeVersion);
   assert.equal(manifest.abiVersion, policy.abiVersion);
@@ -40,6 +41,8 @@ export async function verifyRelease(directory) {
   assert.equal(provenance.headerSha256, policy.headerSha256);
   assert.equal(provenance.runtimeLicenseSha256, hash(await readFile(new URL('../RUNTIME-LICENSE', import.meta.url))));
   assert.equal(provenance.artifacts.length, manifest.artifacts.length);
+  if (complete) assertCompleteRelease(manifest);
+  assert.equal(new Set(manifest.artifacts.map(item => item.fileName)).size, manifest.artifacts.length, 'Duplicate release filename');
   const files = [];
   for (const artifact of manifest.artifacts) {
     selectArtifact(manifest, { version: manifest.runtimeVersion, abiVersion: manifest.abiVersion, ...artifact });
@@ -71,7 +74,7 @@ function absent(path, invoke) {
   }
   throw Error('Immutable publication refuses an existing release or tag');
 }
-export function publishVerifiedRelease(plan, directory, notesFile, invoke = run) {
+export function publishVerifiedRelease(plan, directory, notesFile, invoke = run, { draftOnly = false } = {}) {
   const repo = plan.repository;
   assert.equal(repo, policy.repository);
   assert.equal(plan.tag, `runtime-v${policy.runtimeVersion}`);
@@ -86,6 +89,7 @@ export function publishVerifiedRelease(plan, directory, notesFile, invoke = run)
     '-F', 'draft=true', '-F', 'prerelease=true', '-f', `name=${plan.tag}`, '-F', `body=@${notesFile}`]));
   assert.ok(Number.isSafeInteger(created.id) && created.id > 0, 'Draft creation returned no release ID');
   const endpoint = `repos/${repo}/releases/${created.id}`;
+  console.error(`Inspect retained draft: https://github.com/${repo}/releases (release ID ${created.id})`);
   // No --clobber: interruption leaves a draft for explicit inspection, never silently overwrites it.
   for (const file of plan.files) invoke('gh', ['release', 'upload', plan.tag, join(directory, file.name), '--repo', repo]);
   // Unpublished drafts may be absent from the tag endpoint. Preserve the returned ID.
@@ -103,20 +107,28 @@ export function publishVerifiedRelease(plan, directory, notesFile, invoke = run)
     assert.equal(matches[0].size, file.size);
     assert.equal(matches[0].digest, `sha256:${file.sha256}`, 'GitHub digest must match the reviewed local bytes');
   }
-  invoke('gh', ['api', endpoint, '--method', 'PATCH', '-F', 'draft=false', '-F', 'prerelease=true', '-f', 'make_latest=false']);
-  return { status: 'published', repository: repo, tag: plan.tag, sourceCommit: plan.sourceCommit };
+  if (!draftOnly) invoke('gh', ['api', endpoint, '--method', 'PATCH', '-F', 'draft=false', '-F', 'prerelease=true', '-f', 'make_latest=false']);
+  return { status: draftOnly ? 'draft' : 'published', repository: repo, tag: plan.tag, sourceCommit: plan.sourceCommit,
+    releaseId: created.id, url: release.html_url ?? created.html_url ?? `https://github.com/${repo}/releases` };
 }
 
-async function main(args) {
-  const options = {}; let execute = false;
+export function publicationOptions(args) {
+  const options = {}; let execute = false, draftOnly = false;
   for (let i = 0; i < args.length; i++) {
     const key = args[i];
     if (key === '--execute' && !execute) { execute = true; continue; }
-    assert.ok(['--release-dir', '--notes-file'].includes(key) && !options[key] && args[i + 1] && !args[i + 1].startsWith('--'), 'Use --release-dir PATH --notes-file PATH [--execute]');
+    if (key === '--draft-only' && !draftOnly) { draftOnly = true; continue; }
+    assert.ok(['--release-dir', '--notes-file'].includes(key) && !options[key] && args[i + 1] && !args[i + 1].startsWith('--'), 'Use --release-dir PATH --notes-file PATH [--execute [--draft-only]]');
     options[key] = resolve(args[++i]);
   }
   assert.ok(options['--release-dir'] && options['--notes-file'], 'Both explicit input paths are required');
-  const original = await verifyRelease(options['--release-dir']);
+  assert.ok(!draftOnly || execute, '--draft-only requires explicit --execute');
+  return { options, execute, draftOnly };
+}
+
+async function main(args) {
+  const { options, execute, draftOnly } = publicationOptions(args);
+  const original = await verifyRelease(options['--release-dir'], { complete: draftOnly });
   const temporary = await mkdtemp(join(tmpdir(), 'wc-publish-'));
   try {
     // Freeze the exact verified bytes used by the offline check and upload.
@@ -124,16 +136,20 @@ async function main(args) {
     const notes = join(temporary, 'release-notes.md');
     assert.ok((await lstat(options['--notes-file'])).size <= 1024 ** 2, 'Release notes exceed bound');
     await copyFile(options['--notes-file'], notes);
-    const plan = await verifyRelease(temporary);
+    const plan = await verifyRelease(temporary, { complete: draftOnly });
     assert.deepEqual(plan, original, 'Inputs changed during publication snapshot');
     run(process.execPath, [join(root, 'tools/runtime-artifacts/tools/verify-offline.mjs'),
       '--contract-dir', join(root, 'sdk/contract'), '--release-dir', temporary, '--work-dir', temporary, '--report', join(temporary, 'offline.json')]);
     const report = await json(temporary, 'offline.json');
     assert.equal(report.status, 'passed'); assert.equal(report.networkRequests, 0);
-    console.log(JSON.stringify(execute ? publishVerifiedRelease(plan, temporary, notes) : { status: 'verified', published: false, ...plan }, null, 2));
+    console.log(JSON.stringify(execute ? publishVerifiedRelease(plan, temporary, notes, run, { draftOnly }) : { status: 'verified', published: false, ...plan }, null, 2));
   } finally { await rm(temporary, { recursive: true, force: true }); }
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try { await main(process.argv.slice(2)); }
-  catch { console.error('Runtime publication rejected. Inspect local validation or the retained GitHub draft; no existing asset was overwritten.'); process.exitCode = 1; }
+  catch (error) {
+    console.error(error.message);
+    console.error('Runtime publication rejected. Inspect local validation or the retained GitHub draft; no existing asset was overwritten.');
+    process.exitCode = 1;
+  }
 }

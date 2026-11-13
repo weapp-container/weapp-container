@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { publishVerifiedRelease } from '../tools/publish.mjs';
+import { readFileSync } from 'node:fs';
+const policy = JSON.parse(readFileSync(new URL('../policy.json', import.meta.url)));
+import { publishVerifiedRelease, publicationOptions } from '../tools/publish.mjs';
 
-const plan = { repository: 'weapp-container/weapp-container', tag: 'runtime-v0.1.0-preview.7.0',
+const plan = { repository: 'weapp-container/weapp-container', tag: `runtime-v${policy.runtimeVersion}`,
   sourceCommit: 'a'.repeat(40), files: [{ name: 'manifest.json', size: 23, sha256: 'b'.repeat(64) }] };
 function github(overrides = {}) {
   const calls = []; let created = false;
@@ -22,6 +24,7 @@ function github(overrides = {}) {
       if (overrides.exists) return '{}';
       const error = Error('GitHub refused'); error.stderr = `(HTTP ${overrides.status ?? 404})`; throw error;
     }
+    if (overrides.uploadFailure && args[0] === 'release') throw Error('Interrupted upload');
     return '';
   };
   return { calls, invoke };
@@ -37,6 +40,27 @@ test('publication stages a draft, verifies server digests, then publishes withou
   assert.equal(mutations[2][2], 'repos/weapp-container/weapp-container/releases/123');
   assert.ok(g.calls.every(call => !call.some(value => value.includes('/releases/tags/'))));
   assert.ok(g.calls.every(call => !call.includes('--clobber') && !call.includes('weapp-container/runtime-artifacts')));
+});
+test('draft-only uploads and verifies bytes without a public publication request', () => {
+  const g = github();
+  const result = publishVerifiedRelease(plan, '/release', '/notes.md', g.invoke, { draftOnly: true });
+  assert.equal(result.status, 'draft');
+  assert.equal(result.releaseId, 123);
+  assert.ok(g.calls.some(call => call.includes('POST') && call.includes('draft=true')));
+  assert.ok(g.calls.every(call => !call.includes('PATCH') && !call.includes('draft=false') && !call.includes('--clobber')));
+});
+test('interrupted uploads retain a draft and never publish or overwrite', () => {
+  const g = github({ uploadFailure: true });
+  assert.throws(() => publishVerifiedRelease(plan, '/release', '/notes.md', g.invoke, { draftOnly: true }), /Interrupted/);
+  assert.ok(g.calls.every(call => !call.includes('PATCH') && !call.includes('--clobber')));
+});
+test('publication CLI remains local by default and draft creation requires explicit execution', () => {
+  const paths = ['--release-dir', '/release', '--notes-file', '/notes.md'];
+  assert.equal(publicationOptions(paths).execute, false);
+  assert.equal(publicationOptions([...paths, '--execute']).draftOnly, false);
+  assert.equal(publicationOptions([...paths, '--execute', '--draft-only']).draftOnly, true);
+  assert.throws(() => publicationOptions([...paths, '--draft-only']), /requires explicit/);
+  assert.throws(() => publicationOptions([...paths, '--execute', '--execute']));
 });
 test('existing releases/tags, access failures and dirty source stop before mutations', () => {
   for (const overrides of [{ exists: true }, { status: 403 }, { dirty: ' M file' }]) {

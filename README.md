@@ -9,6 +9,8 @@
 
 [开发文档](https://container.weapp.dev/docs/) · [在线示例](https://container.weapp.dev/demo/) · [源码文档索引](docs/README.md) · [参与贡献](CONTRIBUTING.md)
 
+[GitHub 预发布下载](https://github.com/weapp-container/weapp-container/releases)
+
 [![公共源检查](https://github.com/weapp-container/weapp-container/actions/workflows/public-ci.yml/badge.svg)](https://github.com/weapp-container/weapp-container/actions/workflows/public-ci.yml)
 
 接入从已有的原生小程序目录或框架构建产物开始，不要求使用 weapp-vite。打包工具将输入转换为可校验的 manifest、IR 和内容寻址资源，运行时管理 JavaScript 执行、页面、导航、存储和宿主通信。QuickJS 是主要引擎；V8、Skia 与浏览器呈现路径按配置和宿主能力选择。
