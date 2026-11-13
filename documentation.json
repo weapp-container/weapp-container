@@ -2094,8 +2094,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "复核手动启动、固定源码构建14归档、草稿人工发布、公开版本锁分离、失败重试及匿名复验流程",
-      "reviewedChineseSha256": "9ead7207bea891d07eb0ba82da615d967d5a86ad6fc6ffe2c3655be4a27f49e7",
+      "reviewedChineseSummary": "iOS/Desktop GitHub 与公开 Specs 的 `.7.1` release 已匿名校验；Contract 保持 `.7.0`；Android Central、Trunk、npm 和 pub.dev 阻塞状态已按实际记录。",
+      "reviewedChineseSha256": "749c63fd63a450333b0ba4679d42e435407842abab98e46a861117dbc801fbad",
       "legacyHeadingIds": []
     },
     {

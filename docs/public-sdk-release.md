@@ -1,98 +1,59 @@
-# Weapp Container 0.1.0-preview.7.0 发布状态
+# Weapp Container 0.1.0-preview.7.1 发布状态
 
 **简体中文** · [English](public-sdk-release.en.md)
 
-已公开 Contract npm、Flutter platform interface、核心运行库、iOS 和 Desktop 的 GitHub prerelease，以及组织公开 CocoaPods Specs 源。**全部 SDK 发布尚未完成**；Android Central、React Native、Flutter 五个平台包和主包仍有具体阻塞。
+本页记录 `.7.1` 预览版各注册源的实际状态。核心 runtime、iOS、Desktop 和公开 Specs 已完成发布并匿名校验；Contract 接口未变，继续使用已发布的 npm `.7.0`，不重复发布。Android Central、CocoaPods Trunk、React Native npm 和 Flutter pub.dev 仍受账号侧认证或前置依赖阻塞。
 
-## 已公开入口
+## 注册源状态
 
-| 发行物 | 公开入口 | 验证 |
+| 分发项 | 已注册版本 | `.7.1` 状态与验证 |
 |---|---|---|
-| Contract | [npm 0.1.0-preview.7.0](https://www.npmjs.com/package/@weapp-container/sdk-contract/v/0.1.0-preview.7.0) | preview 标签、匿名 tarball 字节一致、全新匿名安装、类型/工具导出、fixture 和 14 项公开锁验证通过；trusted publisher 已配置并查回 |
-| Flutter interface | [pub.dev 0.1.0-preview.7.0](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0) | 匿名归档字节一致；全新 hosted 依赖解析、静态分析和两种消息传输测试通过；GitHub OIDC 已配置；仅 interface 完成 |
-| 核心运行库 | [runtime-v0.1.0-preview.7.0](https://github.com/weapp-container/weapp-container/releases/tag/runtime-v0.1.0-preview.7.0) | 14 个归档匿名下载及 SHA-256 全通过；全新离线安装、缓存复验、错误哈希拒绝全通过 |
-| iOS | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-ios/releases/tag/v0.1.0-preview.7.0) | 双 ZIP 匿名下载；公开 SwiftPM 模拟器/真机目标构建；最终字节 arm64 模拟器交互 XCTest 通过 |
-| Desktop | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-desktop/releases/tag/v0.1.0-preview.7.0) | 三端归档匿名下载；公开 macOS/Linux/Windows CI 消费全部通过；本机 ARM/Rosetta 消费通过 |
-| CocoaPods | [weapp-container/Specs](https://github.com/weapp-container/Specs) | 两个 Pod 远端 lint、全新公开 Specs 解析、iOS 模拟器/macOS 编译链接及 macOS C API 执行通过；Trunk 未投稿 |
+| 核心 runtime | `.7.1` | [GitHub Release](https://github.com/weapp-container/weapp-container/releases/tag/runtime-v0.1.0-preview.7.1) 已公开。17 个资产匿名下载与 SHA-256 核验通过；14 个安装归档通过离线安装、缓存复验和错误哈希拒绝验证。 |
+| Contract | npm `.7.0` | [已发布的 Contract 包](https://www.npmjs.com/package/@weapp-container/sdk-contract/v/0.1.0-preview.7.0)保持原版本；C ABI 与接口未变，不发布 `.7.1`。 |
+| Android | 无 | Maven Central `.7.1` 坐标匿名查询返回 404。候选 build run [43473194455](https://github.com/weapp-container/sdk-android/actions/runs/43473194455) 通过；Central workflow 尚在发布分支，且仓库缺少 Central/signing secrets。 |
+| iOS | GitHub `.7.1` | [iOS GitHub Release](https://github.com/weapp-container/sdk-ios/releases/tag/v0.1.0-preview.7.1) 已公开；build [43473195791](https://github.com/weapp-container/sdk-ios/actions/runs/43473195791)、finalize [43476990650](https://github.com/weapp-container/sdk-ios/actions/runs/43476990650) 和发布 [43477207833](https://github.com/weapp-container/sdk-ios/actions/runs/43477207833) 通过。CocoaPods Trunk `.7.1` 尚未注册，缺少 `COCOAPODS_TRUNK_TOKEN`。 |
+| Desktop | GitHub `.7.1` | [Desktop GitHub Release](https://github.com/weapp-container/sdk-desktop/releases/tag/v0.1.0-preview.7.1) 已公开；三平台 build/finalize [43473197471](https://github.com/weapp-container/sdk-desktop/actions/runs/43473197471) 和发布 [43475623344](https://github.com/weapp-container/sdk-desktop/actions/runs/43475623344) 通过。CocoaPods Trunk `.7.1` 尚未注册，缺少 `COCOAPODS_TRUNK_TOKEN`。 |
+| CocoaPods Specs | Specs `.7.1` | [公开 Specs 源](https://github.com/weapp-container/Specs/commit/650112e) 已导入 iOS/Desktop `.7.1` Podspec；两个 release archive 均匿名下载并与 manifest SHA-256 一致。Trunk 版本查询返回 404。 |
+| React Native | 无 | npm `.7.1` 版本匿名查询返回 404。源码、Android Maven 依赖和默认 runtime lock 已升到 `.7.1`；对应原生发行物完成前不发布桥接包。 |
+| Flutter | interface `.7.0` | [已发布的 `.7.0` interface](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0)继续可用。七个 `.7.1` 包尚未注册；Desktop staging [43477208452](https://github.com/weapp-container/sdk-flutter/actions/runs/43477208452) 通过，发布仍等待 pub.dev OIDC 和 Android 前置依赖。 |
+
+现有可安装包仍可使用其原版本：
 
 ```sh
 npm install @weapp-container/sdk-contract@0.1.0-preview.7.0
 ```
 
-```swift
-.package(url: "https://github.com/weapp-container/sdk-ios.git", exact: "0.1.0-preview.7.0")
-```
+`.7.1` SDK 安装示例会在各自注册源和匿名消费者验证通过后启用。源码、构建、模拟器、注册源下载和真机验收分别记录；不能用其中一项代替另一项。
 
-```ruby
-source 'https://github.com/weapp-container/Specs.git'
-source 'https://cdn.cocoapods.org/'
-pod 'WeappContainer', '0.1.0-preview.7.0' # iOS
-# macOS target: pod 'WeappContainerDesktop', '0.1.0-preview.7.0'
-```
+## 验证记录
 
-iOS 编译要求 Xcode 27.2+，部署最低版本 iOS 16；真机目标编译通过不代表真机运行验收。
+runtime 验证摘要绑定 `runtime-v0.1.0-preview.7.1`，核心来源提交为 `fbd8cfcc44011b1250c4e987b02f9217ce1a64d0`。17 个公开资产的大小与 SHA-256 和发布清单一致，验证记录位于 `artifacts/published-runtime-verification/`。
 
-## 实现与验证
+Android、iOS、Desktop、Flutter 和 React Native 的源码与 runtime lock 已指向 `.7.1`。iOS/Desktop GitHub release 和 Specs 已匿名下载并验证归档哈希；Android Maven、CocoaPods Trunk、React Native npm 和 Flutter `.7.1` 的公开入口仍未注册，因此不报告其消费者发布验证。Contract npm `.7.0` 与 Flutter interface `.7.0` 是此前已发布版本。
 
-核心生产提交 `51aadc009e0c2540bebca497779bada600cb9d9e`；C ABI 1。Android 两 ABI、iOS 真机和两种模拟器、macOS 双架构、Linux/Windows x86_64 已从同一干净提交生产，来源、工具链、许可、大小和哈希均记录在公开 provenance 中。历史版本、标签、锁文件和资产保持原样。
-
-五个 SDK 的新默认锁及回归测试已通过 PR 合并；Contract 的公开锁已提前合并。发布工具已改用创建时返回的 Release ID 校验草稿，避免未公开 tag 查询返回 404；保留已有版本/草稿拒绝与完整哈希检查。
-
-Android 正式 AAR/POM/sources/javadoc、R8、双 ABI、16KB 对齐和 API 36 arm64 模拟器交互验收通过。iOS 最终归档通过 arm64 真机及 x86_64 模拟器编译、arm64 模拟器完整交互验收。真机运行均未完成。Desktop 三 OS 公开归档消费者通过（[CI 43305230931](https://github.com/weapp-container/sdk-desktop/actions/runs/43305230931)），覆盖下载、哈希、解压、迁移目录、编译、链接和交互执行；Rosetta 不计作 Intel 真机验收。
-
-六个 SDK 的源码/工具测试共 263 项通过（Contract 39、Android 50、iOS 48、Desktop 45、Flutter 35、RN 46）；完整 submodule 指针校验和公开锁闭合检查通过。
-
-Contract 已公开版本通过全新目录匿名安装、TypeScript 6.0.3 类型检查、工具导出、14 项公开锁与 authored fixture 校验。公开归档 SHA-256 为 `232330e1234a70a27e7d9d6e1d4c61233cecb580cd1703fcc4bb9ae169465853`。Flutter interface 的公开归档 SHA-256 为 `777e97fd7ca14aebc6aac851d9a9d20135960216658ef16a4180b1cb63bef1e1`，静态分析与两项公开传输消费测试通过。
-
-从公开 npm 安装的 Contract 下载器已在无 GitHub 凭据、无 Authorization 请求头的环境下载并安装 macOS arm64 运行库。关闭网络后缓存复验与安装复用通过；版本不符和哈希不符均被拒绝，未尝试降级回退。
-
-Flutter 五个平台包候选均通过依赖解析、静态分析及零警告的发布预检，并已冻结相同验证字节的归档。平台包不包含仓库测试或额外的变更日志，安装后的文档链接固定到源码提交。此结果只覆盖打包预检，尚未发布或完成原生消费者验收。
-
-## 暂缓与阻塞
-
-- 按用户要求暂缓 CocoaPods Trunk 注册与 PGP 签名配置，未进行 Trunk 投稿。
-- Maven Central 命名空间已验证，但 Portal token、签名和真实上传未完成。因此 React Native 和 Flutter Android 的公开 Maven 依赖尚未满足。
-- pub.dev 首次登录已完成，interface 已公开。后续依照既定顺序从 Android 平台包继续；其公开 Maven 依赖仍未满足，五个平台包与主包尚未发布。
-- Flutter 五端、RN 双端的实际公开消费，以及 Android/iOS 真机运行仍未完成。
-- Desktop 已发布归档的 C 头文件 `WEAPP_DESKTOP_VERSION` 仍为 `0.1.0-preview.6.0`，包元数据和运行库是 `0.1.0-preview.7.0`。当前源码已修正并新增版本协调测试；已发布字节保留，修正版须使用新版本。
-- 主仓库已同步六个 SDK 的当前公开锁和发布配置，完整 submodule 指针校验通过。
-
-只有注册源可查、匿名可下载并通过对应消费验证的项目才记录为发布完成。编译、模拟器和真机结果分别记录。
-
+仓库所有者可在 GitHub Actions/OIDC 配置就绪后继续执行发布。当前检查到相关仓库 secrets 列表为空，尚不能完成 Central 签名上传或 Trunk 投稿。iOS SwiftPM/Pod lint 与 Desktop 三平台消费者构建通过；Flutter 五平台和 RN 双端的本轮 `.7.1` 公开消费者验收仍待对应注册源发布。真机与硬件 GPU 结果继续单独标记。
 
 <a id="order"></a>
 ## 发行顺序
 
-1. 核心 `public-native.yml` 从同一提交构建九个原生目标、收集许可、验证哈希并打包。下载 `public-runtime`，通过离线验证后才使用既有运行库发布工具的 `--execute`。
-2. Android、iOS 和 Desktop 的 `build-public.yml` 选择该成功核心 run ID；源码清单和 producer 收据绑定原生输入，保留原始已核验归档字节。
-3. 先发布 Android Central、iOS/Desktop GitHub prerelease，再将固定 HTTP URL/哈希的 Podspec 导入 `weapp-container/Specs`。本次发行暂缓 Trunk 注册，记录为未投稿。
-4. 用实际核验的核心 manifest 更新当前默认运行库锁；历史锁使用独立文件名保留。用 `--pin` 固定 iOS URL/checksum、复核提交后对原始归档执行 `--finalize`。
-5. 依次发布 Contract、React Native、Flutter platform interface、五个平台包和主包。用无 GitHub 认证的全新目录验证公开消费者，分别记录构建、模拟器和真机结果。
-
+1. 从已公开并核验的 runtime lock 构建 Android、iOS 和 Desktop SDK；校验源码提交、归档哈希、许可及消费者结果。
+2. Android 发布 Maven Central 并发布绑定相同 producer 的 GitHub release；iOS 与 Desktop 发布 GitHub prerelease。任何版本或归档不可覆盖。
+3. 使用精确 release URL 和 SHA-256 更新公开 Specs 源，完成 CocoaPods Trunk 首次注册/认证后逐个投稿并匿名验证。
+4. 发布 React Native npm 包，使用精确的 iOS/Android release identity 与 OIDC provenance；要求其 Maven、Pod 依赖已经公开。
+5. Flutter 按 platform interface、Android/iOS/macOS/Linux/Windows 插件、主包顺序发布。标签为 `<package>-v0.1.0-preview.7.1`，每次发布验证 staging 归档哈希和已发布依赖。
+6. 对每个注册源执行全新匿名安装与消费者检查，再更新本页和 Website 快照。Contract 保持 `.7.0`。
 
 <a id="automated-prerelease"></a>
-## GitHub 预发布自动化
+## 发布自动化
 
-在 Actions 手动启动 **Public native production**，选择 main 并启用 `prepare_release`。关闭该开关时仍只构建九个运行库，不创建草稿。开启前通过 PR 协调核心 `SDK_RELEASE_VERSION`、发行策略 `runtimeVersion`、Android/iOS/Desktop 的 package 与 native-input 版本、Desktop 版本头文件及 SDK 源码清单；提交各 SDK 后更新主仓库 submodule 指针。Contract 使用策略中的 `contractVersion`，接口未变更时无需随运行库升级。
-
-`publishedRuntimeVersion` 标识六个 SDK 已共同固定的公开版本，与候选 `runtimeVersion` 分开维护。准备新版本时保留已发布锁文件，不预填尚未生成的归档哈希；核心测试继续检查六个 SDK 的公开锁完全一致。当前公开版本已有 tag，必须准备新候选版本才能开启发行。
-
-生产预检保存候选版本、核心提交和四个 SDK 固定提交；版本不一致、源码未审核或标签已存在时在原生编译前失败。**Prepare runtime prerelease** 在生产成功后接续执行，等待同一 main 提交的公共源检查、双语文档和发布安全检查通过。它运行固定 SDK 工具，完成 Android AAR/R8/16KB 检查、iOS SwiftPM 编译与 Pod lint、三端 Desktop 消费者执行，然后汇总九个运行库与五个 SDK 包装归档，并对全部归档执行离线安装、缓存复验及错误哈希拒绝验证。
-
-验证通过后创建 `runtime-v<版本>` 的 prerelease 草稿，上传 14 个归档及 `manifest.json`、`provenance.json`、`SHA256SUMS`，核对 GitHub 服务端大小与 SHA-256。Actions 摘要提供草稿链接，**仓库所有者审核后手动点击 Publish**。预发布不会成为正式 Latest Release；全部下载见 [Releases 列表](https://github.com/weapp-container/weapp-container/releases)。
-
-如需重试，在后续工作流输入原生产 `runtime_run_id`；只接受本仓库 main 上、开启发行开关且产物未过期的成功生产。草稿同版本串行创建，已有草稿或标签时拒绝覆盖。上传中断保留草稿供人工检查；不要直接重跑覆盖资产。修复后清理未公开草稿需人工审核，已公开版本应使用新版本重发。
-
-手动 Publish 后，**Verify published runtime anonymously** 无认证下载全部 17 个资产并复验 14 个离线安装，在 `published-runtime-verification` 产物中提供版本化锁文件和验证摘要。通过后续 PR 将同一 manifest 原字节同步到六个 SDK 的版本化锁，核对默认下载器仍选择有效的公开锁，再更新核心 `publishedRuntimeVersion`。此流程不发布 npm、Maven Central、pub.dev 或 CocoaPods，也不把编译、桌面软件渲染验证描述为真机或硬件 GPU 验收。
+核心 runtime 的 `.7.1` release 已发布。后续候选仍按 `public-native.yml`、生产产物离线验证和人工审核流程推进；不得覆盖已有 tag、草稿、归档或校验和。SDK producer 使用准确的 runtime 版本锁、源码清单和成功的生产 run ID。Central、npm、pub.dev 与 CocoaPods 投稿各自验证注册源的实际响应与归档字节，上传成功本身不代表消费者验证通过。
 
 <a id="authentication"></a>
 ## 发布认证
 
-首次 npm 发布需要具有 `@weapp-container` 发布权限的 npm 用户、浏览器登录/两步验证以及 `--access public --tag preview`。首次发布后为 `publish-npm.yml` 配置 npm trusted publishing。
-
-首次 pub.dev 发布需要逐个新包完成人工登录，创建后配置包级 GitHub OIDC。Maven Central 需要已验证的 `io.github.weapp-container`、Portal user-token 凭据及公开可发现的 PGP 签名公钥。将 `MAVEN_CENTRAL_USERNAME`、`MAVEN_CENTRAL_PASSWORD`、`WEAPP_SIGNING_KEY` 和可选 `WEAPP_SIGNING_PASSWORD` 放入本地进程环境或仓库 secrets，不能提交值。CocoaPods Trunk 注册和邮件验证由账号所有者完成。
+Android Central workflow 需要仓库 secrets：`MAVEN_CENTRAL_USERNAME`、`MAVEN_CENTRAL_PASSWORD`、`WEAPP_SIGNING_KEY`，以及可选的 `WEAPP_SIGNING_PASSWORD`。npm 与 pub.dev 使用 GitHub OIDC；首次发布前由包所有者完成可信发布者绑定和必要的一次性账号验证。CocoaPods Trunk 首次投稿前由所有者完成注册与邮箱验证，并配置 `COCOAPODS_TRUNK_TOKEN`。凭据只存入对应仓库/组织 secrets，不写入源码、日志或聊天。
 
 <a id="acceptance"></a>
 ## 发行验收
 
-核对每个归档的 SHA-256/大小、架构、动态依赖和许可。验证下载中断、哈希/版本不符与离线缓存，并确保没有降级回退。执行 npm pack 和安装后 exports/types 检查、Flutter analyze/publish dry-run、Pod lint、SwiftPM 消费和 Central 验证。真实消费者须用手写测试 pack 完成加载、显示、交互、宿主消息、导航与关闭；CI 软件渲染不等同硬件或设备验收。
+每个版本需确认注册源可查、匿名下载字节与已验证归档 SHA-256 一致，并在干净目录完成对应消费者解析、构建和运行检查。Android、iOS、Desktop、Flutter 五平台、React Native 双平台及 SwiftPM/CocoaPods 分别留存结果。模拟器、CI 软件渲染、真机和硬件 GPU 是不同证据等级；没有执行的项目标记为未验证。
