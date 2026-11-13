@@ -85,7 +85,21 @@ for (const pkg of entries) {
     }
   }
   const notices = resolve(root, 'sdk/licenses', `${pkg.name}-${pkg.version}`);
-  if (!candidates.length && existsSync(notices)) candidates.push(...files(notices));
+  const noticeSource = existsSync(resolve(notices, 'source.json')) ? JSON.parse(readFileSync(resolve(notices, 'source.json'), 'utf8')) : null;
+  if (noticeSource?.kind === 'locked-notice-bundle') {
+    // Binary caches need not restore Skia's downloaded source tree. Use the
+    // same complete, reviewed notice bytes on both cold and warm builds.
+    const locked = readFileSync(resolve(root, 'Cargo.lock'), 'utf8').split(/^\[\[package\]\]\s*$/m)
+      .find(entry => entry.match(/^name = "([^"]+)"/m)?.[1] === pkg.name && entry.match(/^version = "([^"]+)"/m)?.[1] === pkg.version);
+    if (noticeSource.package !== pkg.name || noticeSource.version !== pkg.version || !/^[a-f0-9]{64}$/.test(noticeSource.crateChecksum ?? '')
+      || locked?.match(/^checksum = "([a-f0-9]{64})"/m)?.[1] !== noticeSource.crateChecksum) throw new Error('Notice bundle differs from the locked upstream crate');
+    const bundled = files(notices), expected = new Map((noticeSource.files ?? []).map(file => [file.path, file.sha256]));
+    if (!bundled.length || expected.size !== noticeSource.files?.length || bundled.length !== expected.size
+      || bundled.some(file => createHash('sha256').update(readFileSync(file)).digest('hex') !== expected.get(portableNoticePath(notices, file)))) {
+      throw new Error('Incomplete or changed locked notice bundle');
+    }
+    candidates.splice(0, candidates.length, ...bundled);
+  } else if (!candidates.length && existsSync(notices)) candidates.push(...files(notices));
   if (pkg.license_file && existsSync(resolve(source, pkg.license_file))) {
     if (!isNoticeFileName(basename(pkg.license_file))) throw new Error(`Declared license file is not a portable notice: ${pkg.name}`);
     candidates.push(resolve(source, pkg.license_file));
@@ -114,7 +128,7 @@ for (const pkg of entries) {
     }
     record.nativeSource = { selection: 'SKIA_SOURCE_DIR', noticeCount: nativeNotices.length };
   }
-  if (existsSync(resolve(notices, 'source.json'))) record.noticeSource = JSON.parse(readFileSync(resolve(notices, 'source.json'), 'utf8'));
+  if (noticeSource) record.noticeSource = noticeSource;
   report.packages.push(record);
 }
 const missingLicenseFiles = report.packages.filter(pkg => !pkg.files.length).map(pkg => pkg.name);

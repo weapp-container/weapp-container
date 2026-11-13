@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,8 +42,8 @@ function fixture(t) {
   const lock = spawnSync('cargo', ['generate-lockfile', '--offline'], { cwd: root, encoding: 'utf8', timeout: 30_000 });
   assert.equal(lock.status, 0, lock.error?.message ?? lock.stderr);
   const output = resolve(root, 'notices');
-  const run = () => spawnSync(process.execPath, ['scripts/sdk-licenses.mjs', '--target', 'aarch64-apple-darwin',
-    '--features', 'fixture', '--out', output, '--offline'], { cwd: root, encoding: 'utf8', timeout: 30_000 });
+  const run = (env = {}) => spawnSync(process.execPath, ['scripts/sdk-licenses.mjs', '--target', 'aarch64-apple-darwin',
+    '--features', 'fixture', '--out', output, '--offline'], { cwd: root, encoding: 'utf8', timeout: 30_000, env: { ...process.env, ...env } });
   return { root, output, write, run };
 }
 
@@ -117,4 +117,43 @@ test('a local package without a license declaration does not inherit the runtime
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Missing complete dependency notices: container-core/);
   assert.equal(existsSync(f.output), false);
+});
+
+test('locked complete Skia notices are reproducible with or without cached source and reject changed inputs', t => {
+  const f = fixture(t), name = 'skia-bindings', version = '0.153.3';
+  const bundle = resolve(project, 'sdk/licenses', `${name}-${version}`);
+  const source = JSON.parse(readFileSync(resolve(bundle, 'source.json')));
+  assert.ok(readFileSync(resolve(project, 'Cargo.lock'), 'utf8').includes(`name = "${name}"\nversion = "${version}"\nsource = "registry+https://github.com/rust-lang/crates.io-index"\nchecksum = "${source.crateChecksum}"`));
+  const copied = resolve(f.root, 'sdk/licenses', `${name}-${version}`);
+  cpSync(bundle, copied, { recursive: true });
+  const registry = resolve(f.root, 'registry', `${name}-${version}`);
+  f.write(`registry/${name}-${version}/Cargo.toml`, '[package]\n');
+  const sdk = { id: 'sdk', name: 'container-sdk-ffi', version: '0.1.0', source: null, license: 'Apache-2.0', manifest_path: resolve(f.root, 'crates/container-sdk-ffi/Cargo.toml') };
+  const skia = { id: 'skia', name, version, source: 'registry+https://github.com/rust-lang/crates.io-index', license: 'MIT', manifest_path: resolve(registry, 'Cargo.toml') };
+  const metadata = { workspace_members: [sdk.id], packages: [sdk, skia], resolve: { nodes: [{ id: sdk.id, deps: [{ pkg: skia.id }] }, { id: skia.id, deps: [] }] } };
+  f.write('tools/cargo', `#!${process.execPath}\nprocess.stdout.write(${JSON.stringify(JSON.stringify(metadata))});\n`);
+  // A finite metadata provider models a registry crate with no license file;
+  // the real skia-bindings crate intentionally omits source notices from tar.
+  const cargo = resolve(f.root, 'tools/cargo');
+  chmodSync(cargo, 0o755);
+  f.write('Cargo.lock', `version = 4\n\n[[package]]\nname = "${name}"\nversion = "${version}"\nchecksum = "${source.crateChecksum}"\n`);
+  const env = { PATH: `${resolve(f.root, 'tools')}${process.platform === 'win32' ? ';' : ':'}${process.env.PATH}` };
+  let result = f.run(env);
+  assert.equal(result.status, 0, result.stderr);
+  const readSkia = () => JSON.parse(readFileSync(resolve(f.output, 'licenses.json'))).packages.find(pkg => pkg.name === name);
+  const warm = readSkia();
+  assert.equal(warm.files.length, source.files.length);
+  for (const file of source.files) assert.equal(sha256(readFileSync(resolve(f.output, `${name}-${version}`, file.path))), file.sha256);
+  f.write(`registry/${name}-${version}/skia/LICENSE`, 'A cold build also has downloaded source notices.\n');
+  result = f.run(env); assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(readSkia(), warm);
+  const accepted = readFileSync(resolve(f.output, 'licenses.json'));
+  f.write('Cargo.lock', readFileSync(resolve(f.root, 'Cargo.lock'), 'utf8').replace(source.crateChecksum, '0'.repeat(64)));
+  result = f.run(env); assert.equal(result.status, 1); assert.match(result.stderr, /locked upstream crate/);
+  f.write('Cargo.lock', readFileSync(resolve(f.root, 'Cargo.lock'), 'utf8').replace('0'.repeat(64), source.crateChecksum));
+  writeFileSync(resolve(copied, source.files[0].path), 'Changed legal input');
+  result = f.run(env); assert.equal(result.status, 1); assert.match(result.stderr, /changed locked notice bundle/);
+  rmSync(resolve(copied, source.files[0].path));
+  result = f.run(env); assert.equal(result.status, 1); assert.match(result.stderr, /changed locked notice bundle/);
+  assert.deepEqual(readFileSync(resolve(f.output, 'licenses.json')), accepted);
 });

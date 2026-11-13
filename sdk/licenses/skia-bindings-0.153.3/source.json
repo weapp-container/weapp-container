@@ -1,0 +1,190 @@
+{
+  "kind": "locked-notice-bundle",
+  "package": "skia-bindings",
+  "version": "0.153.3",
+  "crateChecksum": "eb325787c91b3f6c34a7c6f2b8a2297b20292d733ca53a08c233e5028aec49af",
+  "repository": "https://github.com/rust-skia/rust-skia",
+  "commit": "b7f043e0b1e2a850e702245de811f01df1f6b0ff",
+  "bindingLicenseUrl": "https://raw.githubusercontent.com/rust-skia/rust-skia/b7f043e0b1e2a850e702245de811f01df1f6b0ff/LICENSE",
+  "skia": {
+    "repository": "https://github.com/rust-skia/skia",
+    "commit": "61e7ca4e99062cdd0ab69445d5963fb3365778f6"
+  },
+  "collection": {
+    "url": "https://github.com/weapp-container/weapp-container/actions/runs/43285535188",
+    "sourceCommit": "51aadc009e0c2540bebca497779bada600cb9d9e",
+    "inventories": [
+      {
+        "platform": "android",
+        "inventorySha256": "0e582e0b65b104b68c17b114ab1da0078ecebd06964419d01ac0711bf0b3df85",
+        "noticeCount": 34
+      },
+      {
+        "platform": "windows",
+        "inventorySha256": "7bc536dad0263272233f02f2175f3c18bb7b4ca302c5e74a1a106ae3aed24de2",
+        "noticeCount": 34
+      },
+      {
+        "platform": "ios",
+        "inventorySha256": "cf870d6fd44dda877fbc7b18ef900cf42e27246f0a7355898b5c48b7c495c46b",
+        "noticeCount": 34
+      },
+      {
+        "platform": "linux",
+        "inventorySha256": "f4fdb6e2a5363ca8cab47a01f7f074ec2d8b99e2f6a58db797a8875ed2c9f191",
+        "noticeCount": 34
+      }
+    ],
+    "scope": "Conservative union of complete upstream source notices collected for Android, iOS, Linux and Windows. The two CRLF variants are retained byte-for-byte; no runtime binaries are included."
+  },
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "4b33ed5b329a3a79eb1243fd91373c68b0ae0b9df7503bfc50d0c5253adf1b9a"
+    },
+    {
+      "path": "skia/LICENSE",
+      "sha256": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd"
+    },
+    {
+      "path": "skia/bazel/rbe/gce_linux/LICENSE",
+      "sha256": "fd112c80352fc42a60f051012c6b9adef055123e395dece30fa8f44880f39e96"
+    },
+    {
+      "path": "skia/include/third_party/vulkan/LICENSE",
+      "sha256": "e59bb5c5c6ba426a9ac4ba9fe667ad14c5166b12aa25be8af1d122b14fbe2e36"
+    },
+    {
+      "path": "skia/modules/canvaskit/npm_build/LICENSE",
+      "sha256": "d27678cba0d529e77201e2d2a053628143e986aad8f1e77f7039ad4366c8f978"
+    },
+    {
+      "path": "skia/third_party/etc1/LICENSE",
+      "sha256": "5366e97b4478f15a1e2fd7e6094337426597df28de50cd9fed3f2e7e87f1229e"
+    },
+    {
+      "path": "skia/third_party/expat/LICENSE",
+      "sha256": "cca48bacd6e7ed63f00b42a346bcc8549a460b41efe75d93db350fc882f54dca"
+    },
+    {
+      "path": "skia/third_party/externals/brotli/LICENSE",
+      "sha256": "3d180008e36922a4e8daec11c34c7af264fed5962d07924aea928c38e8663c94"
+    },
+    {
+      "path": "skia/third_party/externals/d3d12allocator/LICENSE.txt",
+      "sha256": "e078ee4f8c5ed0673f4d93b5318557eb8b4e0d7dbccef2ab45c763c7693f0f37"
+    },
+    {
+      "path": "skia/third_party/externals/d3d12allocator/premake/LICENSE.txt",
+      "sha256": "602cb6e9e4c2697d1c5b25f8e55485b596a704d834d477b49b76795074210d9c"
+    },
+    {
+      "path": "skia/third_party/externals/expat/COPYING",
+      "sha256": "31b15de82aa19a845156169a17a5488bf597e561b2c318d159ed583139b25e87"
+    },
+    {
+      "path": "skia/third_party/externals/expat/expat/COPYING",
+      "sha256": "31b15de82aa19a845156169a17a5488bf597e561b2c318d159ed583139b25e87"
+    },
+    {
+      "path": "skia/third_party/externals/freetype/LICENSE.TXT",
+      "sha256": "bd36c8b474855fa294c2ec5c184544478ef3720aad37d65a6296a4f264fd2d3b"
+    },
+    {
+      "path": "skia/third_party/externals/harfbuzz/COPYING",
+      "sha256": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64"
+    },
+    {
+      "path": "skia/third_party/externals/harfbuzz/src/ms-use/COPYING",
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "skia/third_party/externals/harfbuzz/test/COPYING",
+      "sha256": "9b35b8485f69cd298fccbb3c40a827dc06cf1185553bef827903497d2944a8d7"
+    },
+    {
+      "path": "skia/third_party/externals/harfbuzz/test/shape/data/aots/COPYING",
+      "sha256": "f55f74bf740db07bb032a90aa74af4307adea3d489c1ccba12453cf0c0a764cb"
+    },
+    {
+      "path": "skia/third_party/externals/harfbuzz/test/shape/data/text-rendering-tests/COPYING",
+      "sha256": "d24039e4d22c9bc72096f6174374539d92a3d6e1163938546ec59179fe095e6f"
+    },
+    {
+      "path": "skia/third_party/externals/icu/LICENSE",
+      "sha256": "e55522d81edc687a341a4411e0776e54ca654e90147f354a90458aaced4116af"
+    },
+    {
+      "path": "skia/third_party/externals/icu/license.html",
+      "sha256": "c62d7697c03979f5056d28b338fafc7a1152820f7b379adf4a9d88cd37160f96"
+    },
+    {
+      "path": "skia/third_party/externals/icu/scripts/LICENSE",
+      "sha256": "845022e0c1db1abb41a6ba4cd3c4b674ec290f3359d9d3c78ae558d4c0ed9308"
+    },
+    {
+      "path": "skia/third_party/externals/libjpeg-turbo/LICENSE.md",
+      "sha256": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430"
+    },
+    {
+      "path": "skia/third_party/externals/libpng/LICENSE",
+      "sha256": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526"
+    },
+    {
+      "path": "skia/third_party/externals/libpng/ci/LICENSE_MIT.txt",
+      "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
+    },
+    {
+      "path": "skia/third_party/externals/libpng/contrib/gregbook/COPYING",
+      "sha256": "d6cb0e9e560f51085556949a84af12b79a00f10ab8b66c752537faf7cd665572"
+    },
+    {
+      "path": "skia/third_party/externals/libpng/contrib/gregbook/LICENSE",
+      "sha256": "b6a03c1803eb58ffb1f1278d5c7d4096c4c116e66dce8a7553e8c77d163c3438"
+    },
+    {
+      "path": "skia/third_party/externals/libpng/contrib/pngexif/LICENSE_MIT.txt",
+      "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
+    },
+    {
+      "path": "skia/third_party/externals/libpng/contrib/pngminus/LICENSE.txt",
+      "sha256": "1806f1f10d393e9e377b3a8d1b968452b54f1a90378f14eeef45426946ace330"
+    },
+    {
+      "path": "skia/third_party/externals/libwebp/COPYING",
+      "sha256": "5aec868f669e384a22372a4e8a1a6cd7d44c64cd451f960ca69cc170d1e13acf"
+    },
+    {
+      "path": "skia/third_party/externals/spirv-cross/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "skia/third_party/externals/vulkanmemoryallocator/LICENSE.txt",
+      "sha256": "52df2c03d6cfc9ffec13c9d3626c530fc9ce0cbe41d5ea3d10cd46edeb1aeb38"
+    },
+    {
+      "path": "skia/third_party/externals/wuffs/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "skia/third_party/externals/zlib/LICENSE",
+      "sha256": "e1cfcc55c325b3f78cf55df9664abaa066e2271dffe8213347d9fccdfbac8f2c"
+    },
+    {
+      "path": "skia/third_party/harfbuzz/LICENSE",
+      "sha256": "cca48bacd6e7ed63f00b42a346bcc8549a460b41efe75d93db350fc882f54dca"
+    },
+    {
+      "path": "skia/third_party/wuffs/LICENSE",
+      "sha256": "e59bb5c5c6ba426a9ac4ba9fe667ad14c5166b12aa25be8af1d122b14fbe2e36"
+    },
+    {
+      "path": "windows-crlf/skia/third_party/externals/expat/COPYING",
+      "sha256": "431dd07ea1ffce7b9e525014bbf923006f129ee28ef5cdffc048f8e3eb39191c"
+    },
+    {
+      "path": "windows-crlf/skia/third_party/externals/expat/expat/COPYING",
+      "sha256": "431dd07ea1ffce7b9e525014bbf923006f129ee28ef5cdffc048f8e3eb39191c"
+    }
+  ]
+}
