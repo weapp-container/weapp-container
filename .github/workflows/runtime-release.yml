@@ -17,7 +17,9 @@ permissions:
   actions: read
 
 concurrency:
-  group: runtime-release-${{ github.event.workflow_run.head_sha || inputs.runtime_run_id }}
+  # Serialize automatic and manual preparation together, including retries
+  # selecting different production IDs for the same candidate version.
+  group: runtime-prerelease-preparation
   cancel-in-progress: false
 
 jobs:
