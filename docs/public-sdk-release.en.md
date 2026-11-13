@@ -2,7 +2,7 @@
 
 [简体中文](public-sdk-release.md) · **English**
 
-This page records the actual registry state for the `.7.1` preview. The core runtime, iOS, Desktop and public Specs source are published and anonymously verified. The Contract interface is unchanged, so the published npm `.7.0` package remains in use and is not republished. Android Central, CocoaPods Trunk, React Native npm and pub.dev remain blocked by owner authentication or dependency prerequisites.
+This page records the actual registry state for the `.7.1` preview. The core runtime, iOS, Desktop, public Specs source and Flutter platform interface are published and anonymously verified. The Contract interface is unchanged, so the published npm `.7.0` package remains in use and is not republished. Android Central, CocoaPods Trunk, React Native npm and the remaining Flutter packages remain blocked by owner authentication or dependency prerequisites.
 
 ## Registry status
 
@@ -15,7 +15,7 @@ This page records the actual registry state for the `.7.1` preview. The core run
 | Desktop | GitHub `.7.1` | The [Desktop GitHub Release](https://github.com/weapp-container/sdk-desktop/releases/tag/v0.1.0-preview.7.1) is public; the three-platform build/finalize [43473197471](https://github.com/weapp-container/sdk-desktop/actions/runs/43473197471) and publication [43475623344](https://github.com/weapp-container/sdk-desktop/actions/runs/43475623344) passed. CocoaPods Trunk `.7.1` is not registered because `COCOAPODS_TRUNK_TOKEN` is missing. |
 | CocoaPods Specs | Specs `.7.1` | The [public Specs source](https://github.com/weapp-container/Specs/commit/650112e) contains the iOS/Desktop `.7.1` Podspecs; both release archives were downloaded anonymously and matched their manifest SHA-256 values. Trunk version queries return 404. |
 | React Native | None | The npm `.7.1` version returns 404 anonymously. The source, Android Maven dependency and default runtime lock use `.7.1`; the bridge package waits for its native releases. |
-| Flutter | interface `.7.0` | The [published `.7.0` interface](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0) remains available. None of the seven `.7.1` packages is registered; Desktop staging [43477208452](https://github.com/weapp-container/sdk-flutter/actions/runs/43477208452) passed, while publication awaits pub.dev OIDC and Android prerequisites. |
+| Flutter | interface `.7.1` | [platform interface `.7.1`](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.1) is public; staging [43490236246](https://github.com/weapp-container/sdk-flutter/actions/runs/43490236246) and publication [43490337704](https://github.com/weapp-container/sdk-flutter/actions/runs/43490337704) passed, with anonymous archive SHA-256 `c3eabcc357977df5d440f12a6a22adf58a09263e95ceb589a77773550c0a0a36`. First-time Linux/Windows package uploads were rejected by pub.dev (`Only users are allowed to upload new packages`); Android/iOS/macOS plugins and the main package still wait for their native registry dependencies. |
 
 Existing public packages can still be installed at their published versions:
 
@@ -29,7 +29,7 @@ The `.7.1` SDK installation examples become active after each registry entry and
 
 The runtime verification summary is bound to `runtime-v0.1.0-preview.7.1`, with core source commit `fbd8cfcc44011b1250c4e987b02f9217ce1a64d0`. All 17 public assets match the release manifest in size and SHA-256. The evidence is stored under `artifacts/published-runtime-verification/`.
 
-Android, iOS, Desktop, Flutter and React Native source trees and runtime locks now select `.7.1`. iOS/Desktop GitHub releases and Specs were anonymously downloaded and matched to their release hashes; Android Maven, CocoaPods Trunk, React Native npm and Flutter `.7.1` entries remain unregistered, so their consumer publication checks are not reported as passed. Contract npm `.7.0` and Flutter interface `.7.0` are previously published versions.
+Android, iOS, Desktop, Flutter and React Native source trees and runtime locks now select `.7.1`. iOS/Desktop GitHub releases, Specs and the Flutter platform interface were anonymously downloaded and matched to their release hashes; Android Maven, CocoaPods Trunk, React Native npm, new Flutter Linux/Windows packages and the remaining Flutter plugin/main packages are not yet publicly registered, so their consumer publication checks are not reported as passed. Contract npm `.7.0` is a previously published version whose interface is unchanged.
 
 The repository owner can continue the workflows after GitHub Actions/OIDC is configured. The checked repositories currently expose no relevant secrets, so Central signing/upload and Trunk submission cannot complete. iOS SwiftPM/Pod lint and Desktop three-platform consumers passed; fresh public Flutter five-platform and React Native two-platform checks still wait for their registry entries. Physical-device and hardware-GPU results remain separate.
 

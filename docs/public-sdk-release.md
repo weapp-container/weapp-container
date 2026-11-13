@@ -2,7 +2,7 @@
 
 **简体中文** · [English](public-sdk-release.en.md)
 
-本页记录 `.7.1` 预览版各注册源的实际状态。核心 runtime、iOS、Desktop 和公开 Specs 已完成发布并匿名校验；Contract 接口未变，继续使用已发布的 npm `.7.0`，不重复发布。Android Central、CocoaPods Trunk、React Native npm 和 Flutter pub.dev 仍受账号侧认证或前置依赖阻塞。
+本页记录 `.7.1` 预览版各注册源的实际状态。核心 runtime、iOS、Desktop、公开 Specs 和 Flutter platform interface 已完成发布并匿名校验；Contract 接口未变，继续使用已发布的 npm `.7.0`，不重复发布。Android Central、CocoaPods Trunk、React Native npm 和 Flutter 其余 pub.dev 包仍受账号侧认证或前置依赖阻塞。
 
 ## 注册源状态
 
@@ -15,7 +15,7 @@
 | Desktop | GitHub `.7.1` | [Desktop GitHub Release](https://github.com/weapp-container/sdk-desktop/releases/tag/v0.1.0-preview.7.1) 已公开；三平台 build/finalize [43473197471](https://github.com/weapp-container/sdk-desktop/actions/runs/43473197471) 和发布 [43475623344](https://github.com/weapp-container/sdk-desktop/actions/runs/43475623344) 通过。CocoaPods Trunk `.7.1` 尚未注册，缺少 `COCOAPODS_TRUNK_TOKEN`。 |
 | CocoaPods Specs | Specs `.7.1` | [公开 Specs 源](https://github.com/weapp-container/Specs/commit/650112e) 已导入 iOS/Desktop `.7.1` Podspec；两个 release archive 均匿名下载并与 manifest SHA-256 一致。Trunk 版本查询返回 404。 |
 | React Native | 无 | npm `.7.1` 版本匿名查询返回 404。源码、Android Maven 依赖和默认 runtime lock 已升到 `.7.1`；对应原生发行物完成前不发布桥接包。 |
-| Flutter | interface `.7.0` | [已发布的 `.7.0` interface](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0)继续可用。七个 `.7.1` 包尚未注册；Desktop staging [43477208452](https://github.com/weapp-container/sdk-flutter/actions/runs/43477208452) 通过，发布仍等待 pub.dev OIDC 和 Android 前置依赖。 |
+| Flutter | interface `.7.1` | [platform interface `.7.1`](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.1) 已公开；staging [43490236246](https://github.com/weapp-container/sdk-flutter/actions/runs/43490236246) 与发布 [43490337704](https://github.com/weapp-container/sdk-flutter/actions/runs/43490337704) 通过，匿名归档 SHA-256 为 `c3eabcc357977df5d440f12a6a22adf58a09263e95ceb589a77773550c0a0a36`。Linux/Windows 首次包发布被 pub.dev 拒绝（`Only users are allowed to upload new packages`）；Android/iOS/macOS 插件和主包仍等待原生注册源依赖。 |
 
 现有可安装包仍可使用其原版本：
 
@@ -29,7 +29,7 @@ npm install @weapp-container/sdk-contract@0.1.0-preview.7.0
 
 runtime 验证摘要绑定 `runtime-v0.1.0-preview.7.1`，核心来源提交为 `fbd8cfcc44011b1250c4e987b02f9217ce1a64d0`。17 个公开资产的大小与 SHA-256 和发布清单一致，验证记录位于 `artifacts/published-runtime-verification/`。
 
-Android、iOS、Desktop、Flutter 和 React Native 的源码与 runtime lock 已指向 `.7.1`。iOS/Desktop GitHub release 和 Specs 已匿名下载并验证归档哈希；Android Maven、CocoaPods Trunk、React Native npm 和 Flutter `.7.1` 的公开入口仍未注册，因此不报告其消费者发布验证。Contract npm `.7.0` 与 Flutter interface `.7.0` 是此前已发布版本。
+Android、iOS、Desktop、Flutter 和 React Native 的源码与 runtime lock 已指向 `.7.1`。iOS/Desktop GitHub release、Specs 和 Flutter platform interface 已匿名下载并验证归档哈希；Android Maven、CocoaPods Trunk、React Native npm、Flutter Linux/Windows 新包以及 Flutter 依赖插件和主包仍未完成公开注册，因此不报告其消费者发布验证。Contract npm `.7.0` 是此前已发布且接口未变的版本。
 
 仓库所有者可在 GitHub Actions/OIDC 配置就绪后继续执行发布。当前检查到相关仓库 secrets 列表为空，尚不能完成 Central 签名上传或 Trunk 投稿。iOS SwiftPM/Pod lint 与 Desktop 三平台消费者构建通过；Flutter 五平台和 RN 双端的本轮 `.7.1` 公开消费者验收仍待对应注册源发布。真机与硬件 GPU 结果继续单独标记。
 
