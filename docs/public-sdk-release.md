@@ -44,6 +44,10 @@ Android 正式 AAR/POM/sources/javadoc、R8、双 ABI、16KB 对齐和 API 36 ar
 
 Contract 已公开版本通过全新目录匿名安装、TypeScript 6.0.3 类型检查、工具导出、14 项公开锁与 authored fixture 校验。公开归档 SHA-256 为 `232330e1234a70a27e7d9d6e1d4c61233cecb580cd1703fcc4bb9ae169465853`。Flutter interface 的公开归档 SHA-256 为 `777e97fd7ca14aebc6aac851d9a9d20135960216658ef16a4180b1cb63bef1e1`，静态分析与两项公开传输消费测试通过。
 
+从公开 npm 安装的 Contract 下载器已在无 GitHub 凭据、无 Authorization 请求头的环境下载并安装 macOS arm64 运行库。关闭网络后缓存复验与安装复用通过；版本不符和哈希不符均被拒绝，未尝试降级回退。
+
+Flutter 五个平台包候选均通过依赖解析、静态分析及零警告的发布预检，并已冻结相同验证字节的归档。平台包不包含仓库测试或额外的变更日志，安装后的文档链接固定到源码提交。此结果只覆盖打包预检，尚未发布或完成原生消费者验收。
+
 ## 暂缓与阻塞
 
 - 按用户要求暂缓 CocoaPods Trunk 注册与 PGP 签名配置，未进行 Trunk 投稿。

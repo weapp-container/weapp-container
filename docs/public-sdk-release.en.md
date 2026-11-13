@@ -44,6 +44,10 @@ The six SDK source/tool suites passed 263 tests (Contract 39, Android 50, iOS 48
 
 The public Contract version passed fresh anonymous installation, TypeScript 6.0.3 type checks, tool exports, all 14 public-lock entries and authored-fixture checks. Its public archive SHA-256 is `232330e1234a70a27e7d9d6e1d4c61233cecb580cd1703fcc4bb9ae169465853`. The public Flutter interface archive SHA-256 is `777e97fd7ca14aebc6aac851d9a9d20135960216658ef16a4180b1cb63bef1e1`; static analysis and both public transport consumer tests passed.
 
+The Contract downloader installed from public npm downloaded and installed the macOS arm64 runtime without GitHub credentials or Authorization headers. With network access disabled, cache verification and installation reuse passed. Wrong versions and hashes were rejected without attempting a fallback.
+
+All five Flutter platform candidates passed dependency resolution, static analysis and publication dry-runs with zero warnings. Archives containing the same validated bytes are frozen. Platform packages exclude repository tests and alternate changelogs, and installed documentation links point to an immutable source commit. These checks cover packaging only; the candidates remain unpublished and native consumer acceptance is incomplete.
+
 ## Deferred work and blockers
 
 - CocoaPods Trunk registration and PGP signing configuration are deferred; no Trunk submission was made.
