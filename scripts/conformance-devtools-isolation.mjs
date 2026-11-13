@@ -149,7 +149,9 @@ export async function inventoryRetainedBuildInputs({ checkout, archive, helper, 
     helperInputs.push({ ...item, snapshot })
     if (!/\.[cm]?js$/.test(file)) return
     const source = bytes.toString('utf8')
-    for (const match of source.matchAll(/(?:^|\n)\s*(?:import|export)\s+(?:[^'";]*?\bfrom\s+)?['"]([^'"]+)['"]/g)) {
+    // Keep the scan line anchored. `\s*` would cross the line prefix and
+    // treat import text inside a template literal as an executable import.
+    for (const match of source.matchAll(/(?:^|\n)[ \t]*(?:import|export)\s+(?:[^'";\n]*?\bfrom\s+)?['"]([^'"\n]+)['"]/g)) {
       if (match[1].startsWith('.')) await visitHelper(resolve(dirname(file), match[1]))
       else if (match[1].startsWith('file:')) await visitHelper(fileURLToPath(match[1]))
     }

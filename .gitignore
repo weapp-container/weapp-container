@@ -66,3 +66,8 @@ packages/**/.weapp-vite/
 # repoctl / TypeScript local build state
 /tools/**/node_modules/
 *.tsbuildinfo
+
+# Local instructions and private validation state.
+/AGENTS.md
+/.local-validation/
+/artifacts/local-validation/

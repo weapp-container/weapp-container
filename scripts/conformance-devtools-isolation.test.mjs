@@ -400,7 +400,7 @@ test('retained build inventory binds copied bytes and helper imports without cla
   const module = join(dist, 'index.js')
   await writeFile(module, 'retained compiled bytes; build source unknown\n')
   const helper = join(directory, 'helper.mjs')
-  await writeFile(helper, "import { value } from './helper-dependency.mjs'\nconst input = new URL('./input.json', import.meta.url)\nconst root = new URL('.', import.meta.url)\n")
+  await writeFile(helper, "import { value } from './helper-dependency.mjs'\nconst generated = `import { getManagedProjectSessionOwner } from '../utils/managedProjectSession'\\n${value}`\nconst input = new URL('./input.json', import.meta.url)\nconst root = new URL('.', import.meta.url)\n")
   await writeFile(join(directory, 'helper-dependency.mjs'), 'export const value = 1\n')
   await writeFile(join(directory, 'input.json'), '{"value":1}\n')
   const linked = join(checkout, 'node_modules')
