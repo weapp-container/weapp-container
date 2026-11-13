@@ -2,16 +2,22 @@
 
 [简体中文](public-sdk-release.md) · **English**
 
-Core runtime, iOS and Desktop GitHub prereleases and the organization’s public CocoaPods Specs source are available. **Publication of the complete SDK set is unfinished**: Contract npm needs a new publish 2FA challenge; Android Central, React Native and Flutter have the blockers below.
+Contract npm, the Flutter platform interface, core runtime, iOS and Desktop GitHub prereleases and the organization’s public CocoaPods Specs source are available. **Publication of the complete SDK set is unfinished**: Android Central, React Native, the five Flutter platform packages and the main package have the blockers below.
 
 ## Public entry points
 
 | Distribution | Public entry | Validation |
 | --- | --- | --- |
+| Contract | [npm 0.1.0-preview.7.0](https://www.npmjs.com/package/@weapp-container/sdk-contract/v/0.1.0-preview.7.0) | Preview tag, exact anonymous tarball bytes, fresh anonymous installation, types/tool exports, authored fixture and all 14 public runtime pins passed; trusted publisher configured and read back |
+| Flutter interface | [pub.dev 0.1.0-preview.7.0](https://pub.dev/packages/weapp_container_platform_interface/versions/0.1.0-preview.7.0) | Exact anonymous archive bytes, fresh hosted resolution, static analysis and both transport consumer tests passed; GitHub OIDC configured; interface only |
 | Core runtime | [runtime-v0.1.0-preview.7.0](https://github.com/weapp-container/weapp-container/releases/tag/runtime-v0.1.0-preview.7.0) | All 14 archives downloaded anonymously and passed SHA-256 checks, fresh offline installation, cache verification and wrong-hash rejection |
 | iOS | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-ios/releases/tag/v0.1.0-preview.7.0) | Both ZIPs downloaded anonymously; public SwiftPM simulator/device compilation; final arm64 simulator interaction XCTest passed |
 | Desktop | [v0.1.0-preview.7.0](https://github.com/weapp-container/sdk-desktop/releases/tag/v0.1.0-preview.7.0) | Three archives downloaded anonymously; public macOS/Linux/Windows CI consumers and local ARM/Rosetta consumers passed |
 | CocoaPods | [weapp-container/Specs](https://github.com/weapp-container/Specs) | Both Pods passed remote lint, fresh public Specs resolution, iOS simulator/macOS build/link and macOS C API execution; no Trunk submission |
+
+```sh
+npm install @weapp-container/sdk-contract@0.1.0-preview.7.0
+```
 
 ```swift
 .package(url: "https://github.com/weapp-container/sdk-ios.git", exact: "0.1.0-preview.7.0")
@@ -34,16 +40,19 @@ PRs for the five SDK default locks and regression checks have merged; the Contra
 
 Android release AAR/POM/sources/javadoc, R8, both ABIs, 16KB alignment and API 36 arm64 simulator interaction acceptance passed. Final iOS archives passed arm64 device and x86_64 simulator compilation and complete arm64 simulator interaction acceptance. Physical-device execution remains unverified. Desktop public archive consumers passed on all three OSes ([CI 43305230931](https://github.com/weapp-container/sdk-desktop/actions/runs/43305230931)), covering download, checksums, extraction, directory relocation, compilation, linking and interactive execution. Rosetta is not Intel hardware acceptance.
 
-The six SDK source/tool suites passed 258 tests (Contract 36, Android 50, iOS 48, Desktop 45, Flutter 33, RN 46). Complete submodule identity and public-lock closure checks passed.
+The six SDK source/tool suites passed 263 tests (Contract 39, Android 50, iOS 48, Desktop 45, Flutter 35, RN 46). Complete submodule identity and public-lock closure checks passed.
 
-The final Contract npm candidate passed fresh-directory installation, type checks, tool exports, all 14 public-lock entries and authored-fixture checks. All seven Flutter packages were staged with public Desktop URLs/SHA-256; the platform interface publish dry-run passed with zero warnings.
+The public Contract version passed fresh anonymous installation, TypeScript 6.0.3 type checks, tool exports, all 14 public-lock entries and authored-fixture checks. Its public archive SHA-256 is `232330e1234a70a27e7d9d6e1d4c61233cecb580cd1703fcc4bb9ae169465853`. The public Flutter interface archive SHA-256 is `777e97fd7ca14aebc6aac851d9a9d20135960216658ef16a4180b1cb63bef1e1`; static analysis and both public transport consumer tests passed.
+
+The Contract downloader installed from public npm downloaded and installed the macOS arm64 runtime without GitHub credentials or Authorization headers. With network access disabled, cache verification and installation reuse passed. Wrong versions and hashes were rejected without attempting a fallback.
+
+All five Flutter platform candidates passed dependency resolution, static analysis and publication dry-runs with zero warnings. Archives containing the same validated bytes are frozen. Platform packages exclude repository tests and alternate changelogs, and installed documentation links point to an immutable source commit. These checks cover packaging only; the candidates remain unpublished and native consumer acceptance is incomplete.
 
 ## Deferred work and blockers
 
 - CocoaPods Trunk registration and PGP signing configuration are deferred; no Trunk submission was made.
 - The Maven Central namespace is verified, but Portal credentials, signing and real upload are unfinished. Public Maven dependencies for React Native and Flutter Android are therefore unavailable.
-- npm publish requires a new 2FA challenge after the first authorization session expired. No Contract version was published. Trusted publishing must be configured after the first publication.
-- First pub.dev authorization is incomplete: both IPv4 and default connections to accounts.google.com timed out. The seven names are unclaimed, but no version was published. Real hosted dependencies and publication validation for the remaining six packages must proceed in order.
+- First pub.dev login is complete and the interface is public. Continue in the agreed order with the Android package; its public Maven dependency remains unavailable. The five platform packages and main package remain unpublished.
 - Public Flutter consumption on five platforms, React Native consumption on two platforms, and Android/iOS physical-device execution remain incomplete.
 - Published Desktop archives retain the stale `WEAPP_DESKTOP_VERSION` C header macro `0.1.0-preview.6.0`; package metadata and runtime are `0.1.0-preview.7.0`. Current source fixes it and adds a coordination test. Published bytes are immutable; a corrected distribution needs a new version.
 - The core repository now pins the six SDK public locks and publication configurations; full submodule identity verification passed.

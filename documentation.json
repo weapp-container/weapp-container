@@ -3333,8 +3333,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "公开发行入口、安装、逐平台验证与尚未完成的注册源发布",
-      "reviewedChineseSha256": "54dbca23b26697d0ae251a50156d5891a7e9c7e5af9668412db6d0d4fee8c08a",
+      "reviewedChineseSummary": "已复核公开注册源状态、OIDC、匿名下载缓存验证、五个平台包预检及未完成的原生消费与账号接入。",
+      "reviewedChineseSha256": "71189bce52829b8c102678c71cb165d9871596ac7258019d0c5530de4c5d4ba3",
       "legacyHeadingIds": []
     },
     {
