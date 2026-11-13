@@ -1,0 +1,46 @@
+{
+  "name": "@weapp-container/node",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Isolated real-runtime mini-program integration testing",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.mts",
+      "import": "./src/index.mjs"
+    },
+    "./artifact": {
+      "types": "./src/artifact.d.mts",
+      "import": "./src/artifact.mjs"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@sonofmagic/container-manifest": "workspace:*"
+  },
+  "optionalDependencies": {
+    "@weapp-container/runtime-darwin-arm64": "workspace:*",
+    "@weapp-container/runtime-linux-x64": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "weapp-vite": ">=7.5.0"
+  },
+  "peerDependenciesMeta": {
+    "weapp-vite": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "weapp-vite": "7.5.0"
+  }
+}

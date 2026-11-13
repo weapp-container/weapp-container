@@ -45,6 +45,15 @@ impl ContainerSession {
     }
 
     pub(super) fn unload_active_for_retirement(&mut self) -> Result<(), SdkError> {
+        // An interrupted realm is retained for diagnostics only. Native
+        // retirement below still revokes calls and releases all resources.
+        if self
+            .active
+            .as_ref()
+            .is_some_and(|active| active.session.execution_fault().is_some())
+        {
+            return Ok(());
+        }
         let identity = self.accepted_pack_metadata();
         let result = self
             .active

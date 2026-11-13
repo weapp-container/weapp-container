@@ -9,6 +9,7 @@ description = "Manifest-loading AppService/View/Renderer session runtime for Wea
 
 [features]
 default = []
+testing = ["quickjs-native", "container-engine-quickjs/testing"]
 # A separately produced demo runtime. Its policy is a required build input;
 # application or host configuration cannot replace it at runtime.
 restricted-showcase = []

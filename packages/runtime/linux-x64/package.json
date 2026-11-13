@@ -1,0 +1,31 @@
+{
+  "name": "@weapp-container/runtime-linux-x64",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Real QuickJS test host for Weapp Container",
+  "license": "Apache-2.0",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "bin/weapp-test-host",
+  "files": [
+    "bin",
+    "README.md",
+    "runtime.json",
+    "RUNTIME-LICENSE",
+    "THIRD_PARTY_NOTICES",
+    "check.mjs"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepack": "node check.mjs"
+  },
+  "bin": {
+    "weapp-container-test-host": "bin/weapp-test-host"
+  }
+}

@@ -553,6 +553,8 @@ struct LoadedModule {
 /// Select the trusted native operation before entering the shared task boundary.
 /// Module evaluation must never look up an application-replaceable global.
 enum EngineTask<'a> {
+    #[cfg(feature = "testing")]
+    Testing(Value),
     Call {
         target: CallTarget,
         args: ValueBatch,
@@ -593,6 +595,8 @@ pub struct Session {
     engine_host_environment: host_environment::HostEnvironmentMirror,
     engine_execution_fault: Option<BridgeError>,
     engine_turn_deadline: Option<Instant>,
+    #[cfg(feature = "testing")]
+    testing_time_ms: Option<u64>,
     #[cfg(feature = "conformance-observation")]
     conformance_guests: conformance_observation::ConformanceGuestState,
     animation_clock: animation_clock::AnimationClock,
@@ -1061,6 +1065,8 @@ impl Session {
             engine_host_environment: host_environment::HostEnvironmentMirror::default(),
             engine_execution_fault: None,
             engine_turn_deadline: None,
+            #[cfg(feature = "testing")]
+            testing_time_ms: None,
             #[cfg(feature = "conformance-observation")]
             conformance_guests: Default::default(),
             animation_clock: animation_clock::AnimationClock::default(),
@@ -2087,6 +2093,11 @@ impl Session {
     }
 
     fn poll_timers_within_turn(&mut self, now_ns: u64) -> BridgeBatch {
+        #[cfg(feature = "testing")]
+        let now_ns = self
+            .testing_time_ms
+            .map(|now| now.saturating_mul(1_000_000))
+            .unwrap_or(now_ns);
         if !self.initialized {
             return BridgeBatch::new(Vec::new());
         }
@@ -6639,9 +6650,12 @@ impl Session {
             } else {
                 TimerKind::Interval
             };
-            let timer_id =
-                self.app_service
-                    .schedule_timer(kind, delay_ms, unix_now_ns(), callback_id.clone());
+            let timer_id = self.app_service.schedule_timer(
+                kind,
+                delay_ms,
+                self.timer_now_ns(),
+                callback_id.clone(),
+            );
             return Ok(vec![self.response(
                 request,
                 json!({
@@ -8193,6 +8207,33 @@ impl Session {
             })
     }
 
+    /// Explicit test-distribution control. All guest work uses the normal
+    /// checkpoint, execution deadline and effect pipeline.
+    #[cfg(feature = "testing")]
+    pub fn testing_control(&mut self, input: Value) -> Result<(Value, BridgeBatch), BridgeError> {
+        let mut output = Value::Null;
+        let batch = self.with_engine_batch_turn(None, |session| {
+            let values = session
+                .run_engine_task(EngineTask::Testing(input.clone()), BridgeErrorCode::Engine)?;
+            if input["action"] == "clock" {
+                session.testing_time_ms = input["now"].as_u64();
+            }
+            let mut messages = Vec::new();
+            session.append_engine_effects(&mut messages)?;
+            output = values.into_iter().next().unwrap_or(Value::Null);
+            Ok(BridgeBatch::new(messages))
+        })?;
+        Ok((output, batch))
+    }
+
+    fn timer_now_ns(&self) -> u64 {
+        #[cfg(feature = "testing")]
+        if let Some(now) = self.testing_time_ms {
+            return now.saturating_mul(1_000_000);
+        }
+        unix_now_ns()
+    }
+
     fn call_engine(
         &mut self,
         target: CallTarget,
@@ -8237,6 +8278,10 @@ impl Session {
                         EngineTask::Call { target, args } => {
                             container_core::JsEngine::call(engine, target, args)
                         }
+                        #[cfg(feature = "testing")]
+                        EngineTask::Testing(input) => {
+                            engine.testing_call(input).map(|value| vec![value])
+                        }
                         EngineTask::EvaluateModule(id) => {
                             engine.evaluate_module_with_id(id).map(|()| Vec::new())
                         }
@@ -8272,6 +8317,13 @@ impl Session {
                     let result = match task {
                         EngineTask::Call { target, args } => {
                             container_core::JsEngine::call(engine, target, args)
+                        }
+                        #[cfg(feature = "testing")]
+                        EngineTask::Testing(_) => {
+                            return Err(BridgeError::new(
+                                BridgeErrorCode::UnsupportedCapability,
+                                "testing requires QuickJS",
+                            ))
                         }
                         EngineTask::EvaluateModule(id) => {
                             engine.evaluate_module_with_id(id).map(|()| Vec::new())

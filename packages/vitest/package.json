@@ -1,0 +1,37 @@
+{
+  "name": "@weapp-container/vitest",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Vite artifact plugin and isolated Vitest fixtures for Weapp Container",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.mts",
+      "import": "./src/index.mjs"
+    },
+    "./config": {
+      "types": "./src/config.d.mts",
+      "import": "./src/config.mjs"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@weapp-container/node": "workspace:*"
+  },
+  "peerDependencies": {
+    "vitest": ">=5.0.0"
+  },
+  "devDependencies": {
+    "vitest": "~5.0.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

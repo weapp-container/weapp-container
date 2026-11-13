@@ -84,6 +84,8 @@ struct NativePromiseRejections {
 
 #[cfg(feature = "quickjs-native")]
 struct NativeQuickJs {
+    #[cfg(feature = "testing")]
+    testing: rquickjs::Persistent<rquickjs::Function<'static>>,
     batch_call: rquickjs::Persistent<rquickjs::Function<'static>>,
     host_environment: rquickjs::Persistent<rquickjs::Function<'static>>,
     receiver_incarnations: rquickjs::Persistent<rquickjs::Function<'static>>,
@@ -2988,6 +2990,15 @@ impl QuickJsEngine {
             })
             .map_err(|error| CoreError::new(EngineErrorCode::Call, error.to_string()))?;
         execution.check()?;
+        #[cfg(feature = "testing")]
+        let testing = context.with(|ctx| {
+            let function = ctx
+                .eval::<rquickjs::Function, _>(include_str!("testing.js"))
+                .map_err(|error| {
+                    native_execution_error(execution, &ctx, error, EngineErrorCode::Call)
+                })?;
+            Ok::<_, CoreError>(rquickjs::Persistent::save(&ctx, function))
+        })?;
         let facade = container_core::app_service_environment_bootstrap(MINI_PROGRAM_BOOTSTRAP);
         let (
             batch_call,
@@ -3020,6 +3031,16 @@ impl QuickJsEngine {
             .enumerate()
             {
                 execution.check()?;
+                #[cfg(feature = "testing")]
+                if index == 1 {
+                    testing
+                        .clone()
+                        .restore(&ctx)
+                        .and_then(|function| function.call::<_, String>(("{\"action\":\"bind\"}",)))
+                        .map_err(|error| {
+                            native_execution_error(execution, &ctx, error, EngineErrorCode::Call)
+                        })?;
+                }
                 if index == 2 {
                     let transports = ctx.eval::<rquickjs::Object, _>(source).map_err(|error| {
                         native_execution_error(execution, &ctx, error, EngineErrorCode::Call)
@@ -3091,6 +3112,14 @@ impl QuickJsEngine {
                 }
                 execution.check()?;
             }
+            #[cfg(feature = "testing")]
+            testing
+                .clone()
+                .restore(&ctx)
+                .and_then(|function| function.call::<_, String>(("{\"action\":\"bindMethods\"}",)))
+                .map_err(|error| {
+                    native_execution_error(execution, &ctx, error, EngineErrorCode::Call)
+                })?;
             let receiver_event = (|| -> rquickjs::Result<rquickjs::Function> {
                 let dispatcher = ctx
                     .globals()
@@ -3143,6 +3172,8 @@ impl QuickJsEngine {
             },
         )));
         Ok(NativeQuickJs {
+            #[cfg(feature = "testing")]
+            testing,
             batch_call,
             host_environment,
             receiver_incarnations,
@@ -3449,9 +3480,43 @@ impl QuickJsEngine {
         .map_err(EngineError::Execution)
     }
 
+    /// Private test-driver transport; normal distributions do not compile it.
+    #[cfg(feature = "testing")]
+    pub fn testing_call(
+        &mut self,
+        input: serde_json::Value,
+    ) -> Result<serde_json::Value, container_core::EngineError> {
+        use container_core::{EngineError as CoreError, EngineErrorCode};
+        self.execution.check()?;
+        let native = self
+            .native
+            .as_mut()
+            .ok_or_else(|| CoreError::new(EngineErrorCode::Call, "QuickJS is unavailable"))?;
+        let encoded = native.context.with(|ctx| {
+            let function = native.testing.clone().restore(&ctx).map_err(|error| {
+                native_execution_error(&self.execution, &ctx, error, EngineErrorCode::Call)
+            })?;
+            function
+                .call::<_, String>((input.to_string(),))
+                .map_err(|error| {
+                    native_execution_error(&self.execution, &ctx, error, EngineErrorCode::Call)
+                })
+        })?;
+        let mut value: serde_json::Value = serde_json::from_str(&encoded)
+            .map_err(|error| CoreError::new(EngineErrorCode::Call, error.to_string()))?;
+        if input["action"] == "pending" {
+            let status = self
+                .capture_receiver_transport(
+                    serde_json::json!({"kind":"turn-scheduler","action":"status"}),
+                )
+                .map_err(|error| CoreError::new(EngineErrorCode::Call, error.to_string()))?;
+            value["value"] = serde_json::json!(value["value"] == true || status["ready"] == true);
+        }
+        Ok(value)
+    }
+
     /// Run callbacks whose logical deadline has elapsed. The host supplies
-    /// non-negative safe-integer Unix milliseconds; runtime nanoseconds must
-    /// be converted before calling this boundary.
+    /// non-negative safe-integer Unix milliseconds.
     #[cfg(feature = "quickjs-native")]
     pub fn drain_timers(&mut self, now_ms: u64) -> Result<container_core::ValueBatch, EngineError> {
         container_core::JsEngine::call(

@@ -9,6 +9,7 @@ description = "Embeddable Weapp Container session, verified packs, persistence a
 
 [features]
 default = ["quickjs-native"]
+testing = ["quickjs-native", "container-runtime/testing"]
 restricted-showcase = ["container-runtime/restricted-showcase"]
 quickjs-native = ["container-runtime/quickjs-native"]
 quickjs-native-android = ["quickjs-native", "container-runtime/quickjs-native-android"]
@@ -36,3 +37,8 @@ reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"
 tokio = { version = "1", features = ["rt", "sync", "time", "net", "macros"] }
 
 [dev-dependencies]
+
+[[bin]]
+name = "weapp-test-host"
+path = "src/bin/test-host.rs"
+required-features = ["testing"]

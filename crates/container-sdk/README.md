@@ -7,6 +7,10 @@ Weapp 容器的原生嵌入边界。该 crates 拥有一个经过验证的可移
 
 默认功能启用实际的 QuickJS。未请求引擎的构建会返回 `ERR_ENGINE`；它们从不运行仅元数据的引擎，也不会选择备用引擎。Skia CPU、GLES、Metal 和 V8 有明确的 Cargo 特性。通过查询 `capabilities` 可以区分编译支持与当前附加/渲染的 GPU 绘制表面。
 
+The `testing` feature adds the real QuickJS `weapp-test-host` stdio process and
+typed test controls. The Node SDK and Vitest fixture reuse this session boundary;
+see [testing runtime](../../docs/testing-runtime.md) for APIs, packaging and checks.
+
 ```rust,no_run
 use container_sdk::{ContainerConfig, ContainerSession};
 use serde_json::json;

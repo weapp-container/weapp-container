@@ -1,2 +1,4 @@
 packages:
   - tools/container-manifest
+  - packages/*
+  - packages/runtime/*

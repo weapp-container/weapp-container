@@ -224,6 +224,10 @@ const __container_turn_scheduler = (function() {
   }
   function capture(request) {
     const action = own(request, 'action');
+    if (action === 'status') {
+      prune(null);
+      return '{"ready":' + (!retired && !paused && pendingTick() ? 'true' : 'false') + '}';
+    }
     if (action === 'begin') return begin(request);
     if (action === 'task') return task(request);
     if (action === 'end') { active = null; return '{"ended":true}'; }

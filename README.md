@@ -7,7 +7,7 @@
 
 将小程序嵌入自己的应用。Weapp Container 提供 Rust 运行时、portable pack 打包工具、开发模拟器，以及 Android、iOS、C++ Desktop、Flutter 和 React Native 接入层。
 
-[开发文档](https://container.weapp.dev/docs/) · [在线示例](https://container.weapp.dev/demo/) · [源码文档索引](docs/README.md) · [参与贡献](CONTRIBUTING.md)
+[开发文档](https://container.weapp.dev/docs/) · [在线示例](https://container.weapp.dev/demo/) · [源码文档索引](docs/README.md) · [测试运行时](docs/testing-runtime.md) · [参与贡献](CONTRIBUTING.md)
 
 [GitHub 预发布下载](https://github.com/weapp-container/weapp-container/releases)
 
@@ -73,6 +73,7 @@ pnpm simulator:dev -- --project examples/apps/reference-app --surface web --soft
 | `crates/container-engine-*` | QuickJS 与显式 V8 provider 边界 |
 | `crates/container-render-skia`、`container-host-*` | 绘制、Web 与原生宿主适配 |
 | `crates/container-simulator`、`apps/dev-player` | 开发模拟器和设备客户端 |
+| `packages/node`、`packages/vitest`、`packages/runtime/*` | Node 测试 SDK、Vite/Vitest 接入和预编译测试宿主 |
 | `sdk/*` | 独立的合约及 Android、iOS、Desktop、Flutter、React Native 包装层 |
 | `website` | 文档与展示应用源码 |
 | `tools/runtime-artifacts` | [运行库打包、离线验证与发行工具](tools/runtime-artifacts/README.md) |

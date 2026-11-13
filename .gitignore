@@ -53,3 +53,12 @@ docs/**/evidence/
 docs/*-evidence/
 docs/sdk-migration/
 examples/hosts/conformance-web/projection-build.json
+
+# Generated npm testing runtime payloads
+packages/runtime/*/bin/
+packages/runtime/*/runtime.json
+packages/runtime/*/RUNTIME-LICENSE
+packages/runtime/*/THIRD_PARTY_NOTICES
+packages/**/node_modules/
+packages/**/test/.tmp-*/
+packages/**/.weapp-vite/

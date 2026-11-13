@@ -17,7 +17,7 @@ function option(name, fallback) {
 const toolRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const root = resolve(option('--source-root', toolRoot));
 const packageName = option('--package', 'container-sdk-ffi');
-if (!['container-sdk-ffi', 'container-host-web', 'container-host-harmony'].includes(packageName)) throw new Error('Select a supported runtime package');
+if (!['container-sdk', 'container-sdk-ffi', 'container-host-web', 'container-host-harmony'].includes(packageName)) throw new Error('Select a supported runtime package');
 const target = option('--target', process.platform === 'darwin' ? 'aarch64-apple-darwin' : undefined);
 if (!target) throw new Error('--target is required');
 const features = option('--features', 'quickjs-native,skia-backend');

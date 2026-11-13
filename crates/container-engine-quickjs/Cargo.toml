@@ -10,6 +10,7 @@ description = "Optional QuickJS adapter boundary for the container runtime"
 [features]
 default = ["stub"]
 stub = []
+testing = ["quickjs-native"]
 conformance-observation = ["container-core/conformance-observation"]
 quickjs-native = ["dep:rquickjs"]
 # Android triples have no bundled rquickjs-sys bindings. Require the NDK

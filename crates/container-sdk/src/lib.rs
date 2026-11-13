@@ -18,6 +18,8 @@ mod render_diagnostics;
 mod restricted_showcase_tests;
 mod retirement;
 mod storage;
+#[cfg(feature = "testing")]
+pub mod testing;
 pub use account::{
     storage_namespace, AccountSwitchPhase, AccountSwitchReceipt, HostAccountManager,
 };
@@ -419,6 +421,8 @@ impl Active {
 /// A thread-affine application session, independent from a particular UI
 /// toolkit. It is deliberately !Send/!Sync. All callbacks are queued events.
 pub struct ContainerSession {
+    #[cfg(feature = "testing")]
+    test_options: Option<testing::TestOptions>,
     config: ContainerConfig,
     owner: ThreadId,
     base_id: String,
@@ -581,6 +585,8 @@ impl ContainerSession {
             })
             .unwrap_or_default();
         Ok(Self {
+            #[cfg(feature = "testing")]
+            test_options: None,
             config,
             owner: thread::current().id(),
             base_id,
@@ -731,6 +737,12 @@ impl ContainerSession {
             SessionConfig {
                 session_id: format!("{}-{generation}", self.base_id),
                 engine: self.config.engine,
+                #[cfg(feature = "testing")]
+                engine_execution: self
+                    .test_options
+                    .as_ref()
+                    .map(|options| options.execution_policy())
+                    .unwrap_or_default(),
                 host: candidate_host,
                 require_integrity: true,
                 page_render_mode: self.configured_render_mode()?,
@@ -755,6 +767,10 @@ impl ContainerSession {
         session.ensure_view_execution_supported()?;
         session.set_dev_console_enabled(self.config.dev_diagnostics)?;
         session.set_provider(Box::new(NativeProvider));
+        #[cfg(feature = "testing")]
+        if let Some(options) = &self.test_options {
+            session.testing_control(json!({"action":"clock", "now":options.now_ms}))?;
+        }
         session.set_host_methods(self.methods.iter().cloned().collect())?;
         if let Some(services) = &mut candidate_services {
             if self.config.managed_files_root.is_some()
@@ -3039,6 +3055,15 @@ impl ContainerSession {
         // drain these errors after a replacement has already become active.
         let identity = self.accepted_pack_metadata();
         if let Some(mut active) = self.active.take() {
+            if active.session.execution_fault().is_some() {
+                for request in active.session.revoke_host_services() {
+                    if let HostRequest::Cancel { call_id } = request {
+                        self.push_event(json!({"type":"hostCallCancelled","callId":call_id,"reason":"execution_fault"}));
+                    }
+                }
+                self.begin_http_retirement();
+                return;
+            }
             let navigation = active
                 .session
                 .cancel_all_navigation("SDK runtime retired")
@@ -3079,6 +3104,13 @@ impl ContainerSession {
     }
 
     fn cancel_active_navigation(&mut self, reason: &str) {
+        if self
+            .active
+            .as_ref()
+            .is_some_and(|active| active.session.execution_fault().is_some())
+        {
+            return;
+        }
         let identity = self.accepted_pack_metadata();
         let cancelled = self
             .active
@@ -3157,7 +3189,17 @@ fn validate_batch(batch: &BridgeBatch) -> Result<(), SdkError> {
             || (message.kind == EnvelopeKind::Response
                 && message.payload.get("ok") == Some(&Value::Bool(false)))
         {
-            let error = message.payload.get("error").unwrap_or(&message.payload);
+            let error = message
+                .payload
+                .get("error")
+                .or_else(|| {
+                    message
+                        .payload
+                        .get("errors")
+                        .and_then(Value::as_array)
+                        .and_then(|errors| errors.first())
+                })
+                .unwrap_or(&message.payload);
             return Err(SdkError::new(
                 error
                     .get("code")

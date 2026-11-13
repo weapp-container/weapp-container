@@ -1,0 +1,1 @@
+<view id="root" bindtap="bubble"><button id="increment" bindtap="increment">{{count}}</button><input id="input" bindinput="input"/><counter id="component" value="{{count}}"/><text id="message">{{message}}</text></view>
