@@ -2094,8 +2094,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "iOS/Desktop GitHub 与公开 Specs 的 `.7.1` release 已匿名校验；Contract 保持 `.7.0`；Android Central、Trunk、npm 和 pub.dev 阻塞状态已按实际记录。",
-      "reviewedChineseSha256": "749c63fd63a450333b0ba4679d42e435407842abab98e46a861117dbc801fbad",
+      "reviewedChineseSummary": "preview.7.1 各注册源实际状态；runtime、原生 GitHub release、Specs 与 Flutter interface 匿名验证；Android、Trunk、RN 和 Flutter 其余包的认证或依赖阻塞",
+      "reviewedChineseSha256": "4ab2bef9898936048232ec827916475fbd004a58e02cd72283f191f61e8bcf01",
       "legacyHeadingIds": []
     },
     {
