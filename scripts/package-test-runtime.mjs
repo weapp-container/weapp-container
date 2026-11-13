@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { chmod, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { chmod, copyFile, cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,7 +23,17 @@ const binary = join(destination, 'bin/weapp-test-host');
 await copyFile(join(root, 'target', target, 'release/weapp-test-host'), binary);
 await chmod(binary, 0o755);
 await copyFile(join(root, 'LICENSE'), join(destination, 'RUNTIME-LICENSE'));
-run(process.execPath, ['scripts/sdk-licenses.mjs', '--package', 'container-sdk', '--target', target, '--features', 'testing', '--out', join(destination, 'THIRD_PARTY_NOTICES')]);
+// The collector checks clean source identity. Its staging siblings must stay
+// outside the checkout until collection has completed and been verified.
+const notices = await mkdtemp(join(tmpdir(), 'weapp-test-notices-'));
+try {
+  const collected = join(notices, 'THIRD_PARTY_NOTICES');
+  run(process.execPath, ['scripts/sdk-licenses.mjs', '--package', 'container-sdk', '--target', target, '--features', 'testing', '--out', collected]);
+  await rm(join(destination, 'THIRD_PARTY_NOTICES'), { recursive: true, force: true });
+  await cp(collected, join(destination, 'THIRD_PARTY_NOTICES'), { recursive: true });
+} finally {
+  await rm(notices, { recursive: true, force: true });
+}
 const bytes = await readFile(binary);
 const pkg = JSON.parse(await readFile(join(destination, 'package.json'), 'utf8'));
 await writeFile(join(destination, 'runtime.json'), JSON.stringify({ schemaVersion: 1, version: pkg.version, target, protocolVersion: 1, engine: 'quickjs', testing: true, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') }, null, 2) + '\n');

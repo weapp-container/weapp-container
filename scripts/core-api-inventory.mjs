@@ -348,7 +348,7 @@ const reviewedSourceSha256 = Object.freeze({
   "hostInstaller": "5197f8df3b7c273fb70430bd2de1bf6c3fae352a4d7c476f27d26a944991f40e",
   "asyncHost": "5374301e39469b1759187b636f47045b383e5471270391c688400d949fbb4d2a",
   "logJournal": "332a7d543327192e419a8ae8d15b2594cff418de266133a3f7fcb96514d78c1f",
-  "nativeProvider": "f2d55772dd17d97ca6695cfe4697b5bba3a304ab1ce57ab2ec1b2e27a8d77a1e",
+  "nativeProvider": "81ef905a37908face8798be6868d0d7ff93b7a08deacf2d62c9a223eaa6a144a",
   "simulatorWeb": "99815135af22c7c208a385cdc64bfb7f765a50f0afd47db4b67063c25b206a05",
   "snapshots": "9f42b04de5564eecad51b3396af3087a8c34f91c29415ad8a0c05cf0d6d6d4fb",
   "webHost": "1dcbf654da6cc5e77ac0f7003761bc39045b8e7058e664adf281270e0978a49f",

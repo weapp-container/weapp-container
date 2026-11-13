@@ -7,7 +7,7 @@ import { auditProductNaming } from './check-product-naming.mjs'
 
 const fixtures = {
   'package.json': JSON.stringify({ name: '@sonofmagic/weapp-container' }),
-  'tools/container-manifest/package.json': JSON.stringify({ name: '@sonofmagic/container-manifest', bin: { 'container-pack': 'bin/container-pack.mjs' } }),
+  'tools/container-manifest/package.json': JSON.stringify({ name: '@sonofmagic/container-manifest', bin: { 'container-pack': './dist/cli.mjs' } }),
   'crates/container-simulator/Cargo.toml': '[package]\nname = "container-simulator"\n[[bin]]\nname = "weapp-simulator"\npath = "src/main.rs"\n',
   'crates/container-sdk-ffi/Cargo.toml': '[package]\nname = "container-sdk-ffi"\n[lib]\nname = "weapp_container_sdk"\n',
   'crates/container-sdk-ffi/src/lib.rs': '#[no_mangle]\npub extern "C" fn weapp_container_sdk_abi_version() -> u32 { 1 }\n',

@@ -1813,7 +1813,7 @@
         "path": "docs/host-services/source-review.md"
       },
       "reviewedChineseSummary": "复核测试 feature、受控时间、私有调度观测、TypeScript 迁移与历史证据边界",
-      "reviewedChineseSha256": "0a1752b06a2824bfc275264d85dc77b0f5d7a9a6093dcd17333bde99c7e2523b",
+      "reviewedChineseSha256": "f476d7ad9ee070db6b776a74e9c4413267f8a30b9530c434ee6e19b95f3517bc",
       "legacyHeadingIds": [
         "2026-11-12-复核范围",
         "api-来源审定",

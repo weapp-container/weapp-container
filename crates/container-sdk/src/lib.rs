@@ -421,6 +421,8 @@ impl Active {
 /// A thread-affine application session, independent from a particular UI
 /// toolkit. It is deliberately !Send/!Sync. All callbacks are queued events.
 pub struct ContainerSession {
+    #[cfg(test)]
+    test_view_execution: Option<container_runtime::ViewExecutionPolicy>,
     #[cfg(feature = "testing")]
     test_options: Option<testing::TestOptions>,
     config: ContainerConfig,
@@ -585,6 +587,8 @@ impl ContainerSession {
             })
             .unwrap_or_default();
         Ok(Self {
+            #[cfg(test)]
+            test_view_execution: None,
             #[cfg(feature = "testing")]
             test_options: None,
             config,
@@ -735,6 +739,8 @@ impl ContainerSession {
         let mut session = Session::new(
             pack.manifest.clone(),
             SessionConfig {
+                #[cfg(test)]
+                view_execution: self.test_view_execution.clone().unwrap_or_default(),
                 session_id: format!("{}-{generation}", self.base_id),
                 engine: self.config.engine,
                 #[cfg(feature = "testing")]

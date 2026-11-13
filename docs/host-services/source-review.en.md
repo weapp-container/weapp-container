@@ -67,6 +67,8 @@ Reviewed the test host and TypeScript migration against production boundaries on
 | `container-core/src/turn-scheduler.js` | The private status command only reports currently ready work for bounded flush convergence. It does not advance future timers or change callback ownership and cancellation semantics. |
 | `tools/container-manifest/src/index.ts` | Migrated JS to TypeScript, added JSON / AST boundary types and moved the CLI into a separate entry. Existing tests validate deterministic manifests, resource digests, errors and WXS semantics. |
 
+The receipt durability unit test explicitly uses a finite 2 s View budget so shared CI startup does not mask its target assertions with the 50 ms initialization budget. This override compiles only into unit tests; production and testing distributions retain their default budgets.
+
 The review covers 24 real-runtime integration tests, 87 Rust SDK tests, scheduler callback compatibility tests, manifest regressions and declaration tests. Test processes and node handles bind to sessions; stale handle rejection, cancellation and cleanup failures have checks. These results do not raise device or WeChat compatibility acceptance status.
 
 <a id="后续更新"></a>

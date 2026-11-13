@@ -52,7 +52,7 @@ export async function auditProductNaming({ root = ROOT } = {}) {
     if (expectedBin) check(path, 'package.bin', value.bin ?? null, expectedBin)
   }
   await packageJson('package.json', '@sonofmagic/weapp-container')
-  await packageJson('tools/container-manifest/package.json', '@sonofmagic/container-manifest', { 'container-pack': 'bin/container-pack.mjs' })
+  await packageJson('tools/container-manifest/package.json', '@sonofmagic/container-manifest', { 'container-pack': './dist/cli.mjs' })
   for (const [path, names] of [
     ['crates/container-simulator/Cargo.toml', { package: 'container-simulator', bin: 'weapp-simulator' }],
     ['crates/container-sdk-ffi/Cargo.toml', { package: 'container-sdk-ffi', lib: 'weapp_container_sdk' }],

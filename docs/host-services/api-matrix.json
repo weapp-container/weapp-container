@@ -1625,7 +1625,7 @@
       },
       "nativeProvider": {
         "path": "crates/container-sdk/src/lib.rs",
-        "sha256": "f2d55772dd17d97ca6695cfe4697b5bba3a304ab1ce57ab2ec1b2e27a8d77a1e"
+        "sha256": "81ef905a37908face8798be6868d0d7ff93b7a08deacf2d62c9a223eaa6a144a"
       },
       "hostServices": {
         "path": "crates/container-runtime/src/host_services.rs",

@@ -2367,6 +2367,11 @@ fn sdk_attempt_receipt_is_identical_on_apply_query_event_and_does_not_reexecute(
 fn sdk_attempt_state_observation_failure_cannot_lose_an_accepted_terminal_receipt() {
     let pack = copied_pack("wx.setStorageSync('loads',(wx.getStorageSync('loads')||0)+1);this.setData({count:wx.getStorageSync('loads')});");
     let mut sdk = ContainerSession::new(ContainerConfig::default()).unwrap();
+    // Receipt durability is a semantic check; bound startup separately from
+    // the production 50 ms View performance budget on shared CI machines.
+    sdk.test_view_execution = Some(container_runtime::ViewExecutionPolicy {
+        batch_timeout_ms: 2_000,
+    });
     let begin = sdk
         .command(
             "beginDevPackAttempt",

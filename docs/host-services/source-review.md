@@ -72,6 +72,8 @@ Linux Xvfb/Mesa 集成测试验证真实 GL drawable 的像素、resize、重载
 | `container-core/src/turn-scheduler.js` | 私有 status 命令只返回当前就绪工作，供有限 flush 判断收敛；不推进未来 timer，不改变回调所有权与取消语义。 |
 | `tools/container-manifest/src/index.ts` | 从 JS 迁移为 TypeScript，补充 JSON / AST 类型边界，CLI 移至独立入口；确定性 manifest、资源摘要、错误与 WXS 语义由既有测试验证。 |
 
+收据持久性单元测试显式使用 2 s 的有限 View 预算，避免共享 CI 的 50 ms 初始化预算掩盖目标断言。该覆盖只编译到单元测试，生产与 testing 分发默认预算均保持原值。
+
 复核覆盖 24 个真实运行时集成测试、87 个 Rust SDK 测试、scheduler 回调兼容测试、manifest 回归和声明测试。测试进程与节点句柄绑定会话，旧句柄拒绝、取消和回收失败均有验证；这些结果不提升设备或微信兼容性验收状态。
 
 <a id="subsequent-updates"></a>
