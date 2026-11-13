@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { appendFileSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { RELEASE_REPOSITORY, RELEASE_SDKS, assertCandidate, assertCompleteRelease, assertProductionRun, assertWrapperReceipt, checksReady, releaseNotes, workflowChecks } from './lib/runtime-release.mjs';
+import { RELEASE_REPOSITORY, RELEASE_SDKS, assertCandidate, assertCoreVersions, assertCompleteRelease, assertProductionRun, assertWrapperReceipt, checksReady, releaseNotes, workflowChecks } from './lib/runtime-release.mjs';
 import { NATIVE_TARGETS } from './lib/sdk-native-features.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -45,6 +45,8 @@ async function prepare() {
   const sourceCommit = run('git', ['rev-parse', 'HEAD']).trim(), fixed = pins('HEAD');
   const { SDK_RELEASE_VERSION } = await import('./lib/sdk-current-release.mjs');
   assert.equal(SDK_RELEASE_VERSION, policy.runtimeVersion);
+  assertCoreVersions(Object.fromEntries(['container-sdk', 'container-sdk-ffi'].map(crate => [crate,
+    readFileSync(resolve(root, 'crates', crate, 'Cargo.toml'), 'utf8')])), readFileSync(resolve(root, 'Cargo.lock'), 'utf8'), policy.runtimeVersion);
   const sdks = {};
   for (const sdk of RELEASE_SDKS) {
     const directory = resolve(root, 'sdk', sdk), pkg = json(join(directory, 'package.json'));
