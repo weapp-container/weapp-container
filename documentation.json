@@ -3333,8 +3333,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "已复核 Contract npm 与 Flutter interface 的公开入口、归档校验、消费范围及其余 SDK 的发行阻塞；保留既有发行顺序、认证要求和设备验收边界。",
-      "reviewedChineseSha256": "048fce0c691049780e4669f4871942842d6994daa89c1749353b8bde2cee9994",
+      "reviewedChineseSummary": "已复核 Contract npm 与 Flutter interface 的公开入口、归档校验、OIDC 配置、消费范围及其余 SDK 的发行阻塞；保留既有发行顺序、认证要求和设备验收边界。",
+      "reviewedChineseSha256": "ddd00a02101eb76e6f68574fe5ebc40db6c3e6721c74ac7aa81763176eeef87a",
       "legacyHeadingIds": []
     },
     {
