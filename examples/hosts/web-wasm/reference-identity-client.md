@@ -1,4 +1,8 @@
+<a id="web-host-reference-identity-client"></a>
 # Web 宿主参考身份客户端
+
+**简体中文** · [English](reference-identity-client.en.md)
+
 
 `reference-identity-client.mjs` 将 `tools/host-services-reference` 的账号协议接入
 `BrowserHostServices.identity`，用于 direct 和 Worker 宿主。客户端在宿主 realm

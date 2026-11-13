@@ -1,11 +1,16 @@
+**简体中文** · [English](PULL_REQUEST_TEMPLATE.en.md)
+
+<a id="issues-and-changes"></a>
 ## 问题与变化
 
 说明触发方式、根因、修改后行为及接口兼容性变化。
 
+<a id="verification"></a>
 ## 验证
 
 列出实际测试结果、未执行项及原因。涉及官方工具、设备和性能时附方法、源码及产物标识和限制。
 
+<a id="dependencies"></a>
 ## 关联
 
 关联 Issue 或 SDK PR，说明需要同步的文档和 submodule 指针。

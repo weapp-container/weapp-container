@@ -1,4 +1,8 @@
+<a id="historical-evidence-and-public-source-code"></a>
 # 历史证据与公开源码
+
+**简体中文** · [English](archived-evidence.en.md)
+
 
 公开源码从整理后的快照开始。原开发历史、设备日志、截图、观察记录、构建归档、重复源码和内部任务交接保存在私有档案，不随公开 Git 历史分发。
 

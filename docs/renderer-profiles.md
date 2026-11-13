@@ -1,15 +1,12 @@
-# Renderer profiles and layout-independent View documents
+<a id="renderer-profiles-and-layout-independent-view-documents"></a>
+# 渲染器配置文件和与布局无关的视图文档
 
-Renderer selection is separate from the JavaScript engine and from legacy WXS
-versus modern View language profiles. The supported profile names are `skia`,
-`webview`, and `skyline-compat`. `skyline-compat` identifies the container's
-compatibility path; it does not claim that the official Skyline implementation
-is included or that its conformance gates have passed.
+**简体中文** · [English](renderer-profiles.en.md)
 
-The packer maps emitted app/page JSON `renderer: "webview"` to `webview` and
-`renderer: "skyline"` to `skyline-compat`. Missing declarations retain the
-container's existing `skia` default. Source JSON and all `wv` output bytes stay
-unchanged. A source project may override selection in `container.config.json`:
+
+渲染器选择与 JavaScript 引擎以及传统 WXS 与现代 View 语言配置Profile无关。支持的配置名称为 `skia`、`webview` 和 `skyline-compat`。`skyline-compat` 表示容器的兼容路径；它并不声明已包含官方 Skyline 实现，或其符合性门控已通过。
+
+打包工具将输出的 app/page JSON 中的 `renderer: "webview"` 映射为 `webview`，将 `renderer: "skyline"` 映射为 `skyline-compat`。缺少声明的保持容器原有的 `skia` 默认值。源 JSON 和所有 `wv` 输出字节保持不变。源项目可 在 `container.config.json` 中覆盖选择：
 
 ```json
 {
@@ -22,44 +19,12 @@ unchanged. A source project may override selection in `container.config.json`:
 }
 ```
 
-Keys are emitted route paths, with no `.wxml` or `.json` extension. Precedence
-is configured page, source page, configured default, source app, then `skia`.
-Unknown routes, profile names, source renderer values, and configuration fields
-fail packing with `ERR_RENDERER_CONFIG`. Configuration files participate in dev
-watch dependencies even when no modern View modules are configured.
+键值是路由路径，不包含 `.wxml` 或 `.json` 扩展名。优先级配置为：页面、源页面、配置默认值、源应用，然后是 `skia`。未知的路由、配置文件名、源渲染器值以及配置字段在打包时会报错 `ERR_RENDERER_CONFIG`。配置文件即使没有配置现代 View 模块，也会参与开发模式下的文件监控依赖。
 
-Any explicit selection emits schema v3 with `rendering.version: "1.0"`, a
-`default`, and a resolved `pages` map. Schema v3 can also contain `modernView`.
-Unconfigured legacy packs retain their existing v1/v2 representation. The
-integrity root covers renderer selection, and changing it requires a session
-restart. Older runtimes reject v3; current hosts must negotiate the renderer
-profile version and required profiles before initializing a page. The v3 schema
-is in `schemas/container-manifest-v3.schema.json`.
+任何显式选择都会发出 schema v3，包含 `rendering.version: "1.0"`、`default` 以及解析后的 `pages` 映射。schema v3 也可以包含 `modernView`。未配置的旧版包仍保留其原有的 v1/v2 表示形式。完整性根节点涵盖呈现器选择，更改它需要会话重启。较旧的运行时会拒绝 v3；当前宿主在初始化页面前必须协商呈现器配置版本和所需配置文件。v3 schema 位于 `schemas/container-manifest-v3.schema.json`。
 
-`container-ir::ViewDocument` describes evaluated content before layout. It
-preserves stable occurrence IDs, component/event/slot ownership, typed
-attributes, event capture/catch policies, ordered WXSS roots and raw rule IR,
-and content-addressed resource references. A `typedAttrs` entry is authoritative
-over the legacy `attrs` string projection; neither is an instruction to evaluate
-an expression again. Geometry fields are rejected by the document wire type.
-One stylesheet source may be applied to multiple component instances by
-repeating its source ID with distinct `scopeId` values; all scoped copies must
-retain identical IR. `slotOwner` is optional: producers must preserve the
-declaration owner when known and must not infer it from physical render ancestry.
+`container-ir::ViewDocument` 描述了布局前评估的内容。它保留了稳定的出现 ID、组件/事件/插槽的所有权、类型属性、事件捕获/拦截策略、有序的 WXSS 根节点和原始规则 IR，以及基于内容的资源引用。`typedAttrs` 条目优先于旧的 `attrs` 字符串投影；二者均不是再次求值表达式的指令。几何字段被文档 wire type 拒绝。一个样式表源可以通过重复其源 ID 并使用不同的 `scopeId` 值应用到多个组件实例上；所有作用域副本必须保持相同的 IR。`slotOwner` 是可选的：生产者在已知时必须保留声明的所有权，且不得从物理渲染祖先关系中推断所有权。
 
-The runtime projection consumes the already evaluated component graph. Resolved
-component documents and listener declaration documents are retained separately
-from lexical import/include provenance, including components whose transparent
-host is removed. Component stylesheet imports inherit the originating instance
-scope. Raw conditional imports are preserved; an undeclared inactive reference
-is not fabricated into a loaded sheet. Declared blobs are verified. The document
-does not certify browser CSS isolation or that all conditional imports were
-executed. Source sheets currently repeat per instance scope under explicit
-count/byte limits; a future renderer can intern source IR independently of scope
-applications.
+运行时投影消耗已评估的组件图。解析后的组件文档和监听器声明文档与词法导入/包含来源分开保存，包括其透明宿主被移除的组件。组件样式表导入继承来源实例作用域。原始条件导入被保留；未声明的非活动引用不会被生成为加载的样式表。已声明的二进制数据会被验证。该文档不保证浏览器样式隔离，也不保证所有条件导入均被执行。源样式表目前在每个实例作用域下重复，且受显式计数/字节限制；未来的渲染器可以独立于作用域应用，对源IR进行内联。
 
-Skia and Skyline compatibility profiles use Rust as layout authority. WebView
-uses the browser. A ViewDocument alone proves neither successful presentation
-nor browser/GPU capability: those require a matching presenter receipt and
-separate runtime conformance evidence. No backend may silently substitute
-Skia when a required WebView profile is unavailable.
+Skia 和 Skyline 兼容性配置文件将 Rust 作为布局权威。WebView 使用浏览器。仅凭 ViewDocument 无法证明成功的呈现或浏览器/图形处理器（GPU）能力：这些需要匹配的呈现器回执以及独立的运行时合规性证据。任何后端在缺少所需 WebView 配置文件时均不得静默地替换 Skia。

@@ -1,9 +1,14 @@
+<a id="api-source-approval"></a>
 # API 来源审定
+
+**简体中文** · [English](source-review.en.md)
+
 
 API 清单的来源身份保存在 [检查器](../../scripts/core-api-inventory.mjs) 中。完整文件摘要统一由 `reviewedSourceSha256` 保存，各项能力检查选择自己的固定来源集合；JavaScript 的控制流身份使用固定 Acorn 版本计算的规范 AST 摘要。源码变化必须重新审阅，不能在生成 matrix 时自动接受当前摘要。
 
 这些身份只说明指定源码经过复核。它们不证明编译后的全部行为、官方 API 完整兼容、真机执行、商户交易或各 SDK 的实际验收。平台状态仍由独立的 [验收账本](./acceptance-ledger.json) 和 [验收契约](./acceptance-contracts.json) 决定。
 
+<a id="2026-11-12-review-scope"></a>
 ## 2026-11-12 复核范围
 
 本次以公开源码快照中的实现为目标，逐文件比较之前审定的原始内容与当前内容。更新了 20 个完整文件身份，以及通知 hub、安装器、生命周期、宿主桥接和 Promise 拒绝处理的 AST 身份。未改变能力评级、验收契约或验收账本。
@@ -38,6 +43,7 @@ Simulator 配置透传运行时已有的有限 `ViewExecutionPolicy`，替换仅
 配置字段，使集成测试也能明确选择语义测试预算。默认值继续为 50 ms；初始装载、
 开发重载与 `default_session_config` 使用同一策略，运行时仍校验策略并收紧外层期限。
 
+<a id="2026-11-12-desktop-gl-host-review"></a>
 ## 2026-11-12 桌面 GL 宿主复核
 
 以本次 PR 的基线逐文件复核以下差异，更新 `runtime`、`commonHost`、
@@ -54,6 +60,7 @@ Simulator 配置透传运行时已有的有限 `ViewExecutionPolicy`，替换仅
 Linux Xvfb/Mesa 集成测试验证真实 GL drawable 的像素、resize、重载和 detach；
 该结果不代表 Windows、Wayland 或物理设备验收，也不提升任何 SDK 验收状态。
 
+<a id="subsequent-updates"></a>
 ## 后续更新
 
 1. 找到上次审定的完整来源，审阅到当前文件的差异，确认授权、所有权、生命周期、预算及失败语义。

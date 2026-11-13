@@ -1,4 +1,8 @@
+<a id="security-issue-report"></a>
 # 安全问题报告
+
+**简体中文** · [English](SECURITY.en.md)
+
 
 请勿在公开 Issue 提交可利用漏洞、凭据或用户数据。请通过 [GitHub 私密漏洞报告](https://github.com/weapp-container/weapp-container/security/advisories/new)联系维护者；仓库公开时应启用该功能。
 

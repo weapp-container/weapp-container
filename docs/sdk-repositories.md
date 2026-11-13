@@ -1,18 +1,23 @@
+<a id="sdk-warehouse-and-source-code-construction"></a>
 # SDK 仓库和源码构建
+
+**简体中文** · [English](sdk-repositories.en.md)
+
 
 核心运行时和 SDK 自有源码采用 Apache-2.0，单独标识的双许可证 crate 和第三方组件保留原许可。SDK 继续独立维护，主仓库通过固定提交的 HTTPS submodule 组合它们。
 
 | 仓库 | 路径 | 内容 |
 | --- | --- | --- |
-| [sdk-contract](https://github.com/weapp-container/sdk-contract) | `sdk/contract` | C ABI、TypeScript 类型和协议 |
-| [sdk-android](https://github.com/weapp-container/sdk-android) | `sdk/android` | Kotlin / JNI / Gradle |
-| [sdk-ios](https://github.com/weapp-container/sdk-ios) | `sdk/ios` | Swift / UIKit / SwiftPM / CocoaPods |
-| [sdk-desktop](https://github.com/weapp-container/sdk-desktop) | `sdk/desktop` | C / C++ / CMake |
-| [sdk-flutter](https://github.com/weapp-container/sdk-flutter) | `sdk/flutter` | Flutter 平台插件 |
-| [sdk-react-native](https://github.com/weapp-container/sdk-react-native) | `sdk/react-native` | Fabric / TurboModule |
+| [sdk-contract](https://github.com/weapp-container/sdk-contract/blob/main/README.md) | `sdk/contract` | C ABI、TypeScript 类型和协议 |
+| [sdk-android](https://github.com/weapp-container/sdk-android/blob/main/README.md) | `sdk/android` | Kotlin / JNI / Gradle |
+| [sdk-ios](https://github.com/weapp-container/sdk-ios/blob/main/README.md) | `sdk/ios` | Swift / UIKit / SwiftPM / CocoaPods |
+| [sdk-desktop](https://github.com/weapp-container/sdk-desktop/blob/main/README.md) | `sdk/desktop` | C / C++ / CMake |
+| [sdk-flutter](https://github.com/weapp-container/sdk-flutter/blob/main/README.md) | `sdk/flutter` | Flutter 平台插件 |
+| [sdk-react-native](https://github.com/weapp-container/sdk-react-native/blob/main/README.md) | `sdk/react-native` | Fabric / TurboModule |
 
 `website` 对应文档与展示仓库，运行库发行工具位于主仓库的 [tools/runtime-artifacts](../tools/runtime-artifacts/README.md)。旧 `runtime-artifacts` 仓库仅保留只读历史归档，不再作为 submodule 或新发行入口。`vendor/weapp-vite` 固定到审核过的上游提交。
 
+<a id="current-source-code-build"></a>
 ## 当前源码构建
 
 先完成根目录 README 的依赖安装。从当前主仓库构建运行库，不需要历史下载凭据。Apple Silicon macOS 的原生 SDK 示例：
@@ -35,6 +40,7 @@ CI 通过共享的 Linux 原生依赖 action 执行同样的准备，不依赖 r
 
 各平台入口为 `pnpm sdk:build:android`、`pnpm sdk:build:ios`、`pnpm sdk:build:desktop`、`pnpm sdk:build:flutter` 和 `pnpm sdk:build:react-native`。按对应 SDK README 选择参数，并显式传入匹配的新构建运行库或安装目录。独立 SDK 不隐式寻找父仓库，也不静默退回旧归档。
 
+<a id="precompiled-packages-and-compatibility"></a>
 ## 预编译包和兼容性
 
 现有锁文件记录历史归档的版本、ABI、平台、大小与 SHA-256。保留这些值及严格校验，历史下载的访问要求和随附许可保持原样。下载器仅兼容旧仓库已有的九个历史版本，不允许后续版本再使用旧仓库。

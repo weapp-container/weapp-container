@@ -1,9 +1,14 @@
+<a id="consent-revocation-10-next-runtime-and-sdk-wire-proposal"></a>
 # Consent revocation 1.0：下一批运行时与 SDK wire 提案
+
+**简体中文** · [English](consent-runtime-wire-proposal.en.md)
+
 
 状态：**设计提案，合同修订中，尚未完成实现、尚未验收，不 advertise 能力**。仅补充现有 `docs/host-services/consent-revocation-design.md` 的运行时合同，不改变完整 API 矩阵或任何验收状态。下文 capability 是拟议合同，不能当作当前可用声明。
 
 源码核对基线为主仓库 `281070dc6c28f07228017d9e98e600633d617c23`。共享工作目录仍在变化；实现前以最终干净提交复核引用。本修订纳入[独立审查记录](../archived-evidence.md)的 5 项合同修正；该记录审查的是原始提案，不是本修订的通过记录。本文未执行新的运行时测试、未操作浏览器、未提交或推送。
 
+<a id="0-next-smallest-complete-implementation-batch-do-not-change-any-sdk-versions-yet"></a>
 ## 0. 下一次最小完整实现批次（先不改各 SDK 版本）
 
 建议把下一批限定为 **runtime schema + 现有 Rust manager 的共享 fence + core/两种引擎异步最终 claim 与逐次同步身份 gate + 真实 QuickJS/V8 验证**，包含必要的 `container-sdk` Rust command 路由/manager plumbing；不同时更新 Android/iOS/Desktop/Flutter/RN 发布版本、锁、归档或消费者。Web/Worker 最终 broker、各平台 HTTP v2/UI/future、产物安装与真实 SDK 验收列为后续批次，不能因本批有限测试提升它们的验收状态。
@@ -16,6 +21,7 @@
 requirements 和 capability 仍是提案；不能用这些原语的有限测试推断公开链路已可用。
 旧 C/T 验收 ledger 已按原字节保存，新源码待新归档真实执行后再登记。
 
+<a id="1-must-maintained-boundaries"></a>
 ## 1. 必须保持的边界
 
 - 保留 C ABI `1`、host-services base `1.0`；新增 JSON requirement、context、命令及内部 continuation，不变更既有 C 符号签名或结构布局。
@@ -25,6 +31,7 @@ requirements 和 capability 仍是提案；不能用这些原语的有限测试�
 - 普通 snapshot 更新不是授权命令，不能授予、推进 generation 或解除撤回阻塞。runtime 的最终检查不能仅信任 SDK 转发的 JSON fence。
 - revoke 的返回值区分“已受理”和“撤回完成”。只有共享准入关闭、所有关联 owner 的边界/投影安装完成、后端提交及真实资源终结均完成，native revoke future 才成功。
 
+<a id="2-existing-code-ownership-and-why-modifying-only-current-is-inadequate"></a>
 ## 2. 现有源码归属与为什么不能只修改 current()
 
 以下路径均相对 `/path/to/weapp-container`：
@@ -50,6 +57,7 @@ requirements 和 capability 仍是提案；不能用这些原语的有限测试�
 
 这里最容易漏掉的是 **Rust 已完成，但 JS 回调尚在微任务队列中** 的状态。新合同必须覆盖 `pending → settling → claimed → terminal`，而不是仅覆盖 `pending → removed`。
 
+<a id="3-version-negotiation-and-strict-configuration"></a>
 ## 3. 版本协商与严格配置
 
 新增 capability：
@@ -88,6 +96,7 @@ requirements 和 capability 仍是提案；不能用这些原语的有限测试�
 - configure 时检查支持的底层 hooks、逐次同步身份 gate、coordinator binding 和同 D 的全 owner 门禁；缺少就报 `ERR_PROTOCOL_VERSION`，不能先允许 app.init 再补 fence。已登记但无法参与的 legacy owner 未退休排空前同样拒绝。
 - `syncValues` 不承载 generation/revision/challenge。严格模式中，身份的 profile/phone 授权与 userInfo 投影只能由下述受保护入口建立；错误配置明确拒绝，不能静默截断 userInfo 后当作成功配置。
 
+<a id="4-domains-numbers-and-runtime-internal-authority"></a>
 ## 4. 域、数字与 runtime 内部 authority
 
 ```text
@@ -127,6 +136,7 @@ authority 保留最高已验证 revision。操作自己的回执 revision 与当
 分别记录，乱序回执不能回退 authority。旧失败决定的重试只清理该债务，不恢复最新
 operation 的控制权；同一已失败 attempt 的首次原始错误保持不变。
 
+<a id="5-call-context-protected-api-and-completion-wire"></a>
 ## 5. Call context、protected API 与 completion wire
 
 在既有 `HostApiCallContext` 上追加可选的 `consent`；只在启用扩展且属于受保护调用时存在：
@@ -172,6 +182,7 @@ metadata 不进入 guest result。runtime 核对原 pending 的 E/C/generation�
 
 自己的 grant 会提升 revision，不能简单要求“永远等于入口 revision”。使用下一节的已登记 decision attempt：仅该 call 可以将自己的 acceptedRevision 从 expectedRevision 更新至被协调器接纳的新 revision；generation 必须完全不变。不得仅根据 HTTP 2xx 或 result 中的新 revision 自动追上共享状态。其他旧调用按旧 revision 失效，必要时由新调用重新获取。
 
+<a id="6-minimum-new-host-only-command-contract"></a>
 ## 6. 最小新增 host-only 命令合同
 
 所有对象严格拒绝未知字段。以下命名是建议冻结名，尚非已存在入口；通过现有 session_command JSON 和等价 Web exports/Worker `native.consent.*` 传输。
@@ -191,6 +202,7 @@ IdentityProjection = {
 
 `expiresIn`使用可精确表示的u32整数秒，deny时为0；grant若剩余为0即不允许披露。runtime把期限锚定在observation/decision-attempt捕获时的本地单调时钟，而非收到迟到响应的时刻；同revision的重放最多缩短已有期限，不得延长。完整v2后端对象先由host白名单映射，`consentExpiresIn`分别映射至states两个kind；不复制其他字段。userInfo的具体公开字段沿用现有profile白名单，不允许手机号、token或任意backend扩展。
 
+<a id="61-initialization-and-observation"></a>
 ### 6.1 初始化与 observation
 
 `captureConsentObservation { "kinds":["profile","phone"] }` 返回：
@@ -216,12 +228,14 @@ runtime 保存 observation 的真实 owner/fences/deadline；同一 owner最多 
 
 `identityState` 必须符合上述IdentityProjection。runtime复核profileAuthorized对应profile的有效grant、phoneAuthorized对应phone；非授权状态必须移除userInfo。期限和重放按共同ConsentState规则处理。
 
+<a id="62-registration-and-acceptance-of-this-ui-grant"></a>
 ### 6.2 本次 UI grant 的登记与接纳
 
 `prepareConsentDecision {callId, decisionId, expectedRevision}`：call 必须仍属当前 E/C/generation，kind 从 pending 获取，expectedRevision 等于共享当前值。authority 必须为 current，无未终结 revoke、无 cleanup 债务；若存在历史 revoke，最新 operation 必须已完整 complete。fenced/reconciliationRequired 及撤回失败待重试期间明确拒绝登记，不能仅以新 generation 创建一个“新授权”越过撤回。保存有界 attempt，返回 runtime-minted `decisionAttemptId`，同时绑定登记时已完成的最新撤回边界。decisionId 满足后端 v2 合同，challenge 只留可信 host client。弹窗展示、决定、发 HTTP 前仍各核对该 attempt；过期或撤回需要重新展示并取得新 decision，不能替换 revision 自动重提允许。
 
 `commitConsentDecision {decisionAttemptId, identityProtocol:"2.0", decisionId, granted:true, revision, expiresIn}`：校验 attempt 未用/未过期、E 当前、generation 未变、后端 expectedRevision→revision 严格递增一步、decisionId 匹配；并原子复核 authority 仍为 current、无未终结 revoke/cleanup，登记时的最新完整撤回边界仍相同。任一撤回开始即失效旧 grant attempt；必须等最新 revoke 完整完成后重新展示并登记新决定，不能让 grant 取代进行中或失败待清理的 revoke。满足条件才原子接纳 authority 与该 call 的 acceptedRevision，然后发布 snapshot/返回披露。响应丢失按原 decisionId 查询/重提，不能新造决定；迟到 receipt、superseded 或错误结果不接纳。false 决定使用 revoke/deny 合同，不绕过 generation fence。
 
+<a id="63-undo-and-queryable-final-state"></a>
 ### 6.3 撤回与可查询终态
 
 `beginConsentRevocation {kind, decisionId, context}`：context 沿用现有 native SnapshotOwner 的完整 application/account/session 归属检查；scope 从绑定中算出。共享 manager 的对应 typed API也允许没有 live owner 的 native 管理操作，仍须使用可信安装 scope，不接收 guest 选域。
@@ -253,6 +267,7 @@ public native `revoke(kind)` future 等待**实际 terminal receipt**，成功�
 
 每域最多 64 个运行中 operation；满额拒绝新操作，不能丢弃 pending。已终结 receipt 保留最近 64 个/显式宿主持久化；已驱逐 ID 返回明确 not-found，不假装完成。native tombstone资源计数另受 MAX_PENDING 同等有界预算约束。
 
+<a id="7-final-delivery-claim-microtasks-and-atomicity"></a>
 ## 7. 最终交付 claim、微任务与原子性
 
 建议的根本修复是运行时 `ConsentDelivery`，不把 generation 条件塞进 adapter `current()`：
@@ -289,6 +304,7 @@ ticket，但同一 checkpoint 的另一微任务抛错，最终 Err 不能证明
 
 线性化点必须写进实现测试：不是HTTP结束、SDK enqueue或Rust pending删除，而是最终guest交付claim。单纯“在调用resolver前再比较一次”仍未覆盖当前两种engine的Promise微任务。
 
+<a id="71-reusability-and-deadlock-constraints-of-verified-turncheckpoint"></a>
 ### 7.1 已核对的 turn/checkpoint 可复用性与死锁约束
 
 本次源码检索没有发现字面名为 `run_on_owner_thread` 的函数；实际边界是 `call_engine_with_error_code`（`crates/container-runtime/src/lib.rs:7209`）及 `with_engine_host_turn_deadline`（`engine_turn.rs:163`）。前者两端都在 JsEngine::call 后执行 drain_microtasks；普通throw也checkpoint，QuickJS已fault则跳过。QuickJS checkpoint在 `container-engine-quickjs/src/lib.rs:3757` 明确要求 execute_pending_job在 Context::with之外，因为后者持有runtime锁；V8 `:3383`在isolate lock内做显式checkpoint。
@@ -305,6 +321,7 @@ ticket，但同一 checkpoint 的另一微任务抛错，最终 Err 不能证明
 
 因此不能把现有rquickjs Context锁/V8 isolate锁当作跨owner授权锁，也不能把一个account manager Mutex持有到JS结束。共享authority只在短临界区线性化；owner lane和独立的计数permit负责执行屏障。
 
+<a id="72-strict-sequential-native-gate-for-strict-synchronous-snapshot-identity"></a>
 ### 7.2 strict 同步身份快照的逐次原生 gate
 
 `weappContainer.identity.getState()` 是同步披露入口，不因当前 turn 已装过 snapshot 就获得后续读取许可。当前 `container-core/src/host-bridge.js:86,357` 调用 `__container_sync_api`；QuickJS `src/lib.rs:224` 和 V8 `src/lib.rs:152` 会直接 clone JS 中的 per-turn cache。严格模式必须改走 runtime 私有的同步 `claim-identity-snapshot` hook，普通设备同步快照与 legacy 合同不受此私有入口影响。
@@ -315,6 +332,7 @@ ticket，但同一 checkpoint 的另一微任务抛错，最终 Err 不能证明
 
 strict userInfo 必须留在受管原生投影中，不能预先放入普通 `__container_sync_api_values` 或任何可被 snapshot facade 直接 clone 的 JS cache。turn 入口刷新、更新 snapshot 和 owner-lane ACK 只维护投影/完成屏障，不能代替逐次检查。hook 不捕获 `&mut Session`，不递归进入 session.command，不等待 HTTP/UI/owner 线程，也不跨 JS 持锁。任一 engine、SDK 或 transport 未接入该同步 hook 时，strict configure 在 app.init 前以 `ERR_PROTOCOL_VERSION` 拒绝；不能回退普通 cache，也不能 advertise consentRevocation/consentDeliveryClaim 1.0。
 
+<a id="8-owner-ack-and-snapshotevent-cleanup"></a>
 ## 8. owner ACK 与 snapshot/event 清理
 
 host/tenant 根 registry 必须登记同 D 的全部实际 owner，登记不能以是否支持新 hooks 为过滤条件。无法参加严格门禁的 legacy/旧 runtime owner 必须先真实退休并排空；在此之前拒绝整个 D 的 strict admission，不能删掉 owner 或从 ACK 集合中省略。候选 owner 和普通异步 Worker 也遵循此规则。
@@ -329,6 +347,7 @@ host/tenant 根 registry 必须登记同 D 的全部实际 owner，登记不能�
 
 只有 latest generation 对应的安全投影已安装、同 D 全部相关 owner 确认、后端提交及被继承的旧清理债务也实际终结，最新 operation/attempt 才原子进入 complete，并允许 authority 转为 current(false)。错误可查询、重试，不恢复授权。已关闭/engine fault的query走Rust manager状态，不把mutating命令一起列为passive。`queryConsentOperation`应加入SDK的账号替换允许列表以及FFI故障被动命令的精确白名单。
 
+<a id="9-reconstruction-and-sdkworker-replay"></a>
 ## 9. 重建与SDK/Worker重放
 
 - 公共controller保持稳定；每次新owner从manager取得全新的ownerRevision和当前每kind状态，先绑定authority，再验证requirements，再安装安全快照，最后app.init/输入。不能从旧config.syncValues复制grant/userInfo来跳过初始化。
@@ -341,6 +360,7 @@ host/tenant 根 registry 必须登记同 D 的全部实际 owner，登记不能�
 - 因此，未取得经过验证的等价最终原子检查与同步 gate 的 Worker transport 必须在 app.init 前拒绝严格 requirements，不能 advertise consentRevocation/consentDeliveryClaim 1.0，也不能因主 realm 有 coordinator 或控制队列而跳过。此类 Worker 若已在同 D 运行，按 §3/§8 阻止 strict admission，直至其真实退休排空；不能从 owner 集合排除。
 - 后续 Worker 支持须先另行冻结可执行的协议和能力协商：共享原子 authority 路线应定义跨内存的读取/提交线性化、owner 归属、permit/expiry 与释放；异步交付路线须明确 request、授予/commit、撤销、ACK 丢失、队列溢出、terminate/重建的状态图，并解决同步 identity snapshot 的相同边界。协议必须说明如何满足 §7/§7.2，或以明确的新合同表达差异，不能冒用 1.0。冻结、实现和真实验证前普通 broker 保持不支持；postMessage、一次主 realm 检查或一个本地 generation Map 都不是原子共享检查。
 
+<a id="10-minimum-ordered-implementation-sequence-preserving-system-boundaries"></a>
 ## 10. 最小、保持系统边界的实现顺序
 
 1. **类型/协议/拒绝优先**：runtime新建consent模块及strict schema；capability、requirements、context/completion、owner-only命令；旧runtime拒绝、新runtime无binding拒绝、旧后端拒绝的测试先落地。此时不advertise已可用。
@@ -352,6 +372,7 @@ host/tenant 根 registry 必须登记同 D 的全部实际 owner，登记不能�
 
 不能先以adapter端窄补丁声称完成，再后补最终JS边界：这会保留当前settling微任务漏洞，也会使每SDK重复实现一套终结规则。
 
+<a id="11-assertions-that-must-be-written-in-this-batch-are-reproducible"></a>
 ## 11. 此批必须写出的可复现断言
 
 - profile/phone真实响应生成后gate；两个同D的live owner，一个先撤回，另一个队列成功被替换为一次fail/complete/rejection；无userInfo/code/旧snapshot/旧event。
@@ -370,6 +391,7 @@ host/tenant 根 registry 必须登记同 D 的全部实际 owner，登记不能�
 
 所有证据仍绑定API/参数kind、干净源码提交、安装产物摘要、OS/浏览器/SDK、实际命令、结果及清理。本文不预填通过，不替代系统UI或真实平台验收。
 
+<a id="12-guaranteed-preservation-across-processdevice-scope"></a>
 ## 12. 明确保留的跨进程/设备范围
 
 该扩展只在同一 host/tenant 根 registry 的保证边界内启用；同 D 的全部实际 owner 必须已关联且具备共享协调、逐次同步 gate、最终 claim 与 ACK，或已真实退休排空。不能用“具备能力”过滤仍活跃的 owner 再宣称全域撤回完成。另一个进程/设备已经缓存的资料，无法因SQLite revision变化自动回收；取消当前HTTP也不能撤销已提交grant或已生成资料。

@@ -1,9 +1,14 @@
+<a id="seven-hosts-dual-rendering-goal-and-freeze-verification-checklist"></a>
 # 七宿主双渲染 goal 与冻结验收清单
+
+**简体中文** · [English](README.en.md)
+
 
 目标是在 Web、macOS、Windows、Linux、Android、iOS、鸿蒙上提供 `skia` 与 `webview` 两种页面渲染器，复用同一 AppService、页面状态和批量 bridge。`skyline-compat` 是 Skia 的兼容 profile，不是第三种 backend。Web 分别验收 `--web-runtime remote` 与 `--web-runtime browser`；其他宿主的运行模式为 `native`。
 
-计划阶段只进行了安装产物和源码审计，并未证明新的渲染器、GPU、设备或性能门禁通过。此目录开始冻结执行阶段的范围。goal 保持 active，只有全部必需门禁具备相匹配的实测证据，才允许标记完成；实现代码、接口编译、已有旧版本截图和检查器单测均不能代替该验收。
+计划阶段只进行了安装产物和源码审计，并未证明新的渲染器、GPU、设备或性能门禁通过。此目录开始冻结执行阶段的范围。目标仍未完成，只有全部必需门禁具备相匹配的实测证据，才允许标记完成；实现代码、接口编译、已有旧版本截图和检查器单测均不能代替该验收。
 
+<a id="freeze-baseline"></a>
 ## 冻结基线
 
 - 主仓提交：`c7d0dc6f595cd2d2c0ae2f7cd781c56a6cc6dab9`。
@@ -16,6 +21,7 @@
 
 所有宿主/渲染器/Web 模式要求 QuickJS 实际执行。V8 保留已有可运行边界：Web remote、macOS native、iOS native；这些组合对新渲染器仍须重新验证。iOS 已有 V8 记录使用匹配的本地 archive，不能推导全新机器可复现分发已经完成。其他 V8 组合必须具备显式 engine availability 测试；不可用时返回 `ERR_ENGINE`，禁止静默切换 QuickJS。availability 测试通过只证明错误边界，不代表 V8 运行通过。未来增加 V8 支持必须新增运行、组件和性能门禁，不能删除现有要求。
 
+<a id="implementation-phase-and-completion-criteria"></a>
 ## 实施阶段与完成条件
 
 1. 统一 frame/resource 准备、按需快照、GPU/DOM 呈现及页面 renderer 选择，移除普通呈现的重复 CPU raster/readback。
@@ -26,10 +32,12 @@
 
 七宿主各自验收，不能把七个 Rust crate 的构建成功算作七个平台运行成功。缺少真实 Windows/Linux 窗口、浏览器运行、移动设备或 GPU 证据时，相应项目保留 `unknown` 或在实际尝试后记录 `blocked`。软件渲染模拟器仅作为辅助验证；移动端 surface/performance 的完成证据要求物理设备。既有 near-parity 总门禁继续独立执行，本 goal 的完成不替代完整微信行为近等价声明。
 
+<a id="evidence-and-performance-rules"></a>
 ## 证据与性能规则
 
 每个 gate 只使用 `passed`、`failed`、`blocked`、`unknown`。非通过项必须说明原因。通过项指向一个 SHA-256 绑定的 JSON receipt；receipt 记录 gate ID、精确源码 commit、编译器及冻结基线、host/runtime/renderer/engine、实际环境、逐项检查结果和非空原始证据文件的哈希。通过的 receipt 必须绑定实际测试的源码 commit；旧失败尝试可以保留，但不能贡献通过状态。`blocked` 执行、错误 engine 或哈希不一致均被拒绝。要求硬件 GPU 的 gate 拒绝软件 fallback；普通 pack 执行通过不能升级为硬件 GPU 通过。
 
+<a id="source-code-and-evidence-separation"></a>
 ### 源码与证据归档分离
 
 测试后的证据提交会改变 HEAD。为避免把证据归档误认为生产源码变化，receipt 可以增加以下 `sourceBinding`，保留原始 `commit`，不填写尚未生成的未来提交 SHA：

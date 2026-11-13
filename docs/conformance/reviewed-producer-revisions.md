@@ -1,43 +1,29 @@
-# Reviewed producer revisions
+<a id="reviewed-producer-revisions"></a>
+# 已审核的生产者修订版本
 
-A reviewed producer revision is an ordered tuple of eight exact source identities: compiler-use recorder, compiler-use preload, fixture-build recorder, fixture packer preload, macro producer, macro insertion manifest, macro observer, and macro validator. Snapshot fixtures additionally require their exact ordered module closure. Current sources bind the GitHub producer, WXML producer, shared snapshot transport, shared temporary-project producer, and issue1034 producer, with exact module paths. Fixed r5b/r5c receipts retain their actual three-module closure; modules absent from those executions are never fabricated. Each identity includes SHA-256 and byte length. A macro or snapshot profile describes semantics; it does not identify a source revision.
+**简体中文** · [English](reviewed-producer-revisions.en.md)
 
-New production uses the current CJS v4 implementation. Fixed historical revisions are `sealed-esm-v2-r3-reviewed-v1` for the independently reviewed 1058 and 1185 receipts, `cjs-v4-r5b-reviewed-v1` for the frozen r5b source policy, `cjs-v4-r5c-reviewed-v1` for the completed r5c 1012 execution, and `cjs-v4-r5f-reviewed-v1` for the completed r5f 1034 execution. Multiple exact source tuples can share a profile. Each fixed revision has inert source copies and review provenance protected by a fixed metadata digest. The readers never import, evaluate, or execute historical JavaScript. Unknown, intermediate, mixed, reordered, missing, or changed source groups remain rejected.
 
-The r5b policy binds exact case ID, pinned source hash, source path, and conditional snapshot profile. It is an execution/read scope, not passed-case evidence: only its referenced 1072 receipt had completed the actual full-reader review at freeze time. Failed or unrun GitHub/WXML cases are not promoted by registry inclusion. The original r5b 1012 receipt remains unusable as a complete positive oracle. The distinct r5c revision has exactly one source scope, 1012, with its actual full-reader and dual-engine review provenance. It grants no scope or completed execution to1034 or the six unexecuted cases. Portable synthetic tests cover both old snapshot profiles without representing new official execution.
+一个已审核的生产者修订版是八个精确源身份的有序元组：编译使用记录器、编译使用预加载、固定构建记录器、固定包打包预加载、宏生产者、宏插入清单、宏观察者和宏验证器。快照固定件还额外需要其精确的模块闭包。当前源绑定 GitHub 生产者、WXML 生产者、共享快照传输、共享临时项目生产者和 issue1034 生产者，并带有精确的模块路径。固定版本 r5b/r5c 的回执保留其实际的三模块闭包；那些在前述执行中缺失的模块绝不会被伪造。每个身份包含 SHA-256 和字节长度。宏或快照配置描述语义；它不标识一个源修订版。
 
-The r5f revision admits only `ide-issue-1034-auto-routes-runtime`, its pinned
-source hash and path, and `issue1034-static-snapshot-v1`. Its eight primary and
-five snapshot source members match the actual receipt CAS and frozen source
-copies. Its provenance includes the actual complete official reader and root
-review. The template integration re-read all five unchanged official receipts
-through the current complete reader and rejected matching-hash mutations of
-snapshot order, closure size, source revision, case path and recorder summary.
-This revision grants no scope to earlier failed attempts or other cases.
+新生产使用当前 CJS v4 实现。已修复的历史版本为：独立审核的 1058 和 1185 回执版本为 `sealed-esm-v2-r3-reviewed-v1`，冻结的 r5b 源策略版本为 `cjs-v4-r5b-reviewed-v1`，完成的 r5c 1012 执行版本为 `cjs-v4-r5c-reviewed-v1`，完成的 r5f 1034 执行版本为 `cjs-v4-r5f-reviewed-v1`。多个精确的源元组可以共享一个配置文件。每个已修复的版本都有惰性源副本和审核来源，由固定的元数据摘要保护。读取者从不导入、评估或执行历史 JavaScript。未知、中间、混合、顺序错乱、缺失或更改的源组仍被拒绝。
 
-The fixed `cjs-v4-r6-v2-reviewed-v1` revision admits only the completed 1014 and
-1013 original case/source/path identities. Its complete fifteen-member tuple
-contains the primary eight, conditional snapshot five and ordered static helpers
-two. All three static helper references (macro, consumer and fixture) match the
-archived bytes. The blocked native template and unexecuted WXML/subpackage cases
-receive no historical scope. Current and fixed interpretations collapse only
-when the complete ordered fifteen-source bytes and profile are identical.
-After the SFC helper change, unchanged r6 receipts select the fixed revision.
-Root independently re-read those two and the five older actual receipts through
-the combined current strict reader.
+r5b策略绑定精确的案例ID、固定源哈希、源路径以及条件快照配置文件。它属于执行/读取范围，不代表案例已通过：只有其引用的1072收据在冻结时间点完成了实际的完整读取审查。失败或未运行的GitHub/WXML案例不会因注册包含而被提升。原始的r5b 1012收据仍无法作为完整的正向 oracle使用。不同的r5c版本恰好只有一个源范围，即1012，其实际的完整读取和双引擎审查来源已得到证实。它不授予1034或六个未执行案例的任何范围或完成执行。可移植的合成测试覆盖了旧的快照配置文件，但并未体现新的官方执行。
 
-Current template receipts additionally bind both static helper modules and the
-exact formatter package closure. Historical receipts retain their actual
-shapes; absent fields are not synthesized to select a current producer.
+r5f版本仅包含 `ide-issue-1034-auto-routes-runtime`、其固定的源哈希和路径，以及 `issue1034-static-snapshot-v1`。其八个主要成员和五个快照源成员与实际的回执CAS和冻结源副本相匹配。其来源信息包括实际的完整官方回执和根审核。模板集成重新读取了通过当前完整回执的五个未更改的官方回执，并拒绝了快照订单、闭包大小、源修订、案例路径和记录器摘要的匹配哈希突变。该版本不授予以往失败尝试或其他情况的任何权限。
 
-The macro reader selects an insertion manifest using all four actual helper identities. The consumer reader checks the recorder pair against the same group and carries an opaque internal selection. The fixture reader then closes all eight identities and, where present, the exact ordered snapshot closure for that source revision, selecting exactly one complete source tuple. Its second opaque token is bound to the same case, source hash, path, and snapshot profile. Snapshot transaction and final-cleanup readers require that complete token to authorize historical producer bytes; a caller-supplied ID, profile, copied token, or earlier consumer token grants no authorization.
+固定版本 `cjs-v4-r6-v2-reviewed-v1` 仅接受完成的 1014 和 1013 原始案例/源码/路径身份。其完整的十五元组包含八个主元、五个条件快照和两个有序静态辅助项。所有三个静态辅助项引用（宏、消费者和固定件）均与归档字节匹配。被阻塞的原生模板和未执行的 WXML/子包案例不接收历史作用域。当前和修复后的解释仅在完整有序十五源字节和配置文件完全一致时才会坍缩。SFC 辅助项变更后，未更改的 r6 回执将选择固定版本。根节点独立地通过组合的当前严格读取器重新读取这两个和五个较早的实际回执。
 
-Identity selection runs before checkpoint/final semantic validation so those strict readers can select historical producer bytes. It is not fixture admission. All current event, build, case, source, process, helper-transform, snapshot, physical-directory, candidate-ledger, cleanup, packer, and resource checks still run. Historical ESM v2 events use the current strict legacy-v2 validator. The current-source path without a macro observation retains its original boundary; fixed revisions require their actual explicit macro observation. Public manifests stay unchanged. The internal fixture provenance schema adds the distinct issue1034 snapshot profile while retaining the old profile values.
+当前模板回执还同时绑定静态辅助模块和确切的格式化程序包闭包。历史回执保留其实际形态；缺失字段不会被合成以选择当前生产者。
 
-Before changing any admitted producer component, including a change that keeps the same profile, preserve the previous complete source tuple and its conditional snapshot closure as a fixed reviewed revision. Independently verify its source freeze, original CAS identities, pinned case scope, and review provenance. Add the fixed metadata digest and inert copies, then run the full current oracle reader against unchanged historical receipts and meaningful strict-validator mutations. Keep portable synthetic admission/rejection tests in the default suite and archive raw receipt audits separately.
+宏读取器使用四个实际辅助身份选择插入清单。消费者读取器将记录器对偶与同一组进行比对，并携带一个不可见的内部选择。固定读取器随后关闭所有八个身份，且在存在情况下，选择该源版本的精确有序快照关闭，精确选择一个完整的源元组。其第二个不可见令牌绑定到相同的案例、源哈希、路径和快照配置。快照事务和最终清理读取器要求完整令牌授权历史生产者字节；调用方提供的ID、配置、复制令牌或更早的消费者令牌均不提供授权。
 
-Adding cases or changing current producer code must preserve admitted official receipts. Profile-only branches, arbitrary path allowlists, receipt-supplied executable modules, dynamically trusted digests, old-reader fallbacks, and copied `passed` fields do not establish reviewed revisions. Changes requiring new semantics need a separately reviewed validator change; source identity alone never grants it.
+身份选择在检查点/最终语义验证之前运行，因此严格读取者可以选取历史生产者字节。这并非固定入口的准入。所有当前的事件、构建、案例、源、流程、辅助转换、快照、物理目录、候选账本、清理、打包器和资源检查仍将继续运行。历史 ESM v2 事件使用当前的严格传统 v2 验证器。没有宏观察的当前源路径保留其原始边界；固定修订需要其实际的显式宏观察。公共清单保持不变。内部固定来源的溯源模式增加了 issue1034 快照配置文件，同时保留旧配置文件的值。
 
-The registry module and every fixed metadata, source, and provenance fixture belong to `REVIEWED_PRODUCER_INPUTS`, binding the full selection closure in official source freezes. Current sources use the normal source freeze; before a later edit they must first become a fixed previous revision.
+在更改任何已确认的生产者组件（包括保持相同配置的更改）之前，保留先前的完整源元组及其条件快照闭包作为固定审查版本。独立验证其源冻结、原始 CAS 身份、锁定的案例范围以及审查来源。添加固定的元数据摘要和惰性副本，然后使用完整的当前预言机读取器对未更改的历史回执和有意义的严格验证器突变进行运行。保持可移植的合成准入/拒收测试在默认套件中，并单独归档原始回执审计。
 
-The issue1034 and WXML producers share temporary-project transaction validation while retaining distinct exact source/helper identities, temporary path patterns, profiles and cleanup kinds. Source/config identity, generated output bytes, runtime snapshot bytes and physical directories remain independently bound. A root-dot runtime snapshot is not admitted as a source build root. The auto-routes cache is accepted only at its exact generated data path for the guarded1034 producer. Nested Vue macro extraction binds the nearest causal extraction before validating its source and effective snapshot; a matching distant source cannot replace a foreign nearest owner.
+添加案例或修改当前生产者代码必须保留已承认的官方回执。仅包含配置分支、任意路径允许列表、由回执提供的可执行模块、动态信任的摘要、旧读取器回退以及复制的 `passed` 字段均不能建立已验收的修订。需要新语义的更改必须有单独审核的验证器变更；仅凭源身份永远不能授予这种权限。
+
+注册模块以及每个固定元数据、源和来源信息的测试用例都属于 `REVIEWED_PRODUCER_INPUTS`，在官方源冻结时绑定完整的选择闭包。当前源使用正常源冻结；在进行后续编辑之前，必须首先变为固定前一版本。
+
+问题1034 和 WXML 生产者共享临时项目事务验证，同时保留各自独立的源/辅助身份、临时路径模式、配置文件和清理类型。源/配置身份、生成输出字节、运行时快照字节和物理目录保持独立绑定。根点快照不被接受为源构建根目录。自动路由缓存仅在受保护1034 生产者的精确生成数据路径下被接受。嵌套的 Vue 宏提取在验证其源和有效快照之前，会绑定最近的因果提取；匹配的远端源不能替代外部最近的所有者。

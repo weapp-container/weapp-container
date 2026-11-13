@@ -1,4 +1,8 @@
+<a id="scope-of-implementation-for-managed-synchronous-file-handles"></a>
 # 受管同步文件句柄的实现范围
+
+**简体中文** · [English](synchronous-file-descriptors.en.md)
+
 
 本批补齐 `openSync`、`closeSync`、`readSync`、`writeSync`、`fstatSync`、
 `ftruncateSync`、`truncateSync` 的实际 native std::fs 实现。公开调用经过
@@ -19,6 +23,7 @@ writeSync 支持 UTF-8 文本及 ArrayBuffer 范围写入；文本长度按字�
 扩展区域为零。同步 FileSystemManager 的 named payload 去除重复 args，避免同一
 ArrayBuffer 被计算两次预算。
 
+<a id="explicit-limits-and-unaccepted-items"></a>
 ## 显式限制与未验收项
 
 - 仅 native SDK 配置了 managed_files_root lease 且绑定同步 provider 时可用。

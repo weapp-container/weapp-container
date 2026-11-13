@@ -1,9 +1,14 @@
+<a id="stacking-drawing-order-and-input"></a>
 # 层叠、绘制顺序与输入
+
+**简体中文** · [English](stacking-contexts.en.md)
+
 
 Weapp Container 的 typed Block/Flex frame 按 CSS 层叠阶段组织绘制。
 `RenderNode.children` 始终保存原 WXML 顺序；不能通过重排或重挂节点来实现 z-index。
 这里描述当前可表达和验证的子集，不表示完整 CSS 或微信运行时视觉等价。
 
+<a id="boundary-between-typed-and-old-frame"></a>
 ## Typed 与旧 frame 的边界
 
 根节点的 `style.flow` 为 `Some(...)` 时，整个 frame 使用 CSS paint plan。
@@ -19,6 +24,7 @@ commit 与 frame 序列化均以 `Unsupported("typed-stacking-without-css-root")
 保留上一份画面；不让 Rust 按旧语义接受、CanvasKit 却按新语义拒绝同一份产物。
 纯旧 `RenderNode.z_index` 继续兼容。
 
+<a id="context-and-paint-phase"></a>
 ## Context 与 paint phase
 
 当前 context 边界包括根节点、fixed 节点、非 `none` 的二维 transform、
@@ -43,6 +49,7 @@ ordinal group 为零，但先判断 paint phase，再在适用阶段比较 order
 或 identity transform 后，它进入零层级阶段，order 才能参与同阶段先后比较。
 Block 子节点不受 order 影响。selector、事件父链和 DOM 查询顺序均不随 order 改变。
 
+<a id="three-relationships-and-shared-plans"></a>
 ## 三种关系与共享计划
 
 | 关系 | 用途 | 提升后代的绘制层级时 |
@@ -67,6 +74,7 @@ Typed `RenderFrame` 序列化携带 `paintPlan` v1，命令为 `begin`、`backgr
 映射点还必须处于该 DOM 祖先自身的输入几何中；可见的匿名文字溢出不会扩大
 公开 WXML 元素的事件区域。
 
+<a id="clipabsolute-and-fixed"></a>
 ## Clip、absolute 与 fixed
 
 overflow clip 约束空间关系，不能因 z-index promotion 丢弃。absolute 后代的包含块
@@ -80,6 +88,7 @@ opacity 及 context 归属。fixed 不能凭视口坐标越过一个 opacity 或
 transform 祖先创建的 fixed 包含块尚未实现，包含 identity transform 的该组合仍显式拒绝；
 fixed 自身的二维 transform 不属于这个限制。
 
+<a id="verification-and-unreached-boundaries"></a>
 ## 验证与尚未达到的边界
 
 `crates/container-render-skia/src/paint_tests.rs` 定义固定几何、无字体依赖的 corpus：

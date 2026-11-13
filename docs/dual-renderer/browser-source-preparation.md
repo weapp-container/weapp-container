@@ -1,4 +1,8 @@
+<a id="managed-build-inputs-for-browser-development"></a>
 # 浏览器开发态的受管构建输入
+
+**简体中文** · [English](browser-source-preparation.en.md)
+
 
 > 本页记录底层阶段合同；这些 API 本身不启用开发 CLI。当前显式 Browser CLI 复用的完整 runner、启动参数及关闭限制见 [Browser 开发循环](browser-dev-loop.md)。
 
@@ -20,6 +24,7 @@ pin 文件的格式见 [runtime 输入](browser-dev-artifacts.md)。示例先接
 `--web-runtime browser` 仍需后续完整执行链路验收。这里也没有 stage、激活站点或
 GPU／性能通过结论。
 
+<a id="data-and-resource-ownership"></a>
 ## 数据和资源归属
 
 监督器在完整构造后才启动自己的 watcher。源协议 `2.0` 使用单一原子替换的
@@ -51,8 +56,8 @@ watcher、portable 和 runtime 使用同一个账本。以下数字是逻辑准�
 | --- | ---: | ---: | ---: |
 | root／producer／tools | 1 | 512 MiB | 512 MiB |
 | runtime | 1 | 1024 MiB | 512 MiB |
-| raw | 2 | 32 MiB | 256 MiB + 64 KiB |
-| portable | 2 | 256 MiB | 512 MiB + 64 KiB |
+| 原始 | 2 | 32 MiB | 256 MiB + 64 KiB |
+| 可携式 | 2 | 256 MiB | 512 MiB + 64 KiB |
 
 显式 source profile 上限为内存／磁盘各 3 GiB、81,984 文件、10,286 目录、6 namespace
 和 1 个有限 artifact 作业；默认 retain-only 上限保持不变。编译器自身的可变输出仍在
@@ -64,6 +69,7 @@ watcher、portable 和 runtime 使用同一个账本。以下数字是逻辑准�
 不是对本机未跟踪构建文件真实性的证明。watch／packer 的实际源码应随执行证据绑定；
 这一阶段也不声称完成了浏览器站点全部输入的冻结。
 
+<a id="next-stage-execution-gatekeeping"></a>
 ## 后续执行门禁
 
 下一阶段需让 consuming stage 实际持有 portable、runtime、工具和 parent 输入，并

@@ -1,4 +1,8 @@
+<a id="dom-inputtextarea-basic-adaptation"></a>
 # DOM input／textarea 基础适配
+
+**简体中文** · [English](dom-text-controls.en.md)
+
 
 DOM presenter 将已求值 `ViewDocument` 中的 `input`、`textarea` 映射为真实 HTML
 文本控件。远端 DOM 与 Browser QuickJS Worker DOM 共用同一个适配器；应用逻辑、
@@ -7,6 +11,7 @@ DOM presenter 将已求值 `ViewDocument` 中的 `input`、`textarea` 映射为�
 本页定义文本编辑的基础状态与事件契约。它不表示原生中文 IME 会话能跨文档重建
 连续保留，也不授予微信官方、七宿主、无障碍、设备或性能门禁通过。
 
+<a id="attributes-and-content"></a>
 ## 属性与内容
 
 | 属性／内容 | 基础行为 |
@@ -28,6 +33,7 @@ input／textarea 不接受子节点；按钮内的文本控件，包括经自定
 在整文档预检中拒绝。未知 input type、未接入的原生键盘／宿主属性及不支持的组合
 返回显式错误，不生成无行为的占位控件。该适配不改变 Skia 或其他宿主的能力声明。
 
+<a id="edit-status-and-candidate-transactions"></a>
 ## 编辑状态与候选事务
 
 每个已接受候选按 occurrence 保存本地值、滚动位置、焦点、选择区起止及方向。
@@ -52,6 +58,7 @@ AppService 的本地编辑。声明 `value` 明确变化时使用新的声明值
 保留旧画面不意味着旧 key、页面或 owner 仍可输入。退休、断连和页面切换继续撤销
 对应权限与资源，不通过复制编辑快照恢复已失效的会话。
 
+<a id="input-and-keyboard-events"></a>
 ## 输入与键盘事件
 
 原生 input、focus、blur 和单行 confirm 采集 `value`、`cursor`、`selectionStart`、
@@ -73,6 +80,7 @@ keyCode 229 输入法键盘事件不能被当作确认提交。默认 textarea E
 完整非冒泡规则，以及平台特有 confirm／键盘行为仍未完成官方语义对照。
 现有事件路由的 capture／target／bubble／catch 边界不因这次基础适配自动升级。
 
+<a id="clear-limitations-of-native-ime"></a>
 ## 原生 IME 的明确限制
 
 当前普通呈现仍为“旧 iframe 快照 → 创建新 iframe → 恢复状态 → ACK”。
@@ -88,6 +96,7 @@ runtime 已撤销旧呈现权限后等待旧控件 compositionend，不能代替
 文档 permit、实际几何最终接受与有限编辑 lease 分开定义。该文档是尚未实现的
 协议提案，不代表现有 v1 支持跨呈现 IME，也不增加任何已声明能力。
 
+<a id="verification-and-evidence"></a>
 ## 验证与证据
 
 所需验证包括真实输入、单行／多行 Enter、输入法确认过滤、选择区与方向、声明值

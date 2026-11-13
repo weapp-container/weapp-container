@@ -1,4 +1,8 @@
+<a id="wxss-2d-transformation"></a>
 # WXSS 2D 变换
+
+**简体中文** · [English](transforms.en.md)
+
 
 Weapp Container 将变换解析、布局和绘制分成三个步骤，避免在节点尚无尺寸时把
 `translate(-50%, -50%)` 错按整个 viewport 计算。

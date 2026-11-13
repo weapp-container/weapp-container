@@ -1,102 +1,36 @@
-# iOS embedding and Metal surface examples
+<a id="ios-embedding-and-metal-surface-examples"></a>
+# iOS 嵌入和 Metal 绘制表面示例
 
-This target is the app-backed counterpart to `examples/hosts/ios`. The Swift
-Package remains the reusable library/ABI check; this target owns a visible
-`UIWindow` and a `CAMetalLayer`, so CoreAnimation can vend a real drawable to
-Rust Skia Ganesh.
+**简体中文** · [English](README.en.md)
 
-From the repository root:
+
+此目标是 `examples/hosts/ios` 的应用支持版本。Swift 包仍用于可重用的库/ABI 检查；此目标拥有一个可见的 `UIWindow` 和一个 `CAMetalLayer`，因此 CoreAnimation 可向 Rust Skia Ganesh 提供真实的可绘制表面。
+
+从仓库根目录：
 
 ```sh
 scripts/ios-app-smoke
 scripts/ios-embedding-smoke
 ```
 
-The script builds `container-host-ios` for `aarch64-apple-ios-sim`, compiles
-the UIKit app with `xcrun swiftc`, creates a signed simulator `.app`, installs
-it on the sole booted simulator (or `WEAPP_CONTAINER_IOS_SIMULATOR_UDID`), launches it with `simctl launch`, and
-requires a direct `WEAPP_CONTAINER_SURFACE_PROBE` with
-`containerSurfaceAttached=true`, `gpuSurface=true` and
-`rendererBackend=skia-gpu-metal`.
+脚本为 `aarch64-apple-ios-sim` 构建 `container-host-ios`，使用 `xcrun swiftc` 编译 UIKit 应用，生成一个签名的模拟器 `.app`，安装到唯一启动的模拟器（或 `WEAPP_CONTAINER_IOS_SIMULATOR_UDID`）上，通过 `simctl launch` 启动它，并要求直接进行 `WEAPP_CONTAINER_SURFACE_PROBE`，参数为 `containerSurfaceAttached=true`、`gpuSurface=true` 和 `rendererBackend=skia-gpu-metal`。
 
-The app compiles the shared `WeappContainerHost/Bridge.swift` and
-`PortablePack.swift`; there is one Swift loader and one C-header ABI in both
-iOS examples. The script validates the checked-in Swift-package portable pack and copies
-it into the signed `.app`. Override the source with
-`WEAPP_CONTAINER_IOS_PACK=/absolute/path/to/pack scripts/ios-app-smoke`.
+该应用编译共享的 `WeappContainerHost/Bridge.swift` 和 `PortablePack.swift`；两个 iOS 示例共用一个 Swift 加载器和一套 C 头文件 ABI。脚本验证仓库中签入的 Swift package portable pack，再将其复制到已签名的 `.app`。使用 `WEAPP_CONTAINER_IOS_PACK=/absolute/path/to/pack scripts/ios-app-smoke` 可指定其他输入包。
 
-The loader verifies the integrity root and all blob SHA-256 values before
-loading the manifest. It executes real module bytes via `app.init`, sends
-`app.lifecycle` launch and `page.push`, then commits the route's WXML/WXSS
-with live JavaScript page data. Startup errors are written to
-`Library/Caches/weapp-ios-evidence.json` and displayed in the app. Surface
-evidence includes correlated startup requests/responses, engine, session,
-snapshot/frame ID, route and manifest integrity root, and requires the
-Metal command buffer to complete successfully. Runtime handle calls and
-Metal detach remain on the main thread.
+加载器在加载清单之前会验证完整性根和所有 blob 的 SHA-256 值。它通过 `app.init` 执行实际的模块字节，发送 `app.lifecycle` 启动和 `page.push` 消息，然后将路由的 WXML/WXSS 与实时 JavaScript 页面数据一起提交。启动错误会被写入 `Library/Caches/weapp-ios-evidence.json` 并在应用中显示。表面证据包括相关联的启动请求/响应、引擎、会话、快照/帧 ID、路由和清单完整性根，并要求 Metal 命令缓冲区成功完成。运行时句柄调用和 Metal 解离操作仍保留在主线程。
 
-The latest runtime frame is rendered directly into the view-backed drawable.
-No RGBA snapshot upload is used as GPU evidence. The default remains a one-frame
-smoke app. Its transparent premultiplied Metal layer is composited over a white
-UIKit host view. The runtime and raw `frame.png` retain their alpha channel.
-The app stays alive after rendering until the smoke supervisor captures
-`app-screen.png` through the simulator and cleans up its owned bundle.
-`screen-capture.json` records the live app PID and OS screenshot hash. A live
-PID alone does not establish foreground ownership or visual correctness;
-inspect the OS screenshot separately from the drawable readback.
-`WEAPP_CONTAINER_IOS_ENGINE=quickjs|v8` selects the build feature and
-runtime configuration together; unavailable V8 target builds fail explicitly.
-The default remains QuickJS. Continuous OS input/timer acceptance and device validation remain separate work. Build or
-source checks alone do not establish simulator, device or GPU conformance.
+最新的运行时帧直接渲染到视图支持的可绘制表面中。
+不使用 RGBA 快照上传作为 GPU 证据。默认仍为一个单帧的“烟雾”应用。其透明的预乘 Metal 图层被合成到白色 UIKit 宿主视图上。运行时和原始 `frame.png` 保留其 alpha 通道。
+应用在渲染完成后仍保持存活，直到烟雾监督器通过模拟器捕获 `app-screen.png` 并清理其拥有的包。`screen-capture.json` 记录了运行中应用的 PID 和操作系统截图哈希。仅凭运行中 PID 无法证明前台拥有权或视觉正确性；需单独检查操作系统截图与可绘制表面回传内容。
+`WEAPP_CONTAINER_IOS_ENGINE=quickjs|v8` 同时选择构建特性与运行时配置；不可用的 V8 目标构建会明确失败。
+默认仍为 QuickJS。持续的 OS 输入/定时器验收和设备验证仍为独立工作。仅凭构建或源码检查无法证明模拟器、设备或 GPU 的合规性。
 
-`ios-embedding-smoke` sets `WeappContainerAppMode=embedding` and runs
-`WeappContainerEmbeddingViewController`, which embeds the shared
-`WeappContainerView`. It owns one live Rust session, a display-link timer
-pump, whole-batch touch events, logical resize, foreground transitions and
-Metal drain/detach/unload. Its first-frame receipt uses the distinct
-`ios-skia-metal-embedding` source and records a still-open session; it cannot
-substitute for the default smoke's completed detach. Later operations enter
-the bounded `embedding-trace.json`, copied out before app cleanup. These
-scripts uninstall their task app after capture. To embed a persistent feature
-in an application, reuse the controller/view and call `close()` when finished.
-See [the embedding contract](../../../docs/ios-portable-pack.md) for startup
-geometry, current-route style selection, resource reuse and input limitations.
+`ios-embedding-smoke` 设置 `WeappContainerAppMode=embedding` 并运行 `WeappContainerEmbeddingViewController`，该控制器嵌入共享的 `WeappContainerView`。它拥有一个活跃的 Rust 会话，一个基于显示链接的定时器泵，批量触摸事件，逻辑尺寸调整，前台切换以及 Metal 的资源回收/分离/卸载。其首帧回执使用独立的 `ios-skia-metal-embedding` 源码，并记录一个仍处于打开状态的会话；它无法替代默认烟雾测试中完成的分离操作。后续操作进入有界的 `embedding-trace.json`，在应用清理前将其复制输出。这些脚本在捕获完成后会卸载其任务应用。要将一个持久性功能嵌入应用程序中，请重用该控制器/视图，并在完成时调用 `close()`。有关启动几何形状、当前路由样式选择、资源复用和输入限制的详情，请参见 [嵌入合约](../../../docs/ios-portable-pack.md)。
 
-Swift's referenced C ABI functions are the roots of ordinary static archive
-linking, with `-dead_strip` for unused transitive code. The app does not force-load
-the complete Rust archive. The pinned rusty_v8 iOS archive disables Wasm but
-contains unused Wasm compilation wrappers with unavailable C++ definitions;
-retaining every archive symbol would make those wrappers a link requirement.
-This link policy does not add Wasm support or change the selected JS engine.
+Swift 引用的 C ABI 函数是普通静态归档链接的基础，使用 `-dead_strip` 来移除未使用的传递代码。该应用不会强制加载完整的 Rust 归档文件。被锁定的 rusty_v8 iOS 归档文件禁用了 Wasm，但包含未使用的 Wasm 编译包装器，这些包装器缺少可用的 C++ 定义；保留每个归档符号会使这些包装器成为链接依赖项。此链接策略不会增加 Wasm 支持，也不会更改所选的 JS 引擎。
 
-Each run saves `source-before.json`, `build.json` and `execution-evidence.json`.
-The supervisor captures `app-stdout.log` and `app-stderr.log` and saves
-`startup-wait.json`. It polls the exact launched PID and matching session/engine
-evidence. A native engine abort fails startup immediately and retains the last
-raw `evidence.json`; it cannot become a screenshot failure or a GPU pass.
-Build provenance hashes the actual signed executable and checks Rust/Swift/build
-inputs before and after compilation. Source changes during compilation fail;
-uncommitted builds stay `unknown`. `CARGO_TARGET_DIR` selects the Cargo output
-directory (relative paths are resolved from this repository). The supervisor
-passes that directory explicitly to Cargo, selects the host staticlib from
-`cargo-build.jsonl`, and copies it to the run's independent
-`native-input/libcontainer_host_ios.a`. Swift links that exact file, without
-searching a default target directory. `native-archive.json` records the selected
-artifact, engine/features and SHA-256; the copied archive is checked again
-after linking/signing. A later build cannot replace this run's linker input.
-`WEAPP_CONTAINER_IOS_FIXTURE_ID` names the
-shared conformance fixture; the same manifest must be used on other hosts and
-engines. A single simulator receipt does not satisfy the complete host matrix.
+每个运行都会保存 `source-before.json`、`build.json` 和 `execution-evidence.json`。
+监督器捕获 `app-stdout.log` 和 `app-stderr.log`，并保存 `startup-wait.json`。它会轮询精确启动的 PID 以及匹配的会话/引擎证据。原生引擎在启动时失败会立即终止启动，并保留最后的原始 `evidence.json`；它不会被视为截图失败或 GPU 通过情况。
+构建溯源会哈希实际签名的可执行文件，并在编译前后检查 Rust/Swift/构建输入。编译过程中源码发生变更将失败；未提交的构建将保持为 `unknown`。`CARGO_TARGET_DIR` 选择 Cargo 输出目录（相对路径从本仓库解析）。监督器会明确将该目录传递给 Cargo，从 `cargo-build.jsonl` 中选择宿主静态库，并将其复制到运行独立的 `native-input/libcontainer_host_ios.a`。Swift 会链接该精确文件，而不会搜索默认目标目录。`native-archive.json` 记录所选的构件、引擎/特性及 SHA-256 值；链接/签名后会再次验证复制的归档文件。后续构建无法替换该运行的链接输入。`WEAPP_CONTAINER_IOS_FIXTURE_ID` 指定共享一致性测试构件；其他宿主和引擎必须使用相同的清单。单个模拟器回执无法满足完整的宿主矩阵要求。
 
-The smoke uses a unique bundle identifier and run directory by default. An
-explicit bundle identifier must be absent on the selected booted simulator;
-existing apps are preserved. `resources.json` records installation/launch
-ownership and PID. Cleanup queries that exact bundle/PID, distinguishes a
-natural exit from a live owned process, uninstalls its bundle and writes
-`cleanup.json`. Identity changes and cleanup failures are reported and fail
-the command; the borrowed simulator and unrelated apps stay running. An install
-attempt without a successful acknowledgement, including interruption before
-that acknowledgement is recorded, does not grant cleanup ownership. That case
-preserves the ambiguous bundle, writes `blocked-unowned` to `cleanup.json`, and
-fails the command. An interrupted launch with no recorded PID also preserves
-any live process until its ownership can be established.
+烟雾使用默认的唯一捆绑标识符和运行目录。所选启动的模拟器上必须没有显式的捆绑标识符；现有应用得以保留。`resources.json` 记录安装/启动的所有权和进程 ID（PID）。清理查询会精确匹配捆绑标识符和 PID，区分正常退出和持续拥有进程的情况，卸载其捆绑包，并写入 `cleanup.json`。身份变更和清理失败将被报告并导致命令失败；借来的模拟器和无关应用将继续运行。在未获得成功确认的情况下尝试安装（包括在确认记录之前被中断），不会授予清理所有权。这种情况会保留模糊的捆绑标识符，在 `cleanup.json` 中写入 `blocked-unowned`，并导致命令失败。在没有记录 PID的情况下中断启动，也会保留任何正在运行的进程，直到其所有权得以确立。

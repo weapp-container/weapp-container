@@ -1,4 +1,8 @@
+<a id="web-bluetooth-gatt-subset-of-host-authorization"></a>
 # Web Bluetooth：宿主授权的 GATT 子集
+
+**简体中文** · [English](WEB-BLUETOOTH.en.md)
+
 
 `BrowserHostServices` 默认不安装蓝牙 API。浏览器的蓝牙权限授予的是 origin；它既不表示当前小程序、账号已经授权，也不代表宿主拥有连接。容器不调用 `navigator.bluetooth.getDevices()`，不接管已经连接的设备，不修改浏览器对象的共享属性。
 

@@ -1,59 +1,21 @@
-# Developer Raster simulator construction and reload
+<a id="developer-raster-simulator-construction-and-reload"></a>
+# 开发者位图模拟器构建和重新加载
 
-`Simulator::from_dev_raster_pack_dir(path, config)` is an explicit library
-factory. It validates the same manifest, blobs, native engine and render target
-as `from_pack_dir`, and enables the existing Session `ExplicitDev` policy before
-`app.init`. The public `SimulatorConfig` has no additional policy flag. Normal
-`from_pack_dir`, headless runs and the current CLI keep synchronous Raster
-presentation. This factory does not attach strict HTTP, browser RAF receipts or
-input admission by itself.
+**简体中文** · [English](dev-raster-simulator-policy.en.md)
 
-An exact owner must publish the accepted pixels and the ticket issued by
-`Session::prepare_dev_raster_presentation`, then acknowledge that exact ticket
-after its presenter succeeds. Factory construction, `run()` success and HTTP
-queue acceptance do not prove presentation. Browser routes continue to use
-their separate DOM authority; a current WebView page does not disable the
-Session's policy for later Raster pages.
 
-`apply_dev_pack` reads `raster_presentation_policy()` from the current Session,
-including a pre-init opt-in made through `host_mut`. Both validation and
-renumbered restart candidates enable that policy before startup. There is no
-second simulator policy, owner ledger or copy of a live lease. In-place updates
-keep the original Session and its existing runtime invalidation rules; they do
-not transfer an old ticket to a newly rendered frame.
+`Simulator::from_dev_raster_pack_dir(path, config)` 是一个显式库工厂。它验证了与 `from_pack_dir` 相同的清单、数据块、原生引擎和渲染目标，并在 `app.init` 之前启用现有的会话 `ExplicitDev` 策略。公共 `SimulatorConfig` 不包含额外的策略标志。正常的 `from_pack_dir`、无头运行以及当前 CLI 保持同步的帧呈现。该工厂本身不会附加严格的 HTTP、浏览器 RAF 回执或输入准入。
 
-Activation is derived from the existing Session's initialization/pages as well
-as completed simulator startup. A caller that activated the runtime through
-`dispatch` or `host_mut`, or encountered partial startup, may still reload it.
-That replacement is a restart with a fresh session identity even if its pack
-only changes presentation or is byte-identical. A truly pristine instance keeps
-the original pre-run replacement behavior.
+必须由拥有者发布已接受的像素和由 `Session::prepare_dev_raster_presentation` 发行的票据，然后在呈现器成功后确认该票据。工厂构造、`run()` 成功和 HTTP 队列验收均不能证明呈现行为。浏览器路由将继续使用其独立的 DOM 权限；当前的 WebView 页面不会禁用会话对后续绘制页面的策略。
 
-A successful restart runs its isolated candidate first. It then retires the
-old explicit runtime through `retire_dev_preview` before replacing the host.
-The new Session starts without a presentation lease and awaits its own issued
-ticket. Old-session tickets and envelopes cannot acknowledge the replacement.
-Every actual restart uses a checked generation increment. Exhaustion returns
-`ERR_RENDER` before startup or old-runtime retirement, rather than reusing a
-session identifier; this applies to synchronous and explicit policies.
+`apply_dev_pack` 从当前会话中读取 `raster_presentation_policy()`，包括通过 `host_mut` 进行的预初始化同意。在启动前，验证和重新编号的重启候选者都会启用该策略。没有第二个模拟器策略、所有者账本或活租约的副本。原地更新保持原始会话及其现有的运行时失效规则；它们不会将旧票据传递给新渲染的帧。
 
-Invalid manifests, blobs, engines or candidate startup preserve the old host and
-its authority because retirement has not begun. A failure during old-runtime
-retirement also preserves that host and session identifier, but its old input
-and presentation authority remain revoked. Consumed callback effects and error
-envelopes stay with that Session; a diagnostic request can drain them. The
-candidate is not published, and cleanup is not treated as a successful rollback
-to an interactive old frame.
+激活源自现有会话的初始化/页面以及模拟器启动完成。通过 `dispatch` 或 `host_mut` 启动运行时，或遇到部分启动的调用者，仍可能重新加载它。该替换操作即使其包仅更改了呈现内容或字节完全相同，也会被视为一次新的启动，拥有全新的会话身份。真正纯净的实例将保持原始启动前的替换行为。
 
-ExternalFrame and NativeGpu are not substituted for Raster. The explicit
-factory reports unsupported mode/backend errors; an uncompiled engine retains
-the `ERR_ENGINE` boundary and never falls back. The existing runtime pre-init
-restriction still rejects an attempted upgrade after synchronous initialization.
+一次成功的重启会先运行其隔离的候选进程。然后通过 `retire_dev_preview` 退役旧的显式运行时，再替换宿主。新的会话在没有呈现租约的情况下启动，并等待自身被发放的票据。旧会话的票据和信封无法确认替换行为。每次实际的重启都会使用经过验证的生成增量。当发生耗尽时，会在启动或旧运行时退役之前返回 `ERR_RENDER`，而不是重用会话标识符；这一规则适用于同步和显式策略。
 
-The source includes native QuickJS/V8 consumers for real Page.onLoad/onReady
-data, repeated JS and route/configuration restarts, runtime-issued tickets,
-old-ticket rejection, actual software-contact cancellation, timer execution,
-in-place reload, pre-init opt-in, rejected candidates, retirement failure,
-generation exhaustion, incompatible modes and current WebView pages. These are
-test definitions until the exact integrated commit executes them. Rust library
-ACKs are test actions, not browser RAF, GPU, platform or DevTools acceptance.
+无效的清单、数据块、引擎或候选启动保持旧的宿主及其权限，因为退休尚未开始。在旧运行时退休期间发生故障也会保留该宿主和会话标识符，但其旧的输入和呈现权限仍被撤销。已消费的回调效果和错误信封仍属于该会话；诊断请求可以将其清除。候选者不会被发布，且清理操作不被视为成功回滚到一个交互式的旧帧。
+
+ExternalFrame 和 NativeGpu 不替代 Raster。明确的工厂会报告不支持的模式/后端错误；未编译的引擎保留 `ERR_ENGINE` 边界，永远不会回退。现有的运行时预初始化限制仍会拒绝同步初始化后的升级尝试。
+
+源代码包含原生的 QuickJS/V8 消费者，用于实时获取 Page.onLoad/onReady 数据、重复的 JS 和路由/配置重启、运行时签发的票据、旧票据拒绝、实际软件接触取消、定时器执行、原地刷新、预初始化主动参与、被拒绝的候选者、退休失败、生成耗尽、不兼容模式以及当前 WebView 页面。这些是测试定义，直到精确的集成提交执行它们。Rust 库的 ACK 是测试操作，而不是浏览器 RAF、GPU、平台或 DevTools 验收。

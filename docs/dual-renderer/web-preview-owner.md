@@ -1,84 +1,34 @@
-# Shared Web preview ownership
+<a id="shared-web-preview-ownership"></a>
+# 共享网页预览所有权
 
-`web_preview.rs::PreviewState` is the single lease ledger in `web.rs::Shared`.
-It owns primary client, checked epoch, connected clients, the bounded request
-queue and bounded retired-lease receipts. `DomState` retains DOM request,
-DOM surface generation, request authority epoch, pending/accepted documents,
-resources and input state. A renderer change does not create another owner
-ledger or reuse an old epoch.
+**简体中文** · [English](web-preview-owner.en.md)
 
-The public wire types and `/api/preview` routes keep their existing shapes.
-`connect`, `claim`, `heartbeat` and `release` still enter the same owner queue.
-The owner plans a transfer, retires runtime authority without the Web mutex,
-then commits with `runtime_retired: true`. Client, queue, lease and retirement
-bounds remain 16 clients, 32 queued requests, 15 seconds and 32 receipts.
-A late release acknowledges its original retired lease without removing a
-new connection with the same client id. The last `u64` epoch cannot wrap.
 
-`WebSurfaceHandle::capture_preview_owner` produces a non-serializable
-`PreviewOwnerFence` bound to the actual `Shared` allocation, client and epoch.
-`validate_preview_owner` checks that allocation again and revalidates the
-live owner/expiry. A same-valued fence cannot authorize a different surface;
-a cloned handle to the same allocation remains valid. No Web lock crosses
-runtime work through these APIs.
+`web_preview.rs::PreviewState` 是 `web.rs::Shared` 中的单个租约账本。
+它拥有主客户端、已验证的时序、已连接客户端、有界的请求队列和有界的已退租回执。`DomState` 保留 DOM 请求、DOM 绘制表面生成、请求权限时序、待处理/已验收的文档、资源和输入状态。渲染器变更不会创建另一个拥有者账本或重用旧的时序。
 
-This common proof does not require a DOM request or carry a DOM request
-revision. It proves only lease ownership, not renderer, session, frame,
-geometry or presentation. Callers must layer those authorities separately.
-DOM presentation and `view.*` operations continue to require a current DOM
-request and its authority epoch; a valid common proof cannot bypass them.
-A new DOM request may reject a queued DOM operation without changing the
-common owner lease.
+公共的 wire 类型和 `/api/preview` 路由保持其原有的结构。
+`connect`、`claim`、`heartbeat` 和 `release` 仍然进入同一个拥有者队列。
+拥有者计划进行转移，不使用 Web 互斥锁退出运行时权限，然后以 `runtime_retired: true` 提交。客户端、队列、租约和退出边界仍为 16 个客户端、32 个排队请求、15 秒和 32 个回执。
+延迟释放会确认其原始的已退出租约，而不会移除具有相同客户端 ID 的新连接。最后一个 `u64` 时钟无法溢出。
 
-This extraction preserves the current DOM-only HTTP admission policy.
-Configured browser capability alone still does not activate an unloaded DOM
-profile. Inactive profiles allow only recognized cleanup/expiry as before.
-Raster, CanvasKit and desktop policies are not newly enabled. Strict Raster
-CLI/SSE connection tokens, frame tickets, binary headers and RAF receipts
-remain a later integration; no GPU, browser or device execution is established
-by this source change.
+`WebSurfaceHandle::capture_preview_owner` 产生一个不可序列化的 `PreviewOwnerFence`，绑定到实际的 `Shared` 分配、客户端和纪元。
+`validate_preview_owner` 检查分配情况，并重新验证活动所有者/过期时间。相同值的 fence 不能授权不同的绘制表面；对同一分配的克隆句柄仍保持有效。这些 API 中没有 Web 锁跨越运行时工作。
 
-Existing DOM/HTTP/lease tests keep their names. New source tests cover common
-proofs before a DOM request exists, DOM request supersession independently of
-lease ownership, same-valued surfaces, handle clones, mirror denial, claim,
-reconnect, live expiry, late cleanup and epoch exhaustion. Compilation,
-formatting and execution must be reported by the final integrated-source run.
+这个通用证明不需要 DOM 请求，也不携带 DOM 请求修订。它仅证明租约所有权，而不涉及渲染器、会话、帧、几何体或呈现。调用方必须单独处理这些权限。DOM 呈现和 `view.*` 操作仍需当前 DOM 请求及其权限纪元；有效的通用证明无法绕过这些要求。新的 DOM 请求可能拒绝一个排队的 DOM 操作，而不会改变共同所有者的租约。
 
-## DOM owner retirement
+此提取保留了当前仅 DOM 的 HTTP 入口策略。
+仅配置浏览器能力并不能激活未加载的 DOM 配置文件。不活跃的配置文件仍只允许之前认可的清理/过期操作。
+位图、CanvasKit 和桌面策略并未被新启用。严格的位图 CLI/SSE 连接令牌、帧票据、二进制头和 RAF 回执仍需后续集成；本次变更并未建立 GPU、浏览器或设备的执行。
 
-DOM publication consumers move replaced `CachedView` and desired-request
-`Value` owners into `DomRetirement`. The receipt is declared before acquiring
-the `Shared` guard and destroyed after releasing it, including error/unwind
-paths. `clear`, renderer-profile/session changes, lease transfer, request
-replacement, pending publication, accepted replacement, abort and runtime
-reconciliation preserve their original authority decisions. Lease transfer
-continues to keep the desired request while retiring its presentation authority.
-Generation exhaustion rejects before moving any existing DOM owner.
+现有的 DOM/HTTP/lease 测试保留其名称。新的源码测试涵盖在 DOM 请求存在之前常见的证明场景、DOM 请求的覆盖（与租赁所有权无关）、相同值的绘制表面、句柄克隆、镜像拒绝、声明、重新连接、实时过期、延迟清理以及纪元耗尽。最终集成源码运行必须报告编译、格式化和执行情况。
 
-Retirement does not create a second resource budget. Existing
-`retained_response_bytes` Weak entries continue to charge each resource's
-actual `Vec` capacity for as long as its Arc is alive in the receipt, a response,
-or another cached document. A later admission reclaims only dead Weak entries.
-The candidate resource map also outlives the guard on publication errors.
-Each candidate resource Arc enters that same Weak ledger immediately after
-allocation, before a later resolver or validation can fail. Subsequent admission
-counts only the next allocation, since earlier candidate bytes are already
-charged. Actual reserved capacity is rechecked after inserting the resource in
-the map, so rejection also keeps its owner alive until unlocked destruction.
-Production-consumer source tests observe actual replaced owners at destruction,
-check mutex availability, retain the original capacity charge until the resource
-is destroyed, and check rejection preserves old owners and input state.
-A real two-resource publication failing on the second resolver or digest also
-observes the first candidate's actual destruction: the mutex is available, its
-Weak capacity charge is still live, and the charge is reclaimed after drop.
+<a id="dom-owner-retirement"></a>
+## DOM 所有者退役
 
-This change deliberately does not claim a wholly lock-free preparation path.
-`publish_view_submission` still invokes its resource resolver, verifies bytes,
-and prepares resources while holding `Shared`; `retain_browser_pending` still
-invokes its runtime predicate under that guard. Profile/request entry still
-calls `Shared::retire_raster_publication` under the guard, which can destroy
-legacy raster owners. A subsequent prepared-publication change must capture
-actual allocation/request/owner/profile authority, perform external work after
-unlock, then revalidate that same authority before moves-only publication.
-Simply unlocking and installing an unbound candidate is not a valid replacement.
-These remaining boundaries are separate from DOM retirement evidence.
+DOM 公布消费者将已缓存的 `CachedView` 和期望请求的 `Value` 所有者移入 `DomRetirement`。回执在获取 `Shared` 保护前声明，在释放该保护后销毁，包括错误/回滚路径。`clear`、渲染器配置/会话变更、租约转移、请求替换、待发布、已接受的替换、中止以及运行时一致性处理均保持其原有的权限决策。租约转移将继续保留期望请求，同时放弃其呈现权限。生成耗尽在移动任何现有 DOM 所有者之前会先拒绝。
+
+退休不会创建第二个资源预算。现有的 `retained_response_bytes` 弱引用条目将继续为每个资源的实际 `Vec` 容量计费，只要其 Arc 存在于回执、响应或其他缓存文档中。后续的准入操作仅回收已死亡的弱引用条目。候选资源映射表也超过了发布错误时的守护锁。每个候选资源 Arc 在分配后立即进入相同的弱引用账本，早于后续解析器或验证器可能失败。后续的准入操作只计算下一次分配，因为之前的候选字节已经计费。实际预留容量在将资源插入映射表后会再次检查，因此拒绝操作也会保持其所有者存活，直到被解锁销毁。生产-消费源测试观察到在销毁时实际替换的所有者，检查互斥锁的可用性，保留原始容量计费直到资源被销毁，并检查拒绝操作是否保留了旧的所有者和输入状态。在第二个解析器或摘要处失败的真正双资源发布也观察到第一个候选资源的实际销毁：互斥锁已可用，其弱引用容量计费仍处于活跃状态，并且在 drop 后会回收该计费。
+
+此更改明确不声称存在完全无锁的准备路径。
+`publish_view_submission` 仍会调用其资源解析器，验证字节，并在持有 `Shared` 的情况下准备资源；`retain_browser_pending` 仍会在该保护下调用其运行时谓词。配置/请求入口仍会在保护下调用 `Shared::retire_raster_publication`，这可能会销毁旧的位图所有者。后续的已准备发布变更必须捕获实际的分配/请求/所有者/配置权限，解锁后执行外部工作，然后在仅移动发布前重新验证相同的权限。简单地解锁并安装一个无绑定的候选者并非有效的替代方案。这些剩余的边界与 DOM 停止使用的证据是分开的。

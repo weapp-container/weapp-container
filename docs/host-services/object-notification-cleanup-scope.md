@@ -1,18 +1,24 @@
+<a id="implementation-scope-of-tcpudp-object-listener-removal"></a>
 # TCP/UDP 对象监听移除的实现范围
+
+**简体中文** · [English](object-notification-cleanup-scope.en.md)
+
 
 产品提交：`617862ab39b98bcc379c1a5c5f4fc9c1deafed45`。固定统计口径为微信基础库 3.17.3、miniprogram-api-typings@5.2.3，1265 API × 七端 = 8855 单元。本批只将以下九个 off 方法的 63 格 Missing→Available：
 
 - TCPSocket：offBindWifi、offClose、offConnect、offError、offMessage。
 - UDPSocket：offClose、offError、offListening、offMessage。
 
-完整矩阵另有 8792 个完整 cell 对象不变。Available1777（20.07%）、Partial1308、RequiresHostService86、Missing5684；accepted0、platformNotApplicable87，距7084仍差5307。验收、coverage、责任、限制、参数合同及 ledger 字节未变，阶段 goal 保持 active。on、工厂、TCP.close、UDP.close 和广告对象没有新增信用。
+完整矩阵另有 8792 个完整 cell 对象不变。Available1777（20.07%）、Partial1308、RequiresHostService86、Missing5684；accepted0、platformNotApplicable87，距7084仍差5307。验收、coverage、责任、限制、参数合同及 ledger 字节未变，阶段 目标仍未完成。on、工厂、TCP.close、UDP.close 和广告对象没有新增信用。
 
+<a id="single-callback-owner-and-real-cancellation"></a>
 ## 单一回调所有者与真实取消
 
 九组实际 on 回调迁入已有私有 finite owner，按工厂对象、API、事件和订阅 ID 分开。原函数重复注册去重；off 选择原函数删除，省略或 undefined 清空当前对象/事件，重复移除幂等，同步返回 void。保存的别名绑定原创建者，改变 this 不能改指向其他对象。off 有自己的准入，不依赖 on/off provider，不额外调用 close/destroy 或取消工厂请求。
 
 私有 authority 先同步撤销，Session 随后取消原生订阅的实际 creator call，成功完成清扫后才给 retained 前缀 ACK。晚到事件、订阅成功/失败和先 off 后 on 的排队竞态不能复活旧 identity。全局注册拒绝非空 objectId；对象注册必须绑定真实存活的 native receiver type。Session、account epoch、API、object、event 与 u64 sequence 检查都在回调 payload 解码之前。
 
+<a id="object-lifecycle-and-settlement-failure"></a>
 ## 对象生命周期和结算故障
 
 TCP.close 只结束连接，保留 socket 对象；UDP.close 成功后销毁对象，失败保留。等待中的 UDP close 仍允许最后一个 Close 事件。off 本身不改变这些生命周期。
@@ -21,6 +27,7 @@ TCP.close 只结束连接，保留 socket 对象；UDP.close 成功后销毁对�
 
 通用 finish_host_call 收集首次清理错误，继续取消其余真实 creator，再尝试外层结算并返回错误。该修改涉及共用异步资源边界，因此本批同时执行完整 runtime/workspace 与 feature gates。
 
+<a id="actual-verification-and-first-failure-attempt"></a>
 ## 实际验证与首轮失败
 
 根实际通过 Node146/146（其中新文件40项）、相关回归198/198、清点/矩阵/IO1275/1275；Node 的两个生产组合标签不代表 native engine 执行。真实 QuickJS/V8 的三个集成文件分别有原7、新11、普通9个 test 函数，每个循环已启用引擎。重叠命令不合计为独立测试总数。
@@ -33,6 +40,7 @@ TCP.close 只结束连接，保留 socket 对象；UDP.close 成功后销毁对�
 
 库存作者的首次699/702失败、修正后1247/1247和静态来源审查分别保留。根的1275项实际复验包含矩阵/IO，不能把库存-only执行冒充 API/native 运行。
 
+<a id="source-products-and-acceptance-boundary"></a>
 ## 来源、产物与验收边界
 
 产品只改14个明确路径；全部1778个最终非文档源码及两份矩阵与产品 Git blob 逐字节绑定，其余源码保持原字节。七个 gitlink、913个历史文件、默认 checkout 本地 main 未改。52个额外 SDK 输入另行绑定到当前字节及精确 gitlink；本批没有改 SDK main、生成 native SDK 归档或生产发布。封包保留源码作者59份、库存348份、独立审查、根的失败/后继和完整原始命令日志；历史父包按已提交 parent 记录，不重复声明其全部历史 raw 文件均包含在本包。

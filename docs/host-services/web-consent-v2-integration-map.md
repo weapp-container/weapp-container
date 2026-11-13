@@ -1,3 +1,6 @@
+
+**简体中文** · [English](web-consent-v2-integration-map.en.md)
+
 Web consent v2 接入只读映射（尚未实现）
 
 读取基线：主仓库 `281070dc6c28f07228017d9e98e600633d617c23`；工作目录 `/path/to/weapp-container`。以下位置按此次源码读取记录；未运行浏览器、未修改源码、未执行新的验收。本文件中的新方法名均为待冻结的接口建议，不能视为现有可调用 API。

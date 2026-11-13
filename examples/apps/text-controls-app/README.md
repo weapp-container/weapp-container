@@ -1,4 +1,8 @@
+<a id="dom-text-editing-development-example"></a>
 # DOM 文本编辑开发示例
+
+**简体中文** · [English](README.en.md)
+
 
 这个普通 `weapp-vite` 项目通过真实 `input` 和 `textarea` 演示文本编辑、
 `input/focus/blur/confirm` 事件、光标/选择区观测、disabled、maxlength、密码遮罩，
@@ -30,6 +34,7 @@ V8 使用方式与其他开发示例相同：启用 `v8-native` feature 并传�
 组件传来的普通事件事实没有浏览器 handler、传播路径或 owner 授权；它们继续由
 共享运行时按当前已呈现文档中的声明解析。
 
+<a id="standalone-build"></a>
 ## 单独构建
 
 ```sh
@@ -47,6 +52,7 @@ node "$TEXT_CONTROLS_REPO/tools/container-manifest/bin/container-pack.mjs" \
 编译器在项目工作目录生成受管 TypeScript 配置；该位置已有精确忽略规则。
 不要从主仓根目录或固定 submodule 的工作目录运行项目初始化。
 
+<a id="current-boundary"></a>
 ## 当前边界
 
 本例用于新 DOM 文本控件适配的开发与验证；示例源码存在不等于浏览器专项通过。

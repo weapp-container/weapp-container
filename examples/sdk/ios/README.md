@@ -1,6 +1,10 @@
-# Independent UIKit consumer
+<a id="independent-uikit-consumer"></a>
+# 独立的 UIKit 消费者
 
-The smoke runner copies the prepared Swift package and shared portable fixture into a new consumer directory. It compiles the device arm64 and simulator x86_64 targets, then runs one XCTest on an existing borrowed arm64 simulator. It never creates or shuts down a simulator.
+**简体中文** · [English](README.en.md)
+
+
+烟雾运行程序将准备好的 Swift 包和共享的便携式固定装置复制到一个新的消费者目录中。它编译了设备 arm64 和模拟器 x86_64 目标，然后在现有的借来的 arm64 模拟器上运行一个 XCTest。它从不创建或关闭模拟器。
 
 ```sh
 node scripts/sdk-ios-smoke.mjs \
@@ -9,12 +13,12 @@ node scripts/sdk-ios-smoke.mjs \
   --out artifacts/sdk/ios/validation
 ```
 
-The default `--rotation device` uses `XCUIDevice.orientation`. `--rotation scene` separately exercises the host's Rotate button, `setNeedsUpdateOfSupportedInterfaceOrientations()` and `UIWindowScene.requestGeometryUpdate`. Both modes require the actual interface orientation and native surface dimensions to change and return to portrait. A scene-mode pass does not certify device-orientation injection; each receipt records its mode.
+默认的 `--rotation device` 使用 `XCUIDevice.orientation`。`--rotation scene` 分别测试宿主的旋转按钮、`setNeedsUpdateOfSupportedInterfaceOrientations()` 和 `UIWindowScene.requestGeometryUpdate`。两种模式都需要实际的界面方向和原生绘制表面尺寸发生改变并返回到纵向。场景模式的通过并不能证明设备方向注入；每条回执都会记录其模式。
 
-Both modes retain the same dual-session, asynchronous host-call, native touch/scroll, navigation, background, persistent reopen, parent/embedded scrolling and multitouch gates. `--compile-only` validates device and x86_64 compile/link without using a simulator; `--simulator-only` builds and runs only the arm64 simulator consumer, skipping the other two architecture checks.
+两种模式都保留了相同的双会话、异步宿主调用、原生触摸/滚动、导航、后台运行、持久重开、父级/嵌入式滚动以及多点触摸门控。`--compile-only` 在不使用模拟器的情况下验证设备和x86_64的编译/链接；`--simulator-only` 仅构建和运行arm64模拟器客户端，跳过其他两个架构的检查。
 
-SwiftPM and CocoaPods runners copy the same `Sources/Consumer.swift`. Both session observers explicitly handle every public event, including native chrome, close errors and versioned raw events. Raw events are retained in a bounded history. Account-switch observations record the receipt and current SDK state, discard prior-owner geometry while input is blocked, and expose failures; SDK cancellation, cleanup and surface rebinding remain owned by the SDK. Recording these events does not certify an account switch or host-service flow: the current smoke test does not configure account or payment services.
+SwiftPM 和 CocoaPods 运行器复制相同的 `Sources/Consumer.swift`。所有会话观察者明确处理每个公共事件，包括原生工具栏、关闭错误和版本化的原始事件。原始事件保留在有界的事件历史中。账户切换观察记录回执和当前 SDK 状态，在输入被阻塞时丢弃前拥有者的几何信息，并暴露失败情况；SDK 取消、清理和绘制表面重新绑定仍由 SDK 所有。记录这些事件并不能证明账户切换或宿主服务流程：当前的烟雾测试并未配置账户或支付服务。
 
-Receipts include the distribution inventory digest, executable and consumer/test source hashes, executed-test counts, and verified app cleanup. If XCTest fails, the runner preserves `last-consumer-result.json` before removing its app and runner. Screenshots and the xcresult remain alongside the receipt.
+回执包括分发库存摘要、可执行文件和消费者/测试源代码的哈希值、执行的测试数量以及已验证的应用程序清理。如果 XCTest 失败，运行器会在删除其应用和运行器之前保留 `last-consumer-result.json`。截图和 xcresult 会与回执一同保留。
 
-The generated project also provides a Release archive configuration. From an exported consumer, run `xcodebuild -project SDKConsumer.xcodeproj -scheme SDKConsumer -configuration Release -sdk iphoneos -destination generic/platform=iOS -archivePath /absolute/path/SDKConsumer.xcarchive CODE_SIGNING_ALLOWED=NO archive` for an unsigned archive. Distribution signing and real-device execution are separate steps.
+生成的项目还提供了一个发布归档配置。从导出的消费者运行 `xcodebuild -project SDKConsumer.xcodeproj -scheme SDKConsumer -configuration Release -sdk iphoneos -destination generic/platform=iOS -archivePath /absolute/path/SDKConsumer.xcarchive CODE_SIGNING_ALLOWED=NO archive` 以生成未签名的归档文件。分发签名和真实设备执行是独立的步骤。

@@ -1,22 +1,18 @@
-# Weapp Container scrolling fixture
+<a id="weapp-container-scrolling-fixture"></a>
+# Weapp 容器滚动测试fixture
 
-This source app exercises two independent scroll views with both axes enabled,
-data-driven scroll commands, wheel and touch input, coordinate taps, selector geometry,
-intersection observation, page scrolling and navigation cleanup. Its colored
-rectangles make movement and clipping measurable in actual rendered pixels.
+**简体中文** · [English](README.en.md)
 
-Run `node scripts/scrolling-smoke.mjs --help` for the pinned compiler → portable
-pack → native QuickJS/V8 regression. The smoke calls the compiled application's own
-event handlers. Observations are written by the app to `scroll:query` and
-`scroll:taps` storage keys, then read through the real `wx` provider. It never
-injects expected page data or a handcrafted render frame.
-This is local conformance evidence; no fresh official DevTools or device result
-is implied.
 
-The A scroll view's ordinary `bindtouchmove` handler calls `stopPropagation`;
-its default drag still scrolls. The C scroll view, revealed after page scroll,
-uses `catchtouchmove` and records the handler without calling `preventDefault`;
-that drag must leave both C and its ancestors unchanged.
+此源应用程序包含两个独立的滚动视图，两个轴方向均启用，由数据驱动的滚动命令，滚轮和触摸输入，坐标点击，选择器几何结构，交集观察，页面滚动和导航清理。其彩色矩形使得移动和裁剪可以在实际渲染像素中进行量化测量。
+
+运行 `node scripts/scrolling-smoke.mjs --help` 以触发固定编译器 → 可移植
+打包 → 原生 QuickJS/V8 回归测试。烟雾测试调用编译应用自身的事件处理器。
+观测结果由应用写入 `scroll:query` 和 `scroll:taps` 存储键，然后通过真实的 `wx` 提供商读取。
+它从不注入预期的页面数据或手工构建的渲染帧。
+这是本地合规性的证据；并未暗示需要新的官方 DevTools 或设备测试结果。
+
+A 滚动视图的普通 `bindtouchmove` 处理程序调用 `stopPropagation`；其默认拖拽仍会滚动。C 滚动视图在页面滚动后显现，使用 `catchtouchmove` 并记录处理程序而不调用 `preventDefault`；该拖拽必须使 C 及其祖先元素保持不变。
 
 ```sh
 node scripts/scrolling-smoke.mjs \
@@ -26,13 +22,7 @@ node scripts/scrolling-smoke.mjs \
   --out artifacts/scrolling.json
 ```
 
-The compiler source is checked against every Git object at the repository's
-submodule pin, with explicitly declared CRLF conversions recorded separately.
-The compiler dist is checked before and after compilation against the supplied
-SHA-256 map from an independent compiler build. This command reuses that
-compiler and its installed dependencies; it does not claim a new compiler
-build or dependency installation. Only a temporary project copy is built.
+编译器源码会与仓库子模块锁定的每个 Git 对象进行比对，并单独记录显式声明的 CRLF 转换。
+在编译前后，会使用独立编译构建提供的 SHA-256 映射表对编译器发布版本进行比对。该命令重用该编译器及其已安装的依赖项；它不声明新的编译构建或依赖项安装。仅构建临时项目副本。
 
-The first page deliberately shares the `.control` class name with the second
-page. Route style selection must keep the second page's declarations out of
-the first page; renaming the class is not a fix for a leaking host stylesheet.
+第一页故意与第二页共享 `.control` 类名。路由样式选择必须确保第二页的声明不会出现在第一页中；重命名类并不能解决宿主样式表泄漏的问题。

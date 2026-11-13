@@ -1,4 +1,8 @@
+<a id="scope-of-implementation-for-unhandled-rejections-and-window-notifications"></a>
 # 未处理拒绝与窗口通知的实现范围
+
+**简体中文** · [English](rejection-window-implementation-scope.en.md)
+
 
 源码冻结为 `42d85060adc8c82543e5a0c9a5cbd975babd1660`，直接父提交为 `ff1037636018403aa0cef99ca39f4ed44f9660a0`。本批真实实现四项运行时通知接口；只将 `offUnhandledRejection`、`offWindowResize` 的七端共14格由 Missing 升为 Available。两个 `on` 接口的七端共14格由 Missing 转为 Partial。生成矩阵为 available1504（16.98%）、partial1021、requiresHostService86、missing6244，固定分母8855，距7084仍差5580；accepted0、platformNotApplicable87。前批35个Available清理单元保留，其他8827个完整单元对象不变，全部验收状态与coverage不变。
 
@@ -18,4 +22,4 @@
 
 Web完成后，矩阵单测仍把前批已完成的offPageNotFound列为Partial。只修改 `scripts/host-api-matrix.test.mjs` 的陈旧预期，并增加当前四接口的七端source/state/gap断言。首轮矩阵报告保持外层失败：生成和--check通过，单测18/19；后继--check与20/20单测通过。该测试文件不在466个Web输入内；root另核对全部466输入和其余1727个非文档源码字节/模式未变。这是冻结42d之后的一个测试差异，不把它追溯计入已完成Web/native回执，也不声称最终交付所有1728个源码字节都等于42d。
 
-SDK源码与七个gitlink未改。本批没有浏览器、公开SDK、物理设备、微信oracle或商户验收，没有生产发布；preview.6.0保持未发布。原908个untracked只核对路径继续存在，不声称已记录其内容hash或属于committed source。证据见 [本批原始记录](../archived-evidence.md)。阶段goal保持active，父全量goal保持paused且未完成。
+SDK源码与七个gitlink未改。本批没有浏览器、公开SDK、物理设备、微信oracle或商户验收，没有生产发布；preview.6.0保持未发布。原908个untracked只核对路径继续存在，不声称已记录其内容hash或属于committed source。证据见 [本批原始记录](../archived-evidence.md)。阶段目标仍未完成，父全量goal保持paused且未完成。

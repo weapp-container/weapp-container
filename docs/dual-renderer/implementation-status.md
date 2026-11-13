@@ -1,6 +1,10 @@
+<a id="dual-rendering-implementation-progress"></a>
 # 双渲染实施进度
 
-目标与验收范围由 [冻结清单](README.md) 管理。下面记录实现阶段，不能替代清单中的官方、宿主、设备或性能门禁。目标尚未完成，执行状态以应用中的 goal 记录为准。
+**简体中文** · [English](implementation-status.en.md)
+
+
+目标与验收范围由 [冻结清单](README.md) 管理。下面记录实现阶段，不能替代清单中的官方、宿主、设备或性能门禁。目标尚未完成，执行状态以版本化验收记录为准。
 
 新增显式实验 [Live Document v2](browser-live-document-v2.md)：原生 QuickJS/V8 提供私有
 接收者 incarnation，runtime 先发无几何 document permit，再原子校验 live geometry
@@ -32,6 +36,7 @@ release WASM 及 native/Worker 真实浏览器回归均通过；完整范围和�
 [handler routing 证据](../archived-evidence.md)。
 本轮未重新运行完整 workspace 测试，不授予 IME、硬件、官方或性能通过。
 
+<a id="current-runnable-path"></a>
 ## 当前可运行路径
 
 - manifest v3 支持默认及逐页 `skia`、`webview`、`skyline-compat` profile。旧 v1/v2 继续可读；不支持的 profile 在加载时明确拒绝。
@@ -79,10 +84,11 @@ release WASM 及 native/Worker 真实浏览器回归均通过；完整范围和�
 
 同一产品源码的 release WASM 静态入口已在一个真实 Worker 内完成 DOM／Skia 切换、输入、返回、resize／2× 与关闭检查。后续 `6d15d84f` 只增加测试采样修正、示例和文档，Rust 源码未变；三组 Node 回归及 all-features release CLI 通过。[双渲染开发示例](../../examples/apps/dual-renderer-app/README.md) 使用真实固定编译器 watch 和 portable pack，在 QuickJS、V8 remote 开发循环中分别通过页面实例、共享存储、同一 App 定时器和严格呈现版本检查。每次在两个指定端点捕获 65 个完整响应，退出前无读取错误或在途请求。
 
-本地 `58730` 预览已更新到该固定 release，并经实际 CUA 点击确认 modern View 的 Update 2、共享 ESM 2/2 和 750×1334 输出。旧标签已不存在，本轮创建并保留一个最终预览页。原始失败、取证脚本修正、精确源码／产物及资源归属记录见[本轮证据](../archived-evidence.md)。自动化浏览器使用 SwiftShader，截图诊断含显式 readback；没有新增硬件 GPU、性能、官方或七宿主通过，279 项发布门禁保持原状，goal 继续 active。
+本地 `58730` 预览已更新到该固定 release，并经实际 CUA 点击确认 modern View 的 Update 2、共享 ESM 2/2 和 750×1334 输出。旧标签已不存在，本轮创建并保留一个最终预览页。原始失败、取证脚本修正、精确源码／产物及资源归属记录见[本轮证据](../archived-evidence.md)。自动化浏览器使用 SwiftShader，截图诊断含显式 readback；没有新增硬件 GPU、性能、官方或七宿主通过，279 项发布门禁保持原状，目标仍未完成。
 
 启动方法见 [模拟器文档](../simulator.md)。默认 Web remote 需要先准备固定的 CanvasKit/font 资源；缺少资源时不会下载或降级为软件。
 
+<a id="dom-text-control-baseline-milestone"></a>
 ## DOM 文本控件基础里程碑
 
 DOM 路径新增真实 input／textarea、标量与选区预检、按语义身份恢复本地编辑、
@@ -106,6 +112,7 @@ DOM 路径新增真实 input／textarea、标量与选区预检、按语义身�
 没有新增官方、硬件、移动键盘或性能通过；冻结的 279 项发布门禁保持 unknown，
 原 `58730` 预览服务未因本轮验证而替换。
 
+<a id="worker-native-input-lifecycle-receipt-strengthening"></a>
 ## Worker 原生输入生命周期接收加固
 
 `8c4c4593` 将 `inputLifetimeRevision` 保留到 scheduler demand，并纳入 DOM adapter
@@ -127,8 +134,9 @@ WASM 与 staged browser 源码仍绑定 `8c4c4593`；测试工具修正单独绑
 跨呈现中文 IME 仍未实现；[稳定原生编辑设计](native-editing-continuity.md) 定义了
 后续 persistent Document、文档 permit、live geometry 最终接受和有限 editing lease，
 目前只是待实现提案。没有新增产品 watch、官方、硬件、其他宿主或性能通过。
-279 项发布门禁保持 unknown，goal 继续 active；现有 `58730` 预览未替换。
+279 项发布门禁保持 unknown，目标仍未完成；现有 `58730` 预览未替换。
 
+<a id="implemented-dom-transaction-boundaries"></a>
 ## 已实现的 DOM 事务边界
 
 基础 DOM `button` adapter 已新增：真实 native button、受限外观属性、保留子树、
@@ -151,6 +159,7 @@ controls 集成 r6 通过真实浏览器原生输入与重建退休验证；下�
 
 事务、取消、迟到 ACK、资源释放及慢通道故障由专项测试管理。实际 browser smoke 的 `passed` 仅限该报告绑定的源码/二进制与已执行检查；未观测的生命周期、有效图片传输、连续滚动或性能行为不能从一次点击结果推导。
 
+<a id="worker-presentation-foundation-boundary"></a>
 ## Worker 呈现基础边界
 
 Worker 已增加可选的 ordered-observation 与 external-presentation 协商：前者保留运行时所属线程分配的 sequence、逻辑 surface generation 和不可复用的输入生命周期；后者返回具体帧实际消费的页面数据版本、物理目标尺寸及真实最终 ACK。倍率重绘保留消费版本，ready 后的数据变化不会倒写旧帧来源；故障、退后台、页面往返和逻辑 resize 则撤销旧输入授权。协议见 [ordered observations](../worker-ordered-observations.md) 和 [external presentation](../worker-external-presentation.md)。
@@ -163,6 +172,7 @@ Worker 已增加可选的 ordered-observation 与 external-presentation 协商�
 
 此前呈现合同阶段的完整工作区／全部 feature 回归为 1,739 项通过、0 项失败、4 项忽略，557 个受检查源码文件在执行期间未变；格式检查及全部 target/feature 的严格 Clippy 通过。定向 Rust 检查为 382 项通过、1 项忽略；Web／Worker 合同为 411 项通过；Web 构建与输入等补充合同为 412 项通过、2 项缺省依赖路径跳过，显式使用固定依赖的 CanvasKit CPU API 套件随后 233 项全部通过；manifest 为 136 项通过。数字覆盖范围重叠，不相加作为独立验收覆盖。最终源码绑定及后续真实产品验证分别记录在 [呈现合同归档](../archived-evidence.md)。冻结的 279 项发布门禁未因此升级。
 
+<a id="browser-development-mode-build-boundary"></a>
 ## 浏览器开发态构建边界
 
 监督器新增 `DevPackConsumer::BrowserWorker`，只构建和校验 portable pack，不创建 native `HostSession` 或执行 AppService；`PortableReady` 与 runtime/presented ready 分开。发布屏障强制刷新编译回执、配置及现代依赖，并检查合法 raw 源码修改，绕过日常 watch 防抖；失效 token 不得覆盖新错误，旧 pack 仍保留。该基础阶段未接入 browser CLI；后续实验入口另见下文。
@@ -173,6 +183,7 @@ Worker 已增加可选的 ordered-observation 与 external-presentation 协商�
 
 开发监督器现可显式准备独立 pin 的 runtime producer：在自己的有限作业中读取固定工具和产物，校验原始回执，通过有界共享资源借用提供字节，并在借用释放后重试清理原 owner。实际 software／CanvasKit 两个静态消费者验证了 64 个共享字节借用、在途借用阻止清理及释放后的目录删除，原 producer 文件树在执行前后相同。该阶段未重建旧 producer，`runtimeReady`、`presentedReady` 均保持 false，当时尚未接入 stage、HTTP 或 browser watch。完整工作区／全部 feature 为 1,876 项通过、0 项失败、6 项忽略；592 个受检查源码文件执行期间未变，格式与严格 Clippy 通过。[静态准备证据](../archived-evidence.md)保留原始失败和最终提交绑定，不授予 Worker、GPU、七宿主或性能门禁通过。
 
+<a id="managed-input-and-static-sites"></a>
 ## 受管输入与静态站点
 
 固定编译器 watch、不可变 raw generation 和 portable 打包进程已复用原 aggregate 账本；writer-done ACK 或同一 watcher 的真实进程树屏障解除写入权。构建失败保留旧 pack，容量恢复复用同一个 compiler context。该阶段的[受管源码证据](../archived-evidence.md)保留 1,904 项 Rust 执行结果，同时明确记录：workspace 记录器因执行期间 CI 测试参数变化而失败，不能当作起止源码一致的通过。
@@ -183,6 +194,7 @@ Worker 已增加可选的 ordered-observation 与 external-presentation 协商�
 
 该阶段的最终源码通过模拟器全部 feature 回归：420 项通过、0 项失败、4 项忽略；严格 workspace／全部 target／全部 feature Clippy、格式、37 项 Node 合同和 136 项 manifest 检查通过。669 个受检查源码文件在各次最终验证中一致。历史全工作区 1,940 项通过、8 项忽略发生在三处私有结果布局的 Box 修复之前，原始字节及精确 diff 保留；修复后重跑受影响的模拟器与两份真实静态 stage，未把历史工作区结果重新标为最终源码通过。完整记录见[受管站点证据](../archived-evidence.md)。
 
+<a id="http-transmission-for-static-sites"></a>
 ## 静态站点的 HTTP 传输
 
 `WebSurface::bind_resource_only` 已将静态资源接到实际 HTTP 队列；`poll → resolve_resource_requests → wait` 在同一 owner lane 完成原身份匹配与资源借用。runtime、pack、site 使用独立的不可变 URL 命名空间，严格检查原 GET/framing，不继承旧入口的 wildcard CORS，也不开放旧 UI、bridge、SSE 或控制 mutation。普通 WebSurface 路由保持原有行为。
@@ -248,6 +260,7 @@ Clippy 通过。它们不运行新闭环的真实
 Worker／浏览器／GPU，不升级原发布门禁。原始开发失败及最终源码绑定另见
 [关闭身份回执证据](../archived-evidence.md)。
 
+<a id="experiment-browser-development-loop-realistic-limited-watch-verified"></a>
 ## 实验 Browser 开发循环：真实有限 watch 已验证
 
 独立 `serve_browser_dev` example 已连接同一个监督器、串行 owner、鉴权控制与开发 UI，
@@ -293,6 +306,7 @@ Browser runner，显式选择 `web + quickjs + webview + browser` 并提供独�
 详见[浏览器开发循环](browser-dev-loop.md)。七宿主、硬件 GPU、性能与官方 oracle
 门禁未变，冻结的 279 项发布项仍为 unknown。
 
+<a id="canvas-batch-processing-and-development-diagnostics"></a>
 ## Canvas 批处理与开发诊断
 
 Canvas2D 先把完整命令批次校验为后端共用的 typed commands，native 路径省去原先仅为校验而丢弃的软件绘制。原生 CPU Skia 绘制与一次 RGBA 读回继续保留；这不表示 Canvas 已接入零读回 GPU 合成。共享 arc 准备接受有限 f64 角度，将方向、整圈与反向余数规整后才交给 f32 后端，避免极大角度的逐圈循环无法结束。其他坐标与数值参数保留原有边界，极大角度不承诺任意精度或官方像素等价。
@@ -301,6 +315,7 @@ Canvas2D 先把完整命令批次校验为后端共用的 typed commands，nativ
 
 实现提交与本次 renderer/runtime 双配置、严格 workspace Clippy、格式及 Node 合约结果见[Canvas 与诊断证据](../archived-evidence.md)。本次没有执行新源码的真实浏览器或官方／设备／性能验收；上一个浏览器里程碑继续绑定其原提交，不能转移通过结论。
 
+<a id="unfulfilled-mandatory-scope-pending-delivery"></a>
 ## 尚未交付的必需范围
 
 Session 已通过 `SkiaPageBackend` 管理按需创建的页面 Skia 对象，只读宿主调用已迁移到 passive typed observation/status；目标 validation/staging 和当前 scene 重绘也有窄接口。Web remote 倍率共同接受、逻辑 resize 恢复及 Worker 同 session 渲染家族切换已由上文后续 checkpoint 交付，不再列为待实现。font mutation 及 backend-neutral coordinator 仍待完成。DOM SelectorQuery 的 partial adapter 和基础 button adapter 已实现；controls r6 在 `4f753cab` 上完成其真实 QuickJS Worker 查询与按钮用例，不能把该历史结果转移到后来源码。Remote 首次 `onLoad` 查询等待、DOM intersection/scroll adapter、button 的其余宿主能力仍待实现；Browser CLI 开放显式 QuickJS Worker + DOM/Skia 的受管原始源码 profile，DOM/Skia 有限真实开发循环已有上述绑定源码的证据，硬件与性能仍待验收。实验 example 保持 WebView，有限 watch 循环已完成其所选源码的真实浏览器验证，尚无无限运行或刷新接管。静态 Worker 导出已有默认产品入口，实际执行和发布门禁分别记录。开发 WebView 已接入 owner-thread 租约、主预览切换、只读镜像、独立编码资源服务和异步 ACK；每项实际 E2E 结果由绑定源码的报告给出，不能仅因接口存在而授予通过。Rust reload 预检覆盖 IR、资源与模板投影，浏览器特有的 CSS/解码失败仍可能发生在 manifest 接纳之后：保留旧图并冻结失效输入，不能称为完整浏览器预检回滚。GPU 配置失败也仍需完整的 pending/failed 配置回滚事务。
@@ -311,6 +326,7 @@ SelectorQuery 的语法与有序树匹配已抽到 `container-core::selector`，
 
 Windows/Linux GPU presenter、七宿主原生 WebView adapter、混合组件合成、真实 IME/video/camera/MapLibre、七宿主植入样例，以及全部硬件与性能门禁继续在目标内。缺少设备或 runner 的项目保持 unknown/blocked。该阶段不会发布 near-parity 或双渲染完成 tag。
 
+<a id="local-validation-record"></a>
 ## 本地验证记录
 
 早先浏览器观测阶段的完整工作区、全部 feature 回归通过：1,660 项通过、0 项失败、2 项既有性能测试忽略，执行期间 2,167 个源码文件哈希保持一致；全部 target/feature 的严格 Clippy 和格式检查通过。新增 DOM 媒体查询及画面输入快照的专项回归为 55 项通过，浏览器协议契约为 84 项通过。后续只调整了两个 Node 命名策略文件，精确登记历史缓存排除路径，其 7 项策略测试及仓库命名检查通过，Rust 实现没有后续变化。[本轮证据](../archived-evidence.md) 保留原始成功、失败、源码快照和变更边界。

@@ -1,4 +1,8 @@
+<a id="independent-consumer-of-the-android-sdk-archive"></a>
 # Android SDK 归档的独立消费者
+
+**简体中文** · [English](sdk-android-archive-consumer.en.md)
+
 
 `scripts/sdk-android-consumer.mjs` 从精确 SDK 归档全新安装 Maven，再单独构建
 Android release 应用和 instrumentation APK。它不运行 SDK library、JNI、Rust

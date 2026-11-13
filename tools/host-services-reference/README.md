@@ -1,4 +1,8 @@
+<a id="host-account-and-payment-reference-backend"></a>
 # 宿主账号与支付参考后端
+
+**简体中文** · [English](README.en.md)
+
 
 这是独立运行的 Node.js 24 ESM 服务，使用内置 `node:sqlite`，没有 npm 依赖。
 它提供宿主身份、一次性小程序登录码、独立的资料/手机号授权、支付订单与验签回调的
@@ -12,6 +16,7 @@ npm --prefix tools/host-services-reference run demo
 `demo` 在内存数据库中完成本地 reference 支付流程，只输出公开资料和订单，不输出
 令牌或密钥。它不调用微信/支付宝，不代表发生真实交易。
 
+<a id="local-business-example-service"></a>
 ## 本地业务示例服务
 
 `HOST_DEMO_CONTROL_TOKEN` 通过后端/原生 debug 环境注入，至少 32 字符；不放入 pack、
@@ -45,6 +50,7 @@ origin 返回 CORS。Android 模拟器使用任务专属 `adb reverse tcp:8787 t
 示例服务每次启动创建临时密钥和内存数据库；不提供真实宿主登录、手机号核验或资金交易。
 Android/iOS 的可编译安装示例位于各 SDK 的 `examples/host-services/`。
 
+<a id="startup-and-configuration"></a>
 ## 启动和配置
 
 将 `config.example.mjs` 复制到后端的私有配置目录，设置环境变量，再启动：
@@ -81,6 +87,7 @@ JavaScript JSON number 丢失精度；值域为 `1..18446744073709551615`。
 示例仅启用 reference 通道。启用微信或支付宝时还要在该 app 的
 `allowedPaymentChannels` 中显式加入 `wechat` / `alipay`。真实通道失败时不会退回 reference。
 
+<a id="strict-v2-authorization-protocol"></a>
 ## 严格 v2 授权协议
 
 v2 后端已实现 SQLite 原子授权前提；SDK/运行时共享授权 fence 和跨进程通知仍待接入。
@@ -124,6 +131,7 @@ revision 为规范十进制 u64 字符串，SQLite TEXT + BigInt 比较，不经
 v1 登录、查会话、应用退出保留。旧 runtime/客户端尚无本批 fence 能力，不得静默降级。
 challenge、decision、revision 检查数据留在可信宿主/后端，不能把 backend object 原样交 guest。
 
+<a id="trust-and-account-lifecycle"></a>
 ## 信任与账号生命周期
 
 | 调用方 | 所持凭据 | 可执行操作 |
@@ -167,6 +175,7 @@ session 失效，不能用旧 epoch 重新登录。这是服务端撤销，与 S
 其他 principal 不受影响。删除是不可恢复的数据清理，业务后端仍须按自身保留策略处理外部账号、
 日志和支付平台记录，并向支付平台查询/撤销尚未完成的交易。
 
+<a id="http-contract"></a>
 ## HTTP 合同
 
 JSON 请求使用 `Content-Type: application/json`；响应禁止缓存。请求体最大 256 KiB。
@@ -207,6 +216,7 @@ HTTP 错误是 `{error,message}`，不返回凭据、平台原始响应、个人
 `401` 表示凭据/码失效，`403` 表示 scope/consent 不满足，`409` 表示幂等或事件冲突。
 其他路径 `404`；健康检查为 `GET /health`。未实现 CORS，页面不能据此直接调用敏感入口。
 
+<a id="payment-and-native-integration"></a>
 ## 支付与 native 对接
 
 业务后端按自身商品/金额/买方身份创建订单，不能把 guest 传入金额直接作为权威金额：
@@ -263,6 +273,7 @@ authenticated payload hash 持久绑定；重复事件只确认一次，另一�
 创建请求晚于通知返回也不会覆盖已付款状态。实际发货需业务后端自己的持久幂等
 订单/发货账本；此参考服务没有跨服务原子发货、退款 API、对账调度或 outbox。
 
+<a id="validation-scope"></a>
 ## 验证范围
 
 `npm test` 覆盖真实 loopback HTTP、SQLite 重开、host/app/epoch/pack 隔离、码过期/

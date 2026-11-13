@@ -1,10 +1,15 @@
+<a id="weapp-container-simulator"></a>
 # Weapp Container 模拟器
+
+**简体中文** · [English](simulator.en.md)
+
 
 仓库提供 `container-simulator` 作为开发和验证工具，支持 Web、桌面窗口及 headless 运行。它
 消费 `container-pack` 目录中的 `manifest.json` 与
 `blobs/sha256/<sha256>`，通过与原生宿主相同的 `HostSession` 驱动 AppService、
 View、Renderer 和 bridge。生产运行时只依赖声明的构建组件，开发验证工具独立运行。
 
+<a id="quick-start"></a>
 ## 快速运行
 
 需要现代 JS/TS 视图时，参见[现代 View](modern-view.md)，运行
@@ -34,6 +39,7 @@ cargo run -p container-simulator -- run --pack artifacts/reference \
 `data.patch.batch` 中提交。输出的 snapshot 是 JSON 元数据和紧凑 RGBA8 像素，
 便于 golden 比较或上传到 CanvasKit/native surface。
 
+<a id="dom-text-editing-example"></a>
 ## DOM 文本编辑示例
 
 [`text-controls-app`](../examples/apps/text-controls-app/README.md) 使用真实 input／textarea，
@@ -47,6 +53,7 @@ pnpm simulator:dev -- --project examples/apps/text-controls-app \
 控件的身份匹配、焦点恢复和事件预算见[文本控件契约](dual-renderer/dom-text-controls.md)。
 普通更新仍会重建 iframe，跨更新保持原生 IME 会话尚未完成；不要将快照恢复视为该能力通过。
 
+<a id="component-relationship-development-example"></a>
 ## 组件关系开发示例
 
 除了 reference-app，还可以运行带自定义组件关系的交互 fixture：
@@ -63,6 +70,7 @@ linked 前发布关系，detached 期间可读取旧关系，unlinked 期间关�
 `linkChanged` 因缺少可靠移动元数据而显式返回 `ERR_UNSUPPORTED_CAPABILITY`。
 此示例可用于开发态验证，不增加真实 DevTools、GPU 或设备通过状态。
 
+<a id="developer-mode-monitor"></a>
 ## 开发态监督器
 
 首次克隆后，先初始化 submodule，并准备其固定版本的构建器依赖：
@@ -405,7 +413,7 @@ integrity root。移动 App 植入示例复制并验证完整资源闭包，在 
 原生 prototype constructor 不被替换，Array 的 map/filter/slice/concat/splice 继续执行。
 直接 View API 未提供编译元数据时仍采用 ECMAScript 属性语义。
 无法正确 lowering 的语法返回 `ERR_UNSUPPORTED_WXS_SYNTAX`：lexical eval/Function、with、
-import、optional、async/generator、tagged template、class、destructuring、spread/rest
+import、可选、异步/生成器、标记模板、类、解构、展开/余量
 和 for-of；这不是完整官方 WXS 方言或反射安全沙箱。
 bare `wx:key` 是对象 item 的 own 属性名，keyword 与连字符不会被误当 JS；primitive
 bare key 为 null，取 item 自身使用 `*this`。既有 dotted loop-scope expression 扩展
@@ -621,6 +629,7 @@ pnpm simulator:dev:browser-smoke -- \
 该报告仍然只代表开发模拟器 Web software surface；它不会升级为 DevTools、GPU、官方
 模拟器或真机证据。
 
+<a id="custom-component-execution-subset"></a>
 ## 自定义组件执行子集
 
 WXML 求值时忽略普通布局中的源码换行缩进；原始 AST/blob 不变，稳定 identity
@@ -701,6 +710,7 @@ listener 按声明 owner 执行，slot 保留声明侧归属。
 `relations`、完整 WXS 方言、property 类型规则与官方组件兼容性仍未完成。本地双引擎、
 渲染和生命周期测试不升级真实 DevTools 或 near-parity 门禁。
 
+<a id="jsonl-debug-script"></a>
 ## JSONL 调试脚本
 
 ```sh
@@ -731,6 +741,7 @@ Rust embedder 可调用 `simulator.set_trace_retention(...)` 调整策略；开�
 应使用独立且有终点的 conformance 运行；截断的开发历史不能作为完整差分证据。
 这些门禁只界定 trace 的留存，不证明 runtime 的总 RSS、GPU 或性能指标达标。
 
+<a id="app-implantation-boundary"></a>
 ## App 植入边界
 
 开发监督器提供显式 `DevSupervisor::shutdown()`：按上述顺序停止它拥有的构建资源，
@@ -774,6 +785,7 @@ remote WebView 使用 `view.prepare → view.prepare.commit → view.presented`�
 WebView adapter 仍待接入。完整 snapshot 仅用于显式截图或软件 surface。
 禁止逐节点 JNI、N-API 或 Swift 往返。示例入口与构建通过不代表完整宿主兼容性通过。
 
+<a id="evidence-boundary"></a>
 ## 证据边界
 
 开发面和 `/embed` 共用批量输入适配器，支持滚轮与单指触摸输入；滚动状态、

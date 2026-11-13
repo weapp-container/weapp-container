@@ -1,10 +1,15 @@
+<a id="canvas-animation-and-mediaqueryobserver-implementation-scope"></a>
 # Canvas、Animation 与 MediaQueryObserver 实现范围
+
+**简体中文** · [English](canvas-animation-media-query-scope.en.md)
+
 
 本批沿用微信基础库 3.17.3、`miniprogram-api-typings@5.2.3`、1265 API × 七端
 共 8855 单元的固定口径。源码实现、有限引擎测试、安装产物、公开 SDK 链路、设备和
 商户验收分别记账。本文不将尚有完整参数或生命周期缺口的 API 晋级为 available。
 
-## Canvas
+<a id="canvas"></a>
+## 画布
 
 QuickJS/V8 从同一 `container-core/src/canvas.js` 安装命令 facade。命令参数在入队前
 复制为有限的原始值/数组；循环、accessor、非有限数字和不支持的对象明确拒绝，
@@ -32,7 +37,8 @@ readback 成功、即将发布时锁定，首次被拒的绘制保持可安装�
 Skia 的 hanging/ideographic 使用 ascent/descent 惯例近似，未实现字体 BASE 表；
 软件文字仍有限，native 执行不代表七端物理呈现验收。
 
-## Animation
+<a id="animation"></a>
+## 动画
 
 双引擎共用 `animation.js`。补齐可选 translate 参数默认值；step 先完成 options
 读取和验证，再提交动作，getter 抛错不丢队列；读取 options 期间拒绝重入修改。
@@ -76,6 +82,7 @@ Reflect.get 读取一次，支持继承和 getter。未知字段、循环与 toJ
 已成功的 media callback。1024 个已观察 observer、4096 个订阅和 u64 序列有显式上限。
 独立引擎保留历史公开诊断路径，该路径不作为 Session owner 完整性的证据。
 
+<a id="outputs-and-acceptance"></a>
 ## 产物与验收
 
 本批新增共享 JS 由生产 AppService bootstrap 内嵌到 QuickJS/V8 runtime。旧 SDK

@@ -1,4 +1,8 @@
+<a id="clean-room-and-evidence-recording"></a>
 # Clean-room 与证据记录
+
+**简体中文** · [English](clean-room-and-evidence.en.md)
+
 
 兼容行为通过版本固定的公开接口、独立测试和输入输出对照验证。每条记录需要保存方法、工具版本、输入 SHA-256、分析时间、选取范围、结论和限制；仓库不保存官方私有源码、资源、用户数据或可替代官方实现的二进制。
 

@@ -1,7 +1,12 @@
+<a id="canvas-affine-matrix-and-current-path-clipping"></a>
 # Canvas 仿射矩阵与当前路径裁剪
+
+**简体中文** · [English](canvas-affine-clip-scope.en.md)
+
 
 固定基线为微信基础库 3.17.3、`miniprogram-api-typings@5.2.3`，仍使用 1265 API × 七平台 = 8855 单元。产品提交 `ba98455f1fb53c8de1a6d3b1f5af5de4ec4e2126` 实现 legacy `CanvasContext.setTransform`、`transform`、`clip`，三项七端均登记为 Partial，Available 与 accepted 增量均为 0。当前为 available1504 / partial1091 / requiresHostService86 / missing6174，距离 7084 Available 仍差 5580；platformNotApplicable87 不从分母扣除。
 
+<a id="implementation-boundary"></a>
 ## 实现边界
 
 两种矩阵方法接受六个有限 native scalar 并返回 void，`clip` 为零参数 void 方法。关联真实 Canvas 节点的上下文经私有 owner 通路提交；既有无 owner 和 offscreen 上下文保留独立事件通路，各通路的批次均经过完整 typed batch 预检后才绘制。`setTransform` 替换 guest CTM；`transform` 按 current × incoming 组合。参数使用 `(a,b,c,d,e,f)`，点映射为 `x'=a*x+c*y+e`、`y'=b*x+d*y+f`。已构造的路径保留构造时的坐标，后继 CTM 不会重新变换旧路径。奇异矩阵可被接受，但预检拒绝不再有限的累计矩阵和几何。
@@ -10,6 +15,7 @@
 
 共享预检在像素分配或发布前检查完整命令流，包括最多 16MiB 的瞬时 clip-mask payload、256Mi 几何 work units 及现有 Canvas 上限。迟到的预算或几何拒绝不能覆盖已接受图像。`draw(true)` 保留已有像素和历史命令，但本次新命令仍从默认绘制状态开始；Promise 返回是容器扩展。
 
+<a id="remaining-range-per-item"></a>
 ## 每项剩余范围
 
 | 成员 | 已实现范围 | 保留的缺口 |
@@ -22,6 +28,7 @@
 
 清点只为这三项增加独立的源码、参数和剩余范围检查。factory、draw、已有 Canvas 成员及 offscreen 的原有缺口均保留；没有新增 SDK 验收合同。8855 格完整比较只改变这三项的 21 格，其余 8834 格完整对象不变，全部 status、coverage、implementation 责任以及合同、ledger 字节不变。
 
+<a id="verification-and-product-scope"></a>
 ## 验证与产物范围
 
 Node Canvas 74/74、根工作区清点/矩阵/IO 568/568、生成及 `--check` 已通过。实际 QuickJS 与 V8 的 Canvas filter 各通过 27 项，包含 24 项 Canvas 和 3 项 nextTick Canvas；两组命令不能累计为独立覆盖数。portable 和 Skia 仿射测试各 13 项、native 调用方保护 3 项通过。owned-page 13 项及 browser-permit 1 项属于周边回归，不单独证明新成员执行。

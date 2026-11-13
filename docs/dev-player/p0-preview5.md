@@ -1,7 +1,12 @@
+<a id="dev-player-preview5-layout-navigation-and-fault-recovery"></a>
 # Dev Player preview.5：布局、导航与故障恢复
+
+**简体中文** · [English](p0-preview5.en.md)
+
 
 本轮修复多分辨率、平板与折叠屏验收中暴露的共享边界问题。**本阶段尚未验收通过**。App17 `0.1.0-preview.5.7+17` 与匹配原生归档、Android APK、iOS Simulator ZIP 已实际构建；当前进展见下节。下文按版本保留实施与失败记录；后续结果不覆盖旧证据，也不给旧二进制重新绑定源码。
 
+<a id="2026-11-02-stage-state"></a>
 ## 2026-11-02 阶段状态
 
 App17 的原生生产者为 `6385949a3a48b22fa852b9d4e3cd4da1853c8e01`，设备构建服务使用后续 `ff07872db78050bb78147f5cc34487ca29c4da30` 的 watch 入口修正；服务源码不重新绑定原生二进制。[阶段证据入口](../archived-evidence.md)分别记录源码、SDK、安装包和测试方法身份。
@@ -18,6 +23,7 @@ preview.5.7 **尚未发布**，实际独立授权下载与六 SDK 默认锁晋�
 
 以下为 App16 失败与 App17 构建前的历史记录，保留当时状态及原始结论。
 
+<a id="app16-failure-and-app17-fault-instance-exit-repair"></a>
 ## App16 失败与 App17 故障实例退出修复
 
 App16 Android 小屏完成十轮普通／自定义导航与旋转，累计通过 301 项断言，在 C012 恢复截图阶段发现诊断入口后停止。新实例的 durable attempt 已 accepted，随后恢复了实际呈现与输入；与此同时，旧 poisoned View 在 unload 时再次请求 guest scope release，清理错误进入同一 controller 队列，随后被 Player 当作当前错误采用。新实例健康不能豁免真实的界面故障，原 full 保持 failed。其余 App16 Android 形态及 iOS 没有本版本的通过证据。详见[保留的 App16 失败](../archived-evidence.md)。
@@ -26,10 +32,12 @@ App17 将终态 session 退出与普通页面销毁分开：已 poisoned 的 Vie
 
 运行库与受影响 SDK 的当前源码版本为 `0.1.0-preview.5.7`，Player 为 `0.1.0-preview.5.7+17`，C ABI 保持 1。默认 View 预算仍为 50 ms。默认 Rust workspace **2,405 passed / 9 ignored**、双引擎原生 workspace **2,706 passed / 11 ignored**、两组严格 Clippy、Player **240/240**、相关 Node 与 SDK 检查已通过；[本地验证记录](../archived-evidence.md)绑定实际源码字节。这不代表新二进制、设备、授权下载或性能验收，App17 尚须构建后重放原失败与多形态十轮门禁。旧 preview.4/5/5.x 产物、默认下载锁与失败证据不改写。
 
+<a id="app15-actual-results-and-post-mortem-diagnosis"></a>
 ## App15 实际结果与后续诊断
 
 以下记录保留各版本实施时的状态，最新状态见上节。
 
+<a id="preview56--app16-source-code-preparation"></a>
 ### preview.5.6 / App16 源码准备
 
 后续运行库与六份 SDK 的当前源码版本为 `0.1.0-preview.5.6`，Player 为 `0.1.0-preview.5.6+16`；新原生库和安装包尚未完成构建，不能用 App15 字节代替。SDK 的默认下载锁继续保留原 preview.5.3，历史 `ORIGIN.json` 不改写；新候选锁仅在新归档构建、校验与授权下载后生成并显式使用。
@@ -58,6 +66,7 @@ C018 第 3 轮的健康源文件原子替换后，约 179.9 秒才生成对应�
 
 本任务的 Android 小屏、大屏及三台 iOS 模拟器已按准确归属关闭，保留设备数据与 Keychain。小米、既有 Web 服务及无关模拟器未操作。下面的 App14 及更早记录保持原结论。
 
+<a id="app14-empirical-testing-and-app15-transaction-recovery-correction"></a>
 ## App14 实测与 App15 恢复事务修正
 
 App14 绑定源码 `b6a19b08946b059828895b293a3e71b6cbf5a9fc`。iPhone SE 完成 C013 连续十轮和生命周期十轮；C012 前四轮通过，第五轮在显式重试后未能于原 25 秒内恢复可交互画面。新 session 的 attempt 已 accepted，AppService 定时器继续推进，108 份后续观测均健康但 `previewOccluded=true`，没有新 `onReady`。这是实际呈现恢复失败，不能当作又一次 View 超时，也不因前四轮通过而重试到绿色。
@@ -68,6 +77,7 @@ Android 小屏原首次运行因 ADB 连接丢失停止；随后一次受控重�
 
 App15 只修改 Player 协调层，运行库和 SDK 继续精确使用原 preview.5.5 生产者；build 15 不给其重新绑定源码。preview.5.5 已发布私有 prerelease，但本轮实际私有下载在 CDN body deadline 内未下载完整首个归档，线上独立安装为零。离线安装及服务端 digest 核对不能替代该失败；SDK 默认锁未因此前移。旧失败、源码哈希和本地检查见[本轮证据](../archived-evidence.md)。
 
+<a id="app14-early-source-code-preparation-records"></a>
 ## App14 早期源码准备记录
 
 以下保留设备执行前的准备状态，后续 App14 实际结果见上节。
@@ -78,6 +88,7 @@ App14 增加受限的 QuickJS 输出阶段诊断、明确的空操作 journal、
 
 无 WXS、现代 View 或预编译声明的普通模板仍会在 `app.init` 创建 View realm 并加载空 registry，这是独立确认的重复工作。延迟该工作必须将 realm 构造、空 registry 初始化、文档注册、执行及结果验证全部纳入首次实际 render 的同一预算；旧 realm 的非空 registry 仍须清理。预编译及现代 View 保留启动时验证与注册。该优化不等于解释历史峰值，后续新源码必须重新执行本地及设备门禁。五种新 Android AVD 仅完成定义准备，尚未启动或安装 App14。
 
+<a id="app12-current-device-result"></a>
 ## App12 当前设备结果
 
 以下结果绑定 App 源码 `ed99d9b6ff7cf97557262d42573e8b2504f30669`、Flutter SDK `79da75144bd3f3b145c2e976049bf1f23a3edd1e`，原生运行库仍由 `012400d43cb20b4d91a73fbbde7e1cf11bd0bb6a` 生产。默认 View 预算保持 **50 ms**。
@@ -94,6 +105,7 @@ iOS 全文件严格安装检查的六项 executable 位变化仍保留为失败�
 
 已关闭本任务创建的三台 iOS 与 Android 小屏/大屏模拟器；原 Web 服务、无关模拟器及小米手机保持原状。安装包、逐阶段源码绑定、回执、截图清单及原始失败在受限本地证据中保留，[安全文本与派生摘要](../archived-evidence.md)单独归档。大屏重跑是在层级采集阶段检测到预览诊断后中止，不能解释为底层截图命令失败。
 
+<a id="normal-timeout-and-post-error-boundary-correction"></a>
 ### 正常超时与后续修正边界
 
 Android 小屏最后一个健康采样早于真实超时约 73 ms；后续同 session 的故障状态为 sticky，因此不存在用较早健康采样反证故障的依据。异常批次已命中程序缓存：准备约 13.5 µs、VM 输入解析约 22.7 ms、包含延迟编译的执行约 109.9 ms。此前正常批次约 1.6–2.4 ms。墙钟不足以区分 CPU、调度等待与宿主暂停，不将原因猜测为 GC 或模拟器负载。
@@ -104,6 +116,7 @@ Android 小屏最后一个健康采样早于真实超时约 73 ms；后续同 se
 
 SDK 的独立确定性反例另证明：同一 controller 更换 View 后，旧 View 的迟到错误可能污染当前预览。修正以 View 租约和操作归属隔离退休回调，并保留活跃错误及退休清理失败；诊断 sink 自身失败也不能遮住原始错误或改变恢复控制流。这个已证明的缺陷不等于 Android 大屏历史取消的已确定原因，新包仍需实测。
 
+<a id="implementation-checklist"></a>
 ## 实施清单
 
 | 边界 | 本轮实现 | 仍需验收 |
@@ -118,9 +131,10 @@ SDK 的独立确定性反例另证明：同一 controller 更换 View 后，旧 
 
 原失败分析保留在 [C013](../archived-evidence.md) 与 [C018](../archived-evidence.md)。这些文件仍是原版本的失败/建议证据，不改为本轮通过记录。
 
+<a id="public-contract-and-compatibility-boundary"></a>
 ## 公共契约和兼容边界
 
-[SDK preview.5 source 协议](../../sdk/contract/PREVIEW5.md) 与 [TypeScript 声明](../../sdk/contract/types/weapp-container.d.ts) 定义完整 wire。C ABI 保持 **1**，现有 guest `weappContainer` 消息 API、Java namespace、包名和旧 SDK 方法继续保留。新 Player 必须协商 `chrome.atomicLayout` 与 `pack.devReload.attemptJournal`；旧二进制缺少所需能力时明确失败，不能静默回退成旧坐标/结果猜测。
+[SDK preview.5 source 协议](https://github.com/weapp-container/sdk-contract/blob/main/PREVIEW5.md) 与 [TypeScript 声明](../../sdk/contract/types/weapp-container.d.ts) 定义完整 wire。C ABI 保持 **1**，现有 guest `weappContainer` 消息 API、Java namespace、包名和旧 SDK 方法继续保留。新 Player 必须协商 `chrome.atomicLayout` 与 `pack.devReload.attemptJournal`；旧二进制缺少所需能力时明确失败，不能静默回退成旧坐标/结果猜测。
 
 完整布局通过 `hostLayout:{protocolVersion:"1.0",atomic:true}` 显式启用。atomic 模式拒绝分开的 `resize/windowMetrics/hostChrome` 绕过入口；未启用的 embedding 保留原路径。新身份以 canonical positive decimal u64 字符串传输，不能经过 JS Number。frame revision、pack acceptance revision、layout revision 和 surface generation 各有归属，互不替代。
 
@@ -128,8 +142,10 @@ SDK 的独立确定性反例另证明：同一 controller 更换 View 后，旧 
 
 View 默认执行预算仍为 **50 ms**，AppService/bridge 外层共享 deadline 只能缩短它。本轮未通过提高默认超时掩盖中断。不可变缓存只复用源验证和编码，不缓存有状态函数结果、不重排调用、不重置已中断 heap。`viewExecutionMetrics` 将准备、源文档验证/编码、provider、receipt 验证及释放分开记录；provider 内部未测量的 compile/transport 不虚构拆分。
 
+<a id="current-verification-status"></a>
 ## 当前验证状态
 
+<a id="preview5-real-failure-after-first-installation"></a>
 ### preview.5 首次安装后的真实失败
 
 Android 小屏模拟器在未执行测试点击、未注入故障时，普通 250 ms 定时器刷新触发了 `ERR_TIMEOUT`。原生指标记录该 frontier 总计 53.016 ms，其中 document validation/encoding 为 49.054 ms、provider 为 3.501 ms；该批次的 document cache 未命中。View 已正确撤销输入和呈现权限，AppService 定时器继续运行，但这只证明故障隔离，不表示正常刷新通过。
@@ -143,6 +159,7 @@ Android 的无障碍树缺少原生视图类，iOS 安装器清除了六个动�
 - Flutter 与 Android/iOS native wrapper 的候选布局、attempt reconciliation、close 和事件转发由对应本轮测试单独验收；声明或编译成功均不计作真实 UI/GPU 通过。
 - preview.5 已生成七个目标的新原生库并发布私有 runtime 预览版，Android/iOS Player 安装包独立绑定原始 producer。Android 小屏安装运行后出现上述真实失败；iOS SE 完成安装字节校验后暂停，未据此宣称交互通过。5.1 已从冻结的 `747d0b02` 重新构建七个原生目标、AAR、XCFramework 与 macOS universal SDK，并生成十份归档。六 SDK 的新锁固定 manifest SHA-256 `bc2bf8a79ebb1ea1b7bcf2b5a4749271f2022c9b103773bd7be6ebc3b94271cd`；SDK pin 提交不替代归档内的原始 producer。5.1 Player 安装包与私有运行库分发已完成，完整设备回归尚未完成，首次交互结果见下文。小米已允许移除，本轮移动验证使用任务专属 Android 与 Apple 模拟器；不访问用户其他设备或其他任务模拟器。
 
+<a id="preview51-distribution-and-first-interaction-results"></a>
 ### preview.5.1 分发与首次交互结果
 
 `runtime-v0.1.0-preview.5.1` 已作为私有 prerelease 发布，13 个资产均与生产者字节及 API digest 一致。独立授权下载覆盖十份归档（275,076,726 字节），全新严格安装 10/10、归档重验 10/10、错误拒绝 3/3；旧 preview.2/3/4/5 的发布身份和资产保持不变。这是分发验收，不代表设备或性能验收。
@@ -173,6 +190,7 @@ build 10 的输入恢复使用独立 lease；旧恢复的迟到成功或失败�
 
 本轮不改冻结的 172 项 oracle、279 项双渲染和 46 项本轮场景范围，不通过缩减清单达成完成。五端客户端、七宿主双渲染与微信 near-parity 仍是各自独立的发布门禁。
 
+<a id="build-10-actual-failure-and-build-11-fix"></a>
 ### build 10 实测失败与 build 11 修复
 
 绑定 `5cd52d48`／Flutter SDK `1db45efa` 的 build 10 已完成新包校验并实际安装。Android 小屏首次自定义页横屏旋转后，测试报告配对连接断开，未完成后续轮次；事后同进程、同 session 自动恢复连接且健康，但事后状态不能替代断开当时的证据。源码发现 inactive 被当作真实后台断开连接，以及旧连接异步清理可能触及新连接。build 11 将 guest 前后台与开发连接状态分开，按连接 lease 管理回调、重试和清理；实际 Android 原失败原因仍需带新诊断重放确认。
@@ -181,12 +199,14 @@ build 10 的输入恢复使用独立 lease；旧恢复的迟到成功或失败�
 
 build 11 使用 `0.1.0-preview.5.2+11`，SDK 包装层增加受原生 journal 约束的 prepared-restart 测量，区分恢复与普通导航。仅测量不会恢复旧画面的输入。新增包装产物与锁必须重新构建、校验和分发；内部 Rust 仍保留 `747d0b02` 生产的 preview.5.1 原字节与原始收据。旧 preview.5.1 archive、build 10 安装包和失败证据不覆盖、不重新绑定。当前修复和单测不代表 build 11 的设备验收通过。
 
+<a id="app11-local-and-pre-validation-at-the-wrapper-layer"></a>
 ### App11 本地与包装层前置验证
 
 当前受控源码的 Player 回归 **212/212**、Flutter SDK **88/88**、Player 静态分析与 Dart 格式检查通过。Android/iOS 包装层源码检查通过；新分发版本为 **preview.5.2**，内部原生运行库仍为 **preview.5.1 / 747d0b02**。新十份实际归档的 manifest SHA-256 为 `10cf2f084601c9d0e2f06c54dcce4810527035beeee760f075b414651c67d829`。这些本地检查不替代 App11 模拟器交互。
 
 iOS 重打包的严格全 XCFramework 字节比较仍记录为 **failed**：唯一差异为生成 `Info.plist` 的库数组顺序。独立 qualification 证明六个原生库、头文件与 modulemap 字节一致，plist 内容按 library identity 比较相同；不将该 qualification 改写为严格原字节门禁通过。原 App10 的 Android 旋转断连、iOS C012 重试失败及 storage 非碰撞补测需求继续保留。
 
+<a id="app11-device-results-and-preview53-native-fix"></a>
 ### App11 设备结果与 preview.5.3 原生修正
 
 私有 `runtime-v0.1.0-preview.5.2` 的十份归档已完成独立审查、授权实际下载、全新安装和重验（各 10/10）。原生字节仍绑定 preview.5.1 / `747d0b02`；App11 绑定 `c4e7f29f`，两者是不同生产者。iOS Simulator 使用 DEBUG 包，包含 Dart 源码及本地路径，只适合私有模拟器验证，不能当作无源码生产分发或真机 IPA。
@@ -197,6 +217,7 @@ App11 在 SE 上完成 C012 恢复、C013 连续十轮与同进程关闭重开�
 
 新 Rust／引擎字节要求独立的 `0.1.0-preview.5.3` 原生产物，Player 为 build 12；preview.5.2、App11 和旧失败材料保持不变。新构建、精确分发锁与多形态设备回归尚待完成，不能沿用旧包通过项。View 默认 50 ms 及外层 deadline 不变。
 
+<a id="preview53-runtime-distribution-and-app12-preparation"></a>
 ### preview.5.3 运行库分发与 App12 准备
 
 `runtime-v0.1.0-preview.5.3` 已发布为私有 prerelease。七个原生切片实际编译自 `012400d43cb20b4d91a73fbbde7e1cf11bd0bb6a`；Android、iOS、macOS SDK 的实际 producer 分别为 `e4fa84e784edc1a80d972655eea347537ca40774`、`159b7e2e66aa83e952e2af43edcd771344829379`、`ae67dde1a104587968e2db37a9636b8776328607`。归档与复验 envelope 为 `eff194421aa48ea7871b0989f9903f3636f6432e`，后续锁提交不改变这些生产者。manifest SHA-256 为 `ee393000b5726172755b24a31812f9b55051e710c2714edadb9b3ac287b95388`。
@@ -207,12 +228,14 @@ App11 在 SE 上完成 C012 恢复、C013 连续十轮与同进程关闭重开�
 
 当前六 SDK 锁一致，Node 合约检查 144/144、零 skip；Player 准备／构建／打包检查 25/25。上述结果仅完成源码与分发前置门禁，App12 安装包、Android／iOS 多形态交互与性能仍须另行记录，不能据此关闭 P0 goal 或增加官方 oracle 通过项。
 
+<a id="preview54-static-document-registration-and-local-access-control"></a>
 ### preview.5.4 静态文档注册与本地门禁
 
 在已验证资源缓存之外，View 现在按 realm/profile 注册完整静态文档并取得不可跨 realm 使用的句柄。后续批次只传当前任务，不再重复传输和解析静态 AST；模块变化、reset、dispose 及成功替换会撤销旧句柄。两种 profile 在任何有状态任务执行之前完成预检，注册、执行和结果验证共用原总 deadline。普通预检拒绝保留健康 registry；超时、取消或未知 VM/收据失败仍要求重建，不吞掉故障。
 
 合并源码已完成默认 Rust workspace **2,343 passed / 9 ignored**、实际本机双引擎／Metal／诊断特性 **2,644 passed / 11 ignored**、两项严格 Clippy、格式，以及 **154 项**冻结清单和 source-binding 合约检查。精确源码、依赖、命令及日志哈希见[本地门禁归档](../archived-evidence.md)。该优化处理了已确认的重复静态传输；尚未证明已解释历史 136 ms 峰值，不能据此关闭正常场景超时或多形态设备门禁。新原生库与 App13 必须从新源码实际构建后另行验收。
 
+<a id="app13-actual-build-and-retention-failure"></a>
 ### App13 实际构建与保留失败
 
 iOS SE 的 C013 已实际完成十轮、二十组旋转回调对照；原 XCTest 通过，但两次 accepted 实例的 `hostLayout / ERR_CANCELLED` 仍未分类，前两份检查缺失诊断 journal。因此该结果不关闭本阶段 P0。版本、产物哈希、141 份终态来源及限制见 [SE 历史证据](../archived-evidence.md)。后续接口增强不追溯解释这些记录。

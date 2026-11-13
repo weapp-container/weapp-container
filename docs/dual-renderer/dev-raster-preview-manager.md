@@ -1,9 +1,10 @@
-# Explicit Raster preview connection manager
+<a id="explicit-raster-preview-connection-manager"></a>
+# 显式位图预览连接管理器
 
-`examples/hosts/web-wasm/dev-raster-preview.mjs` exports `DevRasterPreview` for
-an explicitly configured `ticketed-raster-v1` developer surface. It does not
-add an HTML route, static asset registration, CLI switch or default-policy
-change. The ordinary simulator remains separate.
+**简体中文** · [English](dev-raster-preview-manager.en.md)
+
+
+`examples/hosts/web-wasm/dev-raster-preview.mjs` 导出用于显式配置的 `ticketed-raster-v1` 开发环境的 `DevRasterPreview`。它不添加 HTML 路由、静态资源注册、CLI 选项或默认策略变更。普通的模拟器仍然保持独立。
 
 ```js
 const preview = new DevRasterPreview({ canvas, onState, onDiagnostic })
@@ -15,140 +16,42 @@ await preview.events(events)
 preview.dispose()
 ```
 
-`connect()` synchronously returns the manager; it may synchronously throw when
-disposed or when constructing the EventSource fails. `disconnect()` is also
-synchronous. `claim()` and `events()` return promises. `dispose()` closes its
-terminal barrier and releases owned resources synchronously; it is idempotent.
-Callers that normalize errors through promises should invoke operations inside
-`Promise.resolve().then(() => preview.connect())`, or use `try`/`catch`.
+`connect()` 同步返回管理器；在被销毁或事件源构造失败时，可能同步抛出异常。`disconnect()` 也是同步操作。`claim()` 和 `events()` 返回承诺。`dispose()` 会关闭其终端屏障并同步释放所拥有的资源；该操作是幂等的。通过承诺规范化错误的调用者应在其内部调用 `Promise.resolve().then(() => preview.connect())`，或使用 `try`/`catch`。
 
-The `onState` projection contains `phase`, `clientId`, `connected`, `owner`,
-`inputEnabled`, `sessionId`, `pageId`, `configGeneration`, `previewEpoch`, and
-`presentationTicket`. It never publishes the private connection token. Phases
-include `connecting`, `waiting-init`, `confirming`, `owner`, `readonly`, the
-presenter's drawing/ACK phases, `disconnected`, `error`, and `disposed`.
-`connected` identifies an owned active EventSource instance, rather than
-claiming that its private initialization or heartbeat has completed. `owner`
-does not itself grant input: `inputEnabled` still depends on the exact final
-presentation ACK.
-Readonly `presentationTicket` metadata is projected only after its mirror RAF
-draw returns, so the page can distinguish logical CSS dimensions from physical
-pixel dimensions. This projection grants no owner binding or input authority.
+`onState` 投影包含 `phase`、`clientId`、`connected`、`owner`、`inputEnabled`、`sessionId`、`pageId`、`configGeneration`、`previewEpoch` 和 `presentationTicket`。它从不发布私有连接令牌。阶段包括 `connecting`、`waiting-init`、`confirming`、`owner`、`readonly`，呈现器的绘制/ACK 阶段，`disconnected`、`error` 和 `disposed`。`connected` 识别一个被拥有的活跃 EventSource 实例，而不是声称其私有初始化或心跳已完成。`owner` 本身不授予输入权限：`inputEnabled` 仍取决于最终的呈现 ACK。只在镜像 RAF 绘制返回后才投影只读的 `presentationTicket` 元数据，因此页面可以区分逻辑 CSS 尺寸与物理像素尺寸。此投影不授予任何拥有绑定或输入权限。
 
-## Actual connection and final heartbeat
+<a id="actual-connection-and-final-heartbeat"></a>
+## 实际连接和最终心跳
 
-Every `connect()` creates one actual EventSource at
-`/api/events?clientId=...&since=0`. Every listener captures that source's local
-connection object. Replacing it removes its listeners, aborts its requests and
-closes that specific source. Old init, preview, final bridge, error and network
-callbacks cannot act on its successor. An EventSource error closes and freezes
-that instance; reconnection requires another explicit `connect()`, with another
-private token. The manager does not let an opaque EventSource auto-reconnect
-silently retain its previous authority.
+每次 `connect()` 都会创建一个实际的 EventSource，位于 `/api/events?clientId=...&since=0`。每个监听器捕获该源的本地连接对象。替换它将移除其监听器，中止其请求，并关闭该特定源。旧的初始化、预览、最终桥接、错误和网络回调无法作用于其后继者。EventSource 出现错误时会关闭并冻结该实例；重新连接需要另一个显式的 `connect()`，并使用另一个私有令牌。管理器不会让一个不透明的 EventSource 静默地自动重连并保留其之前的权限。
 
-The connection-private `preview-init` must have version1.0, this `clientId`,
-`connectionToken`, and `committed:false`. It contains no owner epoch. Init,
-public preview state, HTTP202 queued receipts and another client's final
-responses do not establish authority. The manager sends a bound heartbeat to
-`POST /api/preview`, preserving the original token and captured public epoch.
-Only a matching final response with its original `requestId`, own `clientId`,
-`ok:true`, unchanged actual connection/token and exact current heartbeat epoch
-confirms the binding. Tokens are never parsed for internal serial numbers.
-The preview HTTP response must be a queued receipt for that original request.
-Even a correlated `ok:true` HTTP body is rejected as a protocol error; it never
-enters the final-preview channel. That channel is fed only by the listener on
-the actual current EventSource.
+连接私有 `preview-init` 必须具有版本 1.0，该 `clientId`、`connectionToken` 和 `committed:false`。它不包含owner epoch。初始化、公共预览状态、HTTP202 队列确认和另一个客户端的最终响应均不能确立权限。管理器会向 `POST /api/preview` 发送绑定的心跳，保留原始令牌和捕获的公共 epoch。只有与原始 `requestId` 匹配的最终响应，带有自身的 `clientId`、`ok:true`、实际连接/令牌不变且心跳 epoch精确匹配，才能确认绑定。令牌从不被解析以获取内部序列号。预览 HTTP 响应必须是针对该原始请求的队列确认。即使存在相关联的 `ok:true` HTTP 响应体，也会被拒绝为协议错误；它永远不会进入最终预览通道。该通道仅由实际当前 EventSource 上的监听器提供。
 
-`GET /api/state` must advertise the exact developer profile and project the
-original `devRaster.binding:{sessionId,pageId,configGeneration}` and public
-`preview` state. State requests run serially. Replayed SSE state/preview bodies
-only request another fresh GET; they do not overwrite the current page or
-session with retained history. A different page, session, configuration,
-preview epoch, owner or expiry freezes the old presenter, captures and input.
-Frame order comparisons are confined to the current binding domain.
+`GET /api/state` 必须通告精确的开发者配置和项目信息，原始 `devRaster.binding:{sessionId,pageId,configGeneration}` 和公共 `preview` 状态。状态请求按顺序执行。重放的 SSE 状态/预览体仅请求新的 GET；它们不会用保留的历史数据覆盖当前页面或会话。不同的页面、会话、配置、预览纪元、所有者或过期时间将冻结旧的呈现器、捕获和输入。帧顺序比较仅限于当前绑定域。
 
-Heartbeats and state requests have local deadlines and bounded retry budgets.
-Initial handshake failures retry after a short delay; exhausted budgets close
-the owned EventSource. Normal heartbeat renewal retains the same proof and
-accepted presenter binding while the request is pending. A failed renewal
-freezes input before retry. Normal successful renewal does not synthesize a
-View change, repeat business evaluation, or create another authority identity.
-An explicit claim uses the same bound preview endpoint, then requires a new
-final heartbeat before activating the resulting owner binding. Mirrors never
-claim automatically.
-Heartbeat interval plus two request deadlines must fit inside the advertised
-lease, accounting for the previous final-response delay and the next renewal
-deadline. Unsafe timing configuration is rejected explicitly.
+心跳和状态请求具有本地超时和有界的重试预算。
+初始握手失败会短延时后重试；预算耗尽后将关闭所拥有的 EventSource。正常的心跳续期在请求待处理期间保留相同的证明和已接受的呈现器绑定，而失败的续期会在重试前冻结输入。正常成功的续期不会合成视图变更、重复业务评估，或创建另一个权威身份。显式声明使用相同的绑定预览端点，然后需要一个新的最终心跳才能激活相应的所有者绑定。镜像不会自动声明。
+心跳间隔加上两个请求超时必须能容纳在已宣传的租约内，需考虑上一次最终响应延迟和下一次续期超时。不安全的定时配置将被明确拒绝。
 
-Each actual final also commits a conservative local deadline calculated from
-that control request's clock sample taken before sending, plus the advertised
-lease duration. The original runtime's actual lease remains authoritative;
-the local deadline can only stop input earlier. `owner`, `inputEnabled`, frame
-admission, mirror RAF and the bridge send callback check elapsed time
-synchronously, so suspended timer tasks cannot leave stale input enabled on
-resume. A delayed final arriving after its own deadline cannot extend it.
-An unchanged `expired:false` state or a finite clock sample cannot revive an
-expired/rejected local proof; another actual final is required. Normal timely
-renewal updates the local deadline without replacing the accepted proof or
-presenter binding objects.
+每个实际最终也会提交一个保守的本地截止时间，该截止时间由发送前从控制请求的时钟样本计算得出，并加上通告的租约持续时间。原始运行时的实际租约仍然具有权威性；本地截止时间只能提前停止输入。`owner`、`inputEnabled`、帧准入、镜像 RAF 和桥接发送回调检查超时时间同步进行，因此暂停的定时任务在恢复时不会留下过时的输入启用状态。一个在自身截止时间之后才到达的延迟最终无法延长其截止时间。未改变的 `expired:false` 状态或有限的时钟样本无法使已过期/被拒绝的本地证明恢复；必须有另一个实际最终来实现。正常及时的续租更新本地截止时间，而不会替换已接受的证明或呈现器绑定对象。
 
-The injectable `clock` defaults to `Date.now()` and must return finite,
-nonnegative elapsed milliseconds that advance while this document's timer
-queue is suspended. Backward or invalid observations reject the current local
-lease until a fresh actual final establishes another conservative deadline.
-The clock is an embedding input, separate from virtual mini-program business
-timers. A locally owned expiry timer performs proactive freezing and renewal,
-while getters/senders remain independent of that timer executing. The page
-still owns its visibility/BFCache policy; this local guard does not claim an
-exact server clock or physical-screen completion.
-`onState` is a notification snapshot, so a panel can continue showing its last
-projection while timer and event tasks are suspended. It refreshes on the next
-notification; it does not itself grant input. The synchronous `owner`,
-`inputEnabled` and `events()` gates reject elapsed proof immediately when
-called, including before that next UI update.
+可注入的 `clock` 默认为 `Date.now()`，必须返回有限的、非负的经过毫秒数，并在该文档的定时器队列暂停期间持续递增。逆向或无效的观察将拒绝当前本地租约，直到新的实际最终值建立另一个保守截止时间。该时钟是嵌入式输入，与虚拟小程序业务定时器分离。本地拥有的过期定时器会主动冻结和续期，而获取者/发送者则独立于该定时器的执行。页面仍拥有其可见性/BFCache策略；此本地保护机制不声称精确的服务器时钟或物理屏幕完成。
+`onState` 是一个通知快照，因此在定时器和事件任务暂停期间，面板可以继续显示其最后的投影。它在下一次通知时刷新；它本身不会提供输入。同步的 `owner`、`inputEnabled` 和 `events()` 门控在被调用时立即拒绝已过时的证明，包括在下一次 UI 更新之前。
 
-## Frames, readonly mirrors and input
+<a id="frames-readonly-mirrors-and-input"></a>
+## 帧、只读镜像和输入
 
-The manager owns one logical frame acquisition slot with one newest pending
-request. Owner fetches capture `presenter.captureFrameRequest()` before sending
-and pass that exact capture to `offer(buffer,capture)`. Only binaryv2 with its
-declared MIME is accepted. Responses whose actual source, local authority,
-confirmed proof or owner role changed are discarded. A404 means no current
-frame; another snapshot notification can request it again. All fetches use
-`AbortSignal`; an injected custom transport that ignores cancellation may
-continue its own underlying work, but its late result cannot be offered or
-grant input. This is not a resource-release guarantee for arbitrary transports
-that ignore their cancellation contract.
-Transient frame failures also have bounded retries. Each retry explicitly
-restores the same confirmed presenter binding before capturing another request;
-it cannot depend on a coincidental later state or heartbeat notification.
+管理器拥有一个逻辑帧获取槽位和一个最新的待处理请求。拥有者在发送前调用 capture `presenter.captureFrameRequest()`，并将该精确的捕获传递给 `offer(buffer,capture)`。仅接受声明了 MIME 的 binaryv2。实际源、本地权威、已确认证明或拥有者角色发生变更的响应将被丢弃。A404 表示没有当前帧；其他快照通知可再次请求它。所有获取操作均使用 `AbortSignal`；如果注入了忽略取消的自定义传输，它可能继续其底层工作，但其延迟结果无法提供或授予输入。这并不对任意忽略取消契约的传输提供资源释放保证。
+临时帧失败也具有有界的重试次数。每次重试都会明确恢复相同的已确认呈现器绑定，然后再捕获新的请求；它不能依赖于偶然的后续状态或心跳通知。
 
-Owners use `DevRasterPresenterClient` for decoder/RAF/exact ACK/input fencing.
-SSE `bridge` batches feed its original `SseBridgeTransport.receive`. Event
-batches delegate immediately to the presenter, capturing its already accepted
-ticket and binding at API entry; the manager never awaits and then stamps old
-input with a newer ticket.
+所有者使用 `DevRasterPresenterClient` 进行解码器/RAF/精确回执/输入栅栏操作。
+SSE `bridge` 会批量传递其原始的 `SseBridgeTransport.receive`。事件批次会立即传递给呈现器，并捕获其已验收的票据，在API入口处绑定；管理器从不等待，而是用新的票据覆盖旧输入。
 
-A confirmed mirror uses the standalone decoder and a separate bounded RAF
-slot. Its bytes must name the current session/configuration and public owner
-epoch/id. It displays pixels without creating an owner binding, calling
-`setBinding`, issuing an ACK or enabling input. Its RAF callback checks the
-exact local capture again. Mirror and owner drawing observe Canvas2D draw
-return only; neither claims compositor or physical screen completion.
+一个已确认的镜像使用独立解码器和一个单独的有界 RAF 时槽。它的字节必须命名当前会话/配置和公共所有者时钟/ID。它在不创建所有者绑定的情况下显示像素，调用 `setBinding`、发出 ACK 或启用输入。其 RAF 回调会再次检查本地捕获的精确内容。镜像和所有者绘制仅观察 Canvas2D 绘制返回值；二者均不声称合成器或物理屏幕完成。
 
-`disconnect()` and `dispose()` abort state, frame and control requests; cancel
-owned heartbeat/retry/timeout work and mirror RAF; retire presenter waits and
-input; remove listeners and close owned sources. Disposal closes the terminal
-barrier before invoking callbacks. It does not close unrelated browser tabs,
-windows, servers or sources. The embedding page still owns its input listeners,
-page/BFCache policy and any other UI resources.
+`disconnect()` 和 `dispose()` 中止状态、帧和控制请求；取消所拥有的心跳/重试/超时任务以及镜像 RAF；终止呈现器的等待和输入；移除监听器并关闭所拥有的数据源。处置会在调用回调之前关闭终端屏障。它不会关闭其他无关的浏览器标签页、窗口、服务器或数据源。嵌入页面仍拥有其输入监听器、页面/BFCache 策略以及任何其他 UI 资源。
 
-## Validation boundary
+<a id="validation-boundary"></a>
+## 验证边界
 
-Node definitions use injected EventSource, fetch, clock, presenter and RAF
-fixtures. They cover connection/final-response correlation, stale work,
-read-only mirrors, explicit claim, retry bounds and cleanup. They do not prove
-a real TCP handshake, real browser draw/input, continuous gestures, compositor
-completion, GPU performance, seven-host compatibility or goal completion.
-The authored candidate has not itself been executed by its author; root owns
-the test/compiler/browser lane and records exact execution separately.
+节点定义使用注入的 EventSource、fetch、clock、presenter 和 RAF fixtures。它们涵盖连接/最终响应的相关性、过时工作、只读镜像、显式声明、重试边界和清理。它们不能证明真实的 TCP 握手、真实的浏览器绘制/输入、连续手势、合成器完成、GPU 性能、七宿主兼容性或目标完成。该编写的候选者本身并未由其作者执行；根节点拥有测试/编译/浏览器通道，并单独记录精确执行。

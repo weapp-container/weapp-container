@@ -1,4 +1,8 @@
+<a id="behavior-guidelines"></a>
 # 行为准则
+
+**简体中文** · [English](CODE_OF_CONDUCT.en.md)
+
 
 尊重他人，围绕事实、代码和方案讨论，欢迎不同背景和经验的贡献者，给出具体且可执行的反馈。
 

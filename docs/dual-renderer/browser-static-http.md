@@ -1,4 +1,8 @@
+<a id="static-sites-original-lease-http-transfer"></a>
 # 静态站点的原租约 HTTP 传输
+
+**简体中文** · [English](browser-static-http.en.md)
+
 
 > 本页记录底层阶段合同；这些 API 本身不启用开发 CLI。当前显式 Browser CLI 复用的完整 runner、启动参数及关闭限制见 [Browser 开发循环](browser-dev-loop.md)。
 
@@ -8,6 +12,7 @@
 供检查静态描述符、索引与内容寻址 blob。该入口不执行 AppService、Worker、浏览器
 或 presenter，也不授予站点发布、运行或输入权限。
 
+<a id="running-example"></a>
 ## 运行示例
 
 从仓库根目录执行，先完成[固定编译器与受管输入准备](browser-source-preparation.md)，
@@ -70,6 +75,7 @@ pin 文件结构与 [runtime 输入](browser-dev-artifacts.md#监督器的静态
 不是目录列表或可打开的小程序页面；应请求 allowlist 中的具体资源。示例不会自动打开
 浏览器；该静态示例本身不启用 watch CLI。当前受管 Browser runner 的显式 CLI 入口见[开发循环](browser-dev-loop.md)。
 
+<a id="url-and-request-boundary"></a>
 ## URL 和请求边界
 
 资源专用入口只接受以下三类命名空间中的 GET：
@@ -94,6 +100,7 @@ URL 不接受 query、fragment、百分号编码、反斜杠、空段、`.`/`..`
 该检查只覆盖已经读入的字节，不预测后续 TCP 数据；每个响应关闭其连接。
 资源响应不继承旧入口的 wildcard CORS，并发送 `nosniff` 与 `same-origin` resource policy。
 
+<a id="owner-loop-and-exit"></a>
 ## Owner loop 与退出
 
 `WebSurface::bind_resource_only` 显式启用资源队列；普通 `bind` 保留旧模拟器路由，
@@ -127,6 +134,7 @@ resolver 只比对固定身份，并从同一个监督器调用 `browser_runtime
 报告失败，不把 Drop 或日志当作清理完成证明。资源生命周期详见
 [受管 consuming stage](browser-consuming-stage.md)。
 
+<a id="fixed-sites-and-evidence-meaning"></a>
 ## 固定站点与证据含义
 
 初次 source check 只用于取得 stage ticket，期间的原 Diagnostic 会输出到终端。stage

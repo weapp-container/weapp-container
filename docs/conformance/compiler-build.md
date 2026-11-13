@@ -1,4 +1,8 @@
+<a id="fixed-compiler-build-sources"></a>
 # 固定编译器的构建来源
+
+**简体中文** · [English](compiler-build.en.md)
+
 
 正式官方回执的 `compilerBuild` 使用 `{ path, sha256, bytes }` 引用一份独立构建归档。同一轮 172 个 case 可以共享这份引用。读取器只依赖归档内容；清理原 checkout 后仍能复核。`retained-build-inputs.json` 继续用于复制 dist 的诊断运行，不满足正式构建要求。
 
@@ -57,7 +61,7 @@ CJS 分支只接纳已观察到的无依赖 `.ts` JSON 宏。固定编译器通�
 成功收尾会另写 `execution-recipes.json`：它把作者描述绑定为本轮固定 fixture、资源及 oracle，供全部容器 host/engine 读取同一份字节。未绑定的作者描述不能执行 matrix，记录 `unbound-case-fixture`。原固定 fixture recipe 仍兼容，并继续要求与实际 pack 完整一致；`issue1058-v1.json` 保留原候选，fresh 执行改用 `issue1058-captured-static-v1.json`。
 
 ```sh
-rtk proxy node scripts/conformance-devtools-runner.mjs \
+node scripts/conformance-devtools-runner.mjs \
   --case ide-issue-1058-template-tags-runtime \
   --recipes conformance/recipes/issue1058-captured-static-v1.json \
   --compiler-build artifacts/conformance-compiler-build/<unique-run>/compiler-build.json \
