@@ -2045,7 +2045,7 @@
       },
       "androidSession": {
         "path": "sdk/android/library/src/main/java/com/sonofmagic/weapp/container/sdk/WeappContainerSession.kt",
-        "sha256": "9d67374c6ad8493777be38b32ca44a34f2959d5192aeb5e5e2a519dcf817c6f2"
+        "sha256": "3a19445c06a7f47cff08fe818bf3afa47fb6053542a26308d81ee96f5ea43908"
       },
       "flutterIos": {
         "path": "sdk/flutter/weapp_container_ios/ios/Classes/WeappContainerIosPlugin.swift",

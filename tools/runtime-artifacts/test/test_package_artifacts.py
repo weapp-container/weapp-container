@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import plistlib
 import struct
@@ -514,16 +515,26 @@ class PackagerBoundaryTests(unittest.TestCase):
         self.make_native(LINUX); self.package()
         notes = self.root / "notes.md"; notes.write_text("Structural fixtures only; never publish these bytes.\n")
         command = ["node", str(ROOT / "tools/publish.mjs"), "--release-dir", str(self.out), "--notes-file", str(notes)]
-        result = subprocess.run(command, capture_output=True, text=True)
+        # Fail and record any accidental GitHub call, even when the developer
+        # running this test has live GitHub credentials in the environment.
+        tools = self.root / "no-github"; tools.mkdir()
+        called = tools / "called"
+        github = tools / "gh"
+        github.write_text(f'#!/bin/sh\nprintf called > "{called}"\nexit 91\n')
+        github.chmod(0o755)
+        env = {**os.environ, "PATH": str(tools) + os.pathsep + os.environ.get("PATH", "")}
+        result = subprocess.run(command, capture_output=True, text=True, env=env)
         self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(called.exists(), "Default validation called GitHub")
         report = json.loads(result.stdout)
         self.assertEqual(report["repository"], "weapp-container/weapp-container")
         self.assertFalse(report["published"])
         manifest = json.loads((self.out / "manifest.json").read_text())
         archive = self.out / manifest["artifacts"][0]["fileName"]
         archive.write_bytes(archive.read_bytes() + b"tampered")
-        result = subprocess.run(command, capture_output=True, text=True)
+        result = subprocess.run(command, capture_output=True, text=True, env=env)
         self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(called.exists(), "Invalid local bytes called GitHub")
 
 if __name__ == "__main__":
     unittest.main()
