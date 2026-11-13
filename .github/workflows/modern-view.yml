@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           # Satisfies the pinned vendor's ^24.11.0 engine declaration.
-          node-version: 24.18.0
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json
@@ -195,7 +195,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 24.18.0
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json

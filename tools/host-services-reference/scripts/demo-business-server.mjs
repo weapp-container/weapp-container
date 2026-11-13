@@ -1,10 +1,10 @@
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { HostServices } from '../src/service.mjs';
-import { createHostServicesHandler } from '../src/server.mjs';
-import { equalSecret, referenceSignature } from '../src/crypto.mjs';
-import { requireThat, ServiceError } from '../src/errors.mjs';
+import { HostServices } from '../src/service.ts';
+import { createHostServicesHandler } from '../src/server.ts';
+import { equalSecret, referenceSignature } from '../src/crypto.ts';
+import { requireThat, ServiceError } from '../src/errors.ts';
 
 const secret=()=>randomBytes(32).toString('base64url');
 const bearer=request=>/^Bearer ([A-Za-z0-9\-._~+/]+=*)$/.exec(request.headers.authorization??'')?.[1];

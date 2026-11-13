@@ -55,6 +55,20 @@ The following changes were reviewed file by file against this PR's baseline, upd
 
 The review also covers resize, zero-size invalidation, reload, presentation receipts, and shutdown in the standalone desktop host. Linux Xvfb/Mesa integration tests check pixels, resize, reload, and detach on a real GL drawable. These results do not establish Windows, Wayland, or physical-device acceptance and do not raise SDK acceptance status.
 
+<a id="2026-11-13-testing-runtime-review"></a>
+## 2026-11-13 testing runtime and toolchain review
+
+Reviewed the test host and TypeScript migration against production boundaries on `origin/main`. Updated full-file identities for QuickJS, runtime, nativeProvider and manifestPacker, plus the scheduler AST identity. Capability ratings and historical acceptance evidence retain their existing status.
+
+| Source | Changes and preserved boundaries |
+| --- | --- |
+| `container-engine-quickjs/src/lib.rs` | The testing feature uses private transport for instance and node observation. The real engine continues to own authority, execution budgets, exception handling and cleanup. |
+| `container-runtime/src/lib.rs`, `container-sdk/src/lib.rs` | Testing interfaces compile behind a feature and reuse Session, pack verification, providers and shutdown. Controlled time reaches timer registration; real deadlines still bound execution. |
+| `container-core/src/turn-scheduler.js` | The private status command only reports currently ready work for bounded flush convergence. It does not advance future timers or change callback ownership and cancellation semantics. |
+| `tools/container-manifest/src/index.ts` | Migrated JS to TypeScript, added JSON / AST boundary types and moved the CLI into a separate entry. Existing tests validate deterministic manifests, resource digests, errors and WXS semantics. |
+
+The review covers 24 real-runtime integration tests, 87 Rust SDK tests, scheduler callback compatibility tests, manifest regressions and declaration tests. Test processes and node handles bind to sessions; stale handle rejection, cancellation and cleanup failures have checks. These results do not raise device or WeChat compatibility acceptance status.
+
 <a id="后续更新"></a>
 ## Subsequent updates
 

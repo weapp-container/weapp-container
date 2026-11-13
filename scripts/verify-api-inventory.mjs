@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Validate the versioned API inventory and its committed canonical golden hash. */
 import { readFile } from 'node:fs/promises'
-import { canonicalize, DEFAULT_CAPABILITIES, sha256 } from '../tools/container-manifest/src/index.mjs'
+import { canonicalize, DEFAULT_CAPABILITIES, sha256 } from '../tools/container-manifest/src/index.ts'
 
 const inventoryPath = new URL('../docs/api-inventory-v1.json', import.meta.url)
 const goldenPath = new URL('../docs/api-inventory-v1.sha256', import.meta.url)

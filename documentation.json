@@ -63,8 +63,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "README.md"
       },
-      "reviewedChineseSummary": "增加 GitHub 预发布下载入口，保留现有平台与验证状态",
-      "reviewedChineseSha256": "09ad3ffb5057015d66ee26d0ffe2a53550441761846e9b855bfc439152620b0b",
+      "reviewedChineseSummary": "已复核测试运行时入口、Node 版本及 TypeScript 构建产物与源码路径",
+      "reviewedChineseSha256": "3ac0a4e3ffa17b0ec797292f2b6a361ba5dfffddd1edd703a83119cbb8b2ed62",
       "legacyHeadingIds": [
         "weapp-container",
         "从源码开始",
@@ -325,8 +325,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "crates/container-sdk/README.md"
       },
-      "reviewedChineseSummary": "container-sdk；宿主导航chrome",
-      "reviewedChineseSha256": "773eef6f10ed7d7fc31105deb25e55502c6b801c5b667b1ee5a213cdb433672c",
+      "reviewedChineseSummary": "已复核测试运行时入口、Node 版本及 TypeScript 构建产物与源码路径",
+      "reviewedChineseSha256": "30ee9ddee73939afa69ae9b34146993948958948671a2a6b885957c6ecca3f1e",
       "legacyHeadingIds": [
         "container-sdk",
         "host-navigation-chrome"
@@ -1490,8 +1490,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/host-services/consent-revocation-design.md"
       },
-      "reviewedChineseSummary": "资料、手机号授权撤回与迟到结果隔离；现有根因和已有边界；持久授权域与执行 owner；协议版本和旧客户端门禁；后端原子 revision 与确认 challenge；数据和有效期；v2 路径和字段",
-      "reviewedChineseSha256": "3326c4c21b63bea01ae5cf03a67ad4b996e096d85986cfbad2cb7cfda2a4d507",
+      "reviewedChineseSummary": "复核测试 feature、受控时间、私有调度观测、TypeScript 迁移与历史证据边界",
+      "reviewedChineseSha256": "6de49c92a7495084a1b1e4146c1fef95d976d800788faba229e3933909901a7e",
       "legacyHeadingIds": [
         "grant-事务",
         "revoke--deny-事务",
@@ -1812,8 +1812,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/host-services/source-review.md"
       },
-      "reviewedChineseSummary": "同步主分支桌面 GL 实现：保留上下文、呈现回执、清理与软件驱动边界，不提升设备或 GPU 验收结论。",
-      "reviewedChineseSha256": "432a067041a7b8e07007b949ecb046df24d68d925e9ef62fa0b7eabd76abdca5",
+      "reviewedChineseSummary": "复核测试 feature、受控时间、私有调度观测、TypeScript 迁移与历史证据边界",
+      "reviewedChineseSha256": "0a1752b06a2824bfc275264d85dc77b0f5d7a9a6093dcd17333bde99c7e2523b",
       "legacyHeadingIds": [
         "2026-11-12-复核范围",
         "api-来源审定",
@@ -3299,8 +3299,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "tools/container-manifest/README.md"
       },
-      "reviewedChineseSummary": "`container-manifest`；CLI；库 API；仅容器的现代视图；能力覆盖",
-      "reviewedChineseSha256": "6475d3379ca62d8809fe000977aad10d207e387780bbf1fbeb725e22a3fd87f5",
+      "reviewedChineseSummary": "已复核测试运行时入口、Node 版本及 TypeScript 构建产物与源码路径",
+      "reviewedChineseSha256": "58b4686968c134c5b996fa771100a5939bedb6155e6531a0b563916258707966",
       "legacyHeadingIds": [
         "capability-overrides",
         "cli",
@@ -3331,8 +3331,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "tools/host-services-reference/README.md"
       },
-      "reviewedChineseSummary": "宿主账号与支付参考后端；本地业务示例服务；启动和配置；严格 v2 授权协议；信任与账号生命周期；HTTP 合同；支付与 native 对接",
-      "reviewedChineseSha256": "e79fbb15441ea0e19b03457b10364036e119651e06e442c7e48209e3eac7974a",
+      "reviewedChineseSummary": "Node 24.22.2 服务先构建 dist 再启动，保留可信凭据与协议边界",
+      "reviewedChineseSha256": "5d1657ea28df3753f8a440d4c4d3f78e9de3031bcb1624fc71a25ca5d480620a",
       "legacyHeadingIds": [
         "http-合同",
         "严格-v2-授权协议",
@@ -3361,6 +3361,66 @@
         "运行库发行工具",
         "验证与发布"
       ]
+    },
+    {
+      "id": "docs/testing-runtime",
+      "zh": "docs/testing-runtime.md",
+      "en": "docs/testing-runtime.en.md",
+      "section": "engineering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/testing-runtime.md"
+      },
+      "reviewedChineseSummary": "测试运行时、工具链、安装与执行边界",
+      "reviewedChineseSha256": "7708eb0b0b1715983f4c06bbde23972c12affebb7222f34e65714cab52a934a4"
+    },
+    {
+      "id": "packages/node/README",
+      "zh": "packages/node/README.md",
+      "en": "packages/node/README.en.md",
+      "section": "engineering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/node/README.md"
+      },
+      "reviewedChineseSummary": "测试运行时、工具链、安装与执行边界",
+      "reviewedChineseSha256": "e1a4398bf6125652438ec6b9b47701961f702978b7424239a62bc70645f6d5c7"
+    },
+    {
+      "id": "packages/vitest/README",
+      "zh": "packages/vitest/README.md",
+      "en": "packages/vitest/README.en.md",
+      "section": "engineering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/vitest/README.md"
+      },
+      "reviewedChineseSummary": "测试运行时、工具链、安装与执行边界",
+      "reviewedChineseSha256": "022fc9a0a1398bf6b0a178e13c11d2935729f8caafa86f9fe4ef3b327c2b4a40"
+    },
+    {
+      "id": "packages/runtime/darwin-arm64/README",
+      "zh": "packages/runtime/darwin-arm64/README.md",
+      "en": "packages/runtime/darwin-arm64/README.en.md",
+      "section": "engineering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/runtime/darwin-arm64/README.md"
+      },
+      "reviewedChineseSummary": "测试运行时、工具链、安装与执行边界",
+      "reviewedChineseSha256": "192386be538c288ab5a72297b05bc03baf9c9a0c49756391a28e923eae316608"
+    },
+    {
+      "id": "packages/runtime/linux-x64/README",
+      "zh": "packages/runtime/linux-x64/README.md",
+      "en": "packages/runtime/linux-x64/README.en.md",
+      "section": "engineering",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/runtime/linux-x64/README.md"
+      },
+      "reviewedChineseSummary": "测试运行时、工具链、安装与执行边界",
+      "reviewedChineseSha256": "298efa058a9f66b1f70a568c0aab08389feecf9c00d86509c3a071849c974aa5"
     }
   ],
   "excluded": [

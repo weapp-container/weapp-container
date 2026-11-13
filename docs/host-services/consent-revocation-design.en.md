@@ -5,7 +5,7 @@
 
 
 Status: **Backend v2 atomic authorization has been implemented; shared host fence, SDK integration, and real UI/product flow pathways pending implementation and acceptance**.
-`tools/host-services-reference/src/consent-v2.mjs` and service/server have provided the v2 path, trusted persistent domain, monotonic TEXT revision, challenge/CAS, decision idempotency, and strict legacy gating.
+`tools/host-services-reference/src/consent-v2.ts` and service/server have provided the v2 path, trusted persistent domain, monotonic TEXT revision, challenge/CAS, decision idempotency, and strict legacy gating.
 Real HTTP/SQLite testing has set gates before submission and after response generation; this does not indicate that the SDK has implemented late result isolation, and this document does not elevate any complete API acceptance status.
 
 Diagnosis baseline is the main repository `1c95746ef789303e08387c1d5ba671d6263a601b`, Desktop SDK `2bf1e3adc0ff5f59e974440201c3171833c34965`. Errors in error projection and refresh fixes after failure for other SDKs belong to separate batches; this document describes the authorization lifecycle boundaries that these fixes do not replace.
@@ -23,7 +23,7 @@ Need to implement two mutually coordinated boundaries: the backend, using transa
 
 Phone number code, concurrent `HostServices::refresh()` also lacks corresponding checks. `revoke()` does not invalidate existing authorization popups; the "allow" callback from the old popup can still submit `granted:true`. Failure paths also have two related issues: `consent_required` does not necessarily refresh the old snapshot; after initial rejection, a refresh failure may occur, possibly replacing the user's rejection with a second error. Error refresh should be attempted, cannot override original rejection, and cannot bypass authorization checks.
 
-The `setConsent()` of [Host Service](../../tools/host-services-reference/src/service.mjs) only compares the current `purpose` and `permissionVersion`, and generates a random `revision` on each write. The `authorizationVersion` is a hash of the status of the data and phone number, an opaque version that cannot be sorted and is not a write condition. Older `granted:true` requests that are processed by the backend after a subsequent `granted:false` will still succeed. A client's disconnection cannot prove that the backend did not perform the write.
+The `setConsent()` of [Host Service](../../tools/host-services-reference/src/service.ts) only compares the current `purpose` and `permissionVersion`, and generates a random `revision` on each write. The `authorizationVersion` is a hash of the status of the data and phone number, an opaque version that cannot be sorted and is not a write condition. Older `granted:true` requests that are processed by the backend after a subsequent `granted:false` will still succeed. A client's disconnection cannot prove that the backend did not perform the write.
 
 The following mechanisms already exist and should continue to be used:
 

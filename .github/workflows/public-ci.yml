@@ -32,7 +32,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - name: Select checks from the complete tested diff
         id: plan
         env:
@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
       - uses: ./.github/actions/cache-downloads
         with:
@@ -71,6 +71,11 @@ jobs:
           tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP/actionlint-bin" actionlint
           "$RUNNER_TEMP/actionlint-bin/actionlint" -color
       - run: node --test scripts/ci-plan.test.mjs
+      - run: pnpm build
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test:types
+      - run: pnpm test:scripts
       - run: pnpm submodule:verify
       # Bilingual documentation owns docs:check and docs:workspace.
       - run: pnpm opensource:check
@@ -93,7 +98,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
       - uses: ./.github/actions/cache-downloads
         with:
@@ -112,7 +117,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
       - uses: ./.github/actions/cache-downloads
         with:
@@ -158,7 +163,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
       - uses: ./.github/actions/cache-downloads
         with:

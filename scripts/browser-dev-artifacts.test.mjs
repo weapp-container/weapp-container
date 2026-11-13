@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import test from 'node:test'
-import { packContainer } from '../tools/container-manifest/src/index.mjs'
+import { packContainer } from '../tools/container-manifest/src/index.ts'
 import { GLUE_REQUIRED_METHODS, PORTABLE_PACK_VALIDATOR_FILES, WASM_REQUIRED_EXPORTS, WEB_SAMPLE_FILES,
   inventoryGeneratedPackage, rendererRuntimeConfig } from './build-web-wasm.mjs'
 import { loadPinnedGeneratedModuleParser, verifyGeneratedModuleClosure,

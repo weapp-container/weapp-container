@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { syncPortablePack } from './portable-pack.mjs'
-import { canonicalize, sha256 } from '../tools/container-manifest/src/index.mjs'
+import { canonicalize, sha256 } from '../tools/container-manifest/src/index.ts'
 
 async function fixture(root) {
   const source = resolve(root, 'source')

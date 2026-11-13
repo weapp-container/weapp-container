@@ -744,7 +744,7 @@ const intersectionNegativeCases = [
   ['public native SDK construction', 'crates/container-sdk-ffi/src/lib.rs', 'let session = ContainerSession::new(config)?;', 'let session = missing_session(config)?;', /Native intersection default renderer admission/],
   ['native default renderer', 'crates/container-runtime/src/lib.rs', 'browser_view_enabled: false,', 'browser_view_enabled: true,', /Native intersection default renderer admission/],
   ['DOM observer gap', 'crates/container-runtime/src/browser_view.rs', '|| name == "wx.createIntersectionObserver"', '', /Web intersection renderer gap/],
-  ['factory capability ceiling', 'tools/container-manifest/src/index.mjs', "'wx.createIntersectionObserver': 'partial'", "'wx.createIntersectionObserver': 'full'", /Intersection factory Partial capability/],
+  ['factory capability ceiling', 'tools/container-manifest/src/index.ts', "'wx.createIntersectionObserver': 'partial'", "'wx.createIntersectionObserver': 'full'", /Intersection factory Partial capability/],
 ]
 for (const [name, path, before, after, error] of intersectionNegativeCases) test(`Intersection inventory rejects broken ${name}`, async () => {
   await assert.rejects(inventoryCoreApis(catalog, changedRead(path, before, after)), error)
@@ -832,7 +832,7 @@ const tabBarSourcePaths = {
   flutterController: 'sdk/flutter/weapp_container/lib/src/controller.dart',
   flutterView: 'sdk/flutter/weapp_container/lib/src/view.dart',
   iosSession: 'sdk/ios/Sources/WeappContainer/Session.swift',
-  manifestPacker: 'tools/container-manifest/src/index.mjs',
+  manifestPacker: 'tools/container-manifest/src/index.ts',
   nativeChrome: 'sdk/flutter/native_desktop/include/native_chrome_overlay.hpp',
   nativePreview: 'sdk/flutter/native_desktop/include/native_preview_texture.hpp',
   nativeProvider: 'crates/container-sdk/src/lib.rs',
@@ -1818,7 +1818,7 @@ test('finite notification semantic AST tolerates source trivia without changing 
   }
 })
 for (const path of ['crates/container-runtime/src/finite_notifications.rs', 'crates/container-core/src/engine_execution.rs',
-  'crates/container-core/src/engine_terminal_resources.rs', 'tools/container-manifest/src/index.mjs']) {
+  'crates/container-core/src/engine_terminal_resources.rs', 'tools/container-manifest/src/index.ts']) {
   test(`finite notification complete source context requires review for ${path}`, async () => {
     await assertFiniteNotificationsUnreviewed(async target => target === path ? '// source review changed\n' + await read(target) : read(target))
   })
@@ -1940,7 +1940,7 @@ for (const file of ['unhandled-rejections.js', 'window-resize-notifications.js']
 })
 for (const file of ['crates/container-core/src/host_environment.rs', 'crates/container-engine-quickjs/src/lib.rs',
   'crates/container-engine-v8/src/lib.rs', 'crates/container-runtime/src/lib.rs', 'crates/container-runtime/src/host_services.rs',
-  'crates/container-runtime/src/lifecycle_notifications.rs', 'tools/container-manifest/src/index.mjs']) {
+  'crates/container-runtime/src/lifecycle_notifications.rs', 'tools/container-manifest/src/index.ts']) {
   test(`retained removal complete source pin requires review for ${file} trivia`, async () => {
     await assertRetainedRemovalUnavailable(async path => path === file ? '// source trivia\n' + await read(path) : read(path))
   })

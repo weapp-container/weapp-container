@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { ANDROID_CONSUMER_FILES, ANDROID_COORDINATE, installAndroidConsumerArchive, inspectAndroidConsumerPackage, prepareAndroidConsumerHarness, sha256, verifyAndroidConsumerDependencies, verifyInstalledAndroidArchive } from './lib/sdk-android-consumer-harness.mjs';
 import { SDK_RELEASE_VERSION } from './lib/sdk-current-release.mjs';
+import { RUNTIME_REPOSITORY } from '../sdk/contract/tools/runtime-artifacts.mjs';
 
 // Synthetic archive/ELF/Git fixtures. These tests execute the public downloader
 // and unpacker, but execute no Gradle, Rust, Android runtime or device.
@@ -64,7 +65,7 @@ function fixture(t) {
   put(payload, 'distribution.json', json(distribution)); put(payload, 'SDK-SOURCE-INVENTORY.json', source.bytes); put(payload, 'RUNTIME-LICENSE', 'finite private runtime license');
   const archive = resolve(directory, 'android-sdk-finite.tar.gz');
   python("import pathlib,sys,tarfile\nroot=pathlib.Path(sys.argv[1])\nwith tarfile.open(sys.argv[2],'w:gz') as t:\n for f in sorted(root.rglob('*')):\n  if f.is_file():t.add(f,arcname=f.relative_to(root).as_posix(),recursive=False)", [payload,archive], directory);
-  const manifest = { schemaVersion: 1, runtimeVersion: SDK_RELEASE_VERSION, abiVersion: 1, source: { repository: 'weapp-container/runtime-artifacts', releaseTag: `runtime-v${SDK_RELEASE_VERSION}` }, artifacts: [{ component: 'android-sdk', platform: 'android', arch: 'universal', architectures: ['arm64-v8a','x86_64'], fileName: 'android-sdk-finite.tar.gz', size: readFileSync(archive).length, sha256: sha256(readFileSync(archive)) }] };
+  const manifest = { schemaVersion: 1, runtimeVersion: SDK_RELEASE_VERSION, abiVersion: 1, source: { repository: RUNTIME_REPOSITORY, releaseTag: `runtime-v${SDK_RELEASE_VERSION}` }, artifacts: [{ component: 'android-sdk', platform: 'android', arch: 'universal', architectures: ['arm64-v8a','x86_64'], fileName: 'android-sdk-finite.tar.gz', size: readFileSync(archive).length, sha256: sha256(readFileSync(archive)) }] };
   const manifestPath = put(directory, 'manifest.json', json(manifest)), work = resolve(directory, 'work'); mkdirSync(work);
   return { directory, sourceRoot, source, payload, aar, aarFiles, binaries, distribution, manifestPath, work,
     options: { manifestPath, expectedManifestSha256: sha256(readFileSync(manifestPath)), artifactDirectory: directory, workDirectory: work, installDirectory: resolve(work, 'installed') } };

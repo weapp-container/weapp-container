@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promi
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { buildManifest, canonicalize, sha256 } from '../src/index.mjs';
+import { buildManifest, canonicalize, sha256 } from '../src/index.ts';
 
 async function fixture(context, { app = {}, page = {}, config } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'weapp-rendering-'));

@@ -13,7 +13,7 @@ import {
   packContainer,
   sha256,
   extractStaticModuleSpecifiers,
-} from '../src/index.mjs';
+} from '../src/index.ts';
 
 async function fixture() {
   const root = await mkdtemp(path.join(os.tmpdir(), 'weapp-container-'));

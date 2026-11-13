@@ -7,7 +7,7 @@
 
 Embed mini-programs in your own applications. Weapp Container provides a Rust runtime, portable pack tooling, a development simulator, and integration layers for Android, iOS, C++ Desktop, Flutter, and React Native.
 
-[Documentation](https://container.weapp.dev/en/docs/) · [Live demo](https://container.weapp.dev/en/demo/) · [Source documentation](docs/README.en.md) · [Contributing](CONTRIBUTING.en.md)
+[Documentation](https://container.weapp.dev/en/docs/) · [Live demo](https://container.weapp.dev/en/demo/) · [Source documentation](docs/README.en.md) · [Testing runtime](docs/testing-runtime.en.md) · [Contributing](CONTRIBUTING.en.md)
 
 [GitHub prerelease downloads](https://github.com/weapp-container/weapp-container/releases)
 
@@ -33,7 +33,7 @@ Core runtime, iOS, Desktop and CocoaPods Specs downloads for `0.1.0-preview.7.0`
 <a id="从源码开始"></a>
 ## Build from source
 
-Install Git, Node.js **24.18+ / 24.x**, pnpm **10.15.1**, Rust stable, and a host C/C++ toolchain. macOS requires Xcode Command Line Tools. The headless path below uses QuickJS and software rendering without building Skia. Visual previews and native SDKs also download public Skia dependencies; see [Rust build requirements](docs/rust-build-cache.en.md).
+Install Git, Node.js **24.22.2 / 24.x**, pnpm **10.15.1**, Rust stable, and a host C/C++ toolchain. macOS requires Xcode Command Line Tools. The headless path below uses QuickJS and software rendering without building Skia. Visual previews and native SDKs also download public Skia dependencies; see [Rust build requirements](docs/rust-build-cache.en.md).
 
 ```sh
 git clone --recurse-submodules https://github.com/weapp-container/weapp-container.git
@@ -73,6 +73,7 @@ The default address is `127.0.0.1:5179`. CanvasKit, browser Workers, desktop win
 | `crates/container-engine-*` | QuickJS and explicit V8 provider boundaries |
 | `crates/container-render-skia`, `container-host-*` | Rendering and Web/native host adapters |
 | `crates/container-simulator`, `apps/dev-player` | Development simulator and device clients |
+| `packages/node`, `packages/vitest`, `packages/runtime/*` | Node testing SDK, Vite/Vitest integration and prebuilt test hosts |
 | `sdk/*` | Independent contracts and Android, iOS, Desktop, Flutter, and React Native wrappers |
 | `website` | Documentation and demonstration website |
 | `tools/runtime-artifacts` | [Runtime packaging, offline verification, and release tools](tools/runtime-artifacts/README.en.md) |

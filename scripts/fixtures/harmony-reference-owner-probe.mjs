@@ -3,8 +3,8 @@ import {createRequire,stripTypeScriptTypes} from 'node:module';
 import {mkdtemp,readFile,writeFile,mkdir,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {buildManifest} from '../../tools/container-manifest/src/index.mjs';
-import {HostServices} from '../../tools/host-services-reference/src/service.mjs';
+import {buildManifest} from '../../tools/container-manifest/src/index.ts';
+import {HostServices} from '../../tools/host-services-reference/src/service.ts';
 
 const native=createRequire(import.meta.url)(process.argv[2]),owner=native.createOwner();
 const base=await readFile(new URL('../../examples/hosts/harmony/entry/src/main/ets/session/HostServices.ts',import.meta.url),'utf8');

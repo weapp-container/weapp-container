@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createCipheriv, generateKeyPairSync } from 'node:crypto';
-import { AlipayProvider, WechatProvider } from '../src/providers.mjs';
+import { AlipayProvider, WechatProvider } from '../src/providers.ts';
 import { alipayCanonical, alipayRequestCanonical, decimalToMinor, decryptWechatResource, rawJsonProperty,
-  rsaSign, rsaVerify, uniqueForm, wechatAuthorizationMessage, wechatMessage } from '../src/crypto.mjs';
+  rsaSign, rsaVerify, uniqueForm, wechatAuthorizationMessage, wechatMessage } from '../src/crypto.ts';
 
 const keys = () => generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs8', format: 'pem' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
 const merchant = keys(), platform = keys(), alipayKeys = keys(), now = 1790000000000, timestamp = String(Math.floor(now / 1000));

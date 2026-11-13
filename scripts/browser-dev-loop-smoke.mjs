@@ -31,7 +31,7 @@ const SOURCE_FILES = ['scripts/browser-dev-loop-smoke.mjs', 'scripts/browser-dev
   'crates/container-simulator/src/web_control_surface.rs', 'crates/container-simulator/src/web_dev_app.rs',
   'crates/container-simulator/src/web_resources.rs', 'crates/container-simulator/src/browser-dev-http-control.mjs',
   'examples/hosts/web-wasm/browser-dev-app.mjs', 'examples/hosts/web-wasm/browser-dev-entry.mjs',
-  'examples/hosts/web-wasm/browser-dev.css', 'tools/container-manifest/src/index.mjs',
+  'examples/hosts/web-wasm/browser-dev.css', 'tools/container-manifest/src/index.ts',
   'examples/hosts/web-wasm/browser-dev-owner-manager.mjs', 'examples/hosts/web-wasm/worker-session-client.mjs',
   'examples/hosts/web-wasm/worker-canvaskit-adapter.mjs', 'examples/hosts/web-wasm/canvaskit-presenter.mjs',
   'examples/hosts/web-wasm/worker-web-session.mjs', 'examples/hosts/web-wasm/worker-runtime.mjs', 'examples/hosts/web-wasm/surface-input.mjs',

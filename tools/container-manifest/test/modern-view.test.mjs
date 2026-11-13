@@ -6,7 +6,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { buildManifest, canonicalize, packContainer, sha256 } from '../src/index.mjs';
+import { buildManifest, canonicalize, packContainer, sha256 } from '../src/index.ts';
 
 const page = 'pages/home/index.wxml';
 const modern = modules => ({ mode: 'modern', modules });

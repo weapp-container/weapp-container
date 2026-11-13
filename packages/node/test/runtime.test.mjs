@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
-import { createContainer } from '../src/index.mjs';
-import { packArtifact, disposeArtifact } from '../src/artifact.mjs';
+import { createContainer } from '@weapp-container/node';
+import { packArtifact, disposeArtifact } from '@weapp-container/node/artifact';
 
 let artifact;
 before(async () => { artifact = await packArtifact({ projectPath: new URL('./fixture/', import.meta.url).pathname }); });

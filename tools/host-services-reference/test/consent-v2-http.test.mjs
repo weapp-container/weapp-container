@@ -6,8 +6,8 @@ import { randomBytes } from 'node:crypto';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { HostServices } from '../src/service.mjs';
-import { createHostServicesServer } from '../src/server.mjs';
+import { HostServices } from '../src/service.ts';
+import { createHostServicesServer } from '../src/server.ts';
 
 const secret = () => randomBytes(32).toString('base64url');
 const decision = () => randomBytes(16).toString('base64url');

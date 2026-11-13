@@ -29,7 +29,7 @@ const CLI = 'packages/weapp-vite/bin/weapp-vite.js'
 const STATIC_PROFILE_INPUTS = ['conformance-static-cli-profile.mjs', 'conformance-fixture-project.mjs']
 const staticProfileInputs = () => STATIC_PROFILE_INPUTS.map(name => ({ path: `scripts/${name}`, bytes: readFileSync(new URL(`./${name}`, import.meta.url)) }))
 const PACKER = 'tools/container-manifest/bin/container-pack.mjs'
-const PACKER_MODULES = ['tools/container-manifest/bin/container-pack.mjs', ...['index', 'json-integrity', 'rendering', 'wxs-dependencies', 'wxs-compiler', 'modern-view'].map(name => `tools/container-manifest/src/${name}.mjs`)]
+const PACKER_MODULES = ['tools/container-manifest/bin/container-pack.mjs', ...['index', 'cli', 'types', 'json-integrity', 'rendering', 'wxs-dependencies', 'wxs-compiler', 'modern-view'].map(name => `tools/container-manifest/src/${name}.${['json-integrity', 'rendering'].includes(name) ? 'mjs' : 'ts'}`)]
 const hash = bytes => createHash('sha256').update(bytes).digest('hex')
 const canonical = value => Array.isArray(value) ? `[${value.map(canonical).join(',')}]` : value && typeof value === 'object'
   ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}` : JSON.stringify(value)

@@ -8,10 +8,11 @@
     "test": "python3 -m unittest discover -s test -p \"test_*.py\" -v && node --test test/*.test.mjs",
     "check": "node --check tools/package-artifacts.mjs && node --check tools/verify-offline.mjs && node --check tools/publish.mjs",
     "package:runtime": "node tools/package-artifacts.mjs",
-    "verify:offline": "node tools/verify-offline.mjs"
+    "verify:offline": "node tools/verify-offline.mjs",
+    "typecheck": "node --check tools/package-artifacts.mjs && node --check tools/verify-offline.mjs && node --check tools/publish.mjs"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=24.22.2 <25"
   },
   "license": "Apache-2.0"
 }

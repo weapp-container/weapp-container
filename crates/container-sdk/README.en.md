@@ -13,6 +13,10 @@ return `ERR_ENGINE`; they never run a metadata-only engine or choose a fallback.
 Skia CPU, GLES, Metal and V8 have explicit Cargo features. Query `capabilities`
 to distinguish compiled support from a currently attached/rendered GPU surface.
 
+The `testing` feature adds the real QuickJS `weapp-test-host` stdio process and
+typed test controls. The Node SDK and Vitest fixture reuse this session boundary;
+see [testing runtime](../../docs/testing-runtime.en.md) for APIs, packaging and checks.
+
 ```rust,no_run
 use container_sdk::{ContainerConfig, ContainerSession};
 use serde_json::json;

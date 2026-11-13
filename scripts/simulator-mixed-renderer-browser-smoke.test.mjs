@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
 import vm from 'node:vm'
-import { buildManifest } from '../tools/container-manifest/src/index.mjs'
+import { buildManifest } from '../tools/container-manifest/src/index.ts'
 import { createMixedRendererFixture, installMixedSmokeObserver, parseOptions, readMixedInputState, runMixedRendererDevSmoke } from './simulator-mixed-renderer-browser-smoke.mjs'
 
 test('mixed smoke observer preserves EventSource dispatch while bounding final-response evidence', () => {

@@ -4,7 +4,7 @@
 [简体中文](README.md) · **English**
 
 
-This is a standalone Node.js 24 ESM service using built-in `node:sqlite`, with no npm dependencies.
+This is a standalone Node.js 24.22.2 ESM service using built-in `node:sqlite`, with no npm dependencies.
 It provides host identity, one-time mini-program login codes, independent profile/phone number authorization, payment order processing, and signature verification callback.
 The code follows the license from the root directory of the repository; this package does not grant additional commercial usage rights separately.
 
@@ -48,6 +48,7 @@ Android/iOS compile-installation examples are located in the `examples/host-serv
 Copy `config.example.mjs` to the backend's private configuration directory, set environment variables, and start:
 
 ```sh
+pnpm --dir tools/host-services-reference build
 HOST_SERVICES_CONFIG=/absolute/private/config.mjs \
   npm --prefix tools/host-services-reference start
 ```

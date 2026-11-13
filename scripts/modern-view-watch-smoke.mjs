@@ -52,7 +52,7 @@ async function stable(state, label, duration = 1800) {
 try {
   report.sourceHashes = Object.fromEntries(await Promise.all([
     'scripts/simulator-watch.mjs', 'scripts/modern-view-watch-smoke.mjs',
-    'crates/container-simulator/src/dev.rs', 'tools/container-manifest/src/modern-view.mjs',
+    'crates/container-simulator/src/dev.rs', 'tools/container-manifest/src/modern-view.ts',
   ].map(async file => [file, createHash('sha256').update(await readFile(join(root, file))).digest('hex')])))
   await cp(join(root, 'examples/apps/modern-view-app'), project, { recursive: true,
     filter: source => !['dist', '.weapp-vite', '.weapp-container', 'node_modules'].includes(source.split(sep).at(-1)) })

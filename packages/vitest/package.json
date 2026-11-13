@@ -5,21 +5,26 @@
   "description": "Vite artifact plugin and isolated Vitest fixtures for Weapp Container",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=24.18.0"
+    "node": ">=24.22.2 <25"
   },
   "exports": {
     ".": {
-      "types": "./src/index.d.mts",
-      "import": "./src/index.mjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
     },
     "./config": {
-      "types": "./src/config.d.mts",
-      "import": "./src/config.mjs"
+      "import": {
+        "types": "./dist/config.d.mts",
+        "default": "./dist/config.mjs"
+      }
     }
   },
   "files": [
-    "src",
+    "dist",
     "README.md",
+    "README.en.md",
     "LICENSE"
   ],
   "dependencies": {
@@ -29,9 +34,33 @@
     "vitest": ">=5.0.0"
   },
   "devDependencies": {
-    "vitest": "~5.0.4"
+    "vitest": "5.1.0"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weapp-container/weapp-container.git",
+    "directory": "packages/vitest"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown -w",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint src tsdown.config.ts",
+    "test:types": "tsd --files test-d/**/*.test-d.ts",
+    "test": "node --test test/integration.test.mjs"
+  },
+  "tsd": {
+    "compilerOptions": {
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "skipLibCheck": true
+    }
   }
 }

@@ -39,7 +39,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - name: Select successful production and wait for its checks
         id: candidate
         env:
@@ -88,7 +88,7 @@ jobs:
         run: git submodule update --init sdk/contract sdk/android sdk/ios sdk/desktop
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - uses: actions/download-artifact@v4
         with:
           name: selected-release-candidate
@@ -185,7 +185,7 @@ jobs:
       - run: git submodule update --init sdk/contract
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - uses: actions/download-artifact@v4
         with:
           name: selected-release-candidate
@@ -237,7 +237,7 @@ jobs:
       - run: git submodule update --init sdk/contract
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - uses: actions/download-artifact@v4
         with:
           name: verified-runtime-release

@@ -55,7 +55,7 @@ jobs:
           submodules: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24.18.0'
+          node-version: '24.22.2'
       - name: Initialize the matching Windows x64 compiler and runtime tools
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1

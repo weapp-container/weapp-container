@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
-import { HostServices } from '../src/service.mjs';
+import { HostServices } from '../src/service.ts';
 const policies = { profile: { purpose: 'Display the authorized profile', permissionVersion: '1' }, phone: { purpose: 'Associate the verified phone', permissionVersion: '1' } };
-import { referenceSignature } from '../src/crypto.mjs';
+import { referenceSignature } from '../src/crypto.ts';
 
 const secret = () => randomBytes(32).toString('base64url');
 const packRoot = 'a'.repeat(64), clientSecret = secret(), callbackSecret = secret();

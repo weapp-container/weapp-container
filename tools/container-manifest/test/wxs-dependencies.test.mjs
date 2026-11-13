@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { extractWxsDependencySpecifiers } from '../src/wxs-dependencies.mjs';
+import { extractWxsDependencySpecifiers } from '../src/wxs-dependencies.ts';
 
 function valid(source, specifiers = []) {
   const graph = extractWxsDependencySpecifiers(source);

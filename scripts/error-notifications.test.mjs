@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { mkdtemp, writeFile, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { buildManifest, canonicalize } from '../tools/container-manifest/src/index.mjs'
+import { buildManifest, canonicalize } from '../tools/container-manifest/src/index.ts'
 import test from 'node:test'
 import { createAppServiceTestRealm } from './app-service-test-realm.mjs'
 

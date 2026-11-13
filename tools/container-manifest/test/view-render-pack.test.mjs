@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { buildManifest, canonicalize, sha256 } from '../src/index.mjs';
+import { buildManifest, canonicalize, sha256 } from '../src/index.ts';
 
 const fixtureUrl = new URL('../../../conformance/fixtures/isolated-view-render/', import.meta.url);
 

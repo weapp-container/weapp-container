@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { packContainer } from '../../../tools/container-manifest/src/index.mjs'
+import { packContainer } from '../../../tools/container-manifest/src/index.ts'
 
 // Hand-authored inputs deliberately use a sentinel compiler commit: the
 // packer's fixed weapp-vite name must not imply an upstream build was executed.

@@ -4,8 +4,8 @@ import { randomBytes } from 'node:crypto';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { HostServices } from '../src/service.mjs';
-import { digest } from '../src/crypto.mjs';
+import { HostServices } from '../src/service.ts';
+import { digest } from '../src/crypto.ts';
 
 const decision = () => randomBytes(16).toString('base64url');
 const policies = { profile: { purpose: 'Display the public profile', permissionVersion: '1' }, phone: { purpose: 'Associate the verified phone', permissionVersion: '1' } };

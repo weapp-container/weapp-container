@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import test from 'node:test';
-import { parseWxml } from '../src/index.mjs';
+import { parseWxml } from '../src/index.ts';
 
 test('WXS raw text shares a lossless source/AST contract with the Rust parser', async () => {
   const contract = JSON.parse(await fs.readFile(new URL('./fixtures/wxml-wxs-raw-v1.json', import.meta.url), 'utf8'));

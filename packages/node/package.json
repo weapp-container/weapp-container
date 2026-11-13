@@ -5,21 +5,34 @@
   "description": "Isolated real-runtime mini-program integration testing",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=24.18.0"
+    "node": ">=24.22.2 <25"
   },
   "exports": {
     ".": {
-      "types": "./src/index.d.mts",
-      "import": "./src/index.mjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./artifact": {
-      "types": "./src/artifact.d.mts",
-      "import": "./src/artifact.mjs"
+      "import": {
+        "types": "./dist/artifact.d.mts",
+        "default": "./dist/artifact.mjs"
+      },
+      "require": {
+        "types": "./dist/artifact.d.cts",
+        "default": "./dist/artifact.cjs"
+      }
     }
   },
   "files": [
-    "src",
+    "dist",
     "README.md",
+    "README.en.md",
     "LICENSE"
   ],
   "dependencies": {
@@ -42,5 +55,29 @@
   },
   "devDependencies": {
     "weapp-vite": "7.5.0"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weapp-container/weapp-container.git",
+    "directory": "packages/node"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown -w",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint src tsdown.config.ts",
+    "test:types": "tsd --files test-d/**/*.test-d.ts",
+    "test": "node --test test/*.test.mjs"
+  },
+  "tsd": {
+    "compilerOptions": {
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "skipLibCheck": true
+    }
   }
 }

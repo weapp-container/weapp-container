@@ -7,7 +7,7 @@ import { isBuiltin, syncBuiltinESMExports } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import test from 'node:test'
-import { packContainer } from '../tools/container-manifest/src/index.mjs'
+import { packContainer } from '../tools/container-manifest/src/index.ts'
 import { canonicalize } from '../tools/container-manifest/src/json-integrity.mjs'
 import { GENERATED_MODULE_PARSER_PIN, loadPinnedGeneratedModuleParser } from './generated-package-closure.mjs'
 import { GLUE_REQUIRED_METHODS, PORTABLE_PACK_VALIDATOR_FILES, RENDERER_DEPENDENCY_PINS, WASM_REQUIRED_EXPORTS, WASM_TARGET, WEB_SAMPLE_FILES,
@@ -985,7 +985,7 @@ test('the real frozen validator needs no npm dependencies and ignores later orig
   try {
     const source = await snapshotBuildSource(f.root, f.plan.sourceDir, f.run)
     assert.equal(existsSync(resolve(f.plan.sourceDir, 'node_modules')), false)
-    assert.equal(existsSync(resolve(f.plan.sourceDir, 'tools/container-manifest/src/index.mjs')), false)
+    assert.equal(existsSync(resolve(f.plan.sourceDir, 'tools/container-manifest/src/index.ts')), false)
     // Poison the original entry and helper before the frozen module is first
     // imported. Resolving either one from the original project must fail.
     for (const file of PORTABLE_PACK_VALIDATOR_FILES) {

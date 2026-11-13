@@ -5,6 +5,8 @@
 
 `container-manifest` 将 `wv build -p weapp` 目录转换为 Weapp Container 运行时使用的版本化便携式清单。它不会重写原始的微信输出，因此输入目录仍可被官方 DevTools 所导入。
 
+使用 Node 24.22.2。源码采用 repoctl 的 tsdown CLI / 库模板；构建生成 `dist` 与类型声明，npm 包仅分发构建产物。安装后使用 `container-pack` 命令，程序接口从 `@sonofmagic/container-manifest` 及其子路径导入。
+
 ## CLI
 
 ```bash
@@ -29,7 +31,7 @@ manifest 完整性根是其规范形式的 SHA-256 散列值，其中 `integrity
 ## 库 API
 
 ```js
-import { buildManifest, packContainer } from './src/index.mjs';
+import { buildManifest, packContainer } from '@sonofmagic/container-manifest';
 
 const result = await buildManifest('./dist');
 await packContainer('./dist', './artifacts/reference');

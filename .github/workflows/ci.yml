@@ -54,7 +54,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - name: Validate evidence source and mobile execution boundaries
         run: node --test scripts/evidence-source.test.mjs scripts/mobile-module-evidence.test.mjs scripts/pack-execution-evidence.test.mjs scripts/conformance-evidence.test.mjs
       - name: Validate frozen dual-renderer scope without claiming release readiness
@@ -98,7 +98,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - name: Verify public product names and development toolchain boundaries
         run: |
           node --test scripts/check-product-naming.test.mjs scripts/check-toolchain.test.mjs
@@ -177,7 +177,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json
@@ -241,7 +241,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json
@@ -282,7 +282,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json
@@ -327,7 +327,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json
@@ -397,7 +397,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json
@@ -460,7 +460,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - name: Run baseline
         run: node scripts/perf-baseline.mjs --out perf-baseline.json
       - name: Enforce protocol thresholds
@@ -486,7 +486,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: package.json
@@ -536,7 +536,7 @@ jobs:
           cargo: 'true'
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - uses: ./.github/actions/setup-linux-native
         if: runner.os == 'Linux'
       - name: Install source-build fallback tools (macOS)
@@ -582,7 +582,7 @@ jobs:
           cargo: 'true'
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24.22.2'
       - name: Report optional SDK state
         run: node scripts/check-toolchain.mjs --json
       - name: Explicitly compile mobile skeletons

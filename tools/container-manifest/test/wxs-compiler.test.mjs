@@ -7,7 +7,7 @@ import {
   WXS_COMPILER_NAME,
   WXS_COMPILER_VERSION,
   WXS_HELPER_ABI_VERSION,
-} from '../src/wxs-compiler.mjs';
+} from '../src/wxs-compiler.ts';
 
 // A model of the property ABI, isolated inside the same realm as test source.
 // These tests verify the compiler's ordering and binding contract. Native

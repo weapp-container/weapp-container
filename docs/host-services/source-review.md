@@ -60,6 +60,20 @@ Simulator 配置透传运行时已有的有限 `ViewExecutionPolicy`，替换仅
 Linux Xvfb/Mesa 集成测试验证真实 GL drawable 的像素、resize、重载和 detach；
 该结果不代表 Windows、Wayland 或物理设备验收，也不提升任何 SDK 验收状态。
 
+<a id="2026-11-13-testing-runtime-review"></a>
+## 2026-11-13 测试运行时与工具链复核
+
+以 `origin/main` 的生产边界为基线，复核测试宿主及 TypeScript 迁移，更新 QuickJS、runtime、nativeProvider、manifestPacker 的完整文件身份与 scheduler AST 身份。能力评级与历史验收证据保持原样。
+
+| 来源 | 变化与保留的边界 |
+| --- | --- |
+| `container-engine-quickjs/src/lib.rs` | testing feature 使用私有传输调用实例与节点观测；权限、执行预算、异常处理和回收仍由真实引擎管理。 |
+| `container-runtime/src/lib.rs`、`container-sdk/src/lib.rs` | 测试接口按 feature 编译，复用 Session、pack 校验、provider 与关闭机制；受控时钟进入 timer 注册，真实截止时间继续约束执行。 |
+| `container-core/src/turn-scheduler.js` | 私有 status 命令只返回当前就绪工作，供有限 flush 判断收敛；不推进未来 timer，不改变回调所有权与取消语义。 |
+| `tools/container-manifest/src/index.ts` | 从 JS 迁移为 TypeScript，补充 JSON / AST 类型边界，CLI 移至独立入口；确定性 manifest、资源摘要、错误与 WXS 语义由既有测试验证。 |
+
+复核覆盖 24 个真实运行时集成测试、87 个 Rust SDK 测试、scheduler 回调兼容测试、manifest 回归和声明测试。测试进程与节点句柄绑定会话，旧句柄拒绝、取消和回收失败均有验证；这些结果不提升设备或微信兼容性验收状态。
+
 <a id="subsequent-updates"></a>
 ## 后续更新
 

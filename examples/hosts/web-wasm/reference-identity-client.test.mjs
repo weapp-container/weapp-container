@@ -5,8 +5,8 @@ import { once } from 'node:events'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { HostServices } from '../../../tools/host-services-reference/src/service.mjs'
-import { createHostServicesHandler } from '../../../tools/host-services-reference/src/server.mjs'
+import { HostServices } from '../../../tools/host-services-reference/src/service.ts'
+import { createHostServicesHandler } from '../../../tools/host-services-reference/src/server.ts'
 import { createReferenceIdentityClient, ReferenceIdentityError } from './reference-identity-client.mjs'
 
 const policies = { profile: { purpose: 'Display your authorized profile', permissionVersion: 'profile-v1' },

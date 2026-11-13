@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { connect } from 'node:net'
-import { packContainer } from '../tools/container-manifest/src/index.mjs'
+import { packContainer } from '../tools/container-manifest/src/index.ts'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const args = process.argv.slice(2), options = { engine: 'quickjs' }

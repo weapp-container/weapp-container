@@ -33,7 +33,7 @@
 <a id="build-from-source"></a>
 ## 从源码开始
 
-需要 Git、Node.js **24.18+ / 24.x**、pnpm **10.15.1**、Rust stable 和宿主 C/C++ 工具链；macOS 使用 Xcode Command Line Tools。下面的无界面路径使用 QuickJS 和软件渲染，不构建 Skia。可视化预览和原生 SDK 还需要下载公开的 Skia 依赖，详见 [Rust 构建说明](docs/rust-build-cache.md)。
+需要 Git、Node.js **24.22.2 / 24.x**、pnpm **10.15.1**、Rust stable 和宿主 C/C++ 工具链；macOS 使用 Xcode Command Line Tools。下面的无界面路径使用 QuickJS 和软件渲染，不构建 Skia。可视化预览和原生 SDK 还需要下载公开的 Skia 依赖，详见 [Rust 构建说明](docs/rust-build-cache.md)。
 
 ```sh
 git clone --recurse-submodules https://github.com/weapp-container/weapp-container.git

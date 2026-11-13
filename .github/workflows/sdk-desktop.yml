@@ -37,7 +37,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: '24.22.2'
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: '1.99.1'
@@ -67,7 +67,7 @@ jobs:
           targets: ${{ matrix.target }}
       - uses: actions/setup-node@v4
         with:
-          node-version: '24.18.0'
+          node-version: '24.22.2'
       - name: Linux compiler, GTK3 and both display backends
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang libclang-dev pkg-config libfontconfig1-dev libgl1-mesa-dev libgtk-3-dev xvfb weston

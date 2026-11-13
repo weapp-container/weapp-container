@@ -157,19 +157,34 @@
     "runtime:artifacts:test": "python3 -m unittest discover -s tools/runtime-artifacts/test -p 'test_*.py' -v && node --test tools/runtime-artifacts/test/*.test.mjs scripts/runtime-artifacts-migration.test.mjs scripts/runtime-release.test.mjs",
     "docs:workspace": "node tools/documentation/check-workspace.mjs",
     "testing:build": "cargo build --locked -p container-sdk --features testing --bin weapp-test-host",
-    "testing:test": "pnpm testing:build && WEAPP_CONTAINER_TEST_BINARY=$PWD/target/debug/weapp-test-host node --test packages/node/test/*.test.mjs packages/vitest/test/*.test.mjs",
+    "testing:test": "pnpm build && pnpm testing:build && WEAPP_CONTAINER_TEST_BINARY=$PWD/target/debug/weapp-test-host node --test packages/node/test/*.test.mjs packages/vitest/test/*.test.mjs",
     "testing:package": "node scripts/package-test-runtime.mjs",
     "testing:bench": "node scripts/benchmark-test-runtime.mjs",
-    "testing:typecheck": "tsc --ignoreConfig --noEmit --skipLibCheck --module nodenext --target esnext --strict packages/vitest/test/types.mts",
-    "testing:install:test": "node scripts/test-test-runtime-install.mjs"
+    "testing:typecheck": "pnpm test:types",
+    "testing:install:test": "pnpm build && node scripts/test-test-runtime-install.mjs",
+    "build": "turbo run build",
+    "lint": "eslint scripts tools/documentation tools/runtime-artifacts repoctl.config.ts && turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test:types": "turbo run test:types",
+    "test": "pnpm testing:build && turbo run test && pnpm test:scripts",
+    "test:scripts": "node scripts/test-js-toolchain.mjs",
+    "repo:check": "repo check --full"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
+    "eslint": "10.13.0",
     "qrcode": "1.5.4",
-    "typescript": "6.0.3"
+    "repoctl": "6.6.1",
+    "tsd": "0.33.0",
+    "tsdown": "0.23.7",
+    "turbo": "2.11.9",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0",
+    "@weapp-container/node": "workspace:*",
+    "@weapp-container/vitest": "workspace:*"
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=24.18.0 <25"
+    "node": ">=24.22.2 <25"
   }
 }

@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { mkdtemp, writeFile, chmod, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { createContainer } from '../src/index.mjs';
+import { createContainer } from '@weapp-container/node';
 
 async function host(t, source) {
   const root = await mkdtemp(join(tmpdir(), 'weapp-test-transport-'));

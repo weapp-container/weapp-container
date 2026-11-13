@@ -1,5 +1,7 @@
 # 小程序测试运行时
 
+**简体中文** · [English](testing-runtime.en.md)
+
 `@weapp-container/node` 提供独立 Node SDK，`@weapp-container/vitest` 提供 Vite 编译插件和每测试 fixture。后端是 `container-sdk` 的 `testing` feature 与 `weapp-test-host`，固定使用真实 QuickJS。
 
 ```text
@@ -31,6 +33,23 @@ pnpm testing:bench
 `testing:bench` 将冷启动、挂载、操作、回收与四个存活容器的 RSS 写到 `artifacts/testing-runtime-benchmark.json`。通过 `WEAPP_CONTAINER_BENCH_SAMPLES` 设置样本数，使用 release 平台包测发布性能。结果仅代表运行该命令的主机。
 
 2026-11-13 本机 macOS arm64 / Node 24.22.2 的 release 基线为 10 个样本：首次启动 119 ms，启动均值 14.5 ms（其余样本约 2.6–3.2 ms），页面挂载均值 52.7 ms，一次方法调用（含 flush）均值 8.6 ms，回收均值 4.6 ms。四个存活子进程各占约 25 MiB RSS，Node 进程约 65 MiB。Linux 数值待 CI 实测，不由这组结果外推。
+
+## JS 工具链
+
+主仓库统一使用 Node 24.22.2、pnpm 10.15.1 和已发布的 repoctl 6.6.1。库包与 CLI 采用 repoctl 的 tsdown 模板，继承共享 TypeScript / ESLint 配置，由 Turbo 按依赖构建。根脚本保持 `.mjs`；现有测试继续由 `node:test` 执行。
+
+```sh
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm test:types
+pnpm test
+pnpm repo:check
+```
+
+`repo:check` 依次汇总 lint、类型检查、测试和构建；`test:types` 验证生成声明。测试任务会先构建真实 Rust 测试宿主，需本地 Rust 工具链；安装后的消费者无需 Rust。
+
+Node SDK 从 `dist` 提供 ESM / CJS 及对应声明；Vitest 插件保持 ESM。manifest 与 host-services 工具同样从 `dist` 导出，CLI 分别为 `container-pack`、`weapp-host-services`。浏览器共享纯 JS 模块保留源码语义。生成的 dist、原生二进制和 tarball 不提交 Git；本次不增加自动发布流程。
 
 ## 当前约束
 

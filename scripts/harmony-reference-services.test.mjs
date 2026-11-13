@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {stripTypeScriptTypes} from 'node:module';
-import {HostServices} from '../tools/host-services-reference/src/service.mjs';
-import {referenceSignature} from '../tools/host-services-reference/src/crypto.mjs';
+import {HostServices} from '../tools/host-services-reference/src/service.ts';
+import {referenceSignature} from '../tools/host-services-reference/src/crypto.ts';
 
 // Production ArkTS protocol owner + production SQLite account/order service.
 // Finite transport/consent/wallet callbacks exercise lifecycle only; official

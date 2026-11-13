@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
-import { canonicalize, sha256 } from '../tools/container-manifest/src/index.mjs'
+import { canonicalize, sha256 } from '../tools/container-manifest/src/index.ts'
 import { syncIOSPortablePack } from './sync-ios-portable-pack.mjs'
 
 async function fixture(run) {

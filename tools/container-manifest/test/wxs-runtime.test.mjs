@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import test from 'node:test';
-import { compileWxmlExpression, compileWxsModule } from '../src/wxs-compiler.mjs';
+import { compileWxmlExpression, compileWxsModule } from '../src/wxs-compiler.ts';
 
 // This exercises the shipped JS bootstrap and compiler together in Node's VM.
 // It is structural evidence, not a native-engine or official DevTools oracle.

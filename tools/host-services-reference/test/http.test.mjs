@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { HostServices } from '../src/service.mjs';
+import { HostServices } from '../src/service.ts';
 const policies = { profile: { purpose: 'Display the authorized profile', permissionVersion: '1' }, phone: { purpose: 'Associate the verified phone', permissionVersion: '1' } };
-import { createHostServicesServer } from '../src/server.mjs';
-import { referenceSignature } from '../src/crypto.mjs';
+import { createHostServicesServer } from '../src/server.ts';
+import { referenceSignature } from '../src/crypto.ts';
 
 test('loopback HTTP flow enforces trust domains and processes only signed payment notifications', async t => {
   const issuerSecret = 'issuer_secret_'.repeat(4), clientSecret = 'client_secret_'.repeat(4), callbackSecret = 'callback_secret_'.repeat(4), packRoot = 'a'.repeat(64);

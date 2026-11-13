@@ -8,6 +8,8 @@ versioned portable manifest consumed by the Weapp Container runtime. It does not
 the original WeChat output, so the input directory remains importable by the
 official DevTools.
 
+Use Node 24.22.2. Sources follow repoctl's tsdown CLI / library templates. Builds generate `dist` and declarations; the npm package ships built artifacts. After installation, use the `container-pack` command and import APIs from `@sonofmagic/container-manifest` and its subpaths.
+
 ## CLI
 
 ```bash
@@ -36,7 +38,7 @@ their UTF-8 bytes and emits arrays in semantic order (routes preserve
 ## Library API
 
 ```js
-import { buildManifest, packContainer } from './src/index.mjs';
+import { buildManifest, packContainer } from '@sonofmagic/container-manifest';
 
 const result = await buildManifest('./dist');
 await packContainer('./dist', './artifacts/reference');

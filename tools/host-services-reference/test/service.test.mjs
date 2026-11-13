@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { HostServices } from '../src/service.mjs';
+import { HostServices } from '../src/service.ts';
 const policies = { profile: { purpose: 'Display the authorized profile', permissionVersion: '1' }, phone: { purpose: 'Associate the verified phone', permissionVersion: '1' } };
-import { ReferenceProvider } from '../src/providers.mjs';
-import { referenceSignature } from '../src/crypto.mjs';
+import { ReferenceProvider } from '../src/providers.ts';
+import { referenceSignature } from '../src/crypto.ts';
 
 const packRoot = 'a'.repeat(64), secret = 'app-secret-'.repeat(4), callbackSecret = 'callback-secret-'.repeat(4);
 const config = database => ({ database, issuerSecret: 'issuer-secret-'.repeat(4), identitySecret: 'identity-secret-'.repeat(4),

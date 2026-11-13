@@ -30,7 +30,7 @@ jobs:
       - run: git submodule update --init sdk/contract
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.22.2'
       - name: Download every public asset without credentials and verify offline installs
         env:
           GH_TOKEN: ${{ github.token }}

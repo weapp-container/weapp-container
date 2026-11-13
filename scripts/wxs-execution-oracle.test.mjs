@@ -4,8 +4,8 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import test from 'node:test';
-import { buildManifest, canonicalize, sha256 } from '../tools/container-manifest/src/index.mjs';
-import { compileWxsModule } from '../tools/container-manifest/src/wxs-compiler.mjs';
+import { buildManifest, canonicalize, sha256 } from '../tools/container-manifest/src/index.ts';
+import { compileWxsModule } from '../tools/container-manifest/src/wxs-compiler.ts';
 import { compareDatatypeObservations, normalizeDatatypeObservation } from './wxs-datatype-observations.mjs';
 import { datatypeRequests, verifiedOfficialObservations } from './wxs-datatype-differential.mjs';
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { parseWxss, canonicalize, WXSS_IR_VERSION } from '../src/index.mjs';
+import { parseWxss, canonicalize, WXSS_IR_VERSION } from '../src/index.ts';
 
 const cases = JSON.parse(await readFile(new URL('fixtures/wxss-v2.json', import.meta.url), 'utf8'));
 for (const fixture of cases) {

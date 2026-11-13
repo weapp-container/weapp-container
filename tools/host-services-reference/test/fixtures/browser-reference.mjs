@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
-import { HostServices } from '../../src/service.mjs';
-import { createHostServicesHandler } from '../../src/server.mjs';
-import { equalSecret } from '../../src/crypto.mjs';
-import { requireThat, ServiceError, text } from '../../src/errors.mjs';
+import { HostServices } from '../../src/service.ts';
+import { createHostServicesHandler } from '../../src/server.ts';
+import { equalSecret } from '../../src/crypto.ts';
+import { requireThat, ServiceError, text } from '../../src/errors.ts';
 
 const secret = () => randomBytes(32).toString('base64url');
 const bearer = request => /^Bearer ([A-Za-z0-9\-._~+/]+=*)$/.exec(request.headers.authorization ?? '')?.[1];

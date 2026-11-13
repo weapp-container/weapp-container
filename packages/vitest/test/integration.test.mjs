@@ -7,12 +7,14 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createContainer } from '@weapp-container/node';
 import { buildWeappViteArtifact, watchWeappViteArtifact, disposeArtifact } from '@weapp-container/node/artifact';
-import { weappContainerTest, ARTIFACT_KEY } from '../src/config.mjs';
+import { weappContainerTest, ARTIFACT_KEY } from '@weapp-container/vitest/config';
 
 async function project(t) {
   const root = await mkdtemp(fileURLToPath(new URL('./.tmp-', import.meta.url)));
   t.after(() => rm(root, { recursive: true, force: true }));
   await cp(fileURLToPath(new URL('../../node/test/fixture/', import.meta.url)), join(root, 'src'), { recursive: true });
+  // This generated mini-program is a side-effectful application, independent of the enclosing library metadata.
+  await writeFile(join(root, 'package.json'), JSON.stringify({ private: true, sideEffects: true }));
   await writeFile(join(root, 'project.config.json'), JSON.stringify({ appid: 'touristappid', compileType: 'miniprogram', miniprogramRoot: 'dist/' }));
   await writeFile(join(root, 'vite.config.mjs'), 'export default {weapp:{srcRoot:"src"},logLevel:"error"}');
   return root;

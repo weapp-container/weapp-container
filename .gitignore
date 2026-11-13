@@ -62,3 +62,7 @@ packages/runtime/*/THIRD_PARTY_NOTICES
 packages/**/node_modules/
 packages/**/test/.tmp-*/
 packages/**/.weapp-vite/
+
+# repoctl / TypeScript local build state
+/tools/**/node_modules/
+*.tsbuildinfo

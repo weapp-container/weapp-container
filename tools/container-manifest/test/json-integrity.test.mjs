@@ -11,7 +11,7 @@ import { canonicalize, compareUtf8, sha256 } from '../src/json-integrity.mjs';
 const execFileAsync = promisify(execFile);
 
 test('legacy manifest entry point reexports the same integrity functions', async () => {
-  const legacy = await import('../src/index.mjs');
+  const legacy = await import('../src/index.ts');
   assert.equal(legacy.canonicalize, canonicalize);
   assert.equal(legacy.sha256, sha256);
 });

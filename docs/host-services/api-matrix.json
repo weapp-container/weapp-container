@@ -1605,7 +1605,7 @@
       },
       "runtime": {
         "path": "crates/container-runtime/src/lib.rs",
-        "sha256": "766fd602d4a2699e623b79ba50e3d4a012601da291e82aae7b1740434169d3e4"
+        "sha256": "d23d9274ad94f4c5fdbcc2b86b057babcf8b8b9f7dcf66eae0614426640624c8"
       },
       "snapshots": {
         "path": "crates/container-runtime/src/host_environment.rs",
@@ -1625,7 +1625,7 @@
       },
       "nativeProvider": {
         "path": "crates/container-sdk/src/lib.rs",
-        "sha256": "e3489594fa0eb1aa3ec37d36d95c6c0fed3c93f60f7f3b073c4acb1ee9204824"
+        "sha256": "f2d55772dd17d97ca6695cfe4697b5bba3a304ab1ce57ab2ec1b2e27a8d77a1e"
       },
       "hostServices": {
         "path": "crates/container-runtime/src/host_services.rs",
@@ -1745,7 +1745,7 @@
       },
       "turnScheduler": {
         "path": "crates/container-core/src/turn-scheduler.js",
-        "sha256": "ae9db94f5f607ee6a15208b75f5b59a086b100c6d8fbdb32963e43bf50170440"
+        "sha256": "7baef478208b57a2a83adf10e2f2be10e044954ce17fdc3e7ff4b7e79fb0507a"
       },
       "runtimeTurnScheduler": {
         "path": "crates/container-runtime/src/turn_scheduler.rs",
@@ -1985,7 +1985,7 @@
       },
       "quickjs": {
         "path": "crates/container-engine-quickjs/src/lib.rs",
-        "sha256": "855618bfcf2198e2ddca196f733b1b3e7625a5c448e8c2a60ed5208fc7b8d6bd"
+        "sha256": "e87e970390b93e89f56c98e02af1b31183376b5ae52c9d88f71ff2827968c28f"
       },
       "v8": {
         "path": "crates/container-engine-v8/src/lib.rs",
@@ -2016,8 +2016,8 @@
         "sha256": "ab49cf139314d506b9703d01409f8481d088b3983795f906cbfced8d85dfb96b"
       },
       "manifestPacker": {
-        "path": "tools/container-manifest/src/index.mjs",
-        "sha256": "42ae579c16baf71fec5699d3a466e22cf93e8d75f17e428881648922d1ba3276"
+        "path": "tools/container-manifest/src/index.ts",
+        "sha256": "4164461d8cf7547bf87048fa0361426af0c67011d42e4fe94e033fc3cc6ee0f4"
       },
       "flutterController": {
         "path": "sdk/flutter/weapp_container/lib/src/controller.dart",

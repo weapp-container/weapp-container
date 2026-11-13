@@ -1,5 +1,7 @@
 # @weapp-container/node
 
+**简体中文** · [English](README.en.md)
+
 在 Node 中驱动真实 Rust + QuickJS 小程序运行时。每个容器拥有独立子进程、Session、存储和业务堆；页面与组件从验证过的 portable pack 加载。
 
 ```ts

@@ -42,7 +42,7 @@ try {
     'crates/container-runtime/src/modern_source_map.rs', 'crates/container-core/src/modern_view.js',
     'crates/container-engine-quickjs/src/view.rs', 'crates/container-engine-v8/src/view.rs',
     'crates/container-simulator/src/dev.rs', 'crates/container-simulator/src/web.rs', 'crates/container-simulator/src/web-ui.html',
-    'tools/container-manifest/src/modern-view.mjs',
+    'tools/container-manifest/src/modern-view.ts',
   ].map(async file => [file, createHash('sha256').update(await readFile(join(root, file))).digest('hex')])));
   await cp(join(root, 'examples/apps/modern-view-app'), project, { recursive: true,
     filter: source => !['dist', '.weapp-vite', '.weapp-container', 'node_modules'].includes(basename(source)) });

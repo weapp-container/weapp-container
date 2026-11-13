@@ -5,7 +5,7 @@ import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { canonicalize } from '../tools/container-manifest/src/index.mjs';
+import { canonicalize } from '../tools/container-manifest/src/index.ts';
 import { createOwnedCommandRunner, matchedResponse, sha256, sourceHashes } from './simulator-cli-harness.mjs';
 import { compareDatatypeObservations, normalizeDatatypeObservation } from './wxs-datatype-observations.mjs';
 

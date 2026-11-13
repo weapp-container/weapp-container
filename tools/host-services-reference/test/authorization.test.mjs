@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { HostServices } from '../src/service.mjs';
+import { HostServices } from '../src/service.ts';
 
 const selection = { miniAppId: 'mini', packRoot: 'a'.repeat(64), expectedPrincipalId: 'user', expectedPrincipalEpoch: '1' };
 const clientSecret = 'client-secret-'.repeat(4);

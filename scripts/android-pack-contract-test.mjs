@@ -6,7 +6,7 @@ import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promis
 import { homedir, tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { buildManifest, canonicalize, writePack } from '../tools/container-manifest/src/index.mjs'
+import { buildManifest, canonicalize, writePack } from '../tools/container-manifest/src/index.ts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const options = new Map()

@@ -5,7 +5,7 @@
 
 
 状态：**后端 v2 原子授权已实现；共享宿主 fence、SDK 接入和真实 UI/产物链路待实现、待验收**。
-`tools/host-services-reference/src/consent-v2.mjs` 与 service/server 已提供本文 v2 路径、可信
+`tools/host-services-reference/src/consent-v2.ts` 与 service/server 已提供本文 v2 路径、可信
 持久域、单调 TEXT revision、challenge/CAS、decision 幂等及 strict legacy 门禁。
 真实 HTTP/SQLite 测试分别在提交前和响应生成后设 gate；这不代表 SDK 已具备迟到结果隔离，
 本文也不提升任何完整 API 验收状态。
@@ -25,7 +25,7 @@
 
 手机号 code、并发 `HostServices::refresh()` 也缺少对应检查。`revoke()` 没有使既有授权弹窗失效；旧弹窗的“允许”回调还能提交 `granted:true`。失败路径另外存在两个关联问题：`consent_required` 不一定刷新旧快照；原始拒绝后刷新再次失败，可能用第二个错误替换用户拒绝。错误刷新应尽力执行，不能覆盖原始拒绝，也不能绕过授权检查。
 
-[参考服务](../../tools/host-services-reference/src/service.mjs) 的 `setConsent()` 只比较当前 `purpose`、`permissionVersion`，每次写入产生随机 `revision`。`authorizationVersion` 是资料和手机号状态的组合哈希，属于不透明版本，不能排序，也不是写入条件。旧的 `granted:true` 请求若在 `granted:false` 之后才被后端处理，仍会成功。客户端取消连接不能证明后端没有执行该写入。
+[参考服务](../../tools/host-services-reference/src/service.ts) 的 `setConsent()` 只比较当前 `purpose`、`permissionVersion`，每次写入产生随机 `revision`。`authorizationVersion` 是资料和手机号状态的组合哈希，属于不透明版本，不能排序，也不是写入条件。旧的 `granted:true` 请求若在 `granted:false` 之后才被后端处理，仍会成功。客户端取消连接不能证明后端没有执行该写入。
 
 以下机制已经存在，应继续使用：
 

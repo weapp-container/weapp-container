@@ -1,6 +1,8 @@
 # @weapp-container/vitest
 
-Vite 配置插件负责每个 Vitest project 的编译与不可变 pack 代际，fixture 为每个测试创建独立的真实 QuickJS 子进程。使用 Vitest 5、Node 24.18+、weapp-vite 7.5+。
+**简体中文** · [English](README.en.md)
+
+Vite 配置插件负责每个 Vitest project 的编译与不可变 pack 代际，fixture 为每个测试创建独立的真实 QuickJS 子进程。使用 Vitest 5、Node 24.22.2、weapp-vite 7.5+。
 
 ```ts
 // vitest.config.ts
