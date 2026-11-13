@@ -1,4 +1,8 @@
+<a id="appservice-execution-time-limit"></a>
 # AppService 执行时限
+
+**简体中文** · [English](appservice-execution.en.md)
+
 
 宿主可通过 `SessionConfig.engine_execution` 为 QuickJS 启动和每次宿主操作设置时限：
 

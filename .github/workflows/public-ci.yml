@@ -36,7 +36,7 @@ jobs:
         with:
           toolchain: '1.99.1'
       - run: pnpm submodule:verify
-      - run: pnpm opensource:check && pnpm docs:check
+      - run: pnpm opensource:check && pnpm docs:check && pnpm docs:workspace
       - run: node scripts/generate-host-services-matrix.mjs --check
       - run: node --test scripts/core-api-inventory.test.mjs scripts/host-api-matrix.test.mjs scripts/host-api-matrix-io.test.mjs
       - run: pnpm naming:check && pnpm naming:test

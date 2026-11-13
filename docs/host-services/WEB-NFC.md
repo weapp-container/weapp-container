@@ -1,4 +1,8 @@
+<a id="web-nfc-and-frozen-wx-nfc-contract"></a>
 # Web NFC 与冻结 wx NFC 合同
+
+**简体中文** · [English](WEB-NFC.en.md)
+
 
 Web 宿主默认不注册当前 NFC 标签 API。浏览器提供 `NDEFReader`，只能证明存在
 Web NFC 接口；它不能证明该接口满足基础库 3.17.3、typings 5.2.3 冻结的 wx

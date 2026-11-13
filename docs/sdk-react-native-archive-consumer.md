@@ -1,4 +1,8 @@
+<a id="react-native-installation-from-accurate-archive"></a>
 # React Native 从精确归档安装
+
+**简体中文** · [English](sdk-react-native-archive-consumer.en.md)
+
 
 React Native 准备和打包必须使用同一份独立审查的 runtime 清单。
 SDK 仓库内的 preview.5.3 历史锁保持原样；preview.6 源码不接受它。

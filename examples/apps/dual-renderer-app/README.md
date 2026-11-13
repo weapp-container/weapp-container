@@ -1,4 +1,8 @@
+<a id="dual-rendering-development-example"></a>
 # 双渲染开发示例
+
+**简体中文** · [English](README.en.md)
+
 
 这个普通 `weapp-vite` 项目包含三个页面：DOM 首页 → Skia 页面 → 新 DOM 页面。
 两种呈现方式共享一个 AppService。它用于开发和交互检查，不表示官方微信、
@@ -36,6 +40,7 @@ QuickJS 与浏览器 DOM/CanvasKit；当前浏览器独立开发入口不接受 
 或模拟器进程重启会清空该沙箱；页面计数、共享点击和 App 时钟重新开始。
 跨启动持久化需要宿主另外提供持久存储 Provider，本示例未接入该能力。
 
+<a id="building-and-renderer-configuration"></a>
 ## 构建与 renderer 配置
 
 复用固定 submodule 的标准 CLI 和现有 packer，不另加插件或修改上游：
@@ -60,6 +65,7 @@ packer 必须收到 `--project` 才会加载该配置，并生成 schema 3 的
 原始产物的模块与 chunk 仍由 Vite/Rolldown 拥有，portable pack 只转换既有输出。
 状态由页面的可见字段展示，不依赖编译器保留小程序入口的额外模块导出。
 
+<a id="current-validation-scope"></a>
 ## 当前验证范围
 
 2026-10-26 已使用固定上游 SHA

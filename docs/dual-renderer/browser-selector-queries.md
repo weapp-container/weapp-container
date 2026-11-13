@@ -1,9 +1,14 @@
+<a id="dom-selectorquery-partial-implementation-and-evidence-boundary"></a>
 # DOM SelectorQuery（partial 实现与证据边界）
+
+**简体中文** · [English](browser-selector-queries.en.md)
+
 
 DOM 查询由 Rust 匹配已求值的 `ViewDocument`，浏览器批量测量当前实际可见的同一文档，再由运行时完成原 JS 请求。它不读取保留的 Skia frame，不重新执行 WXML/WXS/现代 View，也不把先前的 `view.geometry` 缓存当作调用时测量。
 
 能力始终为 `partial`。历史编译、原生回归与真实 QuickJS Worker 查询结果按实际受测源码保存在 [controls 集成证据](../archived-evidence.md)；controls r6 的浏览器通过绑定 `4f753cab`，不自动覆盖后来的 backend/lazy 源码。固定微信版本、GPU、设备与性能验收尚未完成，冻结的 279 项发布清单不变。Remote 启动等待、IntersectionObserver 和 `pageScrollTo` 的 DOM gate 继续关闭。
 
+<a id="negotiation-and-startup"></a>
 ## 协商与启动
 
 - Worker：默认真实 DOM adapter 工厂在 load 中显式请求 `browserQueries: {version: "1.0"}`。运行时在 `app.init` 前执行 `view.query.enable`，payload 为 `{version: "1.0", scope: "session"}`。缺少契约或 native 拒绝时明确失败；注入 adapter 工厂必须显式声明同一能力，旧 fake 不会自动获能。
@@ -12,6 +17,7 @@ DOM 查询由 Rust 匹配已求值的 `ViewDocument`，浏览器批量测量当�
 
 已协商 Worker 的 `onLoad` 可以调用 `exec`：运行时有界保存原 page/component owner、input lifetime 和首次绝对 deadline，定时器继续运行。首个合法 ACK 后才匹配其实际 `ViewDocument` 并发起测量。普通 candidate 重试不延长预算；hide、unload、逻辑 resize、manifest/session 边界、组件销毁和超时取消等待，不借用后来当前页的身份。
 
+<a id="query-protocol-v10"></a>
 ## 查询协议 v1.0
 
 运行时输出一个 `view.query.request` event：
@@ -40,6 +46,7 @@ DOM 查询由 Rust 匹配已求值的 `ViewDocument`，浏览器批量测量当�
 
 失败 payload 与成功互斥：`{version, requestId, key, error: {code, message}}`。仅接纳 `ERR_RENDER`、`ERR_CANCELLED`、`ERR_TIMEOUT`、`ERR_INVALID_REQUEST`；不接纳任意宿主错误码。所有结果先验证 request/key/epoch/当前呈现/owner/取消和 deadline，完整成功后才原子移除 pending 并进入 JS。无效批次不部分执行 callback；重复或迟到结果不能二次完成。
 
+<a id="support-scope-and-budget"></a>
 ## 支持范围与预算
 
 支持现有 portable selector 子集、source order、`select`/`selectAll`/`selectViewport`、`boundingClientRect`、`scrollOffset` 和 `fields` 中的 rect/size/几何字段、id、dataset、mark。元数据保留原声明的 JSON 值；`properties` 仅支持声明中可验证的 `id`、`class`。`computedStyle`、node/context handle、input.value 等实时平台属性明确 unsupported。缺失单选保留 `null`，缺失多选保留 `[]`。
@@ -50,12 +57,14 @@ Native 与浏览器同为最多 32 个请求、每个 request 256 KiB、总队�
 
 运行时在原 bridge turn 的首次引擎调用之前安装请求作用域，捕获其 `cancelToken`；若内部 query options 另带 token，两条 fence 任一取消都使原查询失败。首帧等待提升直接搬运首次 deadline/token，不继承后来的 ACK/result transport token 或 deadline；turn 退出后恢复原作用域，不污染下一条 bridge 消息。`cancel` 继续只更新纯控制状态，查询回调在下一次正常 owner effect drain 完成。结果完整校验及投影后、原子消费 pending 和进入 JS 之前，再次校验原 deadline 和取消状态。超过预算返回结构化错误，不退回旧缓存。
 
+<a id="verification-status"></a>
 ## 验证状态
 
 新增 Rust 用例覆盖显式协商、首帧等待与定时器、hide/unload、真正 fresh batch、输入 epoch 独立、无效/迟到结果、旧 key 不继承及不支持字段。集成审计又补充原 bridge 取消和作用域恢复、首 ACK 前取消、ACK transport 不重绑首次 fence、waiting/pending deadline、跨请求/同 key 协商重放和乱序结果可重试；32 个并发请求的 fixture 使用递增测量 epoch。这些用例的实际执行结果须按受测源码核对上述集成归档；历史结果不代替当前提交自己的完整回归。
 
 先前隔离分支的 Node 记录位于 `artifacts/browser-selector-node-20261025-r2/`，归档到 `docs/evidence/2026-10-25-dom-selector/`：23 个测试文件执行期间 24 个变更文件的源码哈希一致，1,012 项通过；既有 mixed renderer smoke suite 因该 checkout 缺少 `acorn` 无法加载，未安装依赖或把它记为通过。初次运行的 1,005 项通过及相同依赖阻塞也原样保留。这些历史结果不覆盖后来集成和 fence 修复后的源码；集成审计需重新绑定最终源码与原始日志。Node 用例验证协议和提取的 JS bootstrap，不代表原生 QuickJS/V8 执行通过。后续 native、实际 Remote/Worker 测量与性能结果须绑定最终源码另行保存，不能用 Node fake 取代。
 
+<a id="explicit-real-time-worker-query-smoke-entry"></a>
 ## 显式真实 Worker 查询 smoke 入口
 
 `scripts/browser-dev-loop-smoke.mjs` 可追加 `--server-kind cli --renderer webview --dom-queries true`。仍须显式提供 `--server-bin`、`--producer-dir`、`--pins`、`--node-bin` 和一个全新的 `--out-dir`；脚本不会构建 runtime、生成信任 pins、复用已有预览或把运行失败覆盖为成功。默认不启用查询检查，Skia／context recovery 流程不启用此参数。

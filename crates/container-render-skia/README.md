@@ -1,177 +1,60 @@
 # container-render-skia
 
-`RenderNode.dataset` and `RenderNode.mark` carry JSON values rather than only
-strings. Legacy string entries and omitted maps remain valid frame input;
-typed output requires an updated consumer. The runtime supplies these values
-from WXML and uses the accepted tree for selectors and input. The renderer does
-not infer JSON from attribute strings. See
-[event metadata](../../docs/event-metadata.md) for compatibility and evidence limits.
+**简体中文** · [English](README.en.md)
 
-Rendering contract for the portable container. `SoftwareRenderer` is the deterministic
-headless fallback used in CI. `SkiaRenderer` is the stable host-facing type; enabling
-`skia-backend` enables `skia-safe` 0.153.3. Raster mode draws the accepted frame
-tree to a CPU surface; external-frame and native-GPU modes retain their distinct
-presenter contracts without normal full-page CPU raster/readback. The feature
-is opt-in because it downloads or builds the large Skia
-toolchain; provide a matching `skia-binaries` cache or source build for each target.
-The default build stays deterministic and headless. Native Skia/device validation is
-reported separately from the software tests.
 
-## Image resources
+`RenderNode.dataset` 和 `RenderNode.mark` 传递 JSON 值，而不仅仅是字符串。旧的字符串条目和省略的映射仍有效作为帧输入；类型化的输出需要更新的消费者。运行时从 WXML 中获取这些值，并使用已验收的树进行选择器和输入处理。渲染器不会从属性字符串中推断出 JSON。有关兼容性和证据限制，请参见 [事件元数据](../../docs/event-metadata.md)。
 
-`RenderFrame.images` shares decoded straight RGBA8 resources by ID;
-`RenderNode.image` references a resource and one of the 14 image modes.
-Software, native Skia and CanvasKit use the same content-box crop/fit geometry
-and nearest sampling, with existing transform, opacity, radius and overflow
-boundaries. Resources and references are validated before publication. See
-[the image contract](../../docs/images.md) for limits, provenance and remaining
-asynchronous/provider differences.
+渲染合约用于便携容器。`SoftwareRenderer` 是 CI 中使用的确定性无界面备用方案。`SkiaRenderer` 是稳定且面向宿主的类型；启用 `skia-backend` 可启用 `skia-safe` 0.153.3。位图模式将已验收的帧树绘制到 CPU 绘制表面；外部帧和原生 GPU 模式保持其独立的呈现器合约，无需常规的全页 CPU 位图绘制/读回。该功能为可选，因为其需要下载或构建大型 Skia 工具链；为每个目标提供匹配的 `skia-binaries` 缓存或源码构建。默认构建保持确定性和无界面。原生 Skia/设备验证与软件测试分开报告。
 
-## WXSS layout contract
+<a id="image-resources"></a>
+## 图像资源
 
-`LayoutStyle.flow` carries typed Block/Flex input for the shared Taffy 0.15
-solver. The runtime converts physical, font-relative and viewport units;
-percentages and `auto` survive until their actual containing block is known.
-Explicit Flex defaults to a row; ordinary view nodes use Block. The accepted
-absolute rectangles and allocated-width text plans feed painting, selectors,
-input and scrolling. Static and relative nodes stay in the parent's flow,
-absolute nodes use the nearest positioned ancestor, and fixed nodes use the viewport.
-`top`, `right`, `bottom` and `left` remain optional so opposite-side constraints
-can stretch an out-of-flow node and negative offsets remain observable. A
-`display:none` node is removed from flow and its stale bounds are cleared before
-the next hit-test or snapshot.
+`RenderFrame.images` 根据 ID 共享已解码的直方 RGBA8 资源；
+`RenderNode.image` 引用一个资源和 14 种图像模式之一。
+软件、原生 Skia 和 CanvasKit 使用相同的 content-box 截取/缩放几何形状和最近邻采样，以及现有的变换、不透明度、半径和溢出边界。在发布前会对资源和引用进行验证。有关限制、来源以及剩余的异步/提供者差异，请参见 [图像合约](../../docs/images.md)。
 
-Older serialized frames with no `flow` use their original physical-pixel
-layout path. See [the flow contract](../../docs/layout-flow.md) for supported
-values and remaining inline/text differences; a solver integration alone does
-not prove official WXSS equivalence.
+<a id="wxss-layout-contract"></a>
+## WXSS 布局合约
 
-`LayoutStyle.border` holds typed top/right/bottom/left `BorderSide` values,
-each with its own width, color and style. `solid` paints the outer rounded
-rectangle minus its inner rounded rectangle; different side colors meet at
-diagonals joining the corresponding outer and inner corners. The transparent
-inner hole is never filled to simulate a border. `none` and `hidden` use zero
-width and paint nothing. Other CSS border styles are recognized in the wire
-format but return an explicit unsupported error; negative or nonfinite widths
-reject the frame. Validation completes before the previous frame is replaced.
+`LayoutStyle.flow` 包含针对共享 Taffy 0.15 求解器的带类型 Block/Flex 输入。运行时将物理单位、字体相对单位和视口单位进行转换；百分比和 `auto` 会一直保留，直到知道其实际的包含块。显式 Flex 默认为行布局；普通视图节点使用 Block 布局。接受的绝对矩形和分配宽度的文本布局方案用于绘画、选择器、输入和滚动。静态和相对节点保留在父级的流中，绝对节点使用最近的定位祖先，固定节点使用视口。`top`、`right`、`bottom` 和 `left` 仍保持可选，以便对流外节点施加反方向约束并保持负偏移的可观察性。一个 `display:none` 节点将从流中移除，并在下一次命中测试或快照之前清除其过时的边界。
 
-`box_sizing` is `border-box` for older absolute-frame producers; the WXSS runtime
-explicitly supplies the CSS initial `content-box`. Content-box width and height
-exclude padding and used borders. Border-box dimensions cannot be smaller than
-those insets. Auto fill and measured heights count the insets once, including
-after relayout. `LayoutStyle::border_insets`, `padding_box` and `content_box`
-expose this shared geometry to hosts. Flow children and text use the content
-box; positioned descendants use the padding box as their containing block.
+较旧的序列化帧在没有 `flow` 时使用其原始物理像素布局路径。有关支持的值及剩余的内联/文本差异，请参见[布局流合约](../../docs/layout-flow.md)；仅集成求解器并不能证明官方 WXSS 等效性。
 
-Explicit overflow clips descendants at the inner border edge, with inner
-corner radii derived from the outer radii and the adjacent side widths. The
-element's own border remains paintable and hit-testable outside that clip.
-Software and native Skia paint the same four side regions under transforms,
-ancestor clips and opacity. Sharp shared diagonals avoid compositing translucent
-side colors twice. Their local readbacks do not establish official DevTools
-visual agreement or physical GPU/device acceptance.
+`LayoutStyle.border` 包含带类型化的顶部/右侧/底部/左侧 `BorderSide` 值，每个值都有自己的宽度、颜色和样式。`solid` 会绘制外侧圆角矩形减去内侧圆角矩形；不同边的颜色在对应外角和内角的对角线处相交。透明的内孔永远不会被填充，以模拟边框效果。`none` 和 `hidden` 使用零宽度且不进行任何绘制。其他 CSS 边框样式在传输格式中被识别，但在运行时会返回明确的不支持错误；负值或非有限宽度将拒绝该帧。验证在上一帧被替换之前完成。
 
-`RenderNode.scroll_container` (wire `scrollContainer`, default false) marks a
-resolved scrolling viewport. Its `scrollOffset` translates descendants in local
-coordinates after a fixed padding-box clip; its background, border and own
-geometry stay fixed. Software, native Skia, hit paths and `node_geometries` use
-the same composition, including nested transforms and scroll containers.
-Unmarked offsets retain their legacy metadata meaning. Negative or nonfinite
-offsets reject before replacing the committed frame. `scroll_viewport()` and
-`scroll_content_extent()` expose the padding viewport and unscrolled descendant
-border-box extents to the runtime, which owns axis selection, clamping and events.
-`scroll_target_offset()` resolves a descendant in the container's unscrolled
-local coordinates, including nested transforms/scrolling; `world_transform`
-on node geometry lets input providers invert viewport-space deltas.
-The extent helper excludes hidden subtrees and nested scrolling contents. It
-does not establish full CSS scrollWidth, fixed-descendant or glyph-ink overflow
-semantics, gesture recognition, inertia or official scroll-event parity.
+`box_sizing` 对于较旧的绝对定位帧生产者来说是 `border-box`；WXSS 运行时明确提供 CSS 初始的 `content-box`。内容框的宽度和高度不包含内边距和使用边框。边框框的尺寸不能小于内边距。自动填充和测量高度在重排后只计算一次内边距。`LayoutStyle::border_insets`、`padding_box` 和 `content_box` 向宿主暴露了这种共享的几何信息。流式子元素和文本使用内容框；定位的后代元素将其包含块设为内边距框。
 
-`transform` is represented as an affine matrix (`matrix`, `translate`, `scale`,
-`rotate` and `skew` forms), while `transform-origin` retains percentage or pixel
-units in the frame. Layout bounds stay in the pre-transform coordinate space;
-the software and Skia backends apply the resolved matrix to paint and hit-test
-the same world-space quadrilateral. Pointer coordinates therefore remain aligned
-with pixels when a view is translated, rotated or scaled.
+显式溢出裁剪后代元素在内边框边缘，内角半径由外角半径和相邻边宽推导得出。元素自身的边框在该裁剪范围之外仍可被绘制和检测点击。软件和原生 Skia 在变换、祖先裁剪和不透明度下对四个边区域进行相同绘制，共享锐利的对角线避免了对半透明边颜色的二次合成。其本地读回操作不构成 DevTools 视觉一致性的官方认定，也不代表物理 GPU/设备的验收。
 
-With `skia-backend`, `SkiaRenderer::snapshot()` reads committed pixels back
-from the CPU raster surface through Skia's `read_pixels` API. The
-`native_skia_raster_surface_returns_real_rgba_readback` test asserts the frame
-id, dimensions and RGBA bytes, and `has_native_surface()` lets host diagnostics
-distinguish a committed Skia raster surface from a software fallback. The
-`has_gpu_surface()` query remains false until a platform adapter attaches a
-real GPU context; host/device gates must require a `skia-gpu-*` backend.
+`RenderNode.scroll_container`（wire `scrollContainer`，默认为 false）标记一个已解析的滚动视口。其 `scrollOffset` 在固定边距盒裁剪后，将后代节点在局部坐标系中平移；其背景、边框和自身几何形状保持固定。软件、原生 Skia、命中路径和 `node_geometries` 使用相同的合成方式，包括嵌套变换和滚动容器。未标记的偏移量保留其传统元数据含义。负值或非有限偏移量在替换已提交帧前会被拒绝。`scroll_viewport()` 和 `scroll_content_extent()` 将边距视口和未滚动后代的边框盒范围暴露给运行时，运行时负责轴选择、限制和事件处理。`scroll_target_offset()` 解析容器内后代在未滚动的局部坐标中的位置，包括嵌套变换/滚动；节点几何体上的 `world_transform` 可让输入提供者反转视口空间的增量。范围辅助函数会排除隐藏的子树和嵌套滚动内容。它不建立完整的 CSS scrollWidth、固定后代或字形-墨迹溢出语义，也不提供手势识别、惯性或官方滚动事件一致性。
 
-## Canvas batch execution
+`transform` 以仿射矩阵（`matrix`、`translate`、`scale`、`rotate` 和 `skew` 形式）表示，而 `transform-origin` 保留帧中的百分比或像素单位。布局边界保持在变换前的坐标空间中；软件和 Skia 后端会将解析后的矩阵应用于绘制和命中测试，以同一世界空间四边形进行操作。因此，当视图被平移、旋转或缩放时，指针坐标仍与像素对齐。
 
-`commit_canvas` merges retained command history, then validates and normalizes
-the complete JSON batch into private typed commands. Preparation checks pixel
-layout metadata without allocating pixels, building paths or touching fonts.
-Only the selected backend paints: native Skia no longer performs a discarded
-software rasterization before its own draw. Native unsupported commands fail
-before surface allocation, after shared argument validation completes.
+With `skia-backend`，`SkiaRenderer::snapshot()` 通过 Skia 的 `read_pixels` API 从 CPU 绘制表面读取已提交的像素。`native_skia_raster_surface_returns_real_rgba_readback` 测试验证了帧 ID、尺寸和 RGBA 字节，`has_native_surface()` 可让宿主诊断将已提交的 Skia 绘制表面与软件回退区分开。直到平台适配器挂载了真实的 GPU 上下文，`has_gpu_surface()` 查询才变为 true；宿主/设备门控必须要求使用 `skia-gpu-*` 后端。
 
-Accepted command history and snapshots are published only after the backend
-and snapshot succeed. `reserve` still replays the full retained history, and
-the public JSON wire format and RGBA snapshot contract are unchanged. Native
-Canvas continues to use a CPU Skia raster surface and one pixel readback;
-this change does not establish GPU or device performance results.
+<a id="canvas-batch-execution"></a>
+## Canvas 批量执行
 
-Arc start/end angles accept finite JSON f64 values. Shared preparation reduces
-their direction and turn count before converting bounded start/sweep values to
-f32; neither backend loops once per turn or converts unbounded angles to
-degrees. Forward spans of at least one turn draw a full circle; reverse spans
-wrap within one turn, with exact reverse whole turns and equal endpoints
-producing a zero sweep. This extends the previous f32 angle range; canvas
-coordinates, radius and other numeric arguments retain their existing range.
-Very large angles have deterministic floating-point phase reduction rather
-than a claim of exact arbitrary-precision geometry.
+`commit_canvas` 合并保留的命令历史，然后验证并规范化完整的 JSON 批量内容为私有类型命令。准备阶段检查像素布局元数据，且不分配像素、构建路径或操作字体。只有选定的后端进行绘制：原生 Skia 不再在自身绘制前执行被丢弃的软件光栅化。不支持的原生命令在分配绘制表面之前、共享参数验证完成后即失败。
 
-`CanvasService` owns command history, snapshots and native font state independently
-of a page object. A Session can draw or inspect Canvas before Skia page access;
-first explicit page initialization moves that exact service into its renderer.
-The move preserves decoded faces, glyph-cache identity and render/installation
-locks. Once initialized, the current renderer is the sole authority, including
-after legacy whole-renderer replacement; no retired pre-page history returns.
+已接受的命令历史和快照仅在后端和快照成功后才会发布。`reserve` 仍会回放完整的保留历史，公共的 JSON 无线格式和 RGBA 快照合约保持不变。原生 Canvas 仍使用 CPU Skia 绘制表面和单像素读取；此更改并未建立 GPU 或设备的性能结果。
 
-`accepted_render_target()` is the target pinned by a successful page commit.
-Configuring density, failed commits, independent Canvas and diagnostic capture
-do not change that pin. GPU diagnostics use the accepted target, not a later
-staged density. This submission fact is not a host framebuffer measurement or
-presentation receipt.
+弧度的起始/结束角度接受有限的 JSON f64 值。共享准备会在转换为 f32 之前减少其方向和转弯次数；后端不会为每个转弯循环一次，也不会将无界角度转换为度数。正向跨度至少为一整圈时绘制完整圆圈；反向跨度在一圈内循环，精确的反向整圈且端点相等时会产生零扫掠值。这扩展了之前 f32 角度范围；画布坐标、半径和其他数值参数保持其原有的范围。非常大的角度采用确定性的浮点相位缩减，而不是声称具有精确的任意精度几何。
 
-## Native font ownership
+`CanvasService` 独立于页面对象，拥有命令历史、快照和原生字体状态。
+一个会话可以在访问 Skia 页面之前绘制或检查 Canvas；首次明确的页面初始化会将该服务移入其呈现器。
+此次迁移保留了解码的字形、字形缓存身份和渲染/安装锁。一旦初始化完成，当前呈现器即为唯一权威，即使在旧的全呈现器替换之后也是如此；不会返回已废弃的预页面历史。
 
-Hosts with no discoverable system font manager can read their public installed
-font files once, keep the bytes in `Arc<[u8]>`, and pass ordered
-`NativeFontData::new(bytes, collection_index)` values to
-`SkiaRenderer::install_native_fonts` before the first native render. Every face
-is decoded before the set is published. Invalid bytes or collection indexes
-return `RenderError::InvalidFont` without changing the working provider.
-`native_font_info()` reports only the installed face count and family names.
+`accepted_render_target()` 是页面成功提交后锁定的目标。
+配置密度、提交失败、独立的 Canvas 和诊断捕获
+不会改变该锁定。GPU 诊断使用已接受的目标，而不是后续阶段的密度。此提交事实并非宿主帧缓冲区测量或呈现回执。
 
-System fallback discovery is lazy: constructing native or export-only renderers,
-reading font diagnostics, and laying out or committing rectangle-only frames do
-not initialize the `NativeFonts` system manager. Character lookup checks its
-cache and installed faces first; the first unresolved glyph initializes system
-fallback once, including a manager with no default face. Text measurement can
-still require that lookup, including normal line metrics for empty text.
-Explicit font decoding remains separate and uses
-`FontMgr::custom_empty().unwrap_or_default()`; its platform fallback may discover
-system fonts. This does not establish scan-free installation on every platform
-or a startup performance result. First-frame measurements must include deferred
-font discovery, decoding, text layout and presentation.
+<a id="native-font-ownership"></a>
+## 原生字体所有权
 
-One Canvas/font owner retains the decoded faces and positive/negative glyph
-lookup cache for Canvas text, page rasterization and GLES/Metal target drawing.
-It begins in the independent service and moves without re-decoding into the
-page renderer on first explicit page access. Injected
-faces have priority in the supplied order, followed by verified system glyph
-fallback; a missing glyph affects only that character. Skia takes one owned
-copy for each newly decoded face, with no font reads or byte copies per frame.
-The session-long glyph lookup cache is bounded to 8,192 characters; eviction
-only causes a later lookup to repeat and does not change selected glyphs.
-Identical installations reuse decoded faces. After native rendering begins,
-changing the font set is rejected to keep accepted frames and snapshots
-consistent; an identical installation remains idempotent. Dynamic font loading
-and complete WXSS typography are outside this initialization contract.
+宿主若没有可发现的系统字体管理器，可仅读取其已安装的字体文件一次，将字节内容保存在 `Arc<[u8]>` 中，并在首次原生渲染前，将有序的 `NativeFontData::new(bytes, collection_index)` 值传递给 `SkiaRenderer::install_native_fonts`。每个字体面在集合发布前都会被解码。无效字节或集合索引将返回 `RenderError::InvalidFont`，且不会更改工作提供者。`native_font_info()` 仅报告已安装的字体面数量和字体家族名称。
+
+系统回退发现是惰性的：构建原生或仅导出的渲染器、读取字体诊断信息、布局或提交仅矩形帧的操作都不会初始化 `NativeFonts` 系统管理器。字符查找首先检查缓存和已安装的字体；首次未解析的字形会触发一次系统回退，包括一个没有默认字体的管理器。文本测量仍可能需要此查找，包括空文本的正常行度量。显式字体解码仍保持独立，并使用 `FontMgr::custom_empty().unwrap_or_default()`；其平台回退可能发现系统字体。这并不能在每个平台上实现无扫描安装，也无法带来启动性能的提升。首帧测量必须包含延迟的字体发现、解码、文本布局和呈现。
+
+一个 Canvas/字体拥有者保留了 Canvas 文本、页面光栅化以及 GLES/Metal 目标绘制的解码字体和正/负字形查找缓存。它最初在独立服务中运行，并在首次显式页面访问时直接转移到页面渲染器中，无需重新解码。注入的字体按指定顺序优先，随后是经过验证的系统字形回退；缺少某个字形仅影响该字符。Skia 为每个新解码的字体保留一份独占副本，每帧无需进行字体读取或字节复制。会话期间的字形查找缓存限制为 8,192 个字符；缓存淘汰仅导致后续查找重复，不会改变所选字形。相同安装会复用已解码的字体。在原生渲染开始后，更改字体集将被拒绝，以保持已验收帧和快照的一致性；相同安装保持幂等性。动态字体加载和完整的 WXSS 排版不在本初始化协议范围内。

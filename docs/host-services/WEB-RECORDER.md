@@ -1,10 +1,15 @@
+<a id="web-recording-format-and-resource-ownership"></a>
 # Web 录音格式与资源归属
+
+**简体中文** · [English](WEB-RECORDER.en.md)
+
 
 `BrowserHostServices` 在配置 owner 时冻结录音格式清单，并通过
 `capabilities().recordingFormats` 返回实际安装的格式。默认处理器需要 `getUserMedia`
 和当前账号的私有持久文件目录。格式清单不查询或申请麦克风权限；用户拒绝授权在调用时
 单独返回，不能据此把一个已安装的接口变成不存在。
 
+<a id="format-negotiation"></a>
 ## 格式协商
 
 `MediaRecorder.isTypeSupported` 必须明确支持基线输出：MP3 对应 `audio/mpeg`，
@@ -38,6 +43,7 @@ recorder.start({ format: 'wav', sampleRate: 16000, numberOfChannels: 1 })
 `frameSize`、特定 `audioSource` 和非默认 `audioMode` 尚未满足对应合同，明确拒绝。
 这里的 WAV 后端没有用无头浏览器的成功替代物理麦克风授权、后台录音或移动系统验收。
 
+<a id="bounded-pcm-and-completion-order"></a>
 ## 有界 PCM 与完成顺序
 
 可信静态 `browser-wav-recorder-worklet.mjs` 在原生音频线程读取实际输入，每 2048 帧
@@ -55,6 +61,7 @@ context 中断以及空录音都不会发布成功 Stop。
 仍须到达实际终态；原生释放失败保留准确句柄，供显式 close 重试。取消一个已原生
 成功、尚未传回 guest 的调用，同样撤销该次录音。
 
+<a id="reproduction-and-acceptance-boundaries"></a>
 ## 复现与验收边界
 
 有限测试使用生产 Worklet 源码和可转移的真实 Node MessageChannel，图句柄、权限和
@@ -65,7 +72,7 @@ context 中断以及空录音都不会发布成功 Stop。
 先构建当前 Web 产物，再向一个尚不存在的目录生成独立探针包：
 
 ```sh
-rtk proxy node scripts/create-host-services-recorder-fixture.mjs \
+node scripts/create-host-services-recorder-fixture.mjs \
   --pack examples/hosts/android/app/src/main/assets/portable-pack \
   --out /absolute/path/to/web-build/recorder-probe
 ```
@@ -90,6 +97,7 @@ PCM、浏览器解码器和 OPFS 均使用真实实现。检查暂停、完整 W
 保持 `not-run`。探针在 finally 关闭自己创建的 graph、Worker、stream，并只删除
 UUID 所有者对应的私有目录；fallback 清理被使用时报告失败。
 
+<a id="worker-binary-transfer"></a>
 ## Worker 二进制传输
 
 录音文件通过保留的 `__weappBinary:{type:'ArrayBuffer',bytes:[...]}` 标记进入原生

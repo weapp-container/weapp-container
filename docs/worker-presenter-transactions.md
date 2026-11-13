@@ -1,14 +1,16 @@
-# Worker presenter transactions (explicit 1.0 opt-in)
+<a id="worker-presenter-transactions-explicit-10-opt-in"></a>
+# 工作呈现器事务（显式 1.0 光入）
 
-This source implements an opt-in product transaction over the low-level
-[renderer transition protocol](worker-renderer-transition-protocol.md). It does
-not enable simulator browser-auto, change the frozen 279 gates, or establish
-browser, CanvasKit, physical GPU, seven-host or WeChat parity evidence. Authored
-contract fixtures remain distinct from the root lane's execution reports.
+**简体中文** · [English](worker-presenter-transactions.en.md)
 
-## Entry
 
-A static Worker build can receive `--startup-intent /absolute/startup.json`:
+此源代码实现了基于低级别
+[渲染器转换协议](worker-renderer-transition-protocol.md) 的可选产品交易。它不启用模拟器浏览器自动切换、更改冻结的279个网关，也不建立浏览器、CanvasKit、物理GPU、七宿主或微信一致性证据。编写的合约固定测试用例与根通道的执行报告保持独立。
+
+<a id="entry"></a>
+## 条目
+
+一个静态的 Worker 构建可以接收 `--startup-intent /absolute/startup.json`：
 
 ```json
 {
@@ -21,123 +23,47 @@ A static Worker build can receive `--startup-intent /absolute/startup.json`:
 }
 ```
 
-The builder retains the exact bounded UTF-8 startup bytes and their SHA-256 in
-`workerStartupIntent`, and includes the same opt-in in the generated pinned
-product config. Mixed static products require explicit pinned CanvasKit/font
-inputs (`--renderer canvaskit`). `workerProductOptions` passes the opt-in to
-`WorkerWebSession.load`. It cannot be enabled by URL parameters. Embedders can
-pass the same explicit object directly to `load`.
+构建器保留了精确的有界 UTF-8 启动字节及其 SHA-256，这些内容存储在 `workerStartupIntent` 中，并在生成的固定产品配置中包含相同的显式授权。混合静态产品需要显式指定 CanvasKit/字体输入（`--renderer canvaskit`）。`workerProductOptions` 将该授权传递给 `WorkerWebSession.load`。该功能不能通过 URL 参数启用。嵌入器可直接将相同的显式对象传递给 `load`。
 
-Omitting this field preserves fixed-family behavior and v1 observation
-negotiation. Version 1.0 requires manifest renderer policy, QuickJS, native
-actual-final tracking, external presentation/surface recovery and DOM query
-preflight before `app.init`. Mixed-owner input-causal timing is not negotiated.
-Initial DOM uses browser density; supplying physical render scale to a DOM
-startup remains an explicit error.
+省略该字段将保留固定字体行为和 v1 观察协商
+版本 1.0 要求 manifest 渲染器策略、QuickJS、原生实际最终追踪、外部呈现/绘制表面恢复以及 DOM 查询预检，才可在 `app.init` 之前完成。混合所有者输入因果时序不会协商。
+初始 DOM 使用浏览器密度；向 DOM 启动提供物理渲染缩放仍被视为明确错误。
 
-The [three-route static example](../scripts/fixtures/worker-dual-renderer/README.md)
-provides pack/build commands and a real-browser consumer. It uses hand-authored
-public input to the real packer; it does not claim a `weapp-vite` compiler run.
-Serve the generated site on an unused localhost port. Runtime readiness is
-`window.weappReady`; the first accepted input-enabled view is
-`window.weappPresented`. Inspect `window.weapp.status` for later transitions,
-and await `window.weappClose()` before stopping the owned server. Static builds
-and console readiness alone do not establish browser or GPU acceptance.
+[三路静态示例](../scripts/fixtures/worker-dual-renderer/README.md)
+提供了包构建命令和一个真实的浏览器消费者。它使用手工编写的公共输入传递给真实的打包器；它不声称存在 `weapp-vite` 编译器运行。在未使用的 localhost 端口上服务生成的站点。运行时就绪状态为 `window.weappReady`；第一个被接受的启用输入的视图是 `window.weappPresented`。可检查 `window.weapp.status` 以观察后续状态变化，并在调用 `window.weappClose()` 之前停止所拥有的服务器。静态构建和控制台就绪本身并不能证明浏览器或 GPU 的验收。
 
-## Identity and data flow
+<a id="identity-and-data-flow"></a>
+## 身份和数据流
 
-The original load result remains immutable. V2 observations retain their real
-sequence and exact three-field runtime owner (`workerEpoch`, `sessionId`,
-`packSha256`). A separate native binding names the session, transport family
-and presenter generation. Local scheduler/adapter/font resources use the derived
-five-field owner that includes `presenterGeneration`; they are not new runtimes
-or new startup receipts.
+原始加载结果保持不变。V2 观察结果保留其真实序列和精确的三字段运行时所有者（`workerEpoch`、`sessionId`、`packSha256`）。一个独立的原生绑定指定了会话、传输族和呈现器生成版本。本地调度器/适配器/字体资源使用包含 `presenterGeneration` 的派生五字段所有者；它们不是新的运行时或新的启动回执。
 
-Each adapter borrows a scope of the one RPC and one bridge correlation table.
-Its RPC and bridge requests capture the binding and page/input/surface context
-at entry. An old scope cannot substitute a current binding, fetch a successor's
-resources, or send owner controls such as metrics. Owner metrics/visibility and
-presenter transitions share the serial control queue. Original observations and
-real effects still enter once through the owner before consumers see finals.
+每个适配器借用一个 RPC 和一个桥接相关性表的范围。
+其 RPC 和桥接请求在入口处捕获绑定以及页面/输入/绘制表面上下文。旧的范围无法替代当前绑定，无法获取后继者的资源，也无法发送所有者控制（如指标）。所有者的指标/可见性以及呈现器转换共享串行控制队列。原始观测和实际效果仍需经过所有者一次，消费者在看到最终结果之前都必须经过这一过程。
 
-## Transaction and cleanup
+<a id="transaction-and-cleanup"></a>
+## 交易和清理
 
-A pending family observation immediately freezes input and suspends the old
-scheduler. The owner stops new calls from that presenter and drains every
-entered request through RPC `onActualFinal`; public timeout/cancellation is not
-that barrier. Native `renderer.transition` alone retires the old runtime
-presenter and returns the original effects, binding and input-lifetime final.
-Business JS, timers, storage, page stack and the sole Worker remain owned by the
-same runtime; startup and business requests are never replayed.
+一个待处理的家庭观察会立即冻结输入并挂起旧的调度器。拥有者会停止该呈现器的新调用，并通过 RPC `onActualFinal` 将所有已进入的请求进行处理；公共超时/取消不是这一屏障。仅凭原生 `renderer.transition` 会终止旧的运行时呈现器，并返回原始效果、绑定和输入生命周期的最终状态。业务 JS、定时器、存储、页面栈以及唯一的 Worker 仍由同一个运行时拥有；启动和业务请求将永不重放。
 
-DOM candidate cleanup can await that exact whole-presenter retirement instead
-of issuing an old-generation `view.abort`. This is a genuine native retirement
-barrier, not an invented per-key abort ACK. The DOM adapter checks the exact
-previous generation and source before accepting it. Local scheduler, DOM/GPU
-resources, input helper and renderer lease drain before replacement resources
-are installed. New binding adoption is not presentation: only the new adapter's
-real ACK, geometry and scheduler proof can reopen input.
+DOM 候选项清理可以等待整个呈现器的精确退休，而不是发出旧代的 `view.abort`。这是一道真正的原生退休屏障，而不是为每个键发明的中止确认。DOM 适配器在接收之前会检查前一代和源的精确信息。本地调度器、DOM/GPU 资源、输入辅助程序和渲染器租约将在新资源安装前被释放。新的绑定采用并不涉及呈现：只有新适配器的真实确认、几何信息和调度器证明才能重新打开输入。
 
-A native transition's public timeout retains the original operation until its
-late actual final, rather than sending a second transition. A local asset or
-presenter creation failure reports `presenterTransition.phase = "blocked"` and
-keeps business requests available. When partial-resource cleanup succeeded,
-`retryRendererTransition()` can retry without another startup;
-`retryPresentation()` delegates to the same blocked transaction. When
-`cleanupUncertain` is true, resources remain charged and retry is rejected
-before allocating a successor. Partial-resource cleanup failures remain
-recorded and bounded; they cannot prove cleanup success.
+原生过渡的公共超时在晚些时候实际完成前保留原始操作，而不是发送第二个过渡。本地资产或呈现器创建失败会报告 `presenterTransition.phase = "blocked"`，并保持业务请求可用。当部分资源清理成功时，`retryRendererTransition()` 可以在不重新启动的情况下重试；`retryPresentation()` 会委派给同一个被阻塞的事务。当 `cleanupUncertain` 为 true 时，资源保持已充电状态，重试在分配继任者前被拒绝。部分资源清理失败仍会被记录并限制在范围内；它们无法证明清理成功。
 
-If navigation returns to the original family during the pre-native drain, the
-locally stopped presenter is kept blocked because no native retirement has
-occurred. It is not silently revived. A later pending demand can be explicitly
-retried, or the owner can be closed. Navigation across further families after
-a successful retirement is serialized with a bounded race retry budget.
+如果在预原生阶段 drain 时导航返回到原始家族，本地已停止的呈现器将被保持阻塞，因为尚未发生原生退休。它不会被静默恢复。后续的待处理请求可以显式重试，或者可以关闭拥有者。在成功退休后，跨越更多家族的导航将按顺序执行，并具有有界的竞争重试预算。
 
-Closing during an unfinished transaction uses the same RPC's genuine shutdown
-final as a broader retirement barrier, then drains local cleanup. A terminated
-or uncertain request remains a cleanup error. No second Worker is created.
-Closing an accepted generation follows the ordinary presenter-before-RPC close
-path. Repeated close reuses its owned barrier.
+在未完成的交易期间关闭使用相同的RPC真实关闭最终操作作为更广泛的退休屏障，然后清空本地清理。已终止或不确定的请求仍被视为清理错误。不会创建第二个Worker。关闭已验收的生成过程遵循普通“先呈现器后RPC”的关闭路径。重复关闭会重用其拥有的屏障。
 
-## Source contracts and evidence limits
+<a id="source-contracts-and-evidence-limits"></a>
+## 源合同和证据限制
 
-The new `scripts/worker-presenter-transaction.test.mjs` fixtures cover both
-family directions, one startup, actual-final drain, stale scopes, local failure
-and retry, a returned-family race, and an original late native final. Additional
-existing suites have appended attachment, real bridge context, real scheduler
-identity and static startup definitions. The product fixtures use fake native
-and presenter peers; they cannot establish generated WASM or real rendering.
+新的 `scripts/worker-presenter-transaction.test.mjs` 测试用例涵盖了两种家族方向，一次启动，实际-最终的 draining，过期作用域，本地故障和重试，返回家族的竞争，以及原始的延迟原生最终。其他现有套件已附加了附件、真实的桥接上下文、真实的调度器身份和静态启动定义。产品测试用例使用假的原生和呈现器对等体；它们无法建立生成的 WASM 或真实的渲染。
 
-Real generated-WASM mixed DOM/Skia browser interaction, native callback errors,
-context loss, compositor feedback and release/input performance must be run and
-reported by the sole integration lane. Ordinary simulator browser-auto remains
-closed until those gates provide the required evidence.
+实时生成的 WASM 混合 DOM/Skia 浏览器交互、原生回调错误、上下文丢失、合成器反馈以及释放/输入性能必须由唯一的集成通道进行运行和报告。普通模拟器浏览器自动功能在这些门控提供所需证据之前保持关闭。
 
 
-A renderer asset loader owns all partial resources until its successful lease
-return; a rejection must release those untransferred resources internally. After
-a lease return, the owner records it before checking cancellation. The owner
-also records each canvas before passing it to the adapter factory. If that
-factory rejects before returning a complete adapter and cleanup succeeds, the
-owner removes its untransferred canvas and releases the transferred asset lease
-before retry. A
-factory remains responsible for any internal GPU/resource allocation it cannot
-return after throwing; removing the owner's canvas does not assert that an
-unreturned internal allocation was cleaned.
+一个渲染器资源加载器在其成功租用之前拥有所有部分资源；拒绝必须内部释放那些未转移的资源。在租用返回后，所有者先记录该事件，然后再检查是否被取消。所有者在将画布传递给适配器工厂之前，也会记录每个画布。如果该工厂在返回完整适配器之前拒绝，并且清理成功，则所有者会移除其未转移的画布，并在重试前释放已转移的资源租用。如果工厂在抛出异常后仍无法返回其内部的GPU/资源分配，该工厂仍需对此负责；移除所有者的画布并不表示内部未返回的分配已被清理。
 
-Local scoped admission honors actual-final 1.0 as strictly as raw RPC: a
-not-posted callback must return synchronously, async rejection is observed, and
-callback contract failures remain in diagnostics and cleanup results.
+本地作用域的准入严格遵循实际最终 1.0，如同原始 RPC 一样：未提交的回调必须同步返回，异步拒绝会被观察到，回调合约失败仍保留在诊断和清理结果中。
 
 
-If a transferred partial adapter's scheduler, actual-final drain, destructor or
-remote-final cleanup fails, its local last use is uncertain. The owner retains
-that exact renderer lease and its byte charge, marks
-`presenterTransition.cleanupUncertain`, and rejects renderer retries before any
-new resource allocation. Business requests continue with input frozen. Close
-retains the original cleanup failure and does not declare the uncertain local
-resource released; a native Worker shutdown cannot prove a throwing local GPU
-destructor succeeded. Clean partial failures release their lease and drop the
-disposed adapter references before allowing retry. A count limit does not
-substitute for the loader's charged byte budget.
+如果传输的适配器部分的调度器、实际最终回收、析构函数或远程最终清理失败，其本地最后使用状态将不确定。拥有者保留该渲染器租约及其字节费用，并标记 `presenterTransition.cleanupUncertain`，在任何新的资源分配之前拒绝渲染器重试。业务请求将继续，输入被冻结。关闭操作保留原始的清理失败，并不声明本地资源已释放；原生 Worker 停止无法证明抛出的本地 GPU 析构函数已成功执行。清理部分失败会释放其租约，并在允许重试前删除已处置的适配器引用。计数限制不能替代加载器的字节预算。

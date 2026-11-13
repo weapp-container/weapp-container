@@ -1,4 +1,8 @@
+<a id="blockflex-layout-conventions"></a>
 # Block / Flex 布局约定
+
+**简体中文** · [English](layout-flow.en.md)
+
 
 原生 WXML 产物现在通过一份布局结果驱动绘制、selector、observer、命中与滚动。
 普通 view 使用 Block；显式 `display:flex` 的初始方向为 row。先前将普通流当作

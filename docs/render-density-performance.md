@@ -1,4 +1,8 @@
+<a id="rendering-density-frame-transmission-and-diagnostics"></a>
 # 渲染密度、帧传输与诊断
+
+**简体中文** · [English](render-density-performance.en.md)
+
 
 本次修复将逻辑布局、实际物理目标和 CPU 像素获取分开维护：
 

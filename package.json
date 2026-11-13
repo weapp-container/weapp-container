@@ -149,12 +149,13 @@
     "test:conformance:recipes:issue1182": "node --test conformance/recipes/issue1182.test.mjs",
     "opensource:check": "node scripts/check-open-source.mjs",
     "opensource:secrets": "node scripts/scan-public-source.mjs --mode history",
-    "docs:check": "node scripts/check-doc-links.mjs",
+    "docs:check": "node tools/documentation/check.mjs && node tools/documentation/check-content.mjs",
     "sdk:contracts:test": "node scripts/test-sdk-contracts.mjs",
     "runtime:package": "node tools/runtime-artifacts/tools/package-artifacts.mjs",
     "runtime:verify": "node tools/runtime-artifacts/tools/verify-offline.mjs",
     "runtime:publish": "node tools/runtime-artifacts/tools/publish.mjs",
-    "runtime:artifacts:test": "python3 -m unittest discover -s tools/runtime-artifacts/test -p 'test_*.py' -v && node --test tools/runtime-artifacts/test/*.test.mjs scripts/runtime-artifacts-migration.test.mjs"
+    "runtime:artifacts:test": "python3 -m unittest discover -s tools/runtime-artifacts/test -p 'test_*.py' -v && node --test tools/runtime-artifacts/test/*.test.mjs scripts/runtime-artifacts-migration.test.mjs",
+    "docs:workspace": "node tools/documentation/check-workspace.mjs"
   },
   "devDependencies": {
     "qrcode": "1.5.4",

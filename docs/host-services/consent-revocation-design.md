@@ -1,4 +1,8 @@
+<a id="data-phone-number-authorization-revocation-and-late-result-isolation"></a>
 # 资料、手机号授权撤回与迟到结果隔离
+
+**简体中文** · [English](consent-revocation-design.en.md)
+
 
 状态：**后端 v2 原子授权已实现；共享宿主 fence、SDK 接入和真实 UI/产物链路待实现、待验收**。
 `tools/host-services-reference/src/consent-v2.mjs` 与 service/server 已提供本文 v2 路径、可信
@@ -10,6 +14,7 @@
 
 需要实现两个相互配合的边界：后端以事务阻止旧确认请求重新授予已撤回的权限；宿主以共享授权代际阻止已生成的资料、手机号 code 和快照进入仍然存活的旧调用。取消 HTTP 或检查账号 epoch，分别只能解决其中一部分。
 
+<a id="existing-root-causes-and-existing-boundaries"></a>
 ## 现有根因和已有边界
 
 [Desktop adapter](../../sdk/desktop/src/host_services_adapter.cpp) 的 `current(call)` 验证账号、安装、session 和取消状态，没有资料或手机号的授权代际。`disclosure()` 保存成功响应后调用 `refresh_call()`；后者刷新同步快照，然后无条件继续完成原调用。由此可构造：
@@ -28,6 +33,7 @@
 - native snapshot owner context 防止旧 session、旧账号或旧安装写入新 owner；它没有定义同一 owner 内的授权撤回顺序。
 - [Web reference client](../../examples/hosts/web-wasm/reference-identity-client.mjs) 已有客户端实例内的资料/手机号代际，以及披露前后检查。[BrowserHostServices](../../examples/hosts/web-wasm/browser-host-services.mjs) 已区分外部宿主通知与内部刷新，防止迟到刷新覆盖通知，并对不透明版本冲突重新读取。这些保护不构成后端原子写入，也没有建立所有客户端实例共用的持久授权域。
 
+<a id="persistent-authorization-domain-and-execution-owner"></a>
 ## 持久授权域与执行 owner
 
 持久授权域建议定义为：
@@ -50,6 +56,7 @@ E = (D, principalEpoch, sessionId, incarnation/ownerRevision)
 - 旧 consent 的哈希键和记录没有完整可恢复的授权域，不能凭 appId、最新登录账号或现存包哈希猜测归属。没有经过宿主验证的映射与迁移入口时，v2 重新授权。
 - 是否迁移同一用户旧 epoch 的已确认 grant、如何证明其归属，仍待实现批次确定。不能自动跨账号导入，也不能为迁移顺便改变已有 pairwise app user ID。
 
+<a id="protocol-version-and-old-client-gatekeeping"></a>
 ## 协议版本和旧客户端门禁
 
 当前 HTTP `/health` 只返回健康状态；没有独立的身份协议协商。`/v1/host/consents` 不会因为未知 JSON 字段而拒绝请求。**仅添加可选 `revision` 字段不安全**：新客户端可能被旧服务忽略，旧客户端也可能继续无条件授予。
@@ -71,8 +78,10 @@ base host services `1.0`、C ABI `1` 可以保留，新增 JSON 能力及命令�
 
 新客户端访问旧服务的 v2 路径得到 404、拿不到精确协议或收到缺失字段的 2xx，都应作为协议不支持/无效响应处理。新服务对缺失 revision/challenge 的 grant 返回非 2xx，不能先授予再给兼容警告。HTTP 版本、包版本和 runtime 能力都不是相互替代的证明。
 
+<a id="backend-atomic-revision-and-confirmation-challenge"></a>
 ## 后端原子 revision 与确认 challenge
 
+<a id="data-and-validity-period"></a>
 ### 数据和有效期
 
 每个 `C` 保存一个持久、单调 revision。在线传输使用规范十进制 u64 字符串，初始为 `"0"`；不得经 JSON number、double 或 SQLite 浮点转换。SQLite 存 TEXT，在 `BEGIN IMMEDIATE` 事务内以 `BigInt` 比较、递增；超过 u64 上限拒绝写入，不能回绕。`authorizationVersion` 继续是不透明的公开快照标识，禁止将其当作这个计数器。
@@ -81,7 +90,7 @@ base host services `1.0`、C ABI `1` 可以保留，新增 JSON 能力及命令�
 
 | 对象 | 必需数据 |
 | --- | --- |
-| consent state | `C`、revision、granted、purpose、permissionVersion、policyDigest、expiresAt |
+| 同意状态 | `C`、修订、已授予、目的、许可版本、策略摘要、expiresAt |
 | challenge | 只存随机 token 的哈希；`C`、host session ID、principalEpoch、expectedRevision、policyDigest、expiresAt、consumed 标记 |
 | decision | `(C, decisionId)` 唯一、请求摘要、所用 challenge、提交 revision 与结果；用于丢失响应后的幂等核对 |
 | change record | `C`、revision、granted、来源 decisionId、可恢复的事件序号；不包含资料、号码、bearer |
@@ -90,6 +99,7 @@ challenge 建议有效期 60 秒，并且不得超过父 host session；token �
 
 policy 更新、删除和 grant 到期须在检查时成为原子状态转换：将授权失效、只提升对应 kind 的 revision，并使旧 challenge 失效。policy 的当前版本也须属于同一个事务可见的数据，不能一边校验内存旧 policy、一边写入新状态。重新配置或重启不得把 revision 重置为零。
 
+<a id="v2-paths-and-fields"></a>
 ### v2 路径和字段
 
 除业务入口外，下面的路径使用 host bearer，POST JSON。沿用可信 selection 的 `miniAppId,packRoot,expectedPrincipalId,expectedPrincipalEpoch`，并新增 `expectedPublisherId`。后端分别从 bearer、注册表和可信安装记录取得权威身份，再验证这些预期值；不以 body 选择另一个用户或发行者。v2 请求须拒绝未知字段，2xx 响应必须包含精确的 `identityProtocol:"2.0"`；保留原有 256 KiB 请求/响应上限。
@@ -111,6 +121,7 @@ policy 更新、删除和 grant 到期须在检查时成为原子状态转换：
 
 `consentRevisions` 是宿主协议的检查数据。各 SDK 必须按白名单投影 guest 快照，不能把整个 backend object 原样交给 JS。guest 公开 schema 仍是四项授权状态、不透明版本和已授权的公开资料；host token、challenge、decision 和内部 owner 信息不属于快照。
 
+<a id="grant-transaction"></a>
 ### grant 事务
 
 以下步骤处于同一事务内，中途失败不改变授权，也不消耗他人的 challenge：
@@ -124,6 +135,7 @@ policy 更新、删除和 grant 到期须在检查时成为原子状态转换：
 
 响应丢失可以用相同 decisionId、相同 body 查询/重提原决定，不能新建一个 ID 自动重复授予。重放并不保证仍授权，必须按上面的 superseded 规则和当前状态处理。
 
+<a id="revoke--deny-transaction"></a>
 ### revoke / deny 事务
 
 `granted:false` 不要求旧 challenge 或旧 revision，policy 已删除时仍能撤回。事务校验当前可信账号/应用后，提升该 kind revision，写入 false，记录 decision 和 change record。旧 challenge 因 expected revision 不再匹配而失效，不允许“撤回后旧允许请求”成功。
@@ -132,6 +144,7 @@ policy 更新、删除和 grant 到期须在检查时成为原子状态转换：
 
 后端提交点的保证是：旧 grant 无法再写入，后续读取/兑换按新 revision 拒绝。已经生成、缓存在某个宿主的响应，还需下一节的执行隔离。
 
+<a id="host-asynchronous-checks-and-one-time-settlement"></a>
 ## 宿主异步检查与一次结算
 
 共享授权协调器应归属于已有 host/tenant 账号域，按 `C` 保存每 kind 的本地 generation、当前 backend revision 和权威通知代际。它是授权协调状态，不是第二套账号 epoch 注册表。所有同范围 session、不同版本、不同客户端对象必须接入同一协调器；不同 `C` 分开。native 回调仅入队，由各 owner 所在线程执行。
@@ -155,6 +168,7 @@ policy 更新、删除和 grant 到期须在检查时成为原子状态转换：
 
 同一宿主内的所有已关联 owner 属于本批共享 fence 的保证范围。其他进程或设备的后端撤回需要宿主提供认证通知/恢复机制。若它没有收到通知，已经缓存在那里的资料不能仅靠服务端 revision 被“收回”。要承诺跨进程撤回成功后绝无迟到交付，还需后端 owner lease、事件重放和 fence ACK：未 ACK 的活 owner 使撤回操作保持 pending，断线 owner 在租约过期后必须本地阻断披露，重连先同步再恢复。这一通知/租约合同尚未确定，不能把轮询或一次 HTTP 200 写成跨设备即时撤回验收。
 
+<a id="affected-client-paths"></a>
 ## 受影响的客户端路径
 
 下表是待改范围，不是实现或验收完成表。
@@ -170,6 +184,7 @@ policy 更新、删除和 grant 到期须在检查时成为原子状态转换：
 
 同步身份快照仍须在加载前准备，不能用等待 UI/网络的方式伪造同步接口。手机号验收必须保留真实 `button open-type="getPhoneNumber"` → runtime 绑定 → native 授权 → `bindgetphonenumber` 链路，不新增虚构的 `wx.getPhoneNumber`。
 
+<a id="acceptance-set-the-gate-after-real-response-generation-is-completed"></a>
 ## 验收：在真实响应生成后设置 gate
 
 现有 Desktop `run-host-services-reference.mjs` 的普通 delay 在执行 handler **之前**等待，不能证明“资料已生成/code 已签发后的迟到响应”。Web 独立 fixture 已有 login-code 处理完成后的 gate，但还没有完成本设计的 profile、phone、state 或 stale grant 验收。新增夹具应分别提供两种 gate，不能混用：
@@ -205,6 +220,7 @@ gate 必须有界，支持原调用取消、超时和服务关闭。清理先释
 
 每条记录绑定 API、kind/参数范围、源码提交、安装产物摘要、OS/浏览器、SDK、实际命令、断言结果和清理记录。缺外部通知、系统 UI、设备或归档条件的条目保持待验收；本文不会改变其状态。
 
+<a id="implementation-dependencies-and-pending-items"></a>
 ## 实施依赖与待决项
 
 持久域与 v2 HTTP 字段已按本文冻结并实现；`/v2/apps/profile` 为 POST，状态有效期字段为

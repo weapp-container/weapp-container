@@ -1,78 +1,24 @@
 # container-host-common
 
-Shared host-side boundary for the Web, desktop, Android, iOS and Harmony
-adapters. `HostSession` validates and owns one `container-runtime::Session`,
-then exposes `start`, `lifecycle`, `dispatch`, `dispatch_batch`, `dispatch_json`
-and `dispatch_batch_json` operations.
+**简体中文** · [English](README.en.md)
 
-Host crates forward the `quickjs-native` and `v8-native` provider features to
-the shared runtime. A V8 session on a build without `v8-native` fails with
-`ERR_ENGINE` instead of silently falling back; the default QuickJS path remains
-a protocol-only headless boundary until `quickjs-native` is enabled.
 
-`lifecycle_state()` and `lifecycle_sequence()` expose the core state machine to
-host event loops. A loaded manifest starts in `Created`; only an accepted
-`launch` transition moves it to `Active`, while `hide`/`show` report
-`Background`/`Active` without requiring a second page stack in the host.
+Web、桌面、Android、iOS 和 Harmony 的宿主侧共享边界。`HostSession` 验证并管理一个 `container-runtime::Session`，然后暴露 `start`、`lifecycle`、`dispatch`、`dispatch_batch`、`dispatch_json` 和 `dispatch_batch_json` 操作。
 
-`dispatch_json` accepts either one envelope or the canonical
-`{"messages":[...]}` payload; `dispatch_batch_json` requires the latter. Both
-paths validate session/protocol and envelope invariants before the first
-message enters the runtime, then serialize one complete response batch so
-WASM, JNI, Swift/Objective-C and ArkTS/N-API adapters do not perform per-node
-FFI calls. The wrapper is thread-affine; hosts that need cross-thread access
-must provide an explicit proxy and keep the runtime on its owning thread.
+宿主 crates 将 `quickjs-native` 和 `v8-native` 的提供者特性传递给共享运行时。在未启用 `v8-native` 的构建中，V8 会话将出现 `ERR_ENGINE` 错误，而不是静默回退；默认的 QuickJS 路径在未启用 `quickjs-native` 之前仍仅作为协议层面的无界面边界。
 
-`poll_timers(now_ns)` consumes **Unix epoch nanoseconds**. Rust-owned deadlines
-use `SystemTime` and the QuickJS/V8 timer JavaScript schedules against
-`Date.now()`; the runtime converts this same poll value to epoch milliseconds
-for JS callbacks. RAF/Choreographer/display-link timestamps, uptime and
-time-since-session-start are different clock domains and must only schedule
-the host pump. Sample the current wall clock when polling, including after a
-pause, rather than maintaining a stale startup offset. JavaScript callers
-must convert integer milliseconds to `BigInt` before multiplying to
-nanoseconds and check the `u64` limit; signed JNI callers additionally reject
-negative values and multiplication outside `Long` range. Hosts own suspension
-and callback cadence; this clock contract does not itself establish timer
-throttling or background semantics equivalent to WeChat.
+`lifecycle_state()` 和 `lifecycle_sequence()` 将核心状态机暴露给宿主事件循环。加载的清单初始状态为 `Created`；只有在接收到 `launch` 的验收后，才会转为 `Active` 状态，而 `hide`/`show` 操作则分别报告为 `Background`/`Active`，无需在宿主中进行第二层页面栈操作。
 
-For an accepted raster frame, `render_snapshot_json` returns one
-`RenderSnapshot` containing `frame_id`, dimensions, stride and tightly packed
-premultiplied `rgba8` pixels. Snapshot access reports `NoRenderFrame` when the
-requested snapshot is unavailable. Explicit external-frame snapshot requests
-can generate software diagnostic pixels; borrowed observations cannot. Passive
-reads do not initialize a page renderer. This is the raster and diagnostic
-interface. External-frame and native-GPU presentation consume
-accepted scene/frame data through their own presenter contracts without a
-normal full-page CPU raster/readback/upload. `capture_render_snapshot` is an
-explicit CPU diagnostic request and does not prove host GPU presentation.
+`dispatch_json` 接受一个信封或标准的 `{"messages":[...]}` 负载；`dispatch_batch_json` 要求后者。两条路径在第一个消息进入运行时之前都会验证会话/协议和信封的不变性，然后序列化一个完整的响应批次，以便 WASM、JNI、Swift/Objective-C 和 ArkTS/N-API 适配器无需为每个节点执行 FFI 调用。该包装器是线程相关的；需要跨线程访问的宿主必须提供显式代理，并将运行时保留在其所属线程上。
 
-`render_revision` identifies the accepted Skia revision, independently from
-application frame IDs and the browser document presentation namespace. Backend
-names and native/GPU surface flags are observations; presentation authority
-still requires the matching runtime-owned acknowledgement.
+`poll_timers(now_ns)` 消耗 **Unix 时间戳纳秒**。Rust 所拥有的超时使用 `SystemTime`，QuickJS/V8 定时器 JavaScript 调度基于 `Date.now()`；运行时将相同的轮询值转换为毫秒，供 JS 回调使用。RAF/Choreographer/显示链接时间戳、运行时时间以及会话启动以来的时间属于不同的时钟域，只能用于调度宿主泵。在轮询时采样当前系统时间，包括暂停后，而不是维持一个过时的启动偏移。JavaScript 调用者必须在乘以纳秒之前将整数毫秒转换为 `BigInt`，并检查 `u64` 限制；带有有符号 JNI 调用者还额外拒绝负值和超出 `Long` 范围的乘法操作。宿主控制挂起和回调节奏；此时钟契约本身并不建立定时器节流或等同于微信的后台语义。
 
-Canvas 2D surfaces have independent lifetimes. After a successful
-`wx.canvas.draw`, `canvas_snapshot_json(canvas_id)` returns the corresponding
-RGBA8 buffer; it never replaces the page snapshot. `reserve:false` starts a
-new command history and `reserve:true` replays on the existing surface. A
-renderer command that has no deterministic implementation returns a structured
-render error before the provider response is reported as success.
+对于已验收的位图帧，`render_snapshot_json` 返回一个包含 `frame_id`、尺寸、步长和紧密打包的预乘 `rgba8` 像素的 `RenderSnapshot`。当请求的快照不可用时，快照访问会报告 `NoRenderFrame`。明确的外部帧快照请求可以生成软件诊断像素；借来的观测数据则不能。被动读取不会初始化页面渲染器。这是位图和诊断接口。外部帧和原生 GPU 的呈现通过其自身的呈现器合约消费已验收的场景/帧数据，而无需经过正常的全页 CPU 位图读取/回传/上传流程。`capture_render_snapshot` 是一个明确的 CPU 诊断请求，不能证明宿主 GPU 的呈现。
 
-Native callers must initialize each output slot to `{ data: NULL, len: 0 }` and
-release it before reuse. The Rust boundary rejects a non-empty slot instead of
-overwriting it, preventing a leaked allocation when a JNI, Swift or ArkTS
-caller accidentally reuses a live result.
+`render_revision` 标识了已验收的 Skia 版本，与应用程序帧 ID 和浏览器文档呈现命名空间无关。后端名称和原生/GPU 绘制表面标志仅为观察值；呈现权仍需匹配运行时拥有的确认。
 
-For passive page inspection, `accepted_page_observation()` borrows the accepted
-frame, render revision, pinned submission target and cached snapshot without
-initializing Skia or copying frame/pixel data. `page_render_status()` exposes
-allocation/backend/surface facts, and Metal builds provide the passive
-`has_metal_context()` query. Unloaded hosts retain `NotLoaded`; snapshot APIs
-retain `NoRenderFrame` when their requested snapshot is unavailable.
-`render_target_for_revision()` rejects zero or stale Skia render revisions and
-returns the target pinned by that successful page commit, even if another
-density has since been staged. These observations do not establish current-page,
-input, ready or browser presentation authority, and the submission target is
-not a measured framebuffer or GPU/device result. Explicit snapshot requests
-can clone or generate diagnostic pixels; borrowed observations never do.
+Canvas 2D 绘制表面具有独立的生命周期。在成功执行 `wx.canvas.draw` 后，`canvas_snapshot_json(canvas_id)` 会返回相应的 RGBA8 缓冲区；它永远不会替换页面快照。`reserve:false` 启动新的命令历史，`reserve:true` 在现有表面上演示。一个没有确定性实现的渲染命令在提供者响应之前会返回结构化渲染错误，并将该错误报告为成功。
+
+Native callers 必须将每个输出槽初始化为 `{ data: NULL, len: 0 }`，并在重复使用前释放它。Rust 边界不会覆盖非空槽，而是拒绝它，从而防止 JNI、Swift 或 ArkTS 调用方意外重用活动结果时发生内存泄漏。
+
+对于被动页面检查，`accepted_page_observation()` 会借取已接受的帧、渲染修订版、固定提交目标和缓存快照，而无需初始化 Skia 或复制帧/像素数据。`page_render_status()` 提供分配/后端/绘制表面的相关信息，Metal 构建提供了被动的 `has_metal_context()` 查询。未加载的宿主保持 `NotLoaded` 状态；快照 API 在请求的快照不可用时仍保持 `NoRenderFrame` 状态。`render_target_for_revision()` 会拒绝零值或过时的 Skia 渲染修订版，并返回该成功页面提交所固定的靶标，即使其他密度的帧已重新提交。这些观察结果并不能确立当前页面、输入、就绪或浏览器的呈现权限，提交目标也不是测量的帧缓冲区或 GPU/设备结果。明确的快照请求可以克隆或生成诊断像素；借取的观察结果永远不会这样做。

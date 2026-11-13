@@ -1,29 +1,19 @@
 # container-engine-quickjs
 
-Stable QuickJS adapter boundary with a batch module-loading API. Default CI builds
-use the explicit metadata stub, which returns `NativeBackendUnavailable` from the
-execution methods. Enable `quickjs-native` for the bundled QuickJS-NG runtime:
+**简体中文** · [English](README.en.md)
+
+
+稳定版 QuickJS 适配器边界，包含批量模块加载 API。默认 CI 构建使用显式元数据占位符，该占位符从执行方法中返回 `NativeBackendUnavailable`。启用 `quickjs-native` 以使用捆绑的 QuickJS-NG 运行时：
 
 ```bash
 cargo test -p container-engine-quickjs --features quickjs-native
 ```
 
-The native adapter applies memory/stack limits, installs an interrupt handler,
-evaluates CommonJS-style modules in one batch boundary, calls global or module
-exports with JSON value batches, and drains pending jobs. Its bootstrap exposes
-the registration globals (`App`, `Page`, `Component`, `getApp`) and a
-deterministic `wx` facade for storage, navigation, timers, capabilities and
-`setData`. Side effects are queued and can be consumed with
-`QuickJsEngine::drain_host_events`; host adapters should route those records
-through the normal bridge/provider boundary. Unsupported APIs return a
-structured `ERR_UNSUPPORTED_CAPABILITY` rejection and are never silent no-ops.
-The runtime is thread-affine; hosts must proxy calls instead of moving it
-between threads.
-Mobile and Harmony targets may require `rquickjs/bindgen` plus the platform C
-compiler and are validated separately by the host toolchain.
+原生适配器应用内存/栈限制，安装中断处理程序，批量边界内评估 CommonJS 风格模块，使用 JSON 值批量调用全局或模块导出，并处理待处理任务。其启动程序暴露注册全局（`App`、`Page`、`Component`、`getApp`）和确定性的 `wx` 代理，用于存储、导航、定时器、能力检测和 `setData`。副作用被排队，并可通过 `QuickJsEngine::drain_host_events` 消费；宿主适配器应将这些记录通过正常的桥接/提供者边界路由。不支持的 API 返回结构化的 `ERR_UNSUPPORTED_CAPABILITY` 拒绝，并且永远不会静默执行无操作。运行时是线程相关的；宿主必须代理调用，而不是在不同线程间移动运行时。
+移动端和 Harmony 目标可能需要 `rquickjs/bindgen` 以及平台 C 编译器，并由宿主工具链独立验证。
 
-OpenHarmony has no bundled rquickjs binding for `aarch64-unknown-linux-ohos`;
-use the explicit target feature and SDK toolchain when checking the provider:
+OpenHarmony 未捆绑 `aarch64-unknown-linux-ohos` 的 rquickjs 绑定；
+在检查提供者时，请使用显式的目标特性及 SDK 工具链：
 
 ```bash
 ohos_sdk_native="$OHOS_SDK/openharmony/native" \
@@ -32,25 +22,8 @@ ohos_sdk_native="$OHOS_SDK/openharmony/native" \
   --target aarch64-unknown-linux-ohos
 ```
 
-The repository `scripts/build-native-hosts.mjs` command supplies the target
-compiler, archive tools, bindgen target/sysroot and host compiler variables so
-QuickJS is never built from a host-ABI binding by accident.
+仓库 `scripts/build-native-hosts.mjs` 命令提供了目标编译器、归档工具、bindgen的目标/系统根目录和宿主编译器变量，从而确保 QuickJS 不会意外地从宿主 ABI 绑定构建。
 
-Native timer polls use the shared timer scheduler with Unix milliseconds from
-the host. Explicit zero is preserved; clocks must be non-negative safe integers.
-Due timers run in deadline order, then registration order for ties. Each callback
-is a separate native task with a Promise/microtask checkpoint before the next
-callback, so cancellation from a callback or its microtasks takes effect before
-the next timer. Timers created during a poll wait for a later poll, including
-zero-delay timers created by promises. Overdue intervals coalesce to one tick
-per poll and schedule their next tick relative to that poll's clock.
+原生定时器使用共享定时器调度器，从宿主获取Unix毫秒时间。显式零值被保留；时钟必须是非负的安全整数。到期的定时器按截止时间顺序运行，若存在平局，则按注册顺序运行。每个回调都是一个独立的原生任务，在下一次回调前有一个Promise/微任务检查点，因此从回调或其微任务中取消操作将在下一次定时器之前生效。在一次轮询期间创建的定时器将等待下一次轮询，包括由Promise创建的零延迟定时器。逾期间隔会合并为每次轮询一个时钟滴答，并将其下一次滴答相对该轮询的时钟进行调度。
 
-The default task budget is 1000 callbacks per poll; an optional second argument
-to the internal `__container_drain_timers` engine call selects a budget from 1
-to 1000. Exhaustion emits a `timer.yield` host event and retains pending timers
-for the next poll. Callback and `queueMicrotask` exceptions enter the error queue
-without discarding later tasks. Delays are truncated and clamped to
-0–2147483647 ms; deadlines saturate at `Number.MAX_SAFE_INTEGER`. Timer callbacks
-receive additional arguments and `globalThis` as their receiver. This budget
-bounds callback count, not arbitrary synchronous JavaScript or an infinite
-Promise chain; hosts still own execution deadlines and interruption.
+默认任务预算为每次轮询1000个回调；内部`__container_drain_timers`引擎调用的可选第二个参数可选择1到1000之间的预算。耗尽会发出`timer.yield`主机事件，并保留待处理的定时器以供下一次轮询使用。回调和`queueMicrotask`的异常会进入错误队列，且不会丢弃后续任务。延迟会被截断并限制在0–2147483647毫秒之间；截止时间在`Number.MAX_SAFE_INTEGER`处饱和。定时器回调会接收额外参数以及`globalThis`作为其接收者。此预算限制的是回调数量，而不是任意的同步JavaScript或无限的Promise链；主机仍拥有执行截止时间和中断权。

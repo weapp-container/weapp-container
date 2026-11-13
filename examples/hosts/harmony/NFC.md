@@ -1,4 +1,8 @@
+<a id="api24-nfc-tag-adapter"></a>
 # API24 NFC 标签适配器
+
+**简体中文** · [English](NFC.en.md)
+
 
 `HarmonyNfcApis.ets` 默认不注册 API，也不请求标签或显示授权界面。宿主在创建
 session、执行 `app.init` 前显式配置用途、权限版本、技术范围，并保证宿主
@@ -35,7 +39,7 @@ configureHarmonyNfc({
 | 八种技术 factory | `tag.getNdef/getIsoDep/getMifareClassic/getMifareUltralight/getNfcA/B/F/V` |
 | connect / close / isConnected | 同一实际 `TagSession.connect/resetConnection/isConnected` |
 | setTimeout / transceive / getMaxTransceiveLength | `TagSession.setTimeout/transmit/getMaxTransmitSize` |
-| IsoDep historical bytes | `IsoDepTag.getHistoricalBytes` |
+| IsoDep 历史字节 | `IsoDepTag.getHistoricalBytes` |
 | NfcA ATQA / SAK | `NfcATag.getAtqa/getSak` |
 | NDEF read / write | `NdefTag.readNdef/writeNdef`，`getNdefMessage` 的实际发现缓存 |
 | NDEF record type / id / payload | 原始 `NdefRecord.rtdType/id/payload` 字节数组 |

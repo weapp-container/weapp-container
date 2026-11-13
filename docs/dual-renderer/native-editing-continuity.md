@@ -1,4 +1,8 @@
+<a id="native-editing-continuity-follow-up-protocols-and-implementation-design"></a>
 # 原生编辑连续性：后续协议与实现设计
+
+**简体中文** · [English](native-editing-continuity.en.md)
+
 
 **状态：原生编辑 lease 仍为设计；文档事务基础已新增显式实验实现。**
 当前实际 wire 名称、身份、容量和限制见 [Live Document v2](browser-live-document-v2.md)。
@@ -19,6 +23,7 @@ touch cancellation 也保留原 snapshot，不能向同名新实例重定向。�
 Linux、Android、iOS、鸿蒙仍在原目标内；QuickJS 与已有 V8 范围、官方 oracle、
 实际宿主、设备、硬件和性能证据各自验收。
 
+<a id="issues-and-choices"></a>
 ## 问题与选择
 
 当前 presenter 按 revision 创建 iframe，快照旧控件，再向新控件写回 value、
@@ -47,6 +52,7 @@ hidden clone 可用于非权威预检，不能提供 permit 的权威几何。�
 独立上下文还可能具有不同 font、viewport、media 和资源状态。将原控件移入 clone
 又会损害需要保留的编辑上下文。本设计不重写全部动态 CSS 来模拟原生状态。
 
+<a id="three-independent-lifecycles"></a>
 ## 三个独立生命周期
 
 | 生命周期 | 身份与权限 | 普通 setData | 必须结束的边界 |
@@ -70,6 +76,7 @@ slot 改属、导航返回缓存页、owner A → B → A 都不能复活旧 lea
 名称或尺寸也需要新权限。普通 root-data 更新是否允许连续，由 runtime 根据实际
 生命周期和接收者变化判定，浏览器不得从“没有导航”自行推断。
 
+<a id="explicit-negotiation-and-v1-retention"></a>
 ## 显式协商与 v1 保持
 
 新合同需要 runtime、桥接 transport、session client、owner adapter 和 presenter
@@ -86,6 +93,7 @@ v1 保留“隐藏候选实际布局 → 几何 permit → commit → ACK”的�
 必须明确拒绝。不能把 v2 的延迟几何塞进 v1 permit，不能以空几何占位，不能
 因为另一端未支持就静默退回更宽松的授权。显式选择 v1 时仍不承诺原生连续性。
 
+<a id="draft-api-and-transaction-order"></a>
 ## 草案 API 与事务顺序
 
 以下名称用于完整 lease 设计的数据流；实验实现使用独立的 `view.live.*` 命名，
@@ -136,6 +144,7 @@ ACK 丢失或超时是结果不明，不能立即回滚。transport 必须能够
 无法判明时保持输入和编辑关闭、资源有界保留并要求恢复，不能再发另一次 commit
 赌结果。取消通知、HTTP 202、SSE snapshot 和本地 patch 完成都不是最终 ACK。
 
+<a id="stable-surface-and-typed-reconciliation"></a>
 ## 稳定 surface 与 typed reconciliation
 
 surface 持有 iframe/Document/page root、DOM occurrence map、native-node WeakMap、
@@ -166,6 +175,7 @@ CSS 变化仍可能隐藏编辑祖先或触发实际 blur。浏览器必须在 a
 失败时报告 continuity ended，立即关闭 lease；不能用再次 focus 或伪造组合标志修复。
 可以继续接纳合法新文档，但不能报告该次编辑连续。任意 CSS 变化都连续并非本提案承诺。
 
+<a id="editing-lease-distribution-duration-and-queue"></a>
 ## 编辑 lease 的发放、期限与队列
 
 建议每个 surface 最多一个活动 focused-editor lease。runtime 只从当前已接受文档中
@@ -211,6 +221,7 @@ lease 与当前接收者一致，独立推导处理器与传播路径。不能�
 文本、drop-oldest、无界重试或等待未来 compositionend 来解除堵塞。诊断默认不含
 密码和完整编辑文本；无监听器的密码值仍不得经几何或诊断通道外传。
 
+<a id="native-defaults-focus-and-controlled-state-conflicts"></a>
 ## native defaults、焦点与受控状态冲突
 
 业务输入门禁和 native 编辑许可必须分开。业务门禁关闭时，一般 pointer、tap、
@@ -260,6 +271,7 @@ ACK、scope 更新和资源清理不产生合成 focus/blur，也不自动重新
 借客户端布尔值扩大 permit。新的声明式 focus 能力不在这里隐式开放，当前严格
 拒绝保持到其独立合同和证据完成。
 
+<a id="state-transitions-rollback-and-cleanup"></a>
 ## 状态转换、回滚与清理
 
 presentation 状态建议为 `accepted → preparing → permitted → applied →
@@ -295,6 +307,7 @@ surface listeners、改 successor.inert、释放 successor URL 或回滚新 rece
 超时表示 cleanup pending，不能伪装已释放。重入调用返回同一操作 promise，资源
 只释放一次；真实迟到失败继续留在原 drain 和最终 shutdown 结果中。
 
+<a id="concrete-implementation-gaps"></a>
 ## 具体实现接缝
 
 - `dom-presenter.mjs`：把 `createBrowserCandidate()` 拆为 surface owner 与 revision
@@ -313,6 +326,7 @@ surface listeners、改 successor.inert、释放 successor URL 或回滚新 rece
   Web iframe 的节点稳定证据不能升级为 WKWebView、WebView2、WebKitGTK、Android
   WebView、ArkWeb 或 Skia native control 的能力与通过记录。
 
+<a id="real-ime-evidence-requirements-after-implementation"></a>
 ## 实施后的真实 IME 证据要求
 
 以下是后续必须执行的场景，不是已有通过项。单测可以验证状态、预算、reentrancy

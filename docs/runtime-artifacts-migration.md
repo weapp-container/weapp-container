@@ -1,4 +1,8 @@
+<a id="runtime-library-release-entrance-migration"></a>
 # 运行库发行入口迁移
+
+**简体中文** · [English](runtime-artifacts-migration.en.md)
+
 
 2026-11-12，发行工具从 `weapp-container/runtime-artifacts` 的 `f50e26252b43c13ea68821154d5ebaaa40527b75` 迁入核心仓库。独立 SDK 的下载器支持核心仓库精确发行，旧仓库只保留九个既有历史版本。根项目不再依赖旧仓库的 submodule。
 
@@ -9,6 +13,7 @@
 停更工具源码。六个 SDK 的新下载器对冻结的九个旧版本定向私有档案，保留原锁哈希。
 旧版下载器需升级，不依赖同名仓库的重定向；新的运行库版本只发布到核心仓库。
 
+<a id="historical-pin-audit"></a>
 ## 历史 pin 审计
 
 归档前通过 GitHub API 读取了 9 个已发布 runtime prerelease 和 1 个 Dev Player 草稿，共 139 个资产。以 release ID、tag、draft 状态及每个资产的 ID、名称、大小、服务端摘要生成快照，其 SHA-256 为 `408be85b389237e338932294d48ef77c2bc8480477e8177b0fa6cbef389e8fe9`。本地证据保存在 `artifacts/runtime-artifacts-migration/`，归档后复查相同字段。

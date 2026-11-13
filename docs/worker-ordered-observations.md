@@ -1,16 +1,19 @@
-# Worker ordered observations 1.0
+<a id="worker-ordered-observations-10"></a>
+# 工作者有序观察 1.0
 
-This is an optional Worker/runtime contract. It does not wire the product entry,
-install a presenter, or establish browser/GPU/performance acceptance.
+**简体中文** · [English](worker-ordered-observations.en.md)
 
-## Negotiation and legacy compatibility
 
-Opt in on load with `observation: { version: "1.0" }`. Missing means legacy:
-load/state/frame/ACK/batch shapes and dirty events gain no observation fields, and
-no new host exports are probed. External presentation 1.0 and observation 1.0 are
-independent options; the Worker product should negotiate both for external-frame.
+这是一个可选的 Worker/运行时合约。它不会连接产品入口，安装呈现器，或建立浏览器/GPU/性能验收。
 
-Before `app.init`, the Worker requires:
+<a id="negotiation-and-legacy-compatibility"></a>
+## 协商和向后兼容性
+
+加载时启用 `observation: { version: "1.0" }`。缺失表示使用传统方式：
+加载/状态/帧/ACK/批次形状和脏事件不包含观察字段，且
+不会探测新的宿主导出。外部呈现 1.0 和观察 1.0 是独立选项；Worker 产品应为外部帧协商两者。
+
+在 `app.init` 之前，Worker 需要：
 
 ```js
 host.observation_contract_json()
@@ -19,13 +22,9 @@ host.observation_state_json()
 // { version:'1.0', inputLifetimeRevision:'0', state:<legacy runtime state> }
 ```
 
-Handshake is pure and does not require a loaded session. The state export is
-pure and is validated after manifest load but before application JS. Missing/old
-exports, invalid request versions and missing lifetime tokens fail explicitly.
-The original `runtime_state_json` export/shape remains unchanged. State export
-before loading returns NotLoaded.
+握手是纯的，不需要加载会话。状态导出是纯的，在加载清单之后、应用 JS 之前进行验证。缺失/过时的导出、无效的请求版本和缺失的生命周期令牌会明确失败。原始 `runtime_state_json` 导出/结构保持不变。在加载之前的状态导出返回 NotLoaded。
 
-The successful load adds:
+成功加载添加了：
 
 ```js
 observationContract: {
@@ -42,139 +41,80 @@ observation: {
 }
 ```
 
-packSha256 is the verified pack-index digest, not an arbitrary manifest digest.
-Initialization state (Created, before launch/page) does not mint public sequences
-or generations. Initial capture is tentative until complete load validation;
-failed startup discards it, enables no ordinary work and starts no timer pump.
-One Worker/session cannot reload. New session creation is the only namespace
-reset after successful admission.
+packSha256 是已验证的 pack-index 摘要，而不是任意的清单摘要。
+初始化状态（已创建，启动/页面之前）不会生成公共序列或代。初始捕获在完整加载验证之前是临时的；启动失败将丢弃该捕获，不启用普通工作，并且不会启动定时泵。
+一个 Worker/会话不能重新加载。只有在成功准入后，通过创建新会话才可重置命名空间。
 
-## One owner lane, original sequences
+<a id="one-owner-lane-original-sequences"></a>
+## 一个所有者通道，原始序列
 
-The serialized Worker lane exclusively assigns canonical u64 strings. Each
-changed authoritative snapshot gets the next checked sequence. A no-op state
-request reuses the existing sequence. Page-side response arrival order, RAF,
-config revisions and viewRevision never manufacture sequences.
+序列化的 Worker 通道仅分配标准的 u64 字符串。每个已更改的权威快照都会获得下一个检查序列。空操作状态请求会重用现有序列。页面侧响应到达顺序、每帧更新（RAF）、配置修订和视图修订从不生成序列。
 
-After an entered atomic host call, a finally refresh reads the pure native state
-and hard-lifetime token. This includes bridge turns/batches, frame preparation,
-retained frame reads, metrics, density, ACK effects, timers and error paths. The
-original result/error/batch is retained; application callbacks are not replayed
-for refresh. A successful response adds `.observation` alongside its old fields.
-An error adds `.error.observation` alongside original error fields. Dirty events
-carry `.payload.observation` with that exact snapshot/sequence. Load/state/frame/
-ACK/metrics/scale can therefore refer to the same sequence: it is reused, not
-renumbered for each transport path.
+在执行了一个原子宿主调用后，最终刷新会读取纯原生状态和长生命周期令牌。这包括桥接转/批次、帧准备、保留帧读取、指标、密度、ACK效果、定时器和错误路径。原始结果/错误/批次会被保留；刷新不会重新播放应用回调。成功响应会在原有字段基础上增加 `.observation` 字段。错误响应则在原有错误字段基础上增加 `.error.observation` 字段。脏事件会携带带有该精确快照/序列的 `.payload.observation`。加载/状态/帧/ACK/指标/缩放等都可以引用同一序列：该序列会被复用，而不是为每条传输路径重新编号。
 
-Runtime/owner/policy faults on the opt-in lane defer the single reserved fault
-publication until finally refresh, then carry that observation on the fault.
-This delivers committed timer-error state without needing normal event credit.
-Fault publication still freezes consumers; it never grants presentation/input.
-Admission-only errors/cancelled queued work reuse the last genuine snapshot and
-never enter native state or advance counters. State requests retain control
-admission for diagnostics. Shutdown samples committed unload state before
-disposal, stops the lane and never lets a late response reactivate it.
+运行时/拥有者/策略通道中的选入通道故障会推迟单个预留故障的发布，直到最终刷新，然后将该故障观察结果传递出去。
+这样可以在无需正常事件信用的情况下，传递已确认的定时器错误状态。
+故障发布仍会冻结消费者；它从不授予呈现或输入权限。
+仅准入类错误/已取消的队列工作会重用最后一次真实的快照，从不进入原生状态或推进计数器。状态请求保留诊断用的准入控制。
+关闭时，采样会在处置前提交卸载状态，停止该通道，从不允许可延迟的响应重新激活它。
 
-copyOrderedObservation performs bounded plain-data copy/validation/freeze after
-structured clone and preserves the exact source sequence. The page owner must
-feed only newer sequences to its scheduler; a delayed response cannot overwrite
-a newer dirty/fault observation. Observe outer response metadata before passing
-its inner batch or ACK through compatibility helpers which may select only their
-own known fields. onEvent must remain prompt and must not await presentation.
+copyOrderedObservation 在结构化克隆之后执行有界的普通数据复制/验证/冻结，并保留源序列的精确顺序。页面所有者必须将其调度器提供更新的序列；延迟响应无法覆盖更新的脏/故障观察。在通过兼容性辅助函数传递其内部批处理或确认之前，必须先观察外部响应元数据。onEvent 必须保持及时，并且不得等待呈现。
 
-If a refresh itself fails after irreversible work, the response preserves the
-original error details or committedResult plus observationRefreshError, and the
-owner faults. It does not pretend rollback. Original batches are preserved only
-within the complete response's existing byte/node/depth budget; an oversized
-response can only deliver a bounded budget error, not a guaranteed full batch.
+如果在不可逆操作之后刷新本身失败，响应将保留原始错误详情或已提交结果加上观察刷新错误，且由所有者负责。它不会假装回滚。原始批次仅在完整响应的现有字节/节点/深度预算范围内得到保留；超大响应只能传递有限预算错误，而无法保证完整批次。
 
-## Logical generation and native lifetime
+<a id="logical-generation-and-native-lifetime"></a>
+## 逻辑生成和原生生命周期
 
-surfaceGeneration starts at 1 and advances by one if the logical hard signature
-changes: current page id/path, logical viewport, Active/non-Active authority or
-the native input-lifetime token. Native token changes catch hidden same-turn
-hide/show and push/pop returning to the old page. A token delta is not used as
-the generation delta. Density, CSS zoom, ordinary data, ready setData, retained
-repaints and diagnostic capture do not change logical generation. They may
-change observation sequence because data/render state changed.
+surfaceGeneration 从 1 开始，如果逻辑硬签名发生变化（当前页面 ID/路径、逻辑视口、活动/非活动权限或原生输入生命周期令牌），则递增 1。原生令牌的变化会捕获隐藏的同轮次 hide/show 以及 push/pop 操作返回旧页面的情况。令牌的 delta 不用于生成 delta。密度、CSS 缩放、普通数据、ready setData、保留重绘和诊断捕获不会改变逻辑生成值。但由于数据/渲染状态发生变化，它们可能改变观察序列。
 
-Session owns input_lifetime_revision: Option<u64>, starting Some(0). Hard
-retirement uses checked_add. None is permanently exhausted: no wrap, old proof
-or keyed input may recover; engine-turn admission fails. The new pure state
-export reports null and the Worker enters restart-required. Worker sequence and
-generation counters also check u64 bounds; exhaustion faults the owner without
-minting a reused token. The last genuine observation can accompany the terminal
-fault, but no fabricated next snapshot is advertised.
+会话拥有输入生命周期修订号：Option<u64>，初始值为Some(0)。硬性退休使用checked_add。None表示永久耗尽：不会溢出，旧证明或带密钥的输入可能恢复；引擎轮次准入失败。新的纯状态导出报告为null，工作程序进入重启所需状态。工作程序序列和生成计数器也检查u64边界；耗尽会故障并影响所有者，但不会生成重用令牌。最后一次真实的观测可以伴随终端故障，但不会发布伪造的下一快照。
 
-## Hard/soft invalidation call-site inventory
+<a id="hardsoft-invalidation-call-site-inventory"></a>
+## 硬/软无效调用位置清单
 
-The following inventory covers the pinned runtime source, including unchanged
-components.rs callers. Line numbers may shift on root formatting; function and
-reason identify each call site.
+以下清单涵盖了已固定运行时源代码，包括未更改的 components.rs 调用者。行号在根级格式化时可能会发生偏移；函数和原因用于标识每个调用位置。
 
-| Call site | Class | Reason |
+| 调用位置 | 类 | 原因 |
 | --- | --- | --- |
-| browser_view::invalidate_browser_page -> invalidate_browser_presentation | Hard when page is current or owns frame/browser proof | Cached PageId cannot revive retired authority; unrelated background page is a no-op. |
-| browser_view::retire_browser_contacts_before_host_mutation -> invalidate_browser_presentation | Hard | Explicit host lifetime revocation after contact settlement. |
-| browser_view::retire_browser_preview unhealthy branch -> invalidate_browser_presentation | Hard | Faulted preview revoke without running JS. |
-| browser_view::retire_browser_preview_within_turn storage-sync error -> invalidate_browser_presentation | Hard | Explicit retire remains effective despite sync failure. |
-| browser_view::retire_browser_preview_within_turn normal branch -> retire_browser_contacts_before_host_mutation | Hard | Explicit surface lease retirement. |
-| browser_view::prepare_browser_view_within_turn after contact settlement | Soft, now invalidate_browser_candidate | Ordinary preparation replaces graph authority; no coordinate/lifetime generation. |
-| browser_view::handle_browser_operation VIEW_PREPARE non-quiescent effects | Soft, now invalidate_browser_candidate | Revoke incomplete candidate only; real hard effects/faults already increment through their own boundary. |
+| browser_view::invalidate_browser_page -> invalidate_browser_presentation | 页面为当前页面或拥有帧/浏览器证明时操作较复杂 | 缓存的 PageId 无法复活已退化的权限；无关的后台页面操作无效果。 |
+| browser_view::retire_browser_contacts_before_host_mutation -> invalidate_browser_presentation | Hard | 显式在联系结算后撤销宿主生命周期。 |
+| browser_view::retire_browser_preview unhealthy branch -> invalidate_browser_presentation | Hard | 缺少 JS 执行的预览撤销。 |
+| browser_view::retire_browser_preview_within_turn storage-sync error -> invalidate_browser_presentation | Hard | 显式退场在同步失败的情况下仍然有效。 |
+| browser_view::retire_browser_preview_within_turn normal branch -> retire_browser_contacts_before_host_mutation | Hard | 显式绘制表面租赁回收。 |
+| browser_view::prepare_browser_view_within_turn after contact settlement | Soft, now invalidate_browser_candidate | 普通准备替代图形权限；不生成坐标/生命周期。 |
+| browser_view::handle_browser_operation VIEW_PREPARE 非静止效应 | Soft，现在作废浏览器候选 | 仅撤销不完整的候选；真正的硬效应/故障已通过其自身边界递增。 |
 | lib::replace_manifest changed manifest -> retire_browser_contacts_before_host_mutation("manifest-replaced") | Hard | New graph/resources retire prior input lifetime. |
-| lib::app_service_mut normal -> retire_browser_contacts_before_host_mutation("host-state-mutated") | Hard | Unrestricted mutation can replace pages/lifecycle with identical local counters. |
-| lib::app_service_mut retirement failure -> invalidate_browser_presentation | Hard fallback | Revoke despite callback failure; token need only be unequal, not one increment per API. |
-| lib::renderer_mut -> invalidate_browser_presentation (new) | Hard | Unrestricted borrow can replace renderer/revision namespace. Product retained paths must use known Session APIs. |
-| lib::notify_window_metrics_within_turn changed logical viewport -> invalidate_browser_presentation | Hard | Committed logical coordinates change before resize hooks, including thrown callbacks. |
-| lib::handle_lifecycle Hide/Unload -> invalidate_browser_presentation | Hard | Foreground input lifetime ends even if later hook fails or same batch shows again. |
-| lib::unbind_page -> invalidate_browser_page | Hard if owned/current | Page departure/disposal. |
-| lib::invoke_page_hook_for_id onHide/onUnload -> invalidate_browser_page | Hard if owned/current | Lifecycle paths, including early failure. |
-| lib::invoke_page_hook_for_id_with_index onHide/onUnload -> invalidate_browser_page | Hard if owned/current | Concrete instance path; duplicate revocation is safe and monotonic. |
-| components::invalidate_component_page -> invalidate_browser_page | Hard if owned/current | Incomplete managed graph acknowledgement makes previous receiver unsafe. |
-| components::dispose_page_components -> invalidate_browser_page | Hard if owned/current | Disposed component/event graph cannot resume. |
-| engine_turn::record_execution_fault -> invalidate_browser_presentation | Hard | Interrupted realm has no presentation/input authority. |
-| Session::set_render_scale | Neither | Known retained repaint preserves input token and clone proof. |
-| Session::capture_render_snapshot | Neither | Diagnostic readback does not replace accepted layout/input. |
-| ordinary setData/data patch, browser geometry/permit failure, abort of one key | Neither | Template/transaction changes use existing exact key/retired-through semantics; no hard token is invented. |
+| lib::app_service_mut normal -> retire_browser_contacts_before_host_mutation("host-state-mutated") | 高 | 未受限制的变更可以替换页面/生命周期，且本地计数器相同。 |
+| lib::app_service_mut retirement failure -> invalidate_browser_presentation | 强制回退 | 即使回调失败也要撤销；令牌只需与旧值不同，无需每次 API 调用都递增一次。 |
+| lib::renderer_mut -> invalidate_browser_presentation (new) | Hard | 无限制借用可以替换 renderer/revision 命名空间。产品保留路径必须使用已知的会话 API。 |
+| lib::notify_window_metrics_within_turn changed logical viewport -> invalidate_browser_presentation | 严重 | 缩放钩子之前触发的逻辑视口变化，包括抛出的回调。 |
+| lib::handle_lifecycle Hide/Unload -> invalidate_browser_presentation | Hard | 即使后续钩子失败或同一批次再次显示，前台输入生命周期也会结束。 |
+| lib::unbind_page -> invalidate_browser_page | Hard if owned/current | 页面离开/销毁。 |
+| lib::invoke_page_hook_for_id onHide/onUnload -> invalidate_browser_page | Hard if owned/current | 生命周期路径，包括早期失败。 |
+| lib::invoke_page_hook_for_id_with_index onHide/onUnload -> invalidate_browser_page | Hard if owned/current | 具体实例路径；重复撤销是安全且单调的。 |
+| components::invalidate_component_page -> invalidate_browser_page | 高风险，如果为当前拥有者 | 未完成的管理图确认会使之前的接收方不安全。 |
+| components::dispose_page_components -> invalidate_browser_page | 有风险如果为当前拥有者 | 被销毁的组件/事件图无法恢复。 |
+| engine_turn::record_execution_fault -> invalidate_browser_presentation | Hard | 中断的域没有呈现/输入权限。 |
+| Session::set_render_scale | 既不 | 已知的保留重绘保持输入令牌和克隆证明。 |
+| Session::capture_render_snapshot | 既不 | 诊断回读不会替代已验收的布局/输入。 |
+| 普通 setData/data patch，浏览器几何/许可失败，某键操作中止 | 既不 | 模板/交易变更使用现有精确键/通过退场语义；不发明硬令牌。 |
 
-invalidate_browser_candidate retains the old pixels/resources for diagnostics,
-revokes pending/old event authorization and clears frame proof as before. It
-intentionally does not advance the hard token. Native prepare captures the hard
-lifetime before cancellation/evaluation and rejects if it changes during either
-stage, even if the page returns to the same identity. Hard effects after prepare
-already retire the pending key through existing exact runtime key checks.
+invalidate_browser_candidate 保留旧的像素/资源用于诊断，撤销待处理/旧事件的授权，并如以前一样清除帧证明。它故意不推进硬令牌。Native prepare 在取消/评估之前捕获硬生命周期，并在任一阶段期间若发生变化则拒绝，即使页面返回相同的标识。准备之后的硬效果已通过现有的精确运行时密钥检查退役待处理密钥。
 
-## DOM generation admission
+<a id="dom-generation-admission"></a>
+## DOM 生成准入
 
-In the opt-in browser-view lane, view.prepare must supply the current Worker
-surfaceGeneration. view.prepare.commit, view.presented, view.geometry and
-view.events must carry matching generation/session/page/profile in their exact
-key. Stale operations fail before entering WASM. Exact abort/retire remains
-available for cleanup. Future/guessed generations are not accepted.
+在自愿启用的浏览器视图通道中，view.prepare必须提供当前的Worker绘制表面生成版本。view.prepare.commit、view.presented、view.geometry和view.events必须在其精确键中携带匹配的生成/会话/页面/配置信息。过时的操作在进入WASM之前将失败。精确的中止/回收仍可用于清理。未来或猜测的生成版本不予接受。
 
-One keyed surface operation is admitted per atomic native bridge call. A mixed
-batch with keyed DOM work is rejected without splitting or executing it: a
-hide/show or leave/return earlier inside that batch must not make a later stale
-key appear valid. Ordinary batches retain their native indivisible semantics.
-A hard effect during preparation is rejected natively or is reflected by the
-finally observation; subsequent old-generation commit/input cannot enter. DOM
-adapters must process that observation before publishing a candidate.
+每个原子原生桥调用仅允许一个键控表面操作。包含键控 DOM 工作的混合批次将被拒绝，而不进行拆分或执行：该批次中的 hide/show 或 leave/return 早期操作不得使后续的过时键看起来有效。普通批次保留其原生不可分割的语义。在准备阶段出现硬性效果将被原生拒绝，或通过最终观察结果体现；后续的老一代提交/输入将无法进入。DOM 适配器必须在发布候选之前处理该观察结果。
 
-This is a wire/runtime generation boundary. It does not bind an actual DOM or
-CanvasKit adapter, implement external event generation fencing, or prove a
-page-level presenter/owner cleanup flow. Those remain product integration gates.
+这是一个线程/运行时边界。它不绑定实际的 DOM 或 CanvasKit 适配器，不实现外部事件生成的隔离，也无法证明页面级呈现器/所有者清理流程。这些仍属于产品集成门禁。
 
-## Authored verification and limits
+<a id="authored-verification-and-limits"></a>
+## 作者验证和限制
 
-Authored native tests cover same atomic batch hide/show and push/pop returning
-to old page, repeated real DOM prepare without a hard-token loop, ready setData/
-density/diagnostic capture, failed resize with committed dimensions/token and
-exactly one callback, pure export negotiation, and terminal native overflow.
-Fake-host Node tests cover the opt-in wire, all observation result paths, original
-sequence reuse, stale DOM generations, mixed batch rejection, timer fault/error
-refresh, startup admission, u64 precision and shared-DAG freeze behavior.
+原生测试用例涵盖相同原子批次的隐藏/显示以及推入/弹出返回到旧页面，重复真实 DOM 准备而无需硬令牌循环，准备就绪的 setData/密度/诊断捕获，失败的尺寸调整（带有已提交的尺寸/令牌）和恰好一个回调，纯导出协商，以及终端原生溢出。
 
-These tests are drafts until root executes them. No builds, test commands,
-WASM, browser, service replacement, GPU or performance acceptance ran during
-candidate authoring. Product-entry wiring and real retained-site validation
-remain independent requirements.
+假宿主 Node 测试用例涵盖主动启用的通信链路，所有观察结果路径，原始序列重用，过时的 DOM 生成版本，混合批次拒绝，定时器故障/错误刷新，启动准入，u64 精度和共享 DAG 冻结行为。
+
+这些测试在根执行它们之前都是草稿。没有构建、测试命令、WASM、浏览器、服务替换、GPU 或性能验收在候选作者编写期间运行。产品入口连接和真实保留站点验证仍为独立需求。

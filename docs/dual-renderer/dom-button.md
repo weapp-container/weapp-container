@@ -1,4 +1,8 @@
+<a id="dom-button-basic-adaptation"></a>
 # DOM button 基础适配
+
+**简体中文** · [English](dom-button.en.md)
+
 
 DOM presenter 将已求值 `ViewDocument` 的 `button` 映射为真实 HTML
 `<button type="button">`。共享 WXML、组件/slot 归属、稳定 occurrence、typed 属性和
@@ -7,6 +11,7 @@ DOM presenter 将已求值 `ViewDocument` 的 `button` 映射为真实 HTML
 本页定义容器的本地基础契约；默认外观、键盘和 disabled 行为尚无官方 DevTools
 oracle。Node 合同使用 DOM/RPC doubles，不代表真实浏览器、硬件或 near-parity 门禁通过。
 
+<a id="support-borders"></a>
 ## 支持边界
 
 | 属性/内容 | 行为 |
@@ -32,6 +37,7 @@ oracle。Node 合同使用 DOM/RPC doubles，不代表真实浏览器、硬件�
 同样拒绝。基础 button 事件仅包括 tap、touchstart/move/end/cancel、focus/blur；
 按钮自身的 input/confirm/scroll 绑定明确拒绝。没有分享、登录、支付、表单提交/重置等空实现。
 
+<a id="browsers-events-and-styles"></a>
 ## 浏览器、事件和样式
 
 原生 button 保留浏览器键盘焦点、Enter/Space 激活及基础无障碍角色；native click
@@ -56,6 +62,7 @@ WXML `type` 不写入 HTML 的 type 值；native type 始终为 `button`，不�
 `prefers-reduced-motion`；作者的伪元素样式仍可覆盖它。此默认样式不是官方资源或
 官方像素基线。
 
+<a id="verification-scope"></a>
 ## 验证范围
 
 Node 合同覆盖基础属性与 typed 值、保留子树、显式 unsupported、嵌套控件提前拒绝、
@@ -66,6 +73,7 @@ controls 集成 r6 已通过真实 Enter/Space、disabled/loading、浏览器 CS
 迟到输入专项。屏幕阅读器、设备及官方默认行为仍须独立证据验收；该实现不更新冻结的
 279 个发布门禁，也不授予 Skia、其他宿主、官方等价性或性能通过。
 
+<a id="optional-real-browser-fixture"></a>
 ## 可选真实浏览器 fixture
 
 `browser-dev-loop-smoke.mjs` 新增显式 `--fixture button`，仅接受

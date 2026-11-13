@@ -1,8 +1,13 @@
+<a id="conformance-verification"></a>
 # 兼容验证
+
+**简体中文** · [English](README.en.md)
+
 
 Weapp Container 通过固定版本的公开工具行为观察兼容性，测试不以私有实现源码为输入。
 基线见 [baseline-v1.json](baseline-v1.json)，用例索引见 [case-index-v1.json](case-index-v1.json)。
 
+<a id="verification-levels"></a>
 ## 验证层级
 
 - 单元测试验证 manifest、IR、运行时和证据处理协议。
@@ -14,6 +19,7 @@ Weapp Container 通过固定版本的公开工具行为观察兼容性，测试�
 平台和不完整的差异报告不能视为发布通过。历史用例和原始报告保存在私有档案；
 请阅读 [历史证据说明](../archived-evidence.md)。当前公开快照没有全量微信兼容声明。
 
+<a id="common-entry-points"></a>
 ## 常用入口
 
 证据处理测试也使用固定上游仓库的 Vitest / IDE CLI，先准备公开源码依赖：

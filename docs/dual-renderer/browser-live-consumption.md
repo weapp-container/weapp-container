@@ -1,9 +1,14 @@
+<a id="live-document-21-explicit-consumption"></a>
 # Live Document 2.1 显式消费
+
+**简体中文** · [English](browser-live-consumption.en.md)
+
 
 这是独立、显式开启的开发协议扩展。默认 `DomLiveSessionClient` 仍使用 2.0，
 普通模拟器 CLI 和 Worker 产品入口仍使用各自原协议。2.1 不提供原生编辑 lease，
 也不授予中文 IME、硬件 GPU、七宿主或性能验收通过。
 
+<a id="negotiation-and-identity-request"></a>
 ## 协商与请求身份
 
 客户端传入 `liveVersion: '2.1'`，发送 `view.live.enable`，payload 为
@@ -39,6 +44,7 @@ requestId 必须精确为 `live:<laneId>:<sequence>`。新 admission 只允许�
 带可消费的收据；封存失败保留 Indeterminate，移除收据且保留已发生的不可逆效果。
 2.0 的原固定容量和重放行为不变。
 
+<a id="pure-metadata-consumption"></a>
 ## 纯元数据消费
 
 `view.live.consume` 使用独立 requestId，不占业务序号：
@@ -69,6 +75,7 @@ requestId 必须精确为 `live:<laneId>:<sequence>`。新 admission 只允许�
 且未生效的请求明确失败。真实输入 epoch 变化可释放旧表，但同一 lane 的最高
 序号和已退休水位不重置；客户端不能用未来 epoch 触发这种变化。
 
+<a id="client-settlement-and-cleanup"></a>
 ## 客户端结算与清理
 
 ```js
@@ -93,6 +100,7 @@ consume 回复丢失时，保留原不可变 metadata envelope 和全部覆盖�
 `Session::browser_live_transaction_retention()` 是只读协议记账：记录数、wire bytes、
 最高 admission 和消费水位。它不等于进程 RSS，也不授予呈现或输入权限。
 
+<a id="verification-entry"></a>
 ## 验证入口
 
 ```sh

@@ -1,4 +1,8 @@
+<a id="browser-development-loop"></a>
 # 浏览器开发循环
+
+**简体中文** · [English](browser-dev-loop.en.md)
+
 
 普通 `weapp-simulator dev --web-runtime browser` 和 `serve_browser_dev` example
 现在复用同一个 runner：真实固定 `weapp-vite` watch、portable pack、受管 stage、
@@ -12,6 +16,7 @@ software 或 CanvasKit producer，含 CanvasKit 依赖本身不证明实际执�
 CLI 的 `--open` 可在原 owner 与
 认证 UI 配置完成后打开默认浏览器；监听成功仍不等于 Worker 或画面 ready。
 
+<a id="implementation-and-revalidation-of-state"></a>
 ## 实施与重验状态
 
 Browser Skia CLI 和有界提交状态面板已接入；既有 DOM/CanvasKit 双路径记录见
@@ -55,6 +60,7 @@ loading、焦点和原生点击/键盘激活，未支持组合仍明确拒绝。
 单独验收；旧 `view + bindtap` 记录不能证明该 adapter，也不授予完整微信 button、
 混合组件或冻结清单通过。
 
+<a id="startup"></a>
 ## 启动
 
 先完成[固定编译器和受管源码准备](browser-source-preparation.md)，并从已经完成的
@@ -149,6 +155,7 @@ example 保持原有 WebView startup profile，不新增 renderer 参数，并�
 `--out-dir`。如果已有 `serve-browser-dev-summary.json`，
 入口拒绝启动，避免覆盖历史证据；不要通过删除仍在使用的目录来重启。
 
+<a id="independent-producer-identity"></a>
 ## 独立 producer 身份
 
 pin 文件结构如下。占位符必须替换为独立 producer 执行记录中的原值：
@@ -179,6 +186,7 @@ pins 一致，source 为 passed、stable、clean 且 commit/inventory SHA 与独
 body lease 提供，不把 URL 解释为本地文件路径。完整字节与来源边界见
 [runtime artifact 合同](browser-dev-artifacts.md)。
 
+<a id="page-and-real-watch"></a>
 ## 页面与真实 watch
 
 准备 runtime 和首个 portable pack 共用 180 秒 deadline。之后 stdout 输出单行
@@ -218,6 +226,7 @@ clone、GPU submit、canvas swap 和 runtime ACK 分开记录，不合并为屏�
 等待原 owner 的下一代产物或未完成转换。构建诊断不会冒充成功，也不会据此释放原
 执行实例。其他 owner、控制、存储或 HTTP 错误进入停止和原 owner 清理流程。
 
+<a id="stop-and-resource-ownership"></a>
 ## 停止与资源归属
 
 优先点击页面“停止会话”，并保持原标签页打开，等待页面明确显示 `closed`。
@@ -245,6 +254,7 @@ browser-reported close 策略：服务器关联可信 manager 的原始回执，
 持续保留，等待明确的原始清理证据；不能通过重绑端口、重放新 mutation、替换 owner
 或伪造 `never-constructed` 回执声称清理成功。
 
+<a id="bounded-records-and-explicit-recycling"></a>
 ## 有界记录与显式回收
 
 实验入口在启动时同时启用原 owner、bootstrap 和客户端的 `retirementVersion: "1.0"`。
@@ -274,6 +284,7 @@ Stop 的 ACK 检查同时等待 HTTP 实际工作和 manager 的 `drainControlWo
 退休请求与成功游标，再验证编译失败保留、实际 Worker 逐代关闭和原服务退出。
 `retirement-smoke-r2` 已完成上述八步，结果独立归档，不覆盖此前七步 r5 的结论。
 
+<a id="reports-and-scope-pending-verification"></a>
 ## 报告与待验证范围
 
 只有满足关闭 gate 后，入口才写入 `summaryPath` 并输出 `event: "shutdown"`。
@@ -305,6 +316,7 @@ Stop 的 ACK 检查同时等待 HTTP 实际工作和 manager 的 `drainControlWo
 冻结的 279 项发布门禁仍为 unknown；Skia CLI 的有限真实执行已有上述记录，性能仍未验收，
 现代 View 开发配置和硬刷新接管仍未开放；有界退休不提供无限可靠性保证。
 
+<a id="current-view-of-dom-smoke-and-retirement-evidence"></a>
 ## DOM smoke 的当前画面与退休证据
 
 DOM presenter 在准备、提交与前一代清理之间允许多个 iframe 同时存在。

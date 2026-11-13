@@ -1,44 +1,21 @@
 # container-host-android
 
-Android NDK/JNI host boundary. `load_manifest_json` and batch `dispatch_json` are
-the shared runtime boundary for JNI callers. `android`, `gles` and `vulkan` are
-explicit integration features; either `skia-backend` or the actual
-`skia-gpu-gles` feature advertises the compiled Skia boundary. The default
-metadata stub is suitable for protocol tests and does not claim emulator or
-device conformance.
+**简体中文** · [English](README.en.md)
 
-`build.nativeSurface`/`build.renderer` describe the compiled boundary. They may
-report `skia-raster` before a frame is committed, while `runtime.gpuSurface`
-stays `false` until a host-owned GLES context and framebuffer receive a frame.
 
-`weapp_container_android_host_capabilities` returns a versioned JSON capability report.
-`build` describes compiled features and providers, while `runtime` reports the
-currently loaded session and committed raster surface. `gpuSurface` remains
-false until an Android adapter attaches a real GLES/Vulkan context; a readable
-Skia raster snapshot is not GPU evidence.
+Android NDK/JNI 宿主边界。`load_manifest_json` 和批量 `dispatch_json` 是 JNI 调用者与运行时之间的共享边界。`android`、`gles` 和 `vulkan` 是明确的集成特性；要么 `skia-backend`，要么实际的 `skia-gpu-gles` 特性会宣告编译后的 Skia 边界。默认元数据占位符适用于协议测试，不声明模拟器或设备的合规性。
 
-`start_session` and `dispatch_lifecycle` are available to JNI adapters so app
-ordering remains identical to Web and desktop hosts.
+`build.nativeSurface`/`build.renderer` 描述编译边界。在首帧提交前，它们可能报告 `skia-raster`；`runtime.gpuSurface` 保持为 `false`，直到宿主拥有的 GLES 上下文和帧缓冲区接收到一帧。
 
-The `quickjs-native` and `v8-native` features enable providers in the shared
-runtime. Capability metadata reflects that runtime's compiled providers, including
-features enabled by another workspace consumer. V8 requests fail with
-`ERR_ENGINE` when the shared runtime has no V8 provider; they never select another
-engine.
+`weapp_container_android_host_capabilities` 返回一个版本化的 JSON 能力报告。
+`build` 描述了编译特性及提供者，而 `runtime` 报告当前加载的会话和已提交的绘制表面。`gpuSurface` 直到 Android 驱动器连接了真实的 GLES/Vulkan 上下文之前都保持为 false；仅能读取 Skia 绘制快照，并不能作为 GPU 证据。
 
-The `cdylib` exports `weapp_container_android_host_new/free`,
-`weapp_container_android_host_capabilities`, `weapp_container_android_host_load_manifest`, `weapp_container_android_host_start`,
-`weapp_container_android_host_dispatch_json`, `weapp_container_android_host_dispatch_batch_json`,
-`weapp_container_android_host_render_snapshot`,
-`weapp_container_android_host_canvas_snapshot`, `weapp_container_android_host_poll_timers` and
-`weapp_container_android_buffer_free`; the matching
-header and JNI owner live in `examples/hosts/android`.
+`start_session` 和 `dispatch_lifecycle` 可供 JNI 适配器使用，因此应用的启动顺序与 Web 和桌面宿主保持一致。
 
-`weapp_container_android_host_render_snapshot` returns one JSON `RenderSnapshot` after a
-`render.commit`; its pixel payload is premultiplied RGBA8 for a single GLES or
-Vulkan upload operation.
+`quickjs-native` 和 `v8-native` 特性使共享运行时中的提供者能够运行。能力元数据反映了该运行时编译的提供者，包括由其他工作区消费者启用的特性。当共享运行时没有 V8 提供者时，V8 请求会报错 `ERR_ENGINE`；它们永远不会选择其他引擎。
 
-`weapp_container_android_host_canvas_snapshot` reads the independently committed
-`wx.canvas.draw` surface by UTF-8 canvas id. It keeps page and Canvas 2D
-surfaces separate while still transferring one complete RGBA snapshot across
-JNI.
+`cdylib` 导出 `weapp_container_android_host_new/free`，`weapp_container_android_host_capabilities`，`weapp_container_android_host_load_manifest`，`weapp_container_android_host_start`，`weapp_container_android_host_dispatch_json`，`weapp_container_android_host_dispatch_batch_json`，`weapp_container_android_host_render_snapshot`，`weapp_container_android_host_canvas_snapshot`，`weapp_container_android_host_poll_timers` 和 `weapp_container_android_buffer_free`；对应的头文件和 JNI 所有者位于 `examples/hosts/android`。
+
+`weapp_container_android_host_render_snapshot` 在完成一个 `render.commit` 后返回一个 JSON `RenderSnapshot`；其像素数据为单个 GLES 或 Vulkan 上传操作的预乘 RGBA8 格式。
+
+`weapp_container_android_host_canvas_snapshot` 通过 UTF-8 canvas id 读取独立提交的 `wx.canvas.draw` 绘制表面。它将页面和 Canvas 2D 表面分开，同时在 JNI 之间传输完整的 RGBA 快照。

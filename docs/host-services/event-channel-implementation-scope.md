@@ -1,4 +1,8 @@
+<a id="implementation-scope-of-eventchannel-and-console-grouping"></a>
 # EventChannel 与 Console 分组的实现范围
+
+**简体中文** · [English](event-channel-implementation-scope.en.md)
+
 
 EventChannel 的四个方法 `emit`、`on`、`once`、`off` 为 AppService realm 内的真实
 同步调用，函数和对象引用不跨 native JSON transport。wx.navigateTo 的 events 在

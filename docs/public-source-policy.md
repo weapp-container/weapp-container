@@ -1,4 +1,8 @@
+<a id="open-source-distribution-boundaries"></a>
 # 公开源码发行边界
+
+**简体中文** · [English](public-source-policy.en.md)
+
 
 对外仓库只接收审定的 main 历史、源码、文档及匿名化回归输入。
 原核心、website 和 runtime-artifacts 的完整历史、PR 引用、Release、Actions
@@ -13,6 +17,7 @@
 采用 Apache-2.0 而改变许可。新的公开二进制应从匹配的干净源码构建，附带完整
 许可、构建来源、目标平台和哈希，使用新 tag 发布。
 
+<a id="submit-for-inspection"></a>
 ## 提交检查
 
 每个源码仓库的 Publication security 工作流使用 SHA-256 固定的 Gitleaks 8.30.1，

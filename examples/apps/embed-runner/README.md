@@ -1,29 +1,26 @@
-# App embedding example
+<a id="app-embedding-example"></a>
+# 应用嵌入示例
 
-`embed-runner` is a small application process that embeds the same runtime
-boundary used by the Web, desktop and native host adapters. It loads a packed
-mini-program from an asset directory, starts the app, sends one capability
-request and reads one complete RGBA snapshot. A real Activity, view controller,
-ArkUI Ability or browser worker can use this sequence with its own surface
-presenter.
+**简体中文** · [English](README.en.md)
 
-Run it after building the reference app pack:
+
+`embed-runner` 是一个小型应用程序进程，它嵌入了Web、桌面和原生宿主适配器所使用的相同运行时边界。它从资产目录加载一个打包的迷你程序，启动应用，发送一个能力请求，并读取一个完整的RGBA快照。一个真正的Activity、视图控制器、ArkUI能力或浏览器工作者可以使用此流程，并配合其自身的绘制表面呈现器。
+
+在构建参考应用包之后运行它：
 
 ```sh
 cargo run --manifest-path examples/apps/embed-runner/Cargo.toml -- \
   artifacts/reference-app/pack artifacts/reference-app/embed-report.json
 ```
 
-The package script accepts the usual pnpm separator as well:
+包脚本接受通常的 pnpm 分隔符：
 
 ```sh
 pnpm embed:reference -- \
   artifacts/reference-app/pack artifacts/reference-app/embed-report.json
 ```
 
-The runner ignores that standalone `--` so the two forms are equivalent.
+运行时忽略单独的 `--`，因此两种形式等价。
 
-The output is a diagnostic artifact. It does not claim native GPU, emulator or
-WeChat DevTools conformance. Platform hosts should replace the sample's
-`render_snapshot()` read with their one-shot CanvasKit/Skia/Metal/ArkUI upload,
-while keeping the bridge batch and resource ownership rules unchanged.
+输出是一个诊断日志。它不声明原生 GPU、模拟器或
+微信开发者工具的兼容性。平台宿主应将示例中的 `render_snapshot()` 读取操作替换为自己的单次 CanvasKit/Skia/Metal/ArkUI 上传，同时保持桥接批处理和资源所有权规则不变。

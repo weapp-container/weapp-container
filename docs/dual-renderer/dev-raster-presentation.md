@@ -1,4 +1,8 @@
+<a id="development-mode-raster-ownership"></a>
 # 开发态 Raster 呈现所有权
+
+**简体中文** · [English](dev-raster-presentation.en.md)
+
 
 `Session::enable_dev_raster_presentation()` 在 `app.init`、页面创建和页面 renderer 初始化前显式开启精确回执模式。它不增加 `SessionConfig` 必填字段；现有 headless 和植入调用默认仍使用同步 Raster 语义。当前开发 CLI 尚未启用此模式。
 

@@ -1,9 +1,11 @@
-# Flutter SDK consumer
+<a id="flutter-sdk-consumer"></a>
+# Flutter SDK 消费者
 
-This application consumes the sibling `packages/weapp_container` distribution.
-Keep `consumer` and `packages` together when moving the distribution. No Rust
-checkout or Rust compiler is required. Use Flutter 3.47.7 stable and the normal
-native development tools for the selected target.
+**简体中文** · [English](README.en.md)
+
+
+该应用消耗了兄弟包 `packages/weapp_container` 的分发版本。
+移动分发版本时，请保持 `consumer` 和 `packages` 一起移动。无需检查出 Rust 代码或 Rust 编译器。使用 Flutter 3.47.7 稳定版本以及选定目标的常规原生开发工具。
 
 ```sh
 flutter pub get
@@ -11,21 +13,13 @@ flutter analyze lib
 flutter run -d <device-id>
 ```
 
-For Android, install platform SDKs 35 and 36, NDK 27.1.12297006, and CMake 3.22.1.
-The app and its native plugin modules select that NDK. The Gradle wrapper pins
-9.4.1 and verifies its distribution checksum. Build the two supported ABIs with:
+对于 Android，安装平台 SDK 35 和 36、NDK 27.1.12297006 和 CMake 3.22.1。
+应用及其原生插件模块选择该 NDK。Gradle 包装器固定为 9.4.1 并验证其分发校验和。使用以下命令构建两个支持的 ABIs：
 
 ```sh
 flutter build apk --debug --target-platform android-arm64,android-x64
 ```
 
-iOS requires iOS 16 or later; macOS requires macOS 12 or later. Check the sibling
-`distribution.json` for packaged targets. A blocked target needs its native SDK
-artifact before it can build; this preview does not include a Windows binary.
+iOS 要求 iOS 16 或更高版本；macOS 要求 macOS  12 或更高版本。请查看同级的 `distribution.json` 以获取打包目标信息。被阻塞的目标在没有其原生 SDK 产物之前无法构建；本预览版本不包含 Windows 二进制文件。
 
-The app displays a bounded native mini-program view. Tap its first button and
-scroll the list to start the remaining lifecycle, navigation, Unicode, host
-method, remount, reload, and durable-storage checks. Results appear on screen
-and in `sdk-flutter-report.json` inside the app's application-support directory.
-Automation runners and fixture generation are maintained in the source
-repository's `scripts/sdk-flutter-*` and `sdk/flutter/native_desktop/tests`.
+该应用显示一个限定的原生小程序视图。点击其第一个按钮，然后滚动列表以启动剩余的生命周期、导航、Unicode、宿主方法、重新挂载、重新加载以及持久化存储的检查。结果将在屏幕上和应用支持目录中的 `sdk-flutter-report.json` 文件中显示。自动化运行器和测试用例生成维护在源代码仓库的 `scripts/sdk-flutter-*` 和 `sdk/flutter/native_desktop/tests` 目录中。

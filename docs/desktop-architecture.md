@@ -1,9 +1,13 @@
+<a id="cross-platform-desktop-architecture-and-next-steps"></a>
 # 桌面跨平台架构与后续方向
+
+**简体中文** · [English](desktop-architecture.en.md)
 
 Weapp Container 需要同时支持独立模拟器和嵌入式 SDK。现有 Rust runtime、批量 bridge、
 Skia renderer、平台 host 的分层符合这两个目标，建议继续保留。GTK、Flutter 和 winit
 处理的是不同宿主的接入问题，不需要合并成同一个 GUI 框架。
 
+<a id="current-boundaries"></a>
 ## 当前边界
 
 ```text
@@ -27,6 +31,7 @@ Linux Desktop SDK 当前依赖 GTK 3.24，其父视图契约是 `GtkContainer*`�
 对应适配器，不能把它们的控件指针当成 GTK 3 控件传入。原生父视图、外部纹理和
 独立窗口也不能只靠一个未经类型区分的句柄互换。
 
+<a id="current-implementation"></a>
 ## 这轮实现
 
 此前独立模拟器只有 macOS Metal 原生 GPU 呈现；Windows/Linux 需要显式软件模式。
@@ -54,6 +59,7 @@ detach，同时检查公开构造器拒绝软件 GL 驱动。测试允许 Mesa �
 资源生命周期验证，Windows、Wayland、硬件 GPU 和性能需要独立验收。命令见
 [桌面宿主说明](../crates/container-host-desktop/README.md#native-gl-windows-on-windows-and-linux)。
 
+<a id="next-priorities"></a>
 ## 后续优先级
 
 1. **先验收现有桌面路径。** 在 Windows 实机、Linux X11/Wayland 和 macOS 上执行

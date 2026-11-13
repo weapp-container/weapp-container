@@ -1,4 +1,8 @@
+<a id="performanceobserverdisconnect-implementation-of-scope-registration"></a>
 # PerformanceObserver.disconnect 实现登记范围
+
+**简体中文** · [English](performance-disconnect-accounting-scope.en.md)
+
 
 `disconnect(): void` 的有限清理合同已有真实私有实现：同步移除订阅、清空pending并递增generation，阻断已分离的旧交付；公开receiver不能重定向私有authority。重新observe按新generation交付，能力撤回后仍能清理原observer。此次只将该方法从不完整指标生产范围中分离，恢复七端7格已有实现漏计，运行时源码未改。
 
