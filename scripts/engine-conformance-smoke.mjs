@@ -11,6 +11,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { execFileSync, spawnSync } from 'node:child_process'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { compareEngineTraces } from './engine-conformance-compare.mjs'
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = process.argv.slice(2)
@@ -88,32 +89,6 @@ function runEngine(engine, feature, directory) {
   }
 }
 
-function normalize(value) {
-  if (Array.isArray(value)) return value.map(normalize)
-  if (!value || typeof value !== 'object') return value
-  const output = {}
-  for (const key of Object.keys(value).sort()) {
-    // Engine metadata is expected to differ; all protocol and lifecycle data
-    // remains part of the comparison.
-    if (key === 'engine' || key === 'engineProviderAvailable') continue
-    // Diagnostic effects identify the adapter that emitted them. That is
-    // useful in each engine report but is intentionally excluded from the
-    // semantic trace comparison.
-    if (key === 'source' && (value[key] === 'quickjs' || value[key] === 'v8')) continue
-    output[key] = normalize(value[key])
-  }
-  return output
-}
-
-function compareTraces(quickjs, v8) {
-  if (!quickjs || !v8) return { status: 'failed', reason: 'missing trace' }
-  const left = JSON.stringify(normalize(quickjs))
-  const right = JSON.stringify(normalize(v8))
-  return left === right
-    ? { status: 'passed', reason: 'normalized bridge traces match' }
-    : { status: 'failed', reason: 'normalized bridge traces differ' }
-}
-
 const temporary = resolve(ROOT, 'target', `engine-conformance-${process.pid}`)
 rmSync(temporary, { recursive: true, force: true })
 mkdirSync(temporary, { recursive: true })
@@ -122,7 +97,7 @@ const runs = [
   runEngine('v8', 'v8-native', temporary),
 ]
 
-const comparison = compareTraces(runs[0].trace, runs[1].trace)
+const comparison = compareEngineTraces(runs[0].trace, runs[1].trace)
 const report = {
   schemaVersion: 1,
   scope: 'engine-conformance-smoke',

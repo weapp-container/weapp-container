@@ -9,6 +9,7 @@ const files = [
   'api-completion-compat', 'api-owner-context', 'nexttick-api-owner',
   'nexttick-contract', 'route-transaction', 'scheduler-canvas-owner',
   'scheduler-framework-boundaries', 'turn-scheduler-candidate',
+  'engine-conformance-smoke',
   'harmony-reference-services', 'modern-view-host-pack',
   'conformance-fixture-build', 'runtime-artifacts-migration', 'runtime-release',
 ].map(name => `scripts/${name}.test.mjs`)
