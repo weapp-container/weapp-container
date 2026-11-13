@@ -1,0 +1,208 @@
+name: Public native production
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: SDK validation group (full retains the complete platform matrix)
+        type: choice
+        default: full
+        options: [full]
+      platform:
+        description: Platform selection for non-full runs
+        type: choice
+        default: all
+        options: [all]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.suite }}-${{ inputs.platform }}
+  cancel-in-progress: ${{ inputs.suite != 'full' }}
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    name: SDK contracts (${{ matrix.os }})
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON((inputs.suite == 'full' || inputs.platform == 'all') && '["ubuntu-22.04","xcode-27","windows-2022"]' || inputs.platform == 'macos' && '["xcode-27"]' || inputs.platform == 'windows' && '["windows-2022"]' || '["ubuntu-22.04"]') }}
+    runs-on: ${{ matrix.os }}
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+    steps:
+      - name: Select the recorded Apple toolchain
+        if: runner.os == 'macOS'
+        shell: bash
+        run: echo 'DEVELOPER_DIR=/Applications/Xcode_27.2.app/Contents/Developer' >> "$GITHUB_ENV"
+      - name: Enable long source paths on Windows
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: false
+      - name: Check out the public ABI contract only
+        run: |
+          git -c url."https://github.com/".insteadOf=git@github.com: submodule update --init sdk/contract
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '10.15.1'
+      - run: pnpm install --frozen-lockfile
+      - name: Linux native renderer prerequisites
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build clang libclang-dev pkg-config libfontconfig1-dev libgl1-mesa-dev
+      - name: Test real engine, persistence, asynchronous requests and C ABI
+        run: cargo test -p container-sdk -p container-sdk-ffi --no-default-features --features quickjs-native,skia-backend --locked -- --test-threads=1
+
+  native:
+    name: Native SDK (${{ matrix.target }})
+    needs: contracts
+    if: inputs.suite == 'native' || inputs.suite == 'full'
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON((inputs.suite == 'full' || inputs.platform == 'all') && '[{"os":"xcode-27","target":"aarch64-apple-darwin"},{"os":"xcode-27","target":"x86_64-apple-darwin"},{"os":"xcode-27","target":"aarch64-apple-ios"},{"os":"xcode-27","target":"aarch64-apple-ios-sim"},{"os":"xcode-27","target":"x86_64-apple-ios"},{"os":"ubuntu-22.04","target":"aarch64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-unknown-linux-gnu"},{"os":"windows-2022","target":"x86_64-pc-windows-msvc"}]' || inputs.platform == 'macos' && '[{"os":"xcode-27","target":"aarch64-apple-darwin"},{"os":"xcode-27","target":"x86_64-apple-darwin"},{"os":"xcode-27","target":"aarch64-apple-ios"},{"os":"xcode-27","target":"aarch64-apple-ios-sim"},{"os":"xcode-27","target":"x86_64-apple-ios"}]' || inputs.platform == 'windows' && '[{"os":"windows-2022","target":"x86_64-pc-windows-msvc"}]' || '[{"os":"ubuntu-22.04","target":"aarch64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-linux-android","android":true},{"os":"ubuntu-22.04","target":"x86_64-unknown-linux-gnu"}]') }}
+    runs-on: ${{ matrix.os }}
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+    timeout-minutes: 90
+    steps:
+      - name: Select the recorded Apple toolchain
+        if: runner.os == 'macOS'
+        shell: bash
+        run: echo 'DEVELOPER_DIR=/Applications/Xcode_27.2.app/Contents/Developer' >> "$GITHUB_ENV"
+      - name: Enable long source paths on Windows
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: false
+      - name: Check out the public ABI contract only
+        run: |
+          git -c url."https://github.com/".insteadOf=git@github.com: submodule update --init sdk/contract
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
+          targets: ${{ matrix.target }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+      - name: Linux native build prerequisites
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build clang libclang-dev pkg-config libfontconfig1-dev libgl1-mesa-dev
+      - name: Java for Android command-line tools
+        if: matrix.android
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Android toolchain
+        if: matrix.android
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install pinned Android NDK
+        if: matrix.android
+        shell: bash
+        run: |
+          sdkmanager 'ndk;27.1.12297006'
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
+      - name: Build versioned native SDK
+        run: node scripts/sdk-native-build.mjs --target ${{ matrix.target }}
+      - name: Collect notices for the exact native feature graph
+        shell: bash
+        run: |
+          node --input-type=module -e "import {nativeBuildPlan} from './scripts/lib/sdk-native-features.mjs'; import {spawnSync} from 'node:child_process'; const target='${{ matrix.target }}'; const result=spawnSync(process.execPath,['scripts/sdk-licenses.mjs','--target',target,'--features',nativeBuildPlan(target).features.join(',')],{stdio:'inherit'}); process.exit(result.status??1);"
+      - name: Relocated C consumer
+        if: matrix.target == 'x86_64-apple-darwin' || matrix.target == 'x86_64-unknown-linux-gnu'
+        run: node scripts/sdk-c-consumer.mjs --target ${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sdk-native-${{ matrix.target }}
+          path: artifacts/sdk/native/${{ matrix.target }}/
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdk-licenses-${{ matrix.target }}
+          path: artifacts/sdk/licenses/${{ matrix.target }}/
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always() && (matrix.target == 'x86_64-apple-darwin' || matrix.target == 'x86_64-unknown-linux-gnu')
+        with:
+          name: sdk-c-consumer-${{ matrix.target }}
+          path: artifacts/sdk/validation/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Scope of this job
+        shell: bash
+        run: echo 'Native artifacts require separate packaged-consumer and device/GUI validation before support is advertised.'
+
+  package-runtime:
+    name: Freeze and verify nine runtime archives
+    needs: native
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: false
+      - run: git submodule update --init sdk/contract
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: sdk-native-*
+          path: artifacts/downloads/native
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: sdk-licenses-*
+          path: artifacts/downloads/licenses
+      - name: Stage exact native producer receipts and notices
+        run: |
+          python3 - <<'PYTHON'
+          from pathlib import Path
+          import shutil
+          for kind in ['native', 'licenses']:
+              destination = Path('artifacts/sdk') / kind
+              destination.mkdir(parents=True, exist_ok=True)
+              for folder in (Path('artifacts/downloads') / kind).iterdir():
+                  target = folder.name.removeprefix('sdk-' + kind + '-')
+                  shutil.copytree(folder, destination / target)
+          shutil.copyfile('LICENSE', 'artifacts/sdk/native/RUNTIME-LICENSE')
+          PYTHON
+      - name: Validate complete clean native target set
+        run: node scripts/public-runtime-inputs.mjs artifacts/sdk/native
+      - name: Package immutable runtime archives
+        run: node tools/runtime-artifacts/tools/package-artifacts.mjs --source-commit "$GITHUB_SHA" --native-root artifacts/sdk/native --licenses-root artifacts/sdk/licenses --out-dir artifacts/public-runtime
+      - name: Install and verify every archive offline
+        run: node tools/runtime-artifacts/tools/verify-offline.mjs --contract-dir sdk/contract --release-dir artifacts/public-runtime --work-dir artifacts/offline --report artifacts/offline/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-runtime
+          path: artifacts/public-runtime/
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-runtime-offline-validation
+          path: artifacts/offline/report.json
+          retention-days: 30

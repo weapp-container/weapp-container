@@ -1,8 +1,9 @@
 {
   "repository": "weapp-container/weapp-container",
-  "runtimeVersion": "0.1.0-preview.6.0",
+  "runtimeVersion": "0.1.0-preview.7.0",
   "abiVersion": 1,
-  "contractVersion": "0.1.0-preview.5.7",
+  "contractVersion": "0.1.0-preview.7.0",
   "headerSha256": "2a4761c0650c72ccd8d0a791fb66ee48888e1ce182ba99f0c92673a2c44a8e9b",
-  "contractLicenseSha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  "contractLicenseSha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+  "glHeaderSha256": "8812d0e25f023c745ffad7206552b2a58dce3d7291f0e2a661e6f4e521558de7"
 }

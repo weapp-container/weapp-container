@@ -1553,7 +1553,7 @@
       },
       "workspaceLock": {
         "path": "Cargo.lock",
-        "sha256": "3f4c7fd5a757ca07a89801ca47339c54cb5ca81652d5f475d85a13eab3a35189"
+        "sha256": "d21372cda5f0ad56048ed301f51af961262d7e117a6493acb195ae3c1d8610a5"
       },
       "coreAssembly": {
         "path": "crates/container-core/src/lib.rs",
@@ -2045,11 +2045,11 @@
       },
       "androidSession": {
         "path": "sdk/android/library/src/main/java/com/sonofmagic/weapp/container/sdk/WeappContainerSession.kt",
-        "sha256": "cdf3de18f600fe8e955f0799f02d4a8459b40740ab16e437281a66cdeb633a00"
+        "sha256": "9d67374c6ad8493777be38b32ca44a34f2959d5192aeb5e5e2a519dcf817c6f2"
       },
       "flutterIos": {
         "path": "sdk/flutter/weapp_container_ios/ios/Classes/WeappContainerIosPlugin.swift",
-        "sha256": "c383198c8a7e9f16b0ab16874410ec24dc73155871cbb325af5f38b198d17a2d"
+        "sha256": "1879615bd70eec10080a2cae3eb2b96ffa039f6ba4a18e904b7af6bbc3c5ce23"
       },
       "iosTypes": {
         "path": "sdk/ios/Sources/WeappContainer/Types.swift",

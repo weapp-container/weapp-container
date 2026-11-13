@@ -12,6 +12,7 @@ import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtif
 import { loadShowcaseNativeFont, retainShowcaseNativeFont, verifyShowcaseNativeFont, showcaseNativeFontEnvironment, verifyShowcaseNativeFontArtifact } from './lib/showcase-native-font.mjs';
 import { hardenLinuxStaticArchive } from './lib/sdk-native-hardening.mjs';
 import { hardenDarwinStaticArchive } from './lib/sdk-darwin-hardening.mjs';
+import { portableNativeReceipt } from './lib/sdk-portable-native-receipt.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const options = parseNativeBuildArgs(process.argv.slice(2));
@@ -90,6 +91,17 @@ const quotedNativeFlags = nativePathFlags.map(flag => JSON.stringify(flag)).join
 env.CC_SHELL_ESCAPED_FLAGS = '1';
 for (const variable of ['CFLAGS', 'CXXFLAGS']) {
   env[variable] = [env[variable], quotedNativeFlags].filter(Boolean).join(' ');
+}
+if (platform === 'windows') {
+  // Upstream cached Skia libraries retain their producer's __FILE__ paths.
+  // Rebuild this dependency with Clang's path maps and preserve its other GN flags.
+  const flags = sourcePathMappings.map(([source, destination]) =>
+    `/clang:-ffile-prefix-map=${source.replaceAll('\\', '/')}=${destination}`);
+  env.FORCE_SKIA_BUILD = '1';
+  env.SKIA_GN_ARGS = [env.SKIA_GN_ARGS, `extra_cflags += ${JSON.stringify(flags)}`].filter(Boolean).join('\n');
+  env.CARGO_ENCODED_RUSTFLAGS = [env.CARGO_ENCODED_RUSTFLAGS, '-C', 'link-arg=/PDBALTPATH:weapp_container_sdk.pdb'].filter(Boolean).join('\x1f');
+  toolchain.skiaSourceBuild = true;
+  toolchain.skiaSourcePathsRemapped = true;
 }
 const runtimeDependencies = [];
 const runtimeNotices = [];
@@ -207,7 +219,7 @@ try { if (exitCode === 0) {
   for (const file of [...files, ...runtimeDependencies]) {
     const destination = resolve(output, basename(file));
     copyFileSync(file, destination);
-    if (distribution.policy && platform === 'linux' && basename(file) === 'libweapp_container_sdk.a') {
+    if (platform === 'linux' && basename(file) === 'libweapp_container_sdk.a') {
       receipt.artifactHardening ??= [];
       receipt.artifactHardening.push({ file: basename(file), ...hardenLinuxStaticArchive(destination, {
         sourcePrefixes: sourcePathMappings.map(([source]) => source),
@@ -280,6 +292,12 @@ try { if (exitCode === 0) {
   receipt.error = error.message;
 }
 receipt.finishedAt = new Date().toISOString();
-writeFileSync(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`);
+const localEvidence = `${JSON.stringify(receipt, null, 2)}\n`;
+const validationDirectory = resolve(output, 'validation');
+mkdirSync(validationDirectory, { recursive: true });
+writeFileSync(resolve(validationDirectory, 'producer.json'), localEvidence);
+const publishedReceipt = receipt.status === 'built' && receipt.distributionProfile === 'full'
+  ? portableNativeReceipt(receipt, createHash('sha256').update(localEvidence).digest('hex')) : receipt;
+writeFileSync(receiptPath, `${JSON.stringify(publishedReceipt, null, 2)}\n`);
 console.log(JSON.stringify({ status: receipt.status, target, receipt: receiptPath, artifacts: receipt.artifacts }, null, 2));
 process.exitCode = receipt.exitCode;

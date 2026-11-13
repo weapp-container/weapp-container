@@ -63,8 +63,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "README.md"
       },
-      "reviewedChineseSummary": "Weapp Container；选择你的入口；从源码开始；可选：使用 weapp-vite 开发示例；目录与接入；检查；许可与历史",
-      "reviewedChineseSha256": "c2bc1d6bbd378f0248321e79d75135eaabbea435156fa810745cb74c1f1621b9",
+      "reviewedChineseSummary": "Weapp Container；选择你的入口；从源码开始；可选：使用 weapp-vite 开发示例；目录与接入；检查；许可与历史；已复核 preview.7 公开发行、工具链与生命周期更新",
+      "reviewedChineseSha256": "0d3b307ad7bec9b396f177326ddeb96f51c5f6e3b19f463b9f808cca0555976e",
       "legacyHeadingIds": [
         "weapp-container",
         "从源码开始",
@@ -2242,8 +2242,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/sdk-source-build.md"
       },
-      "reviewedChineseSummary": "明确核心固定 preview.6 源码与 SDK 主分支 preview.7 发行候选的版本边界；保留构建、许可和设备验收条件。",
-      "reviewedChineseSha256": "3a06f0bae6c70a277f58596aa00e45974dd7b4bedc8466d260d47bc09860ebd6",
+      "reviewedChineseSummary": "明确核心固定 preview.6 源码与 SDK 主分支 preview.7 发行候选的版本边界；保留构建、许可和设备验收条件。；已复核 preview.7 公开发行、工具链与生命周期更新",
+      "reviewedChineseSha256": "a4a653c2036d973ebb3f92b7b95a0e40d3e64c32e48bbebc0c534dffc7186296",
       "legacyHeadingIds": []
     },
     {
@@ -3322,6 +3322,32 @@
       },
       "reviewedChineseSummary": "说明独立桌面窗口、嵌入 SDK 与 Flutter 的架构边界，记录 GL 生命周期与后续平台验收优先级。",
       "reviewedChineseSha256": "0ed7222fad02783f29b88934210f7575edef71660cfb95b06d676387316960fa",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/public-sdk-release",
+      "zh": "docs/public-sdk-release.md",
+      "en": "docs/public-sdk-release.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/public-sdk-release.md"
+      },
+      "reviewedChineseSummary": "公开发行入口、安装、逐平台验证与尚未完成的注册源发布",
+      "reviewedChineseSha256": "54dbca23b26697d0ae251a50156d5891a7e9c7e5af9668412db6d0d4fee8c08a",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/public-sdk-release.zh-CN",
+      "zh": "docs/public-sdk-release.zh-CN.md",
+      "en": "docs/public-sdk-release.zh-CN.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/public-sdk-release.zh-CN.md"
+      },
+      "reviewedChineseSummary": "公开发行入口、安装、逐平台验证与尚未完成的注册源发布",
+      "reviewedChineseSha256": "e63924cfe9c13d4626bb0dd999c6e6d267a1197ca0899b840c10184feafa0bea",
       "legacyHeadingIds": []
     }
   ],

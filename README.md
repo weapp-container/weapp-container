@@ -15,6 +15,8 @@
 
 当前为 **preview**。源码可公开获取和构建，各平台的可构建、可安装、已运行与已验收状态分别记录；不承诺微信完整兼容。先查看[能力矩阵](docs/capability-matrix.md)、[平台状态](https://container.weapp.dev/docs/platforms/)及[验证方法](docs/conformance/README.md)。
 
+公开预览版 `0.1.0-preview.7.0` 的核心运行库、iOS、Desktop 和 CocoaPods Specs 已提供公开下载。npm、Maven Central 和 pub.dev 尚未全部发布；安装命令、验证范围及阻塞项见[发布状态](docs/public-sdk-release.md)。
+
 <a id="choose-a-starting-point"></a>
 ## 选择你的入口
 

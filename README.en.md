@@ -15,6 +15,8 @@ Start with a native mini-program directory or an existing framework build. Integ
 
 The project is in **preview**. Source is public and can be built locally. Build, installation, runtime, and acceptance results are recorded separately for each platform; complete WeChat compatibility is not claimed. Read the [capability matrix](docs/capability-matrix.en.md), [platform status](https://container.weapp.dev/en/docs/platforms/), and [validation methodology](docs/conformance/README.en.md) before choosing a target.
 
+Core runtime, iOS, Desktop and CocoaPods Specs downloads for `0.1.0-preview.7.0` are public. npm, Maven Central and pub.dev publication is incomplete; see the [release status](docs/public-sdk-release.en.md) for installation commands, validation scope and blockers.
+
 <a id="选择你的入口"></a>
 ## Choose a starting point
 

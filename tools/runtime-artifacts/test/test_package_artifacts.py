@@ -52,6 +52,12 @@ class PackagerBoundaryTests(unittest.TestCase):
                 struct.pack_into("<H", data, 18, 183 if target.startswith("aarch64") else 62)
                 data.extend(name.encode() + b" isolated fixture")
                 data = bytes(data)
+            elif name.endswith(".dll"):
+                data = bytearray(70)
+                data[:2] = b"MZ"
+                struct.pack_into("<I", data, 60, 64)
+                data[64:70] = b"PE\0\0\x64\x86"
+                data = bytes(data)
             else:
                 data = bytearray(64)
                 data[:4] = b"\xcf\xfa\xed\xfe"
@@ -59,8 +65,9 @@ class PackagerBoundaryTests(unittest.TestCase):
                 data = bytes(data)
             (folder / name).write_bytes(data)
         (folder / "weapp_container_sdk.h").write_bytes((ROOT / "test/fixtures/weapp_container_sdk.h").read_bytes())
+        (folder / "weapp_container_sdk_gl.h").write_bytes((ROOT / "test/fixtures/weapp_container_sdk_gl.h").read_bytes())
         (folder / "RUNTIME-LICENSE").write_bytes((ROOT / "RUNTIME-LICENSE").read_bytes())
-        names = required + ["weapp_container_sdk.h"]
+        names = required + ["weapp_container_sdk.h", "weapp_container_sdk_gl.h"]
         if platform == "android":
             (folder / "platform-notices").mkdir()
             name = "platform-notices/android-ndk-fixture-NOTICE"
@@ -128,6 +135,7 @@ class PackagerBoundaryTests(unittest.TestCase):
             self.assertEqual(contract["repository"],"weapp-container/sdk-contract")
             self.assertEqual(contract["headerSha256"],packager.HEADER_SHA256)
             self.assertEqual(tar.extractfile("weapp_container_sdk.h").read(),(ROOT/"test/fixtures/weapp_container_sdk.h").read_bytes())
+            self.assertEqual(sha(tar.extractfile("weapp_container_sdk_gl.h").read()),packager.GL_HEADER_SHA256)
             for member in tar:
                 self.assertTrue(member.isfile());self.assertFalse(member.name.startswith("/"));self.assertEqual(member.mtime,0)
         provenance = json.loads((self.out/"provenance.json").read_text())
@@ -135,6 +143,32 @@ class PackagerBoundaryTests(unittest.TestCase):
         self.assertEqual(provenance["headerSha256"],packager.HEADER_SHA256)
         self.assertNotIn(str(self.root),(self.out/"provenance.json").read_text())
         self.assertIn("manifest.json",(self.out/"SHA256SUMS").read_text())
+
+    def test_packager_requires_the_actual_native_producer_feature_plan(self):
+        result = subprocess.run(["node", "--input-type=module", "-e",
+            "import {NATIVE_TARGETS,nativeBuildPlan} from './scripts/lib/sdk-native-features.mjs'; console.log(JSON.stringify(Object.fromEntries(Object.keys(NATIVE_TARGETS).map(target=>[target,nativeBuildPlan(target).features]))));"],
+            cwd=ROOT.parents[1], check=True, capture_output=True, text=True)
+        plans = json.loads(result.stdout)
+        self.assertEqual(set(plans), set(packager.TARGETS))
+        for target, plan in plans.items():
+            self.assertEqual(set(plan), set(packager.TARGETS[target][3]), target)
+
+    def test_windows_archive_keeps_the_dll_and_import_library_required_by_consumers(self):
+        target = "x86_64-pc-windows-msvc"
+        self.make_native(target)
+        self.package()
+        pin = json.loads((self.out / "manifest.json").read_text())["artifacts"][0]
+        with tarfile.open(self.out / pin["fileName"], "r:gz") as archive:
+            self.assertTrue({"weapp_container_sdk.dll", "weapp_container_sdk.dll.lib"}.issubset(archive.getnames()))
+        (self.native / target / "weapp_container_sdk.dll").write_bytes(b"wrong architecture")
+        self.repin(target, "weapp_container_sdk.dll")
+        self.assert_rejected("PE image")
+
+    def test_extension_header_cannot_be_replaced_even_with_a_rewritten_receipt(self):
+        self.make_native(LINUX)
+        (self.native / LINUX / "weapp_container_sdk_gl.h").write_text("altered public extension")
+        self.repin(LINUX, "weapp_container_sdk_gl.h")
+        self.assert_rejected("GL extension header")
 
     def test_html_is_limited_to_complete_legal_notices_in_license_trees(self):
         self.make_native(LINUX)
@@ -274,18 +308,37 @@ class PackagerBoundaryTests(unittest.TestCase):
         self.assert_rejected("Existing release archive")
         self.assert_rejected("Existing release archive",target="unknown-runtime")
 
-    def make_desktop(self):
-        self.make_native(LINUX)
+    def make_desktop(self, target=LINUX):
+        self.make_native(target)
+        windows = target.endswith("-windows-msvc")
         install=self.root/"desktop-install"
-        for name in ["lib","include","share/weapp-container"]:(install/name).mkdir(parents=True,exist_ok=True)
-        (install/"lib/libweapp_container_sdk.a").write_bytes((self.native/LINUX/"libweapp_container_sdk.a").read_bytes())
+        for name in ["lib","include","share/weapp-container"] + (["bin"] if windows else []):(install/name).mkdir(parents=True,exist_ok=True)
+        if windows:
+            for folder, name in [("lib", "weapp_container_sdk.dll.lib"), ("bin", "weapp_container_sdk.dll")]:
+                (install/folder/name).write_bytes((self.native/target/name).read_bytes())
+        else:
+            (install/"lib/libweapp_container_sdk.a").write_bytes((self.native/target/"libweapp_container_sdk.a").read_bytes())
         (install/"lib/libweapp_container_desktop.a").write_bytes(b"!<arch>\npublic wrapper fixture")
         (install/"include/weapp_container_sdk.h").write_bytes((ROOT/"test/fixtures/weapp_container_sdk.h").read_bytes())
         (install/"share/weapp-container/README.md").write_text("Public installed wrapper fixture\n")
-        receipt={"schemaVersion":1,"sdkVersion":packager.VERSION,"status":"verified","platform":"linux-x64","sourceCommit":"a"*40,"sourceDirty":False,"native":[self.identity(LINUX)],"checks":[{"label":"isolated fixture validation","exitCode":0}],"artifacts":[]}
-        for file in sorted((install/"lib").iterdir()):receipt["artifacts"].append({"file":file.relative_to(install).as_posix(),"sha256":sha(file.read_bytes())})
+        receipt={"schemaVersion":1,"sdkVersion":packager.VERSION,"status":"verified","platform":"windows-x64" if windows else "linux-x64","sourceCommit":"a"*40,"sourceDirty":False,"native":[self.identity(target)],"checks":[{"label":"isolated fixture validation","exitCode":0}],"artifacts":[]}
+        for folder in ["lib"] + (["bin"] if windows else []):
+            for file in sorted((install/folder).iterdir()):receipt["artifacts"].append({"file":file.relative_to(install).as_posix(),"sha256":sha(file.read_bytes())})
         self.write_json(install/"package.json",receipt)
-        return install,receipt,dict(component="desktop-sdk",platform="linux",arch="x86_64",install_dir=str(install))
+        return install,receipt,dict(component="desktop-sdk",platform="windows" if windows else "linux",arch="x86_64",install_dir=str(install))
+
+    def test_windows_desktop_requires_exact_dll_and_import_library(self):
+        install,receipt,options=self.make_desktop("x86_64-pc-windows-msvc")
+        self.package(**options)
+        manifest=json.loads((self.out/"manifest.json").read_text())
+        with tarfile.open(self.out/manifest["artifacts"][0]["fileName"]) as archive:
+            self.assertIn("bin/weapp_container_sdk.dll",archive.getnames())
+            self.assertIn("lib/weapp_container_sdk.dll.lib",archive.getnames())
+        library=install/"bin/weapp_container_sdk.dll"
+        library.write_bytes(library.read_bytes()+b"foreign runtime")
+        next(item for item in receipt["artifacts"] if item["file"].endswith(".dll"))["sha256"]=sha(library.read_bytes())
+        self.write_json(install/"package.json",receipt)
+        self.assert_rejected("Installed core archive",**options)
 
     def test_desktop_installation_binds_native_and_wrapper_receipts(self):
         install,receipt,options=self.make_desktop();self.package(**options)
@@ -311,7 +364,7 @@ class PackagerBoundaryTests(unittest.TestCase):
 
     def make_android(self):
         for target in ANDROID:self.make_native(target)
-        install=self.root/"android-install";path=install/f"maven/com/sonofmagic/weapp/weapp-container-android/{packager.VERSION}/weapp-container-android-{packager.VERSION}.aar";path.parent.mkdir(parents=True)
+        install=self.root/"android-install";path=install/f"maven/io/github/weapp-container/weapp-container-android/{packager.VERSION}/weapp-container-android-{packager.VERSION}.aar";path.parent.mkdir(parents=True)
         binaries=[]
         with zipfile.ZipFile(path,"w",compression=zipfile.ZIP_DEFLATED) as archive:
             archive.writestr("AndroidManifest.xml",b"public wrapper fixture manifest")
@@ -377,8 +430,9 @@ class PackagerBoundaryTests(unittest.TestCase):
     def make_ios(self):
         for target in IOS:self.make_native(target)
         install=self.root/"ios-install";install.mkdir()
-        for name in ["Package.swift","WeappContainer.podspec","LICENSE","CONTRACT.md","README.md","ORIGIN.json"]:
+        for name in ["Package.swift","WeappContainer.podspec","LICENSE","CONTRACT.md","README.md","README.en.md","ORIGIN.json"]:
             (install/name).write_text("{}\n" if name.endswith(".json") else "Public wrapper structural fixture\n")
+        (install/"docs").mkdir();(install/"docs/INSTALL.md").write_text("Public installation notes\n")
         sources=install/"Sources/WeappContainer";sources.mkdir(parents=True);(sources/"Container.swift").write_text("// Authored public wrapper fixture\n")
         framework=install/"Frameworks/WeappContainerNative.xcframework";framework.mkdir(parents=True)
         entries=[]
@@ -407,6 +461,8 @@ class PackagerBoundaryTests(unittest.TestCase):
         with tarfile.open(self.out/pin["fileName"]) as archive:
             self.assertIn("Frameworks/WeappContainerNative.xcframework/Info.plist",archive.getnames())
             self.assertIn("Sources/WeappContainer/Container.swift",archive.getnames())
+            self.assertIn("README.en.md",archive.getnames())
+            self.assertIn("docs/INSTALL.md",archive.getnames())
             self.assertEqual(json.loads(archive.extractfile("build.json").read())["status"],"built")
 
     def test_ios_cannot_repin_a_foreign_simulator_archive(self):
