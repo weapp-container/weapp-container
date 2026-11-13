@@ -2,6 +2,7 @@ name: Public source checks
 
 on:
   pull_request:
+  merge_group:
   push:
     branches: [main]
   workflow_dispatch:
@@ -10,47 +11,40 @@ permissions:
   contents: read
 
 concurrency:
-  group: public-source-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 env:
   CARGO_INCREMENTAL: '0'
   RUSTUP_TOOLCHAIN: '1.99.1'
 
 jobs:
-  source:
-    name: Source and contract checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - uses: pnpm/action-setup@v4
-      - run: pnpm install --frozen-lockfile
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: '1.99.1'
-      - run: pnpm submodule:verify
-      - run: pnpm opensource:check && pnpm docs:check && pnpm docs:workspace
-      - run: node scripts/generate-host-services-matrix.mjs --check
-      - run: node --test scripts/core-api-inventory.test.mjs scripts/host-api-matrix.test.mjs scripts/host-api-matrix-io.test.mjs
-      - run: pnpm naming:check && pnpm naming:test
-      - run: pnpm container:manifest:test
-      - run: npm install --ignore-scripts --no-audit --no-fund
-        working-directory: sdk/react-native
-      - run: pnpm sdk:contracts:test
-      - run: pnpm runtime:artifacts:test
-      - run: node --test scripts/check-open-source.test.mjs scripts/check-doc-links.test.mjs scripts/verify-submodule.test.mjs scripts/sdk-licenses.test.mjs scripts/sdk-native-build.test.mjs scripts/check-product-naming.test.mjs scripts/check-toolchain.test.mjs
-
-  rust:
-    name: Rust workspace
+  changes:
+    name: Plan checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.plan.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Select checks from the complete tested diff
+        id: plan
+        env:
+          CI_EVENT_NAME: ${{ github.event_name }}
+          CI_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          CI_HEAD_SHA: ${{ github.sha }}
+        run: node scripts/ci-plan.mjs
+
+  source-checks:
+    name: Source policy and tooling
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,23 +54,182 @@ jobs:
         with:
           node-version: '24'
       - uses: pnpm/action-setup@v4
-      - run: pnpm install --frozen-lockfile
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: '1.99.1'
-          components: rustfmt, clippy
-      - uses: ./.github/actions/setup-linux-native
       - uses: ./.github/actions/cache-downloads
         with:
-          cargo: 'true'
+          pnpm-project: .
+      - run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
+      - name: Validate all workflows with checksum-pinned actionlint
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 3 https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz -o "$RUNNER_TEMP/actionlint.tar.gz"
+          printf '%s  %s\n' '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8' "$RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/actionlint-bin"
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP/actionlint-bin" actionlint
+          "$RUNNER_TEMP/actionlint-bin/actionlint" -color
+      - run: node --test scripts/ci-plan.test.mjs
+      - run: pnpm submodule:verify
+      # Bilingual documentation owns docs:check and docs:workspace.
+      - run: pnpm opensource:check
+      - run: node scripts/generate-host-services-matrix.mjs --check
+      - run: pnpm naming:check && pnpm naming:test
+      - run: pnpm container:manifest:test
+      - run: pnpm runtime:artifacts:test
+      - run: node --test scripts/check-open-source.test.mjs scripts/check-doc-links.test.mjs scripts/verify-submodule.test.mjs scripts/sdk-licenses.test.mjs scripts/sdk-native-build.test.mjs scripts/check-toolchain.test.mjs
+
+  api-inventory:
+    name: API inventory and evidence boundaries
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - run: pnpm install --frozen-lockfile
+      - run: node --test scripts/core-api-inventory.test.mjs scripts/host-api-matrix.test.mjs scripts/host-api-matrix-io.test.mjs
+
+  sdk-contracts:
+    name: SDK source contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+        working-directory: sdk/react-native
+      - run: node scripts/test-sdk-contracts.mjs
+
+  format:
+    name: Rust format
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
+          components: rustfmt
       - run: cargo fmt --all -- --check
-      - run: cargo check --workspace --all-targets --locked
-      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+  rust-checks:
+    name: Rust / ${{ matrix.suite }}
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [lint, tests, desktop-gpu]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/cache-downloads
+        with:
+          pnpm-project: .
+      - run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.1'
+          components: clippy
+      - uses: ./.github/actions/setup-linux-native
+      - uses: ./.github/actions/cache-rust-build
+        with:
+          key: public-ci-${{ matrix.suite }}
+      - name: Check workspace
+        if: matrix.suite == 'lint'
+        run: cargo check --workspace --all-targets --locked
+      - name: Clippy workspace
+        if: matrix.suite == 'lint'
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Test complete workspace
+        if: matrix.suite == 'tests'
+        # Deadline-sensitive engine contracts stay serial within their runner.
+        run: cargo test --workspace --no-fail-fast --locked -- --test-threads=1
       - name: Check desktop GPU integration
+        if: matrix.suite == 'desktop-gpu'
         run: cargo clippy -p container-simulator --all-targets --features desktop-window --locked -- -D warnings
       - name: Exercise an X11 GL drawable with Mesa (not hardware GPU acceptance)
+        if: matrix.suite == 'desktop-gpu'
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a cargo test -p container-host-desktop -p container-simulator --features container-simulator/desktop-window --locked x11_gl_drawable_renders_resizes_reloads_and_detaches -- --ignored --test-threads=1 --nocapture
-      # Deadline-sensitive engine contracts share the runner's CPU budget.
-      - run: cargo test --workspace --no-fail-fast --locked -- --test-threads=1
+
+  # Stable names remain usable as required checks after splitting the work.
+  # A failed/cancelled prerequisite must never become a successful skipped gate.
+  source:
+    name: Source and contract checks
+    if: always()
+    needs: [changes, source-checks, api-inventory, sdk-contracts]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every applicable source check
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node --input-type=module <<'NODE'
+          const jobs = JSON.parse(process.env.RESULTS);
+          const code = jobs.changes.outputs.code;
+          const passed = jobs.changes.result === 'success' && ['true', 'false'].includes(code)
+            && ['source-checks', 'sdk-contracts'].every(name => jobs[name].result === 'success')
+            && jobs['api-inventory'].result === (code === 'true' ? 'success' : 'skipped');
+          console.log(jobs);
+          if (!passed) process.exit(1);
+          NODE
+
+  rust:
+    name: Rust workspace
+    if: always()
+    needs: [changes, format, rust-checks]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every applicable Rust check
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node --input-type=module <<'NODE'
+          const jobs = JSON.parse(process.env.RESULTS);
+          const code = jobs.changes.outputs.code;
+          const passed = jobs.changes.result === 'success' && ['true', 'false'].includes(code)
+            && ['format', 'rust-checks'].every(name => jobs[name].result === (code === 'true' ? 'success' : 'skipped'));
+          console.log(jobs);
+          if (!passed) process.exit(1);
+          NODE

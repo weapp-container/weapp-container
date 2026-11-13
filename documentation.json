@@ -48,8 +48,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "CONTRIBUTING.md"
       },
-      "reviewedChineseSummary": "参与贡献",
-      "reviewedChineseSha256": "be70275ce51d00e7ee592e1b9093ec9b6f2186cda3f09d293295bcb9388b3070",
+      "reviewedChineseSummary": "参与贡献；并行 CI 检查、文档快速路径、汇总门禁与原生归档依赖",
+      "reviewedChineseSha256": "52f1db5ab127b89e690dd1bafa27e87135964d6db22fcc98d617f5a4a30df68b",
       "legacyHeadingIds": [
         "参与贡献"
       ]

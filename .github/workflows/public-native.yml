@@ -20,6 +20,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  CARGO_INCREMENTAL: '0'
+
 jobs:
   contracts:
     name: SDK contracts (${{ matrix.os }})
@@ -61,12 +64,15 @@ jobs:
       - name: Linux native renderer prerequisites
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang libclang-dev pkg-config libfontconfig1-dev libgl1-mesa-dev
+      - uses: ./.github/actions/cache-rust-build
+        with:
+          key: sdk-contracts
       - name: Test real engine, persistence, asynchronous requests and C ABI
         run: cargo test -p container-sdk -p container-sdk-ffi --no-default-features --features quickjs-native,skia-backend --locked -- --test-threads=1
 
   native:
     name: Native SDK (${{ matrix.target }})
-    needs: contracts
+    # Independent builds start alongside contracts; packaging gates on both.
     if: inputs.suite == 'native' || inputs.suite == 'full'
     strategy:
       fail-fast: false
@@ -120,6 +126,9 @@ jobs:
         run: |
           sdkmanager 'ndk;27.1.12297006'
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
+      - uses: ./.github/actions/cache-rust-build
+        with:
+          key: sdk-native-${{ matrix.target }}
       - name: Build versioned native SDK
         run: node scripts/sdk-native-build.mjs --target ${{ matrix.target }}
       - name: Collect notices for the exact native feature graph
@@ -155,7 +164,7 @@ jobs:
 
   package-runtime:
     name: Freeze and verify nine runtime archives
-    needs: native
+    needs: [contracts, native]
     runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
