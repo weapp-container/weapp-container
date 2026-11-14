@@ -2094,8 +2094,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "复核手动启动、固定源码构建14归档、草稿人工发布、公开版本锁分离、失败重试及匿名复验流程",
-      "reviewedChineseSha256": "9ead7207bea891d07eb0ba82da615d967d5a86ad6fc6ffe2c3655be4a27f49e7",
+      "reviewedChineseSummary": "preview.7.1 各注册源实际状态；runtime、原生 GitHub release、Specs 与 Flutter interface 匿名验证；Android、Trunk、RN 和 Flutter 其余包的认证或依赖阻塞",
+      "reviewedChineseSha256": "4ab2bef9898936048232ec827916475fbd004a58e02cd72283f191f61e8bcf01",
       "legacyHeadingIds": []
     },
     {
