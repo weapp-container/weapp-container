@@ -57,6 +57,11 @@ test('accepts complete correlated pack surface evidence', () => {
   const { probe, manifest } = fixture()
   assert.equal(validateIOSAppEvidence(probe, manifest).integrityRoot, manifest.integrity.root)
 })
+test('accepts a Metal runtime whose CPU raster surface is not active', () => {
+  const { probe, manifest } = fixture()
+  probe.runtimeSurface.nativeSurface = false
+  assert.equal(validateIOSAppEvidence(probe, manifest).mode, 'smoke')
+})
 for (const mode of ['smoke', 'embedding']) {
   const make = () => mode === 'embedding' ? embeddingFixture() : fixture()
   const validate = mode === 'embedding' ? validateIOSEmbeddingEvidence : validateIOSAppEvidence

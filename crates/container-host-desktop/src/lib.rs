@@ -452,6 +452,14 @@ impl DesktopHost {
 mod tests {
     use super::*;
 
+    fn test_session_config() -> SessionConfig {
+        let mut config = SessionConfig::default();
+        if !engine_provider_compiled(config.engine) {
+            config.engine = EngineKind::V8;
+        }
+        config
+    }
+
     #[test]
     fn describes_each_desktop_target() {
         for target in [
@@ -510,7 +518,7 @@ mod tests {
         let mut host = DesktopHost::new(DesktopTarget::Macos);
         host.load_manifest_json(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
         )
         .unwrap();
         let response = host
@@ -551,7 +559,7 @@ mod tests {
         let mut host = DesktopHost::new(DesktopTarget::Linux);
         host.load_manifest_json(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
         )
         .unwrap();
         host.start_session("init").unwrap();

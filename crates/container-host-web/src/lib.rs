@@ -1677,6 +1677,14 @@ impl Default for WebWasmHost {
 mod tests {
     use super::*;
 
+    fn test_session_config() -> SessionConfig {
+        let mut config = SessionConfig::default();
+        if !engine_provider_compiled(config.engine) {
+            config.engine = EngineKind::V8;
+        }
+        config
+    }
+
     fn owner_api_manifest() -> container_ir::ContainerManifestV1 {
         use container_ir::{AppInfo, CompilerInfo, ContainerManifestV1};
         ContainerManifestV1 {
@@ -1747,7 +1755,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_options(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::ExternalFrame,
             },
@@ -1887,7 +1895,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_options(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::BrowserView,
             },
@@ -1942,7 +1950,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_options(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::ExternalFrame,
             },
@@ -2108,7 +2116,7 @@ mod tests {
             let mut host = WebHost::new();
             host.load_manifest_json_with_renderer_policy(
                 serde_json::to_vec(&mixed_renderer_policy_manifest()).unwrap(),
-                SessionConfig::default(),
+                test_session_config(),
                 WebSessionOptions {
                     renderer_mode: mode,
                 },
@@ -2162,7 +2170,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_renderer_policy(
             &bytes,
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::ExternalFrame,
             },
@@ -2189,7 +2197,7 @@ mod tests {
         );
         for (config, options, policy) in [
             (
-                SessionConfig::default(),
+                test_session_config(),
                 WebSessionOptions {
                     renderer_mode: WebRendererMode::ExternalFrame,
                 },
@@ -2200,7 +2208,7 @@ mod tests {
             (
                 SessionConfig {
                     renderer_override: Some(RendererProfile::WebView),
-                    ..Default::default()
+                    ..test_session_config()
                 },
                 WebSessionOptions {
                     renderer_mode: WebRendererMode::ExternalFrame,
@@ -2208,7 +2216,7 @@ mod tests {
                 WebRendererPolicy::Manifest,
             ),
             (
-                SessionConfig::default(),
+                test_session_config(),
                 WebSessionOptions {
                     renderer_mode: WebRendererMode::Software,
                 },
@@ -2236,7 +2244,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_options(
             serde_json::to_vec(&owner_api_manifest()).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::ExternalFrame,
             },
@@ -2338,7 +2346,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_options(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::BrowserView,
             },
@@ -2397,7 +2405,7 @@ mod tests {
         stale.session_id = "other-session".into();
         assert!(host.browser_view_resource(&stale, &digest).is_err());
         assert!(host
-            .load_manifest_json(b"{}", SessionConfig::default())
+            .load_manifest_json(b"{}", test_session_config())
             .is_err());
         assert_eq!(host.info().backend, WebBackend::BrowserViewExport);
         assert_eq!(
@@ -2700,7 +2708,7 @@ mod tests {
         ));
         host.load_manifest_json_with_options(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::ExternalFrame,
             },
@@ -2817,7 +2825,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_options(
             &manifest,
-            SessionConfig::default(),
+            test_session_config(),
             WebSessionOptions {
                 renderer_mode: WebRendererMode::ExternalFrame,
             },
@@ -2871,7 +2879,7 @@ mod tests {
 
         // A bad reload must retain both the old session and presentation mode.
         assert!(host
-            .load_manifest_json(b"{}", SessionConfig::default())
+            .load_manifest_json(b"{}", test_session_config())
             .is_err());
         assert_eq!(host.info().capabilities.renderer, "external-frame-export");
         assert_eq!(
@@ -2880,7 +2888,7 @@ mod tests {
             4
         );
 
-        host.load_manifest_json(&manifest, SessionConfig::default())
+        host.load_manifest_json(&manifest, test_session_config())
             .unwrap();
         assert_eq!(host.info(), HostInfo::current());
         host.unload();
@@ -2936,7 +2944,7 @@ mod tests {
         ));
         host.load_manifest_json(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
         )
         .unwrap();
         assert!(matches!(
@@ -2983,7 +2991,7 @@ mod tests {
         assert_eq!(response.messages[0].payload["host"]["kind"], "web");
         assert_eq!(
             response.messages[0].payload["engineProviderAvailable"],
-            engine_provider_compiled(EngineKind::Quickjs)
+            engine_provider_compiled(host.session.session().unwrap().config().engine)
         );
         let render = host
             .dispatch(BridgeEnvelope::request(

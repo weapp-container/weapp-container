@@ -66,7 +66,12 @@ const test = commandResult(cargo, [
   'test',
   '--lib',
   '--locked',
+  '--no-default-features',
+  '--features',
+  'quickjs-native',
   ...hostCrates.flatMap(crate => ['-p', crate]),
+  '--',
+  '--test-threads=1',
 ])
 const bridgePassed = test.status === 'passed'
 
@@ -78,6 +83,8 @@ function engineTest(engine) {
     '--no-default-features',
     '--features', `${engine}-native`,
     ...engineHostCrates.flatMap(crate => ['-p', crate]),
+    '--',
+    '--test-threads=1',
   ])
 }
 

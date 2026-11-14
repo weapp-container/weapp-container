@@ -76,7 +76,7 @@
     "runtime:dataset-values:smoke": "node scripts/dataset-values-smoke.mjs",
     "runtime:component-relations:smoke": "node scripts/component-relations-smoke.mjs",
     "embed:reference": "cargo run --manifest-path examples/apps/embed-runner/Cargo.toml --",
-    "api:inventory:verify": "node scripts/verify-api-inventory.mjs",
+    "api:inventory:verify": "node scripts/verify-api-inventory.mjs && node scripts/verify-host-api-catalog.mjs",
     "submodule:verify": "node scripts/verify-submodule.mjs",
     "naming:check": "node scripts/check-product-naming.mjs",
     "naming:test": "node --test scripts/check-product-naming.test.mjs",
