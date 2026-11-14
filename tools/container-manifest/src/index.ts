@@ -3,6 +3,7 @@ import { errorInfo } from './types.ts';
 export type { BuildResult, PackOptions, Diagnostic, Manifest, WxmlDocument, WxmlNode, CssRule, CapabilityOverrides } from './types.ts';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { parse as parseJavaScript } from '@babel/parser';
 import { canonicalize, compareUtf8, sha256 } from './json-integrity.mjs';
 import { buildRendererProfiles, RENDERING_MANIFEST_SCHEMA_VERSION } from './rendering.mjs';
 import { extractWxsDependencySpecifiers } from './wxs-dependencies.ts';
@@ -251,10 +252,18 @@ function scopeFor(file: string) {
   return 'page';
 }
 
-function formatFor(file: string) {
+function formatFor(file: string, source: string) {
   const ext = path.posix.extname(file).toLowerCase();
   if (ext === '.json') return 'json';
   if (ext === '.mjs' || file.toLowerCase().endsWith('.esm.js')) return 'esm';
+  if (ext === '.js') {
+    const ast = parseJavaScript(source, {
+      sourceType: 'unambiguous', allowReturnOutsideFunction: true, allowNewTargetOutsideFunction: true,
+    });
+    if (ast.program.body.some(node => node.type === 'ImportDeclaration'
+      || node.type === 'ExportNamedDeclaration' || node.type === 'ExportDefaultDeclaration'
+      || node.type === 'ExportAllDeclaration')) return 'esm';
+  }
   return 'commonjs';
 }
 
@@ -1227,10 +1236,17 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
   const modules = [];
   for (const file of classified.modules) {
     const { bytes, hash } = await contentFor(file);
-    const format = formatFor(file);
+    const source = bytes.toString('utf8');
+    let format;
+    try {
+      format = formatFor(file, source);
+    } catch (caught) { const error = errorInfo(caught);
+      diagnostics.push(diagnostic('error', 'ERR_INVALID_MANIFEST', `Cannot classify AppService module: ${error.message}`, file));
+      continue;
+    }
     const dependencies = [];
     if (format !== 'json') {
-      for (const specifier of extractStaticModuleSpecifiers(bytes.toString('utf8'))) {
+      for (const specifier of extractStaticModuleSpecifiers(source)) {
         const resolved = resolveModuleDependency(file, specifier, classified.modules);
         if (!resolved) {
           diagnostics.push(diagnostic(
