@@ -337,7 +337,7 @@ const reviewedSourceSha256 = Object.freeze({
   "runtimeRoutes": "2c6d7576fa806268005af696cdf1a7f0b054249cb37cf1f70e529fd459be415e",
   "hostServices": "fa059a3b1da09361c00da6ee3c29e4aee7d5c9762cc313d1e5576fbd0194ca60",
   "runtimeLifecycle": "5b48c668e941f7a5699264575543108994cf52b3c919924d7842b2756d0b4b80",
-  "manifestPacker": "4164461d8cf7547bf87048fa0361426af0c67011d42e4fe94e033fc3cc6ee0f4",
+  "manifestPacker": "8ccb528afab024bbd23927a1095814f65401511054b3dde7f427a54b5e6956e2",
   "finiteNotificationResources": "40e629a4cba3d4dff1e2fe68d9de15fc16b8ce0b3926650318f27d2920b6bc59",
   "coreAssembly": "3c537fa5e0fccf44dcce64f73f8c387d58c9a4a5be22eca3fd74b92767902591",
   "quickjsExecution": "c8c1dc74b22b0954e6a2524ba26dd9e4512771c928253f5a054a7fd6495213b0",

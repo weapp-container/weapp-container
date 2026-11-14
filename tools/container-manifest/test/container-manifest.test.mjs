@@ -594,6 +594,77 @@ test('invalid capability override is reported as a structured pack diagnostic', 
   assert.ok(result.diagnostics.some((item) => item.code === 'ERR_INVALID_CAPABILITY'));
 });
 
+test('pack classifies static ESM declarations in .js without rewriting module bytes', async context => {
+  const root = await fixture();
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const sources = new Map([
+    ['app.js', 'export const appReady = true;'],
+    ['pages/home/index.js', 'import {title} from "../../utils/shared.js"; Page({data:{title}});'],
+    ['components/hello/index.js', 'export {title} from "../../utils/shared.js";'],
+    ['utils/side-effect.js', 'import "./shared.js";'],
+    ['utils/default.js', 'export default class Ready {}'],
+    ['utils/default-import.js', 'import Ready from "./default.js";'],
+    ['utils/namespace.js', 'import * as shared from "./shared.js";'],
+    ['utils/star.js', 'export * from "./shared.js";'],
+    ['utils/empty.js', 'export {};'],
+    ['utils/compact.js', 'const value=1;export{value};'],
+    ['utils/multiline.js', 'import/* comment */\n{title}\nfrom "./shared.js";'],
+    ['utils/uppercase.JS', 'export function ready() {}'],
+  ]);
+  for (const [file, source] of sources) await writeFile(path.join(root, file), source);
+  const output = path.join(root, 'pack');
+  await packContainer(root, output, { compilerCommit: 'esm-classification' });
+  const manifest = JSON.parse(await readFile(path.join(output, 'manifest.json'), 'utf8'));
+  for (const [file, source] of sources) {
+    const module = manifest.modules.find(item => item.id === `module:${file}`);
+    assert.equal(module.format, 'esm', file);
+    assert.equal(module.sha256, sha256(Buffer.from(source)), file);
+    assert.equal(await readFile(path.join(output, 'blobs/sha256', module.sha256), 'utf8'), source, file);
+  }
+  assert.deepEqual(manifest.modules.find(item => item.id === 'module:pages/home/index.js').dependencies,
+    ['module:utils/shared.js']);
+});
+
+test('pack preserves CommonJS and explicit format suffixes without static ESM declarations', async context => {
+  const root = await fixture();
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const sources = new Map([
+    ['utils/comments.js', '// export const ready = true;\n/* import "./absent.js"; */\nmodule.exports = {};'],
+    ['utils/string.js', 'module.exports = "export const ready = true";'],
+    ['utils/template.js', 'module.exports = `export const ready = true`;'],
+    ['utils/regex.js', 'module.exports = /export const ready = true/;'],
+    ['utils/properties.js', 'module.exports = { import: true, export: true };'],
+    ['utils/methods.js', 'module.exports = { import() {}, export() {} };'],
+    ['utils/dynamic.js', 'module.exports = () => import("./not-emitted.js");'],
+    ['utils/return.js', 'return; module.exports = {};'],
+    ['utils/new-target.js', 'module.exports = new.target;'],
+    ['utils/sloppy.js', 'with ({ value: 1 }) { module.exports = value; }'],
+    ['utils/explicit.cjs', 'module.exports = {};'],
+    ['utils/explicit.mjs', 'globalThis.ready = true;'],
+    ['utils/explicit.esm.js', 'globalThis.ready = true;'],
+  ]);
+  for (const [file, source] of sources) await writeFile(path.join(root, file), source);
+  const result = await buildManifest(root, { compilerCommit: 'module-format-boundaries' });
+  assert.deepEqual(result.diagnostics.filter(item => item.severity === 'error'), []);
+  for (const file of sources.keys()) {
+    const expected = file.endsWith('.mjs') || file.endsWith('.esm.js') ? 'esm' : 'commonjs';
+    assert.equal(result.manifest.modules.find(item => item.id === `module:${file}`).format, expected, file);
+  }
+  assert.equal(result.manifest.modules.find(item => item.id === 'module:app.json').format, 'json');
+});
+
+test('unparseable .js produces an AppService diagnostic before pack publication', async context => {
+  const root = await fixture();
+  context.after(() => rm(root, { recursive: true, force: true }));
+  await writeFile(path.join(root, 'app.js'), 'export const ready = ;');
+  const result = await buildManifest(root);
+  assert.ok(result.diagnostics.some(item => item.severity === 'error' && item.code === 'ERR_INVALID_MANIFEST'
+    && item.path === 'app.js' && item.message.includes('Cannot classify AppService module:')));
+  const output = path.join(root, 'pack');
+  await assert.rejects(packContainer(root, output), { code: 'ERR_INVALID_MANIFEST' });
+  await assert.rejects(access(path.join(output, 'manifest.json')), { code: 'ENOENT' });
+});
+
 test('extractStaticModuleSpecifiers ignores comments, strings and dynamic imports', () => {
   const source = `
     // require('./commented')
