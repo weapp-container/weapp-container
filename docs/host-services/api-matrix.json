@@ -2017,7 +2017,7 @@
       },
       "manifestPacker": {
         "path": "tools/container-manifest/src/index.ts",
-        "sha256": "4164461d8cf7547bf87048fa0361426af0c67011d42e4fe94e033fc3cc6ee0f4"
+        "sha256": "8ccb528afab024bbd23927a1095814f65401511054b3dde7f427a54b5e6956e2"
       },
       "flutterController": {
         "path": "sdk/flutter/weapp_container/lib/src/controller.dart",
