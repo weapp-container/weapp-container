@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process'
 const files = [
   'ci-plan', 'check-open-source', 'check-doc-links', 'verify-submodule',
   'sdk-licenses', 'sdk-native-build', 'check-toolchain', 'check-product-naming',
-  'core-api-inventory', 'host-api-matrix', 'host-api-matrix-io',
+  'core-api-inventory', 'host-api-catalog', 'host-api-matrix', 'host-api-matrix-io',
   'api-completion-compat', 'api-owner-context', 'nexttick-api-owner',
   'nexttick-contract', 'route-transaction', 'scheduler-canvas-owner',
   'scheduler-framework-boundaries', 'turn-scheduler-candidate',

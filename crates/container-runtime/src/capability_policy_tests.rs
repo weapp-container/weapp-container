@@ -156,6 +156,53 @@ fn published_keys_share_scalar_policy_and_one_inventory_snapshot() {
 }
 
 #[test]
+fn catalog_descriptors_match_runtime_ownership_and_registration_boundaries() {
+    let catalog = host_api_catalog();
+    let names: BTreeSet<_> = catalog.iter().map(|api| api.name.as_str()).collect();
+
+    assert_eq!(names.len(), catalog.len(), "catalog names must be unique");
+    assert!(catalog.iter().all(|api| {
+        host_api_descriptor(&api.name).is_some_and(|found| std::ptr::eq(found, api))
+    }));
+    let manifest = ContainerManifestV1::default();
+    for api in catalog {
+        if host_services::runtime_owned(&api.name)
+            && !finite_notifications::OFF_APIS.contains(&api.name.as_str())
+        {
+            assert_eq!(
+                api.owner, "runtime",
+                "runtime-owned API has host ownership: {}",
+                api.name
+            );
+        }
+        if api.owner == "runtime" && api.metadata.get("component") != Some(&Value::Bool(true)) {
+            assert!(
+                validate_host_services_config(&host_services_config(&manifest, &api.name)).is_err(),
+                "runtime API must not be registered as a host handler: {}",
+                api.name
+            );
+        }
+    }
+}
+
+fn host_services_config(manifest: &ContainerManifestV1, api: &str) -> HostServicesConfig {
+    HostServicesConfig {
+        application: TrustedApplication {
+            host_app_id: "host".into(),
+            tenant_id: "tenant".into(),
+            publisher_id: "publisher".into(),
+            app_id: "wx-app".into(),
+            environment: "trial".into(),
+            version: "1.0.0".into(),
+            pack_root: manifest.integrity.root.clone(),
+        },
+        account: HostAccount::default(),
+        apis: vec![api.to_owned()],
+        sync_values: BTreeMap::new(),
+    }
+}
+
+#[test]
 fn runtime_cleanup_keys_publish_denial_and_preserve_each_policy_minimum() {
     let (mut session, reads) = fixture();
     let mut inventory: BTreeMap<_, _> = finite_notifications::OFF_APIS
