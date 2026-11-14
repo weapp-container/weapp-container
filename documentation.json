@@ -3299,8 +3299,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "tools/container-manifest/README.md"
       },
-      "reviewedChineseSummary": "已复核测试运行时入口、Node 版本及 TypeScript 构建产物与源码路径",
-      "reviewedChineseSha256": "58b4686968c134c5b996fa771100a5939bedb6155e6531a0b563916258707966",
+      "reviewedChineseSummary": "已复核测试运行时入口、Node 版本、TypeScript 构建产物与源码路径，以及 AppService 静态 ESM 分类、显式后缀、错误诊断与字节保留边界",
+      "reviewedChineseSha256": "a4950e5af013242215d8f813902c3b0bf623c3e1046f995b73afb4058fd2d114",
       "legacyHeadingIds": [
         "capability-overrides",
         "cli",
