@@ -182,14 +182,21 @@ function androidSmoke() {
   const expectedSessionId = `android-${randomUUID()}`
   const start = run('adb', ['-s', serial, 'shell', 'am', 'start', '-n', 'com.sonofmagic.weapp.container/.MainActivity',
     '--es', 'weappContainerEngine', expectedEngine, '--es', 'weappContainerSessionId', expectedSessionId])
-  // Activity startup and native library loading are asynchronous. Give the
-  // process a short deterministic window before taking the logcat snapshot;
-  // otherwise a successful launch can be misclassified as an empty run.
-  run(process.execPath, ['-e', 'setTimeout(() => {}, 1000)'], { timeoutMs: 2_000 })
-  const logcat = run('adb', ['-s', serial, 'logcat', '-d', '-v', 'brief', '-s', 'WEAPP_CONTAINER_SMOKE:I', 'WEAPP_CONTAINER_GPU_PROBE:I', 'WEAPP_CONTAINER_SURFACE_PROBE:I', '*:S'])
-  // Logcat truncates individual lines. The app atomically saves the complete
-  // startup/manifest/frame receipt after its GPU callback, so large snapshots
-  // and module sources are validated from this owned launch's file instead.
+  const operations = ['app.init', 'render.commit', 'render.snapshot', 'canvas.draw', 'canvas.snapshot', 'api.call']
+  // Surface observation and Canvas/API probes run after Activity startup. Poll
+  // this owned launch's log until those operations appear or the bounded
+  // runtime deadline expires; a receipt is published before the post-frame
+  // probes and therefore cannot signal that log capture is complete.
+  let logcat = null
+  const logDeadline = Date.now() + 15_000
+  while (Date.now() < logDeadline) {
+    logcat = run('adb', ['-s', serial, 'logcat', '-d', '-v', 'brief', '-s', 'WEAPP_CONTAINER_SMOKE:I', 'WEAPP_CONTAINER_GPU_PROBE:I', 'WEAPP_CONTAINER_SURFACE_PROBE:I', '*:S'])
+    const smoke = (logcat.stdout || '').split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SMOKE')).join('\n')
+    if (operations.every(operation => smoke.includes(` ${operation} `))) break
+    run(process.execPath, ['-e', 'setTimeout(() => {}, 250)'], { timeoutMs: 1_000 })
+  }
+  // The app atomically saves the complete startup/manifest/frame receipt;
+  // logcat is used only to prove that asynchronous post-frame probes ran.
   const readReceipt = run('adb', ['-s', serial, 'shell', 'run-as', 'com.sonofmagic.weapp.container', 'cat', 'files/portable-pack-execution.json'])
   // Release the owned launch before parsing untrusted app evidence. A
   // malformed receipt must never strand an activity through a parser error.
@@ -210,7 +217,6 @@ function androidSmoke() {
   const surfaceProbeLines = logcat.stdout.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE'))
   const gpuProbe = parseGpuProbe(gpuProbeLines, 'android-egl')
   const surfaceProbe = executionReceipt?.surfaceProbe || parseSurfaceProbe(surfaceProbeLines, 'android-gles-window')
-  const operations = ['app.init', 'render.commit', 'render.snapshot', 'canvas.draw', 'canvas.snapshot', 'api.call']
   const output = smokeLines.join('\n')
   const missing = operations.filter(operation => !output.includes(` ${operation} `))
   const backendMatch = output.match(/"backend":"([^"]+)"/)

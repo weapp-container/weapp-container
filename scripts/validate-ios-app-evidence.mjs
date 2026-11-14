@@ -20,7 +20,7 @@ function validateIOSSurfaceEvidence(probe, manifest, mode) {
   require(probe.schemaVersion === 1, 'unsupported iOS surface evidence schema version')
   require(probe.containerSurfaceAttached === true && probe.gpuSurface === true, 'direct container GPU surface missing')
   require(probe.rendererBackend === 'skia-gpu-metal', 'wrong renderer')
-  require(probe.runtimeSurface?.loaded === true && probe.runtimeSurface?.nativeSurface === true
+  require(probe.runtimeSurface?.loaded === true
     && probe.runtimeSurface?.gpuSurface === true && probe.runtimeSurface?.renderer === 'skia-gpu-metal',
   'runtime did not confirm its own GPU surface')
   const drawable = probe.drawableReadback

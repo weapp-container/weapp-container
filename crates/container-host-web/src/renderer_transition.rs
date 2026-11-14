@@ -258,7 +258,15 @@ mod tests {
     use super::*;
     use container_bridge::BridgeEnvelope;
     use container_ir::{ContainerManifestV1, RendererProfile, RendererProfiles, Route, RouteKind};
-    use container_runtime::SessionConfig;
+    use container_runtime::{engine_provider_compiled, SessionConfig};
+
+    fn test_session_config() -> SessionConfig {
+        let mut config = SessionConfig::default();
+        if !engine_provider_compiled(config.engine) {
+            config.engine = container_core::EngineKind::V8;
+        }
+        config
+    }
 
     fn loaded(mode: WebRendererMode) -> WebHost {
         let mut manifest = ContainerManifestV1 {
@@ -292,7 +300,7 @@ mod tests {
         let mut host = WebHost::new();
         host.load_manifest_json_with_renderer_policy(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
             super::super::WebSessionOptions {
                 renderer_mode: mode,
             },

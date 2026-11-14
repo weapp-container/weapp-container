@@ -369,6 +369,14 @@ impl IosHost {
 mod tests {
     use super::*;
 
+    fn test_session_config() -> SessionConfig {
+        let mut config = SessionConfig::default();
+        if !engine_provider_compiled(config.engine) {
+            config.engine = EngineKind::V8;
+        }
+        config
+    }
+
     #[test]
     fn renderer_profile_preflight_preserves_the_previous_native_session() {
         let mut host = IosHost::new();
@@ -447,7 +455,7 @@ mod tests {
         let mut host = IosHost::new();
         let config = SessionConfig {
             session_id: "ios-live".into(),
-            ..SessionConfig::default()
+            ..test_session_config()
         };
         host.load_manifest_json(manifest(), config).unwrap();
         let empty: Value = serde_json::from_slice(&host.session_state_json().unwrap()).unwrap();
@@ -727,7 +735,7 @@ mod tests {
         manifest["capabilities"]["wx.timer"] = json!("partial");
         host.load_manifest_json(
             serde_json::to_vec(&manifest).unwrap(),
-            SessionConfig::default(),
+            test_session_config(),
         )
         .unwrap();
         let init = host.start_session("init").unwrap();
