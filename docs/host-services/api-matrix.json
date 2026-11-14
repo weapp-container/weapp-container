@@ -1805,7 +1805,7 @@
       },
       "webHost": {
         "path": "crates/container-host-web/src/lib.rs",
-        "sha256": "1dcbf654da6cc5e77ac0f7003761bc39045b8e7058e664adf281270e0978a49f"
+        "sha256": "c37244c8a1f1adc51b2b023e0b9a148c602c8666e8fdb9509f545462b728f126"
       },
       "selectorQueries": {
         "path": "crates/container-core/src/selector-query.js",
