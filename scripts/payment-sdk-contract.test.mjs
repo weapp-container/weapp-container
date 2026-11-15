@@ -14,9 +14,13 @@ test('native SDKs expose separate order and standard JSAPI payment boundaries', 
   ]);
 
   assert.match(android, /interface AndroidNativeWxPayChannel/);
+  assert.match(android, /class AndroidWechatWxPayChannel/);
+  assert.match(android, /wx-jsapi/);
   assert.match(android, /fun installWxRequestPayment\(/);
   assert.match(android, /validatedWxPaymentOptions/);
   assert.match(ios, /protocol WeappNativeWxPayChannel/);
+  assert.match(ios, /class WeappWechatWxPay/);
+  assert.match(ios, /handleUniversalLink/);
   assert.match(ios, /installWxRequestPayment\(/);
   assert.match(ios, /validatedWxPaymentOptions/);
   assert.match(desktopHeader, /class HostWxPaymentChannel/);

@@ -171,7 +171,7 @@
       },
       {
         "path": "sdk/android/library/src/main/java/com/sonofmagic/weapp/container/sdk/AndroidAppPayments.kt",
-        "sha256": "2da0af2e8ff784f246db23d2a0295caeffb0ef1f14cbf7778938e01ce87ed105",
+        "sha256": "bf8fb7dd3ff346c57e4d05666fc5d8e332f49031d0af3b2d7c4d1071c4626fe1",
         "registeredApis": [
           "weappContainer.payment.request",
           "wx.requestPayment"
@@ -444,7 +444,7 @@
       },
       {
         "path": "sdk/ios/Sources/WeappContainer/AppPayments.swift",
-        "sha256": "c6351b980899f05a373874bf7184d9938535114e93227e84d8f71ec3ee941e28",
+        "sha256": "c1bf5be4d5f43d9fb00b438a46b1f1cefbe6c885b85ac71066e433a27342cdbf",
         "registeredApis": [
           "weappContainer.payment.request",
           "wx.requestPayment"
