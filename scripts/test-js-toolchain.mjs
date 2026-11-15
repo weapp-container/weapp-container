@@ -11,6 +11,7 @@ const files = [
   'scheduler-framework-boundaries', 'turn-scheduler-candidate',
   'engine-conformance-smoke',
   'harmony-reference-services', 'modern-view-host-pack',
+  'payment-sdk-contract',
   'conformance-fixture-build', 'runtime-artifacts-migration', 'runtime-release',
 ].map(name => `scripts/${name}.test.mjs`)
 const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' })

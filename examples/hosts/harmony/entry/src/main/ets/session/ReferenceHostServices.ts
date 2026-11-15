@@ -158,25 +158,51 @@ export interface HarmonyNativePaymentChannel {
   // is still followed by signed backend confirmation. No automatic UI retry.
   pay: (launch: Object, call: HarmonyApiCall) => Promise<void>;
 }
+/** Host-owned mapping for standard wx.requestPayment JSAPI fields. */
+export interface HarmonyNativeWxPaymentChannel {
+  isAvailable: boolean;
+  pay: (options: Object, call: HarmonyApiCall) => Promise<void>;
+}
 interface PaymentOptions { orderId?: string; }
 interface PaymentResult { orderId: string; serverConfirmed: boolean; }
 interface LaunchKind { kind?: string; }
 interface PaymentWaiter { call: HarmonyApiCall; cancel: () => void; }
 let activeWallet: boolean = false;
 
+function validatedWxPaymentOptions(options: Object): Object {
+  const input=options as Record<string,Object>;
+  const fields=['timeStamp','nonceStr','package','signType','paySign'];
+  const output:Record<string,Object>={};
+  for(const field of fields){const value=input[field];if(typeof value!=='string'||value.trim().length===0)throw new HarmonyApiError('invalid_request',`wx.requestPayment requires non-empty ${field}`);output[field]=value;}
+  if(!['MD5','HMAC-SHA256','RSA'].includes(output.signType as string))throw new HarmonyApiError('invalid_request','wx.requestPayment signType must be MD5, HMAC-SHA256, or RSA');
+  return output;
+}
+
 /** Explicit channel injection, including Harmony's official SDK supplied by the
  * host. No channels means no payment API is advertised or registered. */
 export class HarmonyReferencePayments {
-  readonly supportedApis: Array<string> = ['wx.requestPayment','weappContainer.payment.request'];
+  readonly supportedApis: Array<string>;
   private readonly channels: Map<string,HarmonyNativePaymentChannel> = new Map();
   private readonly backend: HarmonyAccountTransport;
+  private readonly wxChannel: HarmonyNativeWxPaymentChannel | undefined;
   private closed: boolean = false;
   private readonly waiters: Set<PaymentWaiter> = new Set();
-  constructor(services: HarmonyHostServices,backend: HarmonyAccountTransport,channels: Array<HarmonyNativePaymentChannel>) {
+  constructor(services: HarmonyHostServices,backend: HarmonyAccountTransport,channels: Array<HarmonyNativePaymentChannel>,wxChannel?: HarmonyNativeWxPaymentChannel) {
     this.backend=backend;
+    this.wxChannel=wxChannel;
+    this.supportedApis=[];
     for(const channel of channels){const key=JSON.stringify([channel.channel,channel.product]);if(!channel.channel||!channel.product||!channel.kind||this.channels.has(key))throw new HarmonyApiError('invalid_request','unique explicitly configured payment channel/product required');this.channels.set(key,channel);}
-    if(channels.length>0)for(const api of this.supportedApis)services.registerApiHandler(api,(payload:Object,call:HarmonyApiCall):Promise<Object>=>this.request(payload as PaymentOptions,call));
+    if(channels.length>0){this.supportedApis.push('weappContainer.payment.request');services.registerApiHandler('weappContainer.payment.request',(payload:Object,call:HarmonyApiCall):Promise<Object>=>this.request(payload as PaymentOptions,call));}
+    if(wxChannel!==undefined){this.supportedApis.push('wx.requestPayment');services.registerApiHandler('wx.requestPayment',(payload:Object,call:HarmonyApiCall):Promise<Object>=>this.requestWx(payload,call));}
     services.onClose(async():Promise<void>=>{this.closed=true;for(const waiter of this.waiters)waiter.cancel();this.waiters.clear();await this.backend.close();});
+  }
+  private async requestWx(options: Object,call: HarmonyApiCall): Promise<Object> {
+    this.ensure(call);const channel=this.wxChannel;
+    if(channel===undefined||!channel.isAvailable)throw new HarmonyApiError('unsupported','standard wx.requestPayment channel is not configured');
+    const validated=validatedWxPaymentOptions(options);
+    if(activeWallet)throw new HarmonyApiError('invalid_request','another official payment UI is active');activeWallet=true;
+    try { await channel.pay(validated,call);this.ensure(call);return {errMsg:'requestPayment:ok'}; }
+    finally { activeWallet=false; }
   }
   private ensure(call: HarmonyApiCall): void {current(call);if(this.closed)throw new HarmonyApiError('cancelled','payment caller retired; submitted transactions may still complete');}
   private async order(orderId: string, call: HarmonyApiCall): Promise<HarmonyPaymentLaunch> {

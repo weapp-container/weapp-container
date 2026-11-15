@@ -121,13 +121,17 @@ The `pay` promise must represent that exact SDK operation's real terminal
 callback, including cancellation/error. It must not resolve merely because an
 intent or external page was opened.
 
-Pass a trusted `orderId` to `weappContainer.payment.request` or the compatible
-`wx.requestPayment` handler. Guest-supplied signatures are rejected. The adapter
-fetches a backend-owned order bound to the initiating application/user/epoch,
-requires an exact configured provider/product/kind, launches its official
-channel once and polls that same order for server confirmation. Wallet success
-alone does not mark the order paid. No automatic second wallet invocation or
-replacement channel is attempted.
+APP Pay passes a trusted `orderId` to `weappContainer.payment.request`. The
+adapter fetches a backend-owned order bound to the initiating
+application/user/epoch, requires an exact configured provider/product/kind,
+launches its official APP channel and polls that same order. Only server
+confirmation returns success.
+
+Standard `wx.requestPayment` uses the separate optional
+`HarmonyNativeWxPaymentChannel`. The host must explicitly inject a channel for
+JSAPI parameters; they are never rewritten into an APP Pay order, and the API is
+not registered without the channel. The merchant backend must still verify
+transaction notifications before fulfilling business operations.
 
 A caller cancellation/account change stops JS waiting while the process-wide
 wallet callback lease remains assigned to its old operation until the official

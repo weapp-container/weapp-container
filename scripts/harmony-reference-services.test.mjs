@@ -24,7 +24,7 @@ class NativeTransport {
   call(callId,method,payload={},configuration=config){this.requests.push({kind:'call',callId,method,payload,context:{...configuration,sessionId:'session',callId,api:method}});}
   complete(id){return this.commands.find(value=>value.operation==='complete'&&value.payload.callId===id)?.payload;}
 }
-async function fixture(t,{decision=()=>true,logout=()=>{},payment,configuration=config}={}){
+async function fixture(t,{decision=()=>true,logout=()=>{},payment,wxPayment,configuration=config}={}){
   const service=new HostServices({database:':memory:',issuerSecret:'issuer-secret-'.repeat(4),identitySecret:'identity-secret-'.repeat(4),
     applications:['first','second'].map(miniAppId=>({miniAppId,identityProtocol:'1.0',clientId:miniAppId+'-backend',clientSecret,hostAppId:'host',tenantId:'tenant',environment:'develop',trustedPackRoots:[root],authorizationPolicies:structuredClone(policies),allowedPaymentChannels:['reference']})),payments:{reference:{callbackSecret}}});
   const host=service.issueHostSession({hostAppId:'host',tenantId:'tenant',environment:'develop',principalId:'alice',principalEpoch:config.account.epoch,profile:{nickName:'Alice',avatarUrl:'https://example.test/avatar',secret:'never-disclose'},phone:'+8613800000000'}).hostAccessToken;
@@ -45,7 +45,7 @@ async function fixture(t,{decision=()=>true,logout=()=>{},payment,configuration=
     },async close(){this.closed=true;},
   };
   const native=new NativeTransport(),services=new owner.HarmonyHostServices(native),identity=new HarmonyReferenceIdentity(services,backend,{confirm:async(policy,call)=>{prompts.push(structuredClone(policy));return decision(policy,call);},logoutApplication:logout});
-  if(payment)new HarmonyReferencePayments(services,backend,[{channel:'reference',product:'app',kind:'reference',pay:payment}]);
+  if(payment||wxPayment)new HarmonyReferencePayments(services,backend,payment?[{channel:'reference',product:'app',kind:'reference',pay:payment}]:[],wxPayment?{isAvailable:true,pay:wxPayment}:undefined);
   await identity.prepare(configuration);services.configure(configuration,root);
   t.after(async()=>{services.revoke();await services.waitForDrain();service.close();});
   const pump=async()=>{services.drain();await settle();services.drain();};
@@ -148,4 +148,13 @@ test('Harmony unconfigured payment channels advertise no payment calls',()=>{
   new HarmonyReferencePayments(services,{async request(){throw new Error('unreachable');},async close(){}},[]);
   assert(!services.supportedApis().includes('wx.requestPayment'));assert(!services.supportedApis().includes('weappContainer.payment.request'));
   services.revoke();
+});
+
+test('Harmony standard JSAPI payment validates the five signed fields before invoking its native channel',async t=>{
+  const received=[];const f=await fixture(t,{wxPayment:async options=>{received.push(options);}});
+  const invalid=await f.invoke('invalid','wx.requestPayment',{timeStamp:'1',nonceStr:'n',package:'prepay_id=x',signType:'RSA'});
+  assert.equal(invalid.error.code,'invalid_request');assert.equal(received.length,0);
+  const valid=await f.invoke('valid','wx.requestPayment',{timeStamp:'1',nonceStr:'n',package:'prepay_id=x',signType:'RSA',paySign:'s',extra:'ignored'});
+  assert.deepEqual(valid.result,{errMsg:'requestPayment:ok'});
+  assert.deepEqual(received,[{timeStamp:'1',nonceStr:'n',package:'prepay_id=x',signType:'RSA',paySign:'s'}]);
 });

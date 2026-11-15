@@ -87,12 +87,13 @@ mod host_services_contract {
     }
 
     #[test]
-    fn payment_extension_requires_a_backend_order_reference() {
+    fn payment_extension_and_standard_jsapi_have_distinct_payload_contracts() {
         let manifest = manifest();
         let mut session = Session::new(manifest.clone(), SessionConfig::default()).unwrap();
-        session
-            .configure_host_services(config(&manifest, &["weappContainer.payment.request"]))
-            .unwrap();
+        session.configure_host_services(config(
+            &manifest,
+            &["weappContainer.payment.request", "wx.requestPayment"],
+        )).unwrap();
         let api = "weappContainer.payment.request";
         for payload in [
             json!({}),
@@ -110,6 +111,20 @@ mod host_services_contract {
         session
             .validate_host_service_call(api, json!({"orderId":"order-1"}).as_object().unwrap())
             .unwrap();
+
+        let standard = json!({
+            "timeStamp":"1710000000", "nonceStr":"nonce-123",
+            "package":"prepay_id=wx123", "signType":"RSA", "paySign":"signed-value"
+        });
+        session
+            .validate_host_service_call("wx.requestPayment", standard.as_object().unwrap())
+            .unwrap();
+        assert!(session
+            .validate_host_service_call("wx.requestPayment", json!({"orderId":"order-1"}).as_object().unwrap())
+            .is_err());
+        assert!(session
+            .validate_host_service_call(api, standard.as_object().unwrap())
+            .is_err());
     }
 
     #[test]

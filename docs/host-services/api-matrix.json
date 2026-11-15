@@ -171,7 +171,7 @@
       },
       {
         "path": "sdk/android/library/src/main/java/com/sonofmagic/weapp/container/sdk/AndroidAppPayments.kt",
-        "sha256": "b4fce44546676050c5cc12c6d56317ff8b07e9aa2b01c3ad2f802b3d0148e748",
+        "sha256": "2da0af2e8ff784f246db23d2a0295caeffb0ef1f14cbf7778938e01ce87ed105",
         "registeredApis": [
           "weappContainer.payment.request",
           "wx.requestPayment"
@@ -444,7 +444,7 @@
       },
       {
         "path": "sdk/ios/Sources/WeappContainer/AppPayments.swift",
-        "sha256": "5d4bf9ab4f9ee0ca3677ca2ae28ee5d6cb68b072546dcd836a1371c996b49e91",
+        "sha256": "c6351b980899f05a373874bf7184d9938535114e93227e84d8f71ec3ee941e28",
         "registeredApis": [
           "weappContainer.payment.request",
           "wx.requestPayment"
@@ -952,7 +952,7 @@
       },
       {
         "path": "examples/hosts/harmony/entry/src/main/ets/session/ReferenceHostServices.ts",
-        "sha256": "ef4757557e4bbe53c2a412675d6774328857003ee90fb3184e6f3aed23cac1f5",
+        "sha256": "4b98f2997f2f2278eeccf0d2e0940dc83db29ee144ed6f5b6e28b8129978d88d",
         "registeredApis": [
           "component:button.open-type.getPhoneNumber",
           "weappContainer.identity.authorizePhone",
@@ -972,7 +972,7 @@
     "macos": [
       {
         "path": "sdk/desktop/src/host_services_adapter.cpp",
-        "sha256": "e12c5c3e2176f38ed4ca7524cc16eb5de15e534b02411e323dc3c54e83db301f",
+        "sha256": "511c680b118b7b78ee42d319b50c2500f3aee7dbbb9b154668079937d80379b1",
         "registeredApis": [
           "component:button.bindgetphonenumber",
           "component:button.open-type.getPhoneNumber",
@@ -1152,7 +1152,7 @@
     "windows": [
       {
         "path": "sdk/desktop/src/host_services_adapter.cpp",
-        "sha256": "e12c5c3e2176f38ed4ca7524cc16eb5de15e534b02411e323dc3c54e83db301f",
+        "sha256": "511c680b118b7b78ee42d319b50c2500f3aee7dbbb9b154668079937d80379b1",
         "registeredApis": [
           "component:button.bindgetphonenumber",
           "component:button.open-type.getPhoneNumber",
@@ -1377,7 +1377,7 @@
     "linux": [
       {
         "path": "sdk/desktop/src/host_services_adapter.cpp",
-        "sha256": "e12c5c3e2176f38ed4ca7524cc16eb5de15e534b02411e323dc3c54e83db301f",
+        "sha256": "511c680b118b7b78ee42d319b50c2500f3aee7dbbb9b154668079937d80379b1",
         "registeredApis": [
           "component:button.bindgetphonenumber",
           "component:button.open-type.getPhoneNumber",
