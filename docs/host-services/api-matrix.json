@@ -444,7 +444,7 @@
       },
       {
         "path": "sdk/ios/Sources/WeappContainer/AppPayments.swift",
-        "sha256": "c1bf5be4d5f43d9fb00b438a46b1f1cefbe6c885b85ac71066e433a27342cdbf",
+        "sha256": "76a5a16787e098301ea90bbade2110b0e02edf3d788612b48f892284869f6340",
         "registeredApis": [
           "weappContainer.payment.request",
           "wx.requestPayment"
