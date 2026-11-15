@@ -21,6 +21,9 @@ test('native SDKs expose separate order and standard JSAPI payment boundaries', 
   assert.match(ios, /protocol WeappNativeWxPayChannel/);
   assert.match(ios, /class WeappWechatWxPay/);
   assert.match(ios, /handleUniversalLink/);
+  assert.match(ios, /enum WeappWechatPaymentLease/);
+  assert.match(ios, /WeappWechatPaymentLease\.claim\(self\)/);
+  assert.match(ios, /cancelWait\(CancellationError\(\)\)/);
   assert.match(ios, /installWxRequestPayment\(/);
   assert.match(ios, /validatedWxPaymentOptions/);
   assert.match(desktopHeader, /class HostWxPaymentChannel/);
@@ -30,6 +33,17 @@ test('native SDKs expose separate order and standard JSAPI payment boundaries', 
   assert.match(harmony, /interface HarmonyNativeWxPaymentChannel/);
   assert.match(harmony, /function validatedWxPaymentOptions/);
   assert.match(harmony, /wxChannel\?\: HarmonyNativeWxPaymentChannel/);
+});
+
+test('iOS cancellation preserves the process-wide WeChat callback lease until terminal response', async () => {
+  const ios = await read('sdk/ios/Sources/WeappContainer/AppPayments.swift');
+  const cancelWait = [...ios.matchAll(/private func cancelWait\(_ error: Error\) \{([\s\S]*?)\n    \}/g)].map(match => match[1]);
+  assert.equal(cancelWait.length, 2);
+  for (const body of cancelWait) {
+    assert.match(body, /waiting = nil/);
+    assert.doesNotMatch(body, /WeappWechatPaymentLease\.release/);
+  }
+  assert.equal((ios.match(/WeappWechatPaymentLease\.release\(self\)/g) || []).length, 2);
 });
 
 test('standard JSAPI validation keeps the signed field allowlist identical', async () => {
