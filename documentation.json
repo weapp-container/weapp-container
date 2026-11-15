@@ -3063,8 +3063,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "examples/hosts/harmony/REFERENCE_HOST.md"
       },
-      "reviewedChineseSummary": "Harmony 参考账户和支付宿主；引用服务和可信范围；信息披露和取消；原生 HTTP 所有权；显式支付通道；可重现的证据",
-      "reviewedChineseSha256": "570babe46abf0099d1925234576d112a636d2e5ac608ac9df8545e70c79db1c1",
+      "reviewedChineseSummary": "Harmony 参考账户和支付宿主；账户、披露、原生传输、显式支付通道与证据边界",
+      "reviewedChineseSha256": "217f4788447bd37341c2a66573e8fc6e22c7b48e6ddb01954220775434e1b2e6",
       "legacyHeadingIds": [
         "disclosure-and-cancellation",
         "explicit-payment-channels",
