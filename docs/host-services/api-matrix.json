@@ -444,7 +444,7 @@
       },
       {
         "path": "sdk/ios/Sources/WeappContainer/AppPayments.swift",
-        "sha256": "76a5a16787e098301ea90bbade2110b0e02edf3d788612b48f892284869f6340",
+        "sha256": "0a8e1bd0948f1181a510130a68f0b18c10add923cba52460846e52ad3ae140d1",
         "registeredApis": [
           "weappContainer.payment.request",
           "wx.requestPayment"
@@ -2021,7 +2021,7 @@
       },
       "flutterController": {
         "path": "sdk/flutter/weapp_container/lib/src/controller.dart",
-        "sha256": "d304432ff468986e153b71f36dcc8b6daa92dc975c165c1c4c62b32d46358545"
+        "sha256": "cd34b19682e59d141d0badb76d9b93a6df7afc0c810eb3b1c95c963b55daec86"
       },
       "flutterView": {
         "path": "sdk/flutter/weapp_container/lib/src/view.dart",
