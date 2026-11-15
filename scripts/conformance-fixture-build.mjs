@@ -1039,15 +1039,17 @@ export async function flushStaticFixtureBuildRecorder({ recorder: r }) {
 
 export function reviewedFixturePackerClosure() {
   const files = PACKER_MODULES.map(path => ({ path, bytes: readFileSync(join(REPOSITORY, path)) }))
-  const require = createRequire(join(REPOSITORY, PACKER)), dependencyRoot = dirname(require.resolve('acorn/package.json'))
-  const walk = (directory, prefix = 'node_modules/acorn') => {
+  const require = createRequire(join(REPOSITORY, PACKER))
+  const walk = (directory, prefix) => {
     for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
       const file = join(directory, entry.name), path = `${prefix}/${entry.name}`
       if (entry.isDirectory()) walk(file, path)
       else { ensure(entry.isFile(), 'Packer dependency closure contains a link/special file'); files.push({ path, bytes: readFileSync(file) }) }
     }
   }
-  walk(dependencyRoot)
+  // Both parsers are runtime-self-contained; Babel's @babel/types dependency
+  // supplies declarations only and is not loaded by the archived CLI.
+  for (const name of ['acorn', '@babel/parser']) walk(dirname(require.resolve(`${name}/package.json`)), `node_modules/${name}`)
   return files.sort((a, b) => a.path.localeCompare(b.path))
 }
 function materialize(files, directory, load) {

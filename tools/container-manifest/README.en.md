@@ -78,6 +78,15 @@ to an emitted module produces `ERR_UNDECLARED_MODULE_DEPENDENCY` and prevents
 writing a pack; manifests produced before dependency extraction remain valid
 because an empty dependencies field is omitted from canonical JSON.
 
+AppService `.js` modules containing static `import` or `export` declarations
+are classified as `esm`; other `.js` modules remain `commonjs`. Classification
+uses the JavaScript parser, so comments, strings, template/regular-expression
+literals, property names and dynamic `import()` alone do not select ESM.
+Unparseable `.js` source produces an `ERR_INVALID_MANIFEST` diagnostic naming
+the AppService module before a pack can be published. Explicit `.mjs` and
+`.esm.js` suffixes remain ESM, `.cjs` remains CommonJS, and `.json` remains JSON.
+Module bytes are not rewritten, and dynamic import support is unchanged.
+
 WXS uses a separate grammar-aware dependency pass with the exact Acorn version
 in `pnpm-lock.yaml`. It parses Script grammar through ECMAScript 2020, without
 executing or rewriting input bytes. Division and regular-expression literals

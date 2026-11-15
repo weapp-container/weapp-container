@@ -13,13 +13,13 @@ import { createSyntheticFixtureBuild } from './fixtures/conformance-fixture-buil
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex')
 const caseSource = '// Actual synthetic compiler/packer contract test; no official IDE assertion.\n'
-async function fixture(t, { observedCompanionContract = false } = {}) {
+async function fixture(t, { observedCompanionContract = false, appSource = 'App({});\n' } = {}) {
   const root = realpathSync(await mkdtemp(join(tmpdir(), 'conformance-fixture-build-')))
   t.after(() => rm(root, { recursive: true, force: true }))
   const source = join(root, 'source'), archive = join(root, 'build-archive'), project = join(root, 'project')
   await mkdir(join(source, 'e2e'), { recursive: true })
   const raw = {
-    'app.json': JSON.stringify({ pages: ['pages/index/index'] }), 'app.js': 'App({});\n',
+    'app.json': JSON.stringify({ pages: ['pages/index/index'] }), 'app.js': appSource,
     'pages/index/index.js': 'Page({data:{message:"actual generated output"}});\n',
     'pages/index/index.json': '{}', 'pages/index/index.wxml': '<view>{{message}}</view>',
     'pages/index/index.wxss': 'view{color:red}',
@@ -123,6 +123,18 @@ test('actual fresh CLI output of the opened project is packed by an archived rev
   const { schemaVersion, kind, status, ...rawObservation } = result.runtimeObservation
   assert.deepEqual(f.inspect(result, { runtimeObservation: rawObservation }).errors, [])
   await rm(f.project, { recursive: true }); await rm(join(f.root, 'fixture-archive/packer-executor'), { recursive: true })
+  assert.deepEqual(f.inspect(result).errors, [])
+})
+
+test('archived packer classifies emitted ESM .js and verifies its unchanged source offline', async t => {
+  const appSource = 'export const appReady = true;\nApp({globalData:{ready:appReady}});\n'
+  const f = await fixture(t, { appSource }), result = await f.complete()
+  assert.equal(result.attestation.status, 'built', result.attestation.failure)
+  const module = result.fixtureValue.manifest.modules.find(item => item.id === 'module:app.js')
+  assert.equal(module.format, 'esm')
+  assert.equal(module.sha256, hash(appSource))
+  assert.equal((await readFile(join(f.root, result.resources[module.sha256].path))).toString(), appSource)
+  await rm(join(f.root, 'fixture-archive/packer-executor'), { recursive: true })
   assert.deepEqual(f.inspect(result).errors, [])
 })
 
