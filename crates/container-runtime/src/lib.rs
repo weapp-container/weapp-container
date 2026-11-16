@@ -16181,7 +16181,7 @@ mod tests {
         ));
         assert_eq!(system.messages[0].payload["ok"], true);
         assert_eq!(system.messages[0].payload["provider"], "sandbox");
-        assert_eq!(system.messages[0].payload["result"]["SDKVersion"], "3.17.3");
+        assert_eq!(system.messages[0].payload["result"]["SDKVersion"], "3.17.4");
         assert_eq!(
             system.messages[0].payload["result"]["brand"],
             "Weapp Container Test Device"
@@ -17170,7 +17170,7 @@ mod tests {
             op::MODULE_CALL,
             json!({"moduleId":"module:app.js", "export":"run", "args": []}),
         ));
-        assert_eq!(run.messages[0].payload["result"][0]["sdk"], "3.17.3");
+        assert_eq!(run.messages[0].payload["result"][0]["sdk"], "3.17.4");
         assert_eq!(run.messages[0].payload["result"][0]["width"], 0);
         assert_eq!(run.messages[0].payload["result"][0]["menuWidth"], 0);
         assert_eq!(run.messages[0].payload["result"][0]["menuHeight"], 0);

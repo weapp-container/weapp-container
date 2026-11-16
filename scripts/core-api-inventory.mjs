@@ -332,7 +332,7 @@ function conditionalCeiling(tokens) {
 const reviewedSourceSha256 = Object.freeze({
   "quickjs": "e87e970390b93e89f56c98e02af1b31183376b5ae52c9d88f71ff2827968c28f",
   "v8": "70a0a54ba87bd8995ea2038df7e01669206df8d913a72dc3971acb259f94aafa",
-  "runtime": "d23d9274ad94f4c5fdbcc2b86b057babcf8b8b9f7dcf66eae0614426640624c8",
+  "runtime": "fb44cc73e74d8cbb62dd576d2b20f0a92843e7255128b962a9d5057175d44be5",
   "runtimeTurnScheduler": "4fa75f511dd8655da2e540b6a3487d39a48116f2143577d1817586a00ca2b3b6",
   "runtimeRoutes": "2c6d7576fa806268005af696cdf1a7f0b054249cb37cf1f70e529fd459be415e",
   "hostServices": "fa059a3b1da09361c00da6ee3c29e4aee7d5c9762cc313d1e5576fbd0194ca60",
@@ -348,10 +348,10 @@ const reviewedSourceSha256 = Object.freeze({
   "hostInstaller": "5197f8df3b7c273fb70430bd2de1bf6c3fae352a4d7c476f27d26a944991f40e",
   "asyncHost": "5374301e39469b1759187b636f47045b383e5471270391c688400d949fbb4d2a",
   "logJournal": "332a7d543327192e419a8ae8d15b2594cff418de266133a3f7fcb96514d78c1f",
-  "nativeProvider": "81ef905a37908face8798be6868d0d7ff93b7a08deacf2d62c9a223eaa6a144a",
+  "nativeProvider": "97228bb61a986a66b184d9990e2468109fd04501cb018607d6cdfeb259aa1a25",
   "simulatorWeb": "99815135af22c7c208a385cdc64bfb7f765a50f0afd47db4b67063c25b206a05",
   "snapshots": "9f42b04de5564eecad51b3396af3087a8c34f91c29415ad8a0c05cf0d6d6d4fb",
-  "webHost": "c37244c8a1f1adc51b2b023e0b9a148c602c8666e8fdb9509f545462b728f126",
+  "webHost": "79bdc7781e961d37b88cdb3fe7ea76555d9191902eb5f1484da53d8740b788d3",
   "coreManifest": "7d1ea5920ce8f189074e99405f4325843831412aee5e0239c9a15efe62d7511a",
   "workspaceManifest": "b4b42531ff0258486c26f055c2d614f8431e686c13b430928d814c0c2484194b",
   "workspaceLock": "010461656092c5f08cf8622efe1760837ef239067d66310fb7f31aa4890e5834",
@@ -690,7 +690,7 @@ export async function inventoryCoreApis(catalog, read) {
   assert(containsAll(tabState, ['item.badge_text = Some(text.clone())', 'item.red_dot = true', 'chrome.color.clone_from(value)', 'chrome.selected_color.clone_from(value)', 'chrome.background_color.clone_from(value)', 'chrome.border_style.clone_from(value)']) && containsAll(units.chrome.text, ['pub badge_text: Option<String>', 'pub red_dot: bool', 'self.tab_bar_state.project(&mut chrome.tab_bar);', '.and_then(|catalog| catalog.app.get("tabBar"))', '.and_then(|tab_bar| tab_bar.get("custom"))']) && units.runtimeLifecycle.text.includes('self.tab_bar_state = crate::tab_bar::TabBarState::default();'), 'TabBar actual chrome projection and terminal retirement changed')
   assert(containsAll(units.nativeProvider.text, ['.map(|active| active.session.page_chrome())', 'if observed != self.observed_chrome {', '.ok_or_else(|| SdkError::invalid("chrome revision exhausted"))?', 'json!({"type":"chrome","chrome":self.chrome_state()?,"generation":self.generation})']) && containsAll(units.playerModel.text, ['systemTabBar: true,', "if (event.type == 'chrome')", "'chrome': Map<String, Object?>.from(value)", 'if (accepted is Map && _olderChrome(value, accepted)) return;']), 'TabBar independent metadata revision and Player delivery changed')
   assert(containsAll(units.flutterController.text, ['bool systemTabBar = false', "if (systemTabBar) 'systemTabBar': true,", "_invoke<void>('nativeChrome', chrome);"]), 'Flutter trusted TabBar opt-in and native forwarding changed')
-  assert(containsAll(units.flutterAndroid.text, ['val systemTabBar = args["systemTabBar"]?.let', '"systemTabBar must be a boolean"', 'systemTabBar = systemTabBar)']) && containsAll(units.androidSession.text, ['systemTabBar: Boolean = false', 'systemTabBarEnabled = systemTabBar', 'if (systemTabBarEnabled) config.put("systemTabBar", true)']), 'Android Flutter-to-native TabBar configuration changed')
+  assert(containsAll(units.flutterAndroid.text, ['val systemTabBar = args["systemTabBar"]?.let', '"systemTabBar must be a boolean"', 'systemTabBar = systemTabBar,', 'compatibilityVersion = compatibilityVersion']) && containsAll(units.androidSession.text, ['systemTabBar: Boolean = false', 'systemTabBarEnabled = systemTabBar', 'if (systemTabBarEnabled) config.put("systemTabBar", true)', 'compatibilityVersion: String? = null', 'selectedCompatibilityVersion = compatibilityVersion', 'selectedCompatibilityVersion?.let { config.put("compatibilityVersion", it) }']), 'Android Flutter-to-native TabBar and SDK compatibility configuration changed')
   assert(containsAll(units.flutterIos.text, ['if let value = args["systemTabBar"]', 'configuration.systemTabBar = enabled']) && units.iosTypes.text.includes('public var systemTabBar: Bool = false') && units.iosSession.text.includes('if configuration.systemTabBar { config["systemTabBar"] = .bool(true) }'), 'iOS Flutter-to-native TabBar configuration changed')
   assert(containsAll(units.desktopRegistry.text, ['if (args.contains("systemTabBar"))', 'if (!args["systemTabBar"].is_boolean())', 'if (args["systemTabBar"].get<bool>()) e->config["systemTabBar"] = true;', 'if (method == "nativeChrome")', 'e->texture->set_chrome(payload, std::move(action))']) && units.flutterMacos.text.includes('_registry->invoke('), 'Desktop/macOS Flutter TabBar configuration and consumer dispatch changed')
   const flutterTabs = between(units.playerChrome.text, '  Widget _tabs()', '\n  @override')
@@ -1520,7 +1520,7 @@ export async function inventoryCoreApis(catalog, read) {
   const geometry = quoted(between(units.geometry.text, 'pub const HOST_GEOMETRY_APIS:', '/// Return only fields'))
   assert(geometry.length === 6 && units.windowMetrics.text.includes('pub fn validate('), 'Accepted display projection changed; review geometry provenance')
   const nativeProvider = between(units.nativeProvider.text, 'impl HostApiProvider for NativeProvider', 'struct Active')
-  assert(nativeProvider.includes('container_runtime::merge_host_geometry') && nativeProvider.includes('Self::metadata(name, host)'), 'SDK NativeProvider no longer uses the accepted core observation')
+  assert(nativeProvider.includes('container_runtime::merge_host_geometry') && nativeProvider.includes('self.metadata(name, host)'), 'SDK NativeProvider no longer uses the accepted core observation')
   const gaps = {
     'wx.getDeviceInfo': ['fullDeviceSnapshotFields'],
     'wx.getAppBaseInfo': ['hostApplicationBaseSettings'],
