@@ -8,7 +8,6 @@
 use crate::browser_dev_read::read_exact_snapshot;
 use crate::owned_process::OwnedProcess;
 use serde_json::Value;
-use sha2::{Digest, Sha256};
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -288,7 +287,7 @@ impl ArtifactJobConfig {
         Self {
             node_bin,
             entrypoint: tools.files.root.join(EMBEDDED_TOOL_FILES[0].0),
-            entrypoint_sha256: format!("{:x}", Sha256::digest(EMBEDDED_TOOL_FILES[0].1)),
+            entrypoint_sha256: container_ir::hex_digest(EMBEDDED_TOOL_FILES[0].1),
             tool_snapshot: Some(tools),
             parent,
             job_name,
@@ -335,7 +334,7 @@ impl ArtifactToolSnapshot {
             let output = files.root.join(path);
             fs::create_dir_all(output.parent().expect("fixed tool parent"))?;
             private_file(&output)?.write_all(bytes)?;
-            inventory.push(serde_json::json!({"path":path,"size":bytes.len(),"sha256":format!("{:x}", Sha256::digest(bytes))}));
+            inventory.push(serde_json::json!({"path":path,"size":bytes.len(),"sha256":container_ir::hex_digest(bytes)}));
         }
         let descriptor = serde_json::to_vec(&serde_json::json!({"schemaVersion":1,
             "scope":"embedded-finite-artifact-tools","files":inventory}))?;
@@ -601,7 +600,7 @@ fn prepare_artifact_request(
         tools.verify()?;
     }
     let entry = bounded_regular_file(&config.entrypoint, MAX_ENTRY_BYTES as usize)?;
-    if format!("{:x}", Sha256::digest(&entry)) != config.entrypoint_sha256 {
+    if container_ir::hex_digest(&entry) != config.entrypoint_sha256 {
         return Err(ArtifactJobError::Invalid("tool entrypoint pin mismatch"));
     }
     let request_id = request
@@ -717,7 +716,7 @@ impl ArtifactJob {
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null());
-        let request_sha256 = format!("{:x}", Sha256::digest(&bytes));
+        let request_sha256 = container_ir::hex_digest(&bytes);
         let child = match OwnedProcess::spawn_finite(&mut command) {
             Ok(child) => child,
             Err(failure) => {
@@ -901,7 +900,7 @@ pub(crate) mod runtime_receipt_test_support {
             ArtifactJobConfig {
                 node_bin: PathBuf::from("/bin/sh"),
                 entrypoint,
-                entrypoint_sha256: format!("{:x}", Sha256::digest(SCRIPT)),
+                entrypoint_sha256: container_ir::hex_digest(SCRIPT),
                 tool_snapshot: None,
                 parent: parent.to_path_buf(),
                 job_name: JOB_NAME.into(),
@@ -948,7 +947,7 @@ mod tests {
             ArtifactJobConfig {
                 node_bin: PathBuf::from("/bin/sh"),
                 entrypoint: self.entry.clone(),
-                entrypoint_sha256: format!("{:x}", Sha256::digest(fs::read(&self.entry).unwrap())),
+                entrypoint_sha256: container_ir::hex_digest(&fs::read(&self.entry).unwrap()),
                 tool_snapshot: None,
                 parent: self.root.clone(),
                 job_name: "one-job".into(),

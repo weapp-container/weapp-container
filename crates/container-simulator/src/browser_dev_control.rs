@@ -732,7 +732,7 @@ impl ControlLedger {
         decode_payload(request.command, request.payload.clone())?;
         let payload_bytes =
             encode_bounded(&CanonicalValue(&request.payload), MAX_CONTROL_REQUEST_BYTES)?;
-        let payload_sha256 = format!("{:x}", Sha256::digest(&payload_bytes));
+        let payload_sha256 = container_ir::hex_digest(&payload_bytes);
         #[derive(Serialize)]
         #[serde(rename_all = "camelCase")]
         struct CanonicalRequest<'a> {
@@ -1087,7 +1087,7 @@ impl ControlLedger {
         if Arc::strong_count(bytes) != 1 {
             return Err(ControlError::Capacity);
         }
-        let digest = format!("{:x}", Sha256::digest(bytes.as_slice()));
+        let digest = container_ir::hex_digest(bytes.as_slice());
         if digest != ack.final_sha256 {
             return Err(ControlError::AckMismatch);
         }
@@ -1171,7 +1171,7 @@ impl ControlLedger {
         if keys.last().map(|key| key.1) != Some(through) {
             return Err(ControlError::RetiredOrUnseen);
         }
-        if format!("{:x}", digest.finalize()) != request.prefix_sha256 {
+        if container_ir::hex_encode(&digest.finalize()) != request.prefix_sha256 {
             return Err(ControlError::AckMismatch);
         }
         let reply = ControlRetirementReply {
@@ -1478,7 +1478,7 @@ mod tests {
         let final_bytes = ledger
             .cancel_queued(&identity, snapshot(serial), cancelled())
             .unwrap();
-        let hash = format!("{:x}", Sha256::digest(final_bytes.as_slice()));
+        let hash = container_ir::hex_digest(final_bytes.as_slice());
         drop(final_bytes);
         ledger.acknowledge_final("run-1", &bytes, &hash).unwrap();
         (identity.request_id, hash)
@@ -1506,7 +1506,7 @@ mod tests {
             lane,
             previous_through: WireU64::new(previous),
             through_serial: WireU64::new(through),
-            prefix_sha256: format!("{:x}", Sha256::digest(transcript.as_bytes())),
+            prefix_sha256: container_ir::hex_digest(transcript.as_bytes()),
         }
     }
 
@@ -1622,7 +1622,7 @@ mod tests {
         let identity = admit(&mut ledger, &bytes);
         let ticket = ledger.begin(&identity).unwrap().ticket;
         let body = ledger.finish(&ticket, ok_snapshot(1)).unwrap();
-        let hash = format!("{:x}", Sha256::digest(body.as_slice()));
+        let hash = container_ir::hex_digest(body.as_slice());
         let request = retirement(Lane::Normal, 0, 1, &[(identity.request_id, hash.clone())]);
         assert_eq!(
             ledger
@@ -1768,7 +1768,7 @@ mod tests {
         assert!(!ledger.cleanup_ready()); // Retained preparation is not delivery.
         let final_bytes = ledger.commit_prepared_final(prepared).unwrap();
         assert!(!ledger.cleanup_ready());
-        let hash = format!("{:x}", Sha256::digest(final_bytes.as_slice()));
+        let hash = container_ir::hex_digest(final_bytes.as_slice());
         drop(final_bytes); // Losing the transport borrower is not an ACK.
         assert!(!ledger.cleanup_ready());
         assert_eq!(
@@ -1797,7 +1797,7 @@ mod tests {
         let normal_id = admit(&mut ledger, &normal);
         let ticket = ledger.begin(&normal_id).unwrap().ticket;
         let final_bytes = ledger.finish(&ticket, ok_snapshot(1)).unwrap();
-        let hash = format!("{:x}", Sha256::digest(final_bytes.as_slice()));
+        let hash = container_ir::hex_digest(final_bytes.as_slice());
         drop(final_bytes);
         ledger.acknowledge_final("run-1", &normal, &hash).unwrap();
         assert!(ledger.cleanup_ready());
@@ -1809,7 +1809,7 @@ mod tests {
             .cancel_queued(&cleanup_id, snapshot(2), cancelled())
             .unwrap();
         assert!(!ledger.cleanup_ready());
-        let hash = format!("{:x}", Sha256::digest(final_bytes.as_slice()));
+        let hash = container_ir::hex_digest(final_bytes.as_slice());
         drop(final_bytes);
         ledger.acknowledge_final("run-1", &cleanup, &hash).unwrap();
         assert!(ledger.cleanup_ready());
@@ -2203,10 +2203,10 @@ mod tests {
                 },
             )
             .unwrap();
-        let digest = format!("{:x}", Sha256::digest(body.as_slice()));
+        let digest = container_ir::hex_digest(body.as_slice());
         let parsed: Value = serde_json::from_slice(body.as_slice()).unwrap();
         let reencoded = serde_json::to_vec_pretty(&parsed).unwrap();
-        let wrong = format!("{:x}", Sha256::digest(&reencoded));
+        let wrong = container_ir::hex_digest(&reencoded);
         assert_ne!(digest, wrong);
         drop(body);
         let charged = ledger.usage(Lane::Cleanup);
@@ -2257,7 +2257,7 @@ mod tests {
         let identity = admit(&mut ledger, &bytes);
         let ticket = ledger.begin(&identity).unwrap().ticket;
         let body = ledger.finish(&ticket, ok_snapshot(1)).unwrap();
-        let digest = format!("{:x}", Sha256::digest(body.as_slice()));
+        let digest = container_ir::hex_digest(body.as_slice());
         let charged = ledger.usage(Lane::Normal);
         // Original compact_final checks outstanding bodies before hash mismatch.
         // The helper must retain this order and the same original byte charge.
@@ -2315,7 +2315,7 @@ mod tests {
         );
         assert_eq!(ledger.usage(Lane::Normal), charged);
         let body = ledger.commit_prepared_final(prepared).unwrap();
-        let digest = format!("{:x}", Sha256::digest(body.as_slice()));
+        let digest = container_ir::hex_digest(body.as_slice());
         drop(body);
         assert_eq!(
             ledger.acknowledge_final("run-1", &bytes, &digest).unwrap(),
@@ -2423,7 +2423,7 @@ mod tests {
         let identity = admit(&mut ledger, &bytes);
         let ticket = ledger.begin(&identity).unwrap().ticket;
         let body = ledger.finish(&ticket, ok_snapshot(1)).unwrap();
-        let digest = format!("{:x}", Sha256::digest(body.as_slice()));
+        let digest = container_ir::hex_digest(body.as_slice());
         drop(body);
         assert_eq!(
             ledger.acknowledge_final("run-1", &bytes, &digest).unwrap(),
@@ -2476,7 +2476,7 @@ mod tests {
         let body = ledger.finish(&ticket, ok_snapshot(1)).unwrap();
         let ack = FinalAcknowledgement {
             identity: identity.clone(),
-            final_sha256: format!("{:x}", Sha256::digest(body.as_slice())),
+            final_sha256: container_ir::hex_digest(body.as_slice()),
         };
         assert_eq!(
             ledger.compact_final(&ack).unwrap_err(),
@@ -2622,7 +2622,7 @@ mod tests {
             .unwrap();
         let ack = FinalAcknowledgement {
             identity: cleanup.clone(),
-            final_sha256: format!("{:x}", Sha256::digest(body.as_slice())),
+            final_sha256: container_ir::hex_digest(body.as_slice()),
         };
         drop(body);
         ledger.compact_final(&ack).unwrap();

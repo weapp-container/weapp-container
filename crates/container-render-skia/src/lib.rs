@@ -4900,7 +4900,9 @@ impl SkiaRenderer {
             &mut self.canvas.native_fonts,
             &self.native_images,
         )?;
-        context.flush_and_submit();
+        context
+            .flush_and_submit()
+            .map_err(|_| RenderError::Unsupported("skia-gpu-gles-submit"))?;
         drop(surface);
         self.gl_surface_attached = true;
         Ok(())
@@ -5042,7 +5044,9 @@ impl SkiaRenderer {
             &mut self.canvas.native_fonts,
             &self.native_images,
         )?;
-        context.flush_and_submit();
+        context
+            .flush_and_submit()
+            .map_err(|_| RenderError::Unsupported("skia-gpu-metal-submit"))?;
         drop(surface);
         self.metal_surface_attached = true;
         Ok(())

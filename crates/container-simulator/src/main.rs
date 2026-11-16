@@ -3383,7 +3383,6 @@ mod tests {
         use container_simulator::presentation::PresentationSettings;
         use container_simulator::web::WebSurface;
         use container_simulator::{Simulator, SimulatorConfig};
-        use sha2::{Digest, Sha256};
         use std::{env, fs, path::PathBuf};
 
         struct Fixture(PathBuf);
@@ -3402,7 +3401,7 @@ mod tests {
             .unwrap()
             .canonical_json()
             .unwrap();
-        let digest = format!("{:x}", Sha256::digest(&template));
+        let digest = container_ir::hex_digest(&template);
         fs::write(fixture.0.join("blobs/sha256").join(&digest), template).unwrap();
         let route = "pages/index/index";
         let mut manifest = ContainerManifestV1 {

@@ -1098,7 +1098,7 @@ fn real_ledger_final_is_one_original_pending_borrow_and_expiry_releases_ack_barr
                 .any(|entry| entry.bytes.ptr_eq(&weak)),
             "final must not gain a second transport byte charge"
         );
-        (weak, format!("{:x}", Sha256::digest(bytes.as_slice())))
+        (weak, container_ir::hex_digest(bytes.as_slice()))
     };
     let usage = owner.ledger.usage(Lane::Normal);
     assert_eq!(
@@ -1145,7 +1145,7 @@ fn dropping_the_exact_surface_releases_its_original_ledger_body_borrow() {
         assert_eq!(Arc::strong_count(bytes), 2);
         (
             Arc::downgrade(bytes),
-            format!("{:x}", Sha256::digest(bytes.as_slice())),
+            container_ir::hex_digest(bytes.as_slice()),
         )
     };
     assert_eq!(
@@ -1327,7 +1327,7 @@ fn callback_crossing_the_original_deadline_drops_its_real_final_without_queueing
                     panic!("not real final");
                 };
                 final_weak = Some(Arc::downgrade(bytes));
-                digest = Some(format!("{:x}", Sha256::digest(bytes.as_slice())));
+                digest = Some(container_ir::hex_digest(bytes.as_slice()));
                 assert_eq!(Arc::strong_count(bytes), 2);
                 // Normally <=220ms, but always crosses this exact acceptance deadline.
                 thread::sleep(
@@ -1380,7 +1380,7 @@ fn actual_control_socket_disconnect_releases_final_borrow_and_isolates_the_next_
         };
         (
             Arc::downgrade(bytes),
-            format!("{:x}", Sha256::digest(bytes.as_slice())),
+            container_ir::hex_digest(bytes.as_slice()),
         )
     };
     assert_eq!(
@@ -1443,10 +1443,7 @@ fn actual_control_socket_disconnect_releases_final_borrow_and_isolates_the_next_
     let response = receive(&mut target, &mut next_peer);
     assert_status(&response, 200);
     let body_start = find_bytes(&response, b"\r\n\r\n").unwrap() + 4;
-    assert_eq!(
-        format!("{:x}", Sha256::digest(&response[body_start..])),
-        digest
-    );
+    assert_eq!(container_ir::hex_digest(&response[body_start..]), digest);
     assert_eq!(owner.executed, 1);
     assert_eq!(weak.strong_count(), 1);
     assert_eq!(handle.state()["status"], "kept-alive");
@@ -1485,7 +1482,7 @@ fn completed_invoke_and_replay_release_original_final_before_direct_ack() {
             assert_eq!(Arc::strong_count(bytes), 2);
             (
                 Arc::downgrade(bytes),
-                format!("{:x}", Sha256::digest(bytes.as_slice())),
+                container_ir::hex_digest(bytes.as_slice()),
             )
         };
         if let Some((first, first_digest)) = &completed {
@@ -1546,7 +1543,7 @@ fn exhausted_header_budget_releases_original_final_without_implicit_ack() {
                 assert_eq!(Arc::strong_count(bytes), 2);
                 returned_final = Some((
                     Arc::downgrade(bytes),
-                    format!("{:x}", Sha256::digest(bytes.as_slice())),
+                    container_ir::hex_digest(bytes.as_slice()),
                 ));
                 response
             })

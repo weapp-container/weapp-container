@@ -1,6 +1,5 @@
 use crate::{RenderError, TextMetrics};
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use unicode_linebreak::{break_property, linebreaks, BreakClass};
 use unicode_segmentation::UnicodeSegmentation;
 mod sfnt;
@@ -829,7 +828,7 @@ fn layout_flow_text(
         glyphs: Vec::new(),
         flow: keep_glyphs.then(|| TextFlowPlan {
             version: 1,
-            source_sha256: format!("{:x}", Sha256::digest(text.as_bytes())),
+            source_sha256: container_ir::hex_digest(text.as_bytes()),
             style: properties,
             font_size: style.font_size,
             line_height: style.line_height,
@@ -973,7 +972,7 @@ fn validate_flow_layout(
         || flow.style != properties
         || flow.font_size != style.font_size
         || flow.line_height != style.line_height
-        || flow.source_sha256 != format!("{:x}", Sha256::digest(text.as_bytes()))
+        || flow.source_sha256 != container_ir::hex_digest(text.as_bytes())
         || flow
             .available_width
             .is_some_and(|width| !nonnegative(width))

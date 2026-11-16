@@ -8,7 +8,6 @@
 
 use crate::dev::{PortablePackReport, PortablePublicationCheck};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use sha2::{Digest, Sha256};
 
 pub const BROWSER_DEV_VERSION: &str = "1.0";
 const MAX_MESSAGE: usize = 2048;
@@ -129,7 +128,7 @@ fn message(value: &str) -> Result<()> {
 fn digest<T: Serialize>(value: &T) -> Result<String> {
     let bytes =
         serde_json::to_vec(value).map_err(|_| CoordinatorError::Invalid("binding encoding"))?;
-    Ok(format!("{:x}", Sha256::digest(bytes)))
+    Ok(container_ir::hex_digest(&bytes))
 }
 fn valid_pack(report: &PortablePackReport) -> Result<()> {
     if report.schema_version != 1

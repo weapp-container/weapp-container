@@ -11,7 +11,7 @@ use crate::DesktopHost;
 use container_host_common::{HostSession, HostSessionError};
 use objc2::{rc::Retained, runtime::ProtocolObject, ClassType};
 use objc2_app_kit::NSView;
-use objc2_foundation::CGSize;
+use objc2_foundation::NSSize;
 use objc2_metal::{
     MTLCommandBuffer, MTLCommandQueue, MTLCreateSystemDefaultDevice, MTLDevice, MTLDrawable,
 };
@@ -82,22 +82,20 @@ impl MetalWindowPresenter {
                     .with_inner_size(size),
             )?,
         );
-        let device = unsafe { Retained::from_raw(MTLCreateSystemDefaultDevice()) }
-            .ok_or(MetalWindowPresenterError::DeviceUnavailable)?;
+        let device =
+            MTLCreateSystemDefaultDevice().ok_or(MetalWindowPresenterError::DeviceUnavailable)?;
         let command_queue = device
             .newCommandQueue()
             .ok_or(MetalWindowPresenterError::QueueUnavailable)?;
 
-        let metal_layer = unsafe { CAMetalLayer::new() };
-        unsafe {
-            metal_layer.setDevice(Some(&device));
-            metal_layer.setPixelFormat(objc2_metal::MTLPixelFormat::BGRA8Unorm);
-            metal_layer.setPresentsWithTransaction(false);
-            // Skia's Ganesh backend needs to access drawable contents while
-            // recording commands, so framebufferOnly must be disabled.
-            metal_layer.setFramebufferOnly(false);
-            metal_layer.setDrawableSize(CGSize::new(size.width as f64, size.height as f64));
-        }
+        let metal_layer = CAMetalLayer::new();
+        metal_layer.setDevice(Some(&device));
+        metal_layer.setPixelFormat(objc2_metal::MTLPixelFormat::BGRA8Unorm);
+        metal_layer.setPresentsWithTransaction(false);
+        // Skia's Ganesh backend needs to access drawable contents while
+        // recording commands, so framebufferOnly must be disabled.
+        metal_layer.setFramebufferOnly(false);
+        metal_layer.setDrawableSize(NSSize::new(size.width as f64, size.height as f64));
         let view = window
             .window_handle()
             .ok()
@@ -110,11 +108,9 @@ impl MetalWindowPresenter {
                 _ => None,
             })
             .ok_or(MetalWindowPresenterError::WindowHandleUnavailable)?;
-        unsafe {
-            view.setWantsLayer(true);
-            let layer = metal_layer.clone();
-            view.setLayer(Some(layer.as_super()));
-        }
+        view.setWantsLayer(true);
+        let layer = metal_layer.clone();
+        view.setLayer(Some(layer.as_super()));
 
         Ok(Self {
             window,
@@ -195,15 +191,17 @@ impl MetalWindowPresenter {
         // frame (or a runtime frame that has not been committed yet) cannot
         // leave stale GPU evidence visible after the previous frame.
         self.gpu_surface_attached = false;
-        let drawable = unsafe { self.metal_layer.nextDrawable() }
+        let drawable = self
+            .metal_layer
+            .nextDrawable()
             .ok_or(MetalWindowPresenterError::DrawableUnavailable)?;
-        let drawable_size = unsafe { self.metal_layer.drawableSize() };
+        let drawable_size = self.metal_layer.drawableSize();
         let width = drawable_size.width.round();
         let height = drawable_size.height.round();
         if !width.is_finite() || !height.is_finite() || width < 1.0 || height < 1.0 {
             return Err(MetalWindowPresenterError::InvalidDrawableSize);
         }
-        let texture = unsafe { drawable.texture() };
+        let texture = drawable.texture();
         let texture_ptr = Retained::as_ptr(&texture) as *const std::ffi::c_void;
         // SAFETY: `drawable` and its texture stay alive until this method
         // commits the command buffer; the runtime only borrows the texture for
@@ -230,12 +228,10 @@ impl MetalWindowPresenter {
         // no longer represents the current surface until present_runtime
         // succeeds again.
         self.gpu_surface_attached = false;
-        unsafe {
-            self.metal_layer.setDrawableSize(CGSize::new(
-                size.width.max(1) as f64,
-                size.height.max(1) as f64,
-            ));
-        }
+        self.metal_layer.setDrawableSize(NSSize::new(
+            size.width.max(1) as f64,
+            size.height.max(1) as f64,
+        ));
     }
 
     pub fn request_redraw(&self) {

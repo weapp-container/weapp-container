@@ -33,10 +33,10 @@ sha2.workspace = true
 thiserror.workspace = true
 ctrlc.workspace = true
 mio = { version = "1", features = ["net", "os-poll"] }
-getrandom = "=0.3.4"
+getrandom = "=0.4.3"
 
 [target.'cfg(unix)'.dependencies]
-nix = { version = "0.31", default-features = false, features = ["signal", "process"] }
+nix = { version = "0.32", default-features = false, features = ["signal", "process"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 container-host-desktop = { path = "../container-host-desktop", optional = true, features = ["metal-window"] }

@@ -1141,12 +1141,27 @@ fn canonicalize_value(value: &serde_json::Value) -> String {
 
 pub fn hex_digest(bytes: &[u8]) -> String {
     let digest = Sha256::digest(bytes);
-    digest.iter().map(|b| format!("{b:02x}")).collect()
+    hex_encode(&digest)
+}
+
+pub fn hex_encode(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut encoded = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        encoded.push(HEX[(byte >> 4) as usize] as char);
+        encoded.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    encoded
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn hex_encode_preserves_lowercase_byte_order() {
+        assert_eq!(hex_encode(&[0x00, 0x01, 0x0f, 0x10, 0xff]), "00010f10ff");
+    }
 
     fn manifest() -> ContainerManifestV1 {
         let mut m = ContainerManifestV1::default();

@@ -33,7 +33,7 @@ pub(crate) unsafe fn validate(
         return Err(RenderError::Unsupported("skia-gpu-metal-texture-size"));
     }
     if texture.pixelFormat() != MTLPixelFormat::BGRA8Unorm
-        || texture.textureType() != MTLTextureType::MTLTextureType2D
+        || texture.textureType() != MTLTextureType::Type2D
         || texture.sampleCount() != 1
         || !texture.usage().contains(MTLTextureUsage::RenderTarget)
         || texture.isFramebufferOnly()
@@ -59,8 +59,7 @@ mod tests {
     #[test]
     #[ignore = "requires a real Metal device; run explicitly for native SDK validation"]
     fn offscreen_texture_renders_pixels_and_rejects_incompatible_targets() {
-        let device = unsafe { Retained::from_raw(MTLCreateSystemDefaultDevice()) }
-            .expect("real Metal device");
+        let device = MTLCreateSystemDefaultDevice().expect("real Metal device");
         let queue = device.newCommandQueue().expect("Metal queue");
         let descriptor = unsafe {
             MTLTextureDescriptor::texture2DDescriptorWithPixelFormat_width_height_mipmapped(

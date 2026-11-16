@@ -1,4 +1,3 @@
-use sha2::{Digest, Sha256};
 use std::{env, fs, path::PathBuf};
 
 fn main() {
@@ -64,7 +63,7 @@ fn main() {
         );
     }
     let canonical = serde_json::to_vec(&value).expect("cannot canonicalize showcase policy");
-    let hash = format!("{:x}", Sha256::digest(&canonical));
+    let hash = container_ir::hex_digest(&canonical);
     let array = |field: &str| {
         value[field]
             .as_array()
@@ -108,7 +107,7 @@ fn main() {
             let bytes = fs::read(&input).unwrap_or_else(|_| panic!("cannot read {variable}"));
             assert_eq!(bytes.len(), size, "{variable} size mismatch");
             assert_eq!(
-                format!("{:x}", Sha256::digest(&bytes)),
+                container_ir::hex_digest(&bytes),
                 sha256,
                 "{variable} is not the reviewed showcase font input"
             );

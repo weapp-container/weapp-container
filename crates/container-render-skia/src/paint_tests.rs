@@ -11,7 +11,6 @@ use crate::{
     PositionMode, Rect, RenderError, RenderFrame, RenderImage, RenderNode, RenderSnapshot,
     Renderer, ScrollOffset, SkiaRenderer, SoftwareRenderer, Transform2D, MAX_PAINT_DEPTH,
 };
-use sha2::{Digest, Sha256};
 use std::{cell::Cell, fs::OpenOptions, io::Write, path::Path, sync::Arc};
 
 const WHITE: [u8; 4] = [255, 255, 255, 255];
@@ -91,7 +90,7 @@ fn write_new(path: &Path, bytes: &[u8]) {
 }
 
 fn sha256(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    container_ir::hex_digest(bytes)
 }
 
 fn export_evidence(

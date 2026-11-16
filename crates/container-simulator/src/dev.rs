@@ -10,7 +10,6 @@ use crate::{
 use container_bridge::BridgeBatch;
 use container_core::EngineKind;
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use std::collections::hash_map::DefaultHasher;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -2285,7 +2284,7 @@ fn read_modern_dependencies(
                 ),
             )
         })?;
-        if format!("{:x}", Sha256::digest(&bytes)) != source.sha256 {
+        if container_ir::hex_digest(&bytes) != source.sha256 {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
                 format!(
@@ -3198,7 +3197,7 @@ mod tests {
         };
         let receipt = serde_json::to_vec(&serde_json::json!({
             "schemaVersion": 1,
-            "sources": [{ "path": frozen.join("format.view.ts"), "sha256": format!("{:x}", Sha256::digest(source.as_bytes())) }]
+            "sources": [{ "path": frozen.join("format.view.ts"), "sha256": container_ir::hex_digest(source.as_bytes()) }]
         })).unwrap();
         fs::write(staging.join(".watch-dependencies.json"), &receipt).unwrap();
         let mut accepted = BTreeMap::new();

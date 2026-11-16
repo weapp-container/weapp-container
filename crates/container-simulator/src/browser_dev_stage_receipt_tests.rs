@@ -72,7 +72,7 @@ fn raw_pins_and_node_semantic_projection_are_different_domains() {
     let generated_typed = parse_intent(&generated).unwrap();
     assert_eq!(original_typed, generated_typed);
     // Hash validation still consumes the exact original raw bytes.
-    assert_eq!(sha(&original), format!("{:x}", Sha256::digest(&original)));
+    assert_eq!(sha(&original), container_ir::hex_digest(&original));
 }
 
 #[test]

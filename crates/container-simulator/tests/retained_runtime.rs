@@ -15,7 +15,6 @@ use container_simulator::browser_dev_runtime_receipt::{
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
-use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fs::{self, File, OpenOptions};
@@ -38,7 +37,7 @@ fn ensure(condition: bool, message: impl Into<String>) -> TestResult {
 }
 
 fn sha(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    container_ir::hex_digest(bytes)
 }
 
 fn required(name: &str) -> TestResult<String> {

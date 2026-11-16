@@ -10,7 +10,6 @@ use crate::browser_dev_artifact_job::{ArtifactFiles, ArtifactJob, ArtifactJobCom
 use crate::browser_dev_coordinator::RuntimePins;
 use crate::browser_dev_read::read_exact_snapshot;
 use serde::{Deserialize, Deserializer};
-use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs::{self, File, OpenOptions};
 use std::io;
@@ -99,7 +98,7 @@ fn need(condition: bool, message: &'static str) -> Result<()> {
     }
 }
 fn sha(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    container_ir::hex_digest(bytes)
 }
 fn is_hex(value: &str) -> bool {
     value

@@ -16,7 +16,6 @@ use crate::browser_dev_runtime_receipt::{
 };
 use container_ir::{ContainerManifestV1, ManifestError, RendererProfile};
 use serde::de::DeserializeOwned;
-use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Weak};
@@ -57,7 +56,7 @@ fn need(value: bool, message: &'static str) -> Result<()> {
     }
 }
 fn sha(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    container_ir::hex_digest(bytes)
 }
 fn hash(value: &str) -> bool {
     value.len() == 64

@@ -76,22 +76,22 @@ serde_json = { workspace = true, features = ["unbounded_depth"] }
 thiserror.workspace = true
 md-5.workspace = true
 sha1.workspace = true
-image = { version = "=0.25.9", default-features = false, features = ["png", "jpeg", "webp"] }
-getrandom = "=0.3.4"
+image = { version = "=0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }
+getrandom = "=0.4.3"
 
 [build-dependencies]
+container-ir = { path = "../container-ir" }
 serde_json.workspace = true
-sha2.workspace = true
 
 [target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
 web-time = "1.1.0"
-getrandom = { version = "=0.3.4", features = ["wasm_js"] }
+getrandom = { version = "=0.4.3", features = ["wasm_js"] }
 
 # Real-device Session integration test only; no production Metal API expansion.
 [target.'cfg(target_os = "macos")'.dev-dependencies]
-objc2 = { version = "0.5.3", default-features = false, features = ["std"] }
-objc2-metal = { version = "0.2.2", default-features = false, features = [
-    "std", "MTLDevice", "MTLCommandQueue", "MTLCommandBuffer",
+objc2 = { version = "0.6.5", default-features = false, features = ["std"] }
+objc2-metal = { version = "0.3.2", default-features = false, features = [
+    "std", "MTLAllocation", "MTLDevice", "MTLCommandQueue", "MTLCommandBuffer",
     "MTLCommandEncoder", "MTLBlitCommandEncoder", "MTLResource",
     "MTLTexture", "MTLPixelFormat", "MTLTypes",
 ] }

@@ -10,7 +10,6 @@
 use container_render_skia::{RenderFrame, RenderSnapshot, RenderTargetSize};
 use serde::Serialize;
 use serde_json::{json, Value};
-use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, VecDeque};
 use std::io::{self, ErrorKind, Read, Write};
 use std::net::{IpAddr, SocketAddr, TcpListener, TcpStream};
@@ -906,7 +905,7 @@ impl WebSurfaceHandle {
         }
         let target = RenderTargetSize::for_viewport(frame.viewport, effective_scale)
             .map_err(|error| error.to_string())?;
-        let session_key = format!("{:x}", Sha256::digest(session_id.as_bytes()));
+        let session_key = container_ir::hex_digest(session_id.as_bytes());
         let mut descriptors = BTreeMap::new();
         let mut resources = BTreeMap::new();
         let mut image_bytes = 0_usize;
@@ -939,7 +938,7 @@ impl WebSurfaceHandle {
             if image_bytes > MAX_FRAME_CACHE_BYTES {
                 return Err("ERR_RENDER: render resource byte budget exceeded".into());
             }
-            let hash = format!("{:x}", Sha256::digest(&resource.pixels));
+            let hash = container_ir::hex_digest(&resource.pixels);
             let url = format!(
                 "/api/render-resources/{session_key}/{config_generation}/{render_revision}/{hash}"
             );
@@ -2041,7 +2040,7 @@ impl WebSurface {
                 ));
             }
             let bytes = std::fs::read(&path)?;
-            let hash = format!("{:x}", Sha256::digest(&bytes));
+            let hash = container_ir::hex_digest(&bytes);
             if Some(hash.as_str()) != pin["sha256"].as_str() {
                 return Err(io::Error::other(format!(
                     "ERR_RENDER: pinned renderer integrity mismatch: {key}"
@@ -3758,7 +3757,7 @@ mod tests {
             assert_eq!(envelope["sourceFrameId"], 3);
             assert_eq!(envelope["renderRevision"], 7);
             assert!(envelope["frame"].get("images").is_none());
-            let expected = format!("{:x}", Sha256::digest([240, 20, 10, 255]));
+            let expected = container_ir::hex_digest(&[240, 20, 10, 255]);
             assert_eq!(
                 envelope["resources"]["sha256:encoded-source"]["sha256"],
                 expected
