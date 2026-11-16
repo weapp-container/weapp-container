@@ -174,7 +174,7 @@
     "lint": "eslint scripts tools/documentation tools/runtime-artifacts repoctl.config.ts && turbo run lint",
     "typecheck": "turbo run typecheck",
     "test:types": "turbo run test:types",
-    "test": "pnpm testing:build && turbo run test && pnpm test:scripts",
+    "test": "pnpm testing:build && WEAPP_CONTAINER_TEST_BINARY=$PWD/target/debug/weapp-test-host turbo run test && pnpm test:scripts",
     "test:scripts": "node scripts/test-js-toolchain.mjs",
     "repo:check": "repo check --full"
   },
