@@ -1,0 +1,12 @@
+{
+  "kind": "locked-notice-bundle",
+  "package": "skia-safe",
+  "version": "0.157.0",
+  "crateChecksum": "dc1c946dbc1a10b6b1ace7e368ea71f96c81448bbf55effcad0a9a3a392358eb",
+  "repository": "https://github.com/rust-skia/rust-skia",
+  "commit": "30669978c3f39a73e8a7ac74eead8d414eb1891d",
+  "bindingLicenseUrl": "https://raw.githubusercontent.com/rust-skia/rust-skia/30669978c3f39a73e8a7ac74eead8d414eb1891d/LICENSE",
+  "files": [
+    { "path": "LICENSE", "sha256": "4b33ed5b329a3a79eb1243fd91373c68b0ae0b9df7503bfc50d0c5253adf1b9a" }
+  ]
+}

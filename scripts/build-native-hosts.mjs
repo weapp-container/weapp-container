@@ -624,10 +624,10 @@ function runPlatform(name) {
         apiLevel: toolchain.apiLevel,
         apiSource: toolchain.apiSource,
         sampleMinSdk: toolchain.minimumApi,
-        // Locked skia-bindings 0.153.3 keeps its internal ndk_api at 26;
+        // Locked skia-bindings 0.157.0 keeps its internal ndk_api at 26;
         // ANDROID_API_LEVEL selects Rust/QuickJS/JNI, not Skia internals.
         skiaMinimumApi: 26,
-        skiaApiSource: 'skia-bindings-0.153.3-pinned-default',
+        skiaApiSource: 'skia-bindings-0.157.0-pinned-default',
         ignoredSdkEnvironment: ['SDKROOT', 'SDKTARGETSYSROOT'].filter(key => process.env[key] !== undefined),
         compatibility: 'not-verified',
         error: toolchain.error || null,

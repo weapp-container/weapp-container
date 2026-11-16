@@ -73,7 +73,7 @@ node scripts/perf-baseline.mjs --out artifacts/perf-baseline.json
 toolchain；“detected”只代表工具存在，不能替代目标平台编译或模拟器/真机
 运行证据。`--strict` 要求每个可选 SDK 的必需目录齐全。
 
-`container-render-skia` 的 `skia-backend` feature 固定在 `skia-safe 0.153.3`，并启用
+`container-render-skia` 的 `skia-backend` feature 固定在 `skia-safe 0.157.0`，并启用
 `ganesh + metal + pdf`，与 rust-skia 发布的内容寻址二进制 bundle 对齐。这样在
 支持的目标上会直接下载并校验预编译 Skia；若 bundle 不存在，构建会明确进入源码
 路径，此时必须提供 Python、Clang 和 Ninja，不能静默退回 software renderer。可复核

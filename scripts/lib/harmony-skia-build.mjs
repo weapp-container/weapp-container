@@ -1,4 +1,4 @@
-// skia-bindings 0.153.3 disables FreeType for OHOS. Its supported GN override
+// skia-bindings 0.157.0 disables FreeType for OHOS. Its supported GN override
 // hook runs after platform defaults, while the binary-cache key omits those
 // overrides. Force the pinned source build so cached fontless binaries cannot
 // silently satisfy the Harmony target.
@@ -25,7 +25,7 @@ export function harmonySkiaBuild(environment = process.env) {
     env: { FORCE_SKIA_BUILD: '1', SKIA_GN_ARGS: gnArgs },
     error,
     report: {
-      skiaBindingsVersion: '0.153.3',
+      skiaBindingsVersion: '0.157.0',
       buildMode: 'cargo-lock-pinned-source',
       forceSourceBuild: true,
       fontDecoder: 'bundled-freetype',

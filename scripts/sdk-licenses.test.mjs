@@ -119,8 +119,8 @@ test('a local package without a license declaration does not inherit the runtime
   assert.equal(existsSync(f.output), false);
 });
 
-test('locked complete Skia notices are reproducible with or without cached source and reject changed inputs', t => {
-  const f = fixture(t), name = 'skia-bindings', version = '0.153.3';
+test('locked complete dependency notices are reproducible with or without cached source and reject changed inputs', t => {
+  const f = fixture(t), name = 'taffy', version = '0.15.1';
   const bundle = resolve(project, 'sdk/licenses', `${name}-${version}`);
   const source = JSON.parse(readFileSync(resolve(bundle, 'source.json')));
   assert.ok(readFileSync(resolve(project, 'Cargo.lock'), 'utf8').includes(`name = "${name}"\nversion = "${version}"\nsource = "registry+https://github.com/rust-lang/crates.io-index"\nchecksum = "${source.crateChecksum}"`));
@@ -132,8 +132,8 @@ test('locked complete Skia notices are reproducible with or without cached sourc
   const skia = { id: 'skia', name, version, source: 'registry+https://github.com/rust-lang/crates.io-index', license: 'MIT', manifest_path: resolve(registry, 'Cargo.toml') };
   const metadata = { workspace_members: [sdk.id], packages: [sdk, skia], resolve: { nodes: [{ id: sdk.id, deps: [{ pkg: skia.id }] }, { id: skia.id, deps: [] }] } };
   f.write('tools/cargo', `#!${process.execPath}\nprocess.stdout.write(${JSON.stringify(JSON.stringify(metadata))});\n`);
-  // A finite metadata provider models a registry crate with no license file;
-  // the real skia-bindings crate intentionally omits source notices from tar.
+  // A finite metadata provider models a registry crate with an ambient license
+  // file; the locked bundle must remain the source of distributed notice bytes.
   const cargo = resolve(f.root, 'tools/cargo');
   chmodSync(cargo, 0o755);
   f.write('Cargo.lock', `version = 4\n\n[[package]]\nname = "${name}"\nversion = "${version}"\nchecksum = "${source.crateChecksum}"\n`);
@@ -144,7 +144,7 @@ test('locked complete Skia notices are reproducible with or without cached sourc
   const warm = readSkia();
   assert.equal(warm.files.length, source.files.length);
   for (const file of source.files) assert.equal(sha256(readFileSync(resolve(f.output, `${name}-${version}`, file.path))), file.sha256);
-  f.write(`registry/${name}-${version}/skia/LICENSE`, 'A cold build also has downloaded source notices.\n');
+  f.write(`registry/${name}-${version}/LICENSE`, 'A cold build also has downloaded source notices.\n');
   result = f.run(env); assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(readSkia(), warm);
   const accepted = readFileSync(resolve(f.output, 'licenses.json'));

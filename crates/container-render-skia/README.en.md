@@ -12,7 +12,7 @@ not infer JSON from attribute strings. See
 
 Rendering contract for the portable container. `SoftwareRenderer` is the deterministic
 headless fallback used in CI. `SkiaRenderer` is the stable host-facing type; enabling
-`skia-backend` enables `skia-safe` 0.153.3. Raster mode draws the accepted frame
+`skia-backend` enables `skia-safe` 0.157.0. Raster mode draws the accepted frame
 tree to a CPU surface; external-frame and native-GPU modes retain their distinct
 presenter contracts without normal full-page CPU raster/readback. The feature
 is opt-in because it downloads or builds the large Skia
