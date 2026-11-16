@@ -54,7 +54,7 @@
     }
   },
   "devDependencies": {
-    "weapp-vite": "7.5.0"
+    "weapp-vite": "7.11.0"
   },
   "sideEffects": false,
   "main": "./dist/index.cjs",

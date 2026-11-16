@@ -1,36 +1,32 @@
-//#region \0rolldown/runtime.js
+// \0rolldown/runtime.js
 var __defProp = Object.defineProperty;
-var __exportAll = (all, no_symbols) => {
-	let target = {};
+var __exportAll = (all, flags) => {
+	let target = Object.setPrototypeOf({}, null);
 	for (var name in all) __defProp(target, name, {
 		get: all[name],
 		enumerable: true
 	});
-	if (!no_symbols) __defProp(target, Symbol.toStringTag, { value: "Module" });
-	return target;
+	if (!(flags & 1)) __defProp(target, Symbol.toStringTag, { value: "Module" });
+	return flags & 2 ? target : Object.preventExtensions(target);
 };
-//#endregion
-//#region weapp-container-source:state.ts
+// weapp-container-source:state.ts
 let counter = 0;
 function bump() {
 	return ++counter;
 }
-//#endregion
-//#region weapp-container-source:shared.view.js
+// weapp-container-source:shared.view.js
 var weapp_container_source_shared_view_exports = /* @__PURE__ */ __exportAll({
 	bump: () => bump,
 	counter: () => counter
 });
-//#endregion
-//#region weapp-container-source:safe-b.ts
+// weapp-container-source:safe-b.ts
 function readNameA() {
 	return "a";
 }
 function cycle() {
 	return `a:b:${readNameA()}`;
 }
-//#endregion
-//#region weapp-container-source:main.view.ts
+// weapp-container-source:main.view.ts
 var weapp_container_source_main_view_exports = /* @__PURE__ */ __exportAll({
 	exercise: () => exercise,
 	readImported: () => readImported
@@ -65,11 +61,9 @@ function exercise() {
 function readImported() {
 	return counter;
 }
-//#endregion
-//#region weapp-container-modern-view:68c9cd2a2380293024e5a048ac40a1d014b4a048764d6bb2b1c25cfa4db3cd31
+// weapp-container-modern-view:68c9cd2a2380293024e5a048ac40a1d014b4a048764d6bb2b1c25cfa4db3cd31
 var weapp_container_modern_view_68c9cd2a2380293024e5a048ac40a1d014b4a048764d6bb2b1c25cfa4db3cd31_default = { ["page.wxml"]: {
 	["shared"]: weapp_container_source_shared_view_exports,
 	["tools"]: weapp_container_source_main_view_exports
 } };
-//#endregion
 module.exports = weapp_container_modern_view_68c9cd2a2380293024e5a048ac40a1d014b4a048764d6bb2b1c25cfa4db3cd31_default;

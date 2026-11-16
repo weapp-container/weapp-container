@@ -3,6 +3,14 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.15.1",
+  "pnpm": {
+    "overrides": {
+      "katex@<0.18.2": "0.18.2",
+      "glob@<14.0.2": "14.0.6",
+      "minimatch@<11.0.1": "11.0.8",
+      "tinypool@<2.1.2": "2.2.0"
+    }
+  },
   "scripts": {
     "sdk:build:native": "node scripts/sdk-native-build.mjs",
     "sdk:licenses": "node scripts/sdk-licenses.mjs",
@@ -166,18 +174,18 @@
     "lint": "eslint scripts tools/documentation tools/runtime-artifacts repoctl.config.ts && turbo run lint",
     "typecheck": "turbo run typecheck",
     "test:types": "turbo run test:types",
-    "test": "pnpm testing:build && turbo run test && pnpm test:scripts",
+    "test": "pnpm testing:build && WEAPP_CONTAINER_TEST_BINARY=$PWD/target/debug/weapp-test-host turbo run test && pnpm test:scripts",
     "test:scripts": "node scripts/test-js-toolchain.mjs",
     "repo:check": "repo check --full"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
-    "eslint": "10.13.0",
+    "eslint": "10.15.0",
     "qrcode": "1.5.4",
-    "repoctl": "6.6.1",
+    "repoctl": "6.6.2",
     "tsd": "0.33.0",
     "tsdown": "0.23.7",
-    "turbo": "2.11.9",
+    "turbo": "2.11.11",
     "typescript": "6.0.3",
     "vitest": "5.1.0",
     "@weapp-container/node": "workspace:*",
