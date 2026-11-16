@@ -1605,7 +1605,7 @@
       },
       "runtime": {
         "path": "crates/container-runtime/src/lib.rs",
-        "sha256": "fb44cc73e74d8cbb62dd576d2b20f0a92843e7255128b962a9d5057175d44be5"
+        "sha256": "26170be193bb11ca1430384f3c670d1c4876f6c11bc1c551848712edb1163662"
       },
       "snapshots": {
         "path": "crates/container-runtime/src/host_environment.rs",
