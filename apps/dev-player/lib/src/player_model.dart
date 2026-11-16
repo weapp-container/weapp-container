@@ -16,6 +16,7 @@ import 'development_connection.dart';
 import 'protocol.dart';
 import 'tab_icons.dart';
 import 'host_services.dart';
+import 'player_preferences.dart';
 
 class _ShellObservationRequest {
   _ShellObservationRequest(
@@ -58,6 +59,7 @@ class PlayerModel extends ChangeNotifier {
     this.nativeCoordinationTimeout = const Duration(seconds: 15),
     FlutterSecureStorage? secureStorage,
     this.hostServices,
+    this.preferences,
   }) : _secure =
            secureStorage ??
            const FlutterSecureStorage(
@@ -75,6 +77,7 @@ class PlayerModel extends ChangeNotifier {
   final Duration nativeCoordinationTimeout;
   final FlutterSecureStorage _secure;
   final PlayerHostServices? hostServices;
+  final PlayerPreferences? preferences;
   final logs = <String>[];
   // A separate typed journal makes native View failures observable to paired
   // inspectors without exporting free-form UI logs or guest data.
@@ -213,6 +216,101 @@ class PlayerModel extends ChangeNotifier {
       ? null
       : Map.unmodifiable(_developmentAttempt!);
   String? _activeProjectKey;
+  String _activeCompatibilityVersion = '0.0.1';
+  String? _requestedCompatibilityVersion;
+  String? _requestedCompatibilityProjectKey;
+  static const compatibilityVersions = <String>['0.0.1', '0.0.0'];
+  List<String> get compatibilityVersionOptions {
+    final raw = (capabilities['compatibility'] as Map?)?['availableVersions'];
+    if (raw is List) {
+      final values = raw
+          .whereType<Map>()
+          .map((entry) => entry['version'])
+          .whereType<String>()
+          .where((version) => version.isNotEmpty)
+          .toList();
+      if (values.isNotEmpty) return values;
+    }
+    return compatibilityVersions;
+  }
+
+  String get compatibilityVersion {
+    final saved = credentials;
+    final key = saved == null || _store == null
+        ? null
+        : _store!.projectKey(saved.serverId, saved.projectId);
+    if (key != null &&
+        _requestedCompatibilityProjectKey == key &&
+        _requestedCompatibilityVersion != null) {
+      return _requestedCompatibilityVersion!;
+    }
+    if (key != null && _controllerKey == key) {
+      return _activeCompatibilityVersion;
+    }
+    if (key != null) {
+      final preferred = preferences?.compatibilityVersionFor(key);
+      if (preferred != null &&
+          compatibilityVersionOptions.contains(preferred)) {
+        return preferred;
+      }
+      if (_controllerKey != key) return '0.0.1';
+    }
+    return _activeCompatibilityVersion;
+  }
+
+  Future<void> selectCompatibilityVersion(String version) async {
+    if (busy) {
+      throw const PlayerError(
+        'ERR_BUSY',
+        'Wait for the current project operation to finish.',
+      );
+    }
+    if (!compatibilityVersionOptions.contains(version)) {
+      throw const PlayerError(
+        'ERR_UNSUPPORTED_COMPATIBILITY_VERSION',
+        'This compatibility version is not available.',
+      );
+    }
+    final saved = credentials;
+    if (saved == null || _store == null) {
+      throw const PlayerError(
+        'ERR_DEV_PROJECT',
+        'Connect a project before selecting its compatibility version.',
+      );
+    }
+    final key = _store!.projectKey(saved.serverId, saved.projectId);
+    if (version == compatibilityVersion) return;
+    _requestedCompatibilityVersion = version;
+    _requestedCompatibilityProjectKey = key;
+    final pack = activePack ?? availablePack;
+    if (pack != null &&
+        controller != null &&
+        appRequested &&
+        !previewOccluded) {
+      busy = true;
+      var committed = false;
+      _changed();
+      try {
+        await _activate(pack, restart: true);
+        committed = true;
+      } catch (_) {
+        _requestedCompatibilityVersion = null;
+        _requestedCompatibilityProjectKey = null;
+        rethrow;
+      } finally {
+        busy = false;
+        if (!committed && controller != null) {
+          try {
+            await _restoreShellInput(controller!);
+          } catch (_) {}
+        }
+        _changed();
+      }
+    } else {
+      _changed();
+    }
+  }
+
   BigInt _latestOrdinal = BigInt.from(-1);
   String? _latestRunId;
   Future<void> _applyQueue = Future.value();
@@ -516,6 +614,8 @@ class PlayerModel extends ChangeNotifier {
         return;
       }
       credentials = paired;
+      _requestedCompatibilityVersion = null;
+      _requestedCompatibilityProjectKey = null;
       _latest = null;
       _latestOrdinal = BigInt.from(-1);
       _latestRunId = null;
@@ -614,6 +714,8 @@ class PlayerModel extends ChangeNotifier {
       credentials = DeviceCredentials.fromJson(
         Map<String, Object?>.from(jsonDecode(value) as Map),
       );
+      _requestedCompatibilityVersion = null;
+      _requestedCompatibilityProjectKey = null;
       _latest = null;
       final saved = credentials!;
       _transport = DeviceTransport(saved.endpoint, saved.fingerprint)
@@ -948,6 +1050,19 @@ class PlayerModel extends ChangeNotifier {
         'This downloaded pack belongs to a different paired project. Reconnect that project before running or rolling it back.',
       );
     }
+    final requestedCompatibilityVersion =
+        _requestedCompatibilityProjectKey == key &&
+            _requestedCompatibilityVersion != null
+        ? _requestedCompatibilityVersion!
+        : _controllerKey == key
+        ? _activeCompatibilityVersion
+        : preferences?.compatibilityVersionFor(key) ?? '0.0.1';
+    if (!compatibilityVersionOptions.contains(requestedCompatibilityVersion)) {
+      throw const PlayerError(
+        'ERR_UNSUPPORTED_COMPATIBILITY_VERSION',
+        'This compatibility version is not available.',
+      );
+    }
     if (_navigationPreparation != null) {
       _cancelProspectiveChrome();
       await _navigationPreparation;
@@ -958,7 +1073,10 @@ class PlayerModel extends ChangeNotifier {
       _holdShellInput(old);
       _retireShellObservation(old);
     }
-    final replacing = old == null || _controllerKey != key;
+    final replacing =
+        old == null ||
+        _controllerKey != key ||
+        _activeCompatibilityVersion != requestedCompatibilityVersion;
     if (replacing && _pendingRetirement.length >= 2) {
       throw const PlayerError(
         'ERR_BUSY',
@@ -970,6 +1088,7 @@ class PlayerModel extends ChangeNotifier {
     final creation = replacing
         ? WeappContainerController.create(
             storageKey: 'dev-player:$key',
+            compatibilityVersion: requestedCompatibilityVersion,
             gpuRequired: true,
             devDiagnostics: true,
             systemTabBar: true,
@@ -1404,6 +1523,19 @@ class PlayerModel extends ChangeNotifier {
         previousPack = _activeProjectKey == key ? activePack : null;
       }
       activePack = pack;
+      _activeCompatibilityVersion = requestedCompatibilityVersion;
+      _requestedCompatibilityVersion = null;
+      _requestedCompatibilityProjectKey = null;
+      try {
+        await preferences?.setCompatibilityVersion(
+          key,
+          requestedCompatibilityVersion,
+        );
+      } catch (_) {
+        _log(
+          'SDK compatibility selection was applied for this session but could not be persisted.',
+        );
+      }
       tabIcons = preparedIcons;
       availablePack = pack;
       failedPack = null;

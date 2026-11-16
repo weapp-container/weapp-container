@@ -3384,7 +3384,7 @@
         "path": "packages/node/README.md"
       },
       "reviewedChineseSummary": "测试运行时、工具链、安装与执行边界",
-      "reviewedChineseSha256": "e1a4398bf6125652438ec6b9b47701961f702978b7424239a62bc70645f6d5c7"
+    "reviewedChineseSha256": "1ad9d8d9afeee56b29946159248f60b6d0ab2cf1e0f4b2606f72e514054bdf2a"
     },
     {
       "id": "packages/vitest/README",

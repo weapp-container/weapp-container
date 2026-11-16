@@ -39,6 +39,7 @@ try {
 const container = await createContainer({
   pack: artifact.packPath,
   artifact,
+  compatibilityVersion: '0.0.1',
   nowMs: 1000,
   syncValues: { 'wx.getDeviceInfo': { model: 'test' } },
   host: {
@@ -54,6 +55,8 @@ const { pendingHostCalls } = await container.flush()
 host handler 在业务执行前安装，覆盖 App 启动期请求。同步 API 使用 `syncValues`；异步 API 使用现有 provider 完成协议。未匹配的 `wx.request` 默认失败；不会发出真实网络请求。其他 mock API 应在首次挂载前声明，之后可替换已声明 handler。handler 必须响应取消 signal 或最终完成，回收会等待它。
 
 `flush()` 处理 microtask、setData、已经完成的 host 回调和 View 更新，直到当前就绪工作收敛；不会推进未来 timer，也不会等待尚未完成的外部 mock。返回 `pendingHostCalls` 便于断言；超过 `flushBudget`（默认 100 轮）则失败。`clock.advanceBy` 推进会话 Date、guest `performance.now()` 与 timer 时间，随后 flush。不会覆盖真实执行预算、provider deadline、进程 watchdog 或 Node 的时间。
+
+`compatibilityVersion` 选择宿主提供的 SDK 兼容配置。当前默认 profile `0.0.1` 对应 WeChat base library `3.17.4`，并保留 `0.0.0` 对应的 `3.17.3` 历史行为以便回归；未知版本会以 `ERR_UNSUPPORTED_COMPATIBILITY_VERSION` 拒绝。它控制 guest 读取到的 `SDKVersion`，与容器自身发布版本分开。
 
 普通 wx 请求在页面卸载后仍遵守现有回调兼容性契约，迟到结果不能重用新页面实例。RequestTask 显式 abort 与容器销毁会取消宿主工作。
 

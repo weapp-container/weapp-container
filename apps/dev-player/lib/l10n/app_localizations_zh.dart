@@ -200,6 +200,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toolsHeading => '开发工具 / 日志 / 性能';
 
   @override
+  String get compatibilityVersion => 'SDK 兼容版本';
+
+  @override
   String get scanConnection => '扫描开发连接地址';
 
   @override

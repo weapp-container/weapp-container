@@ -23,7 +23,9 @@ class PlayerPreferences extends ChangeNotifier {
     this._file,
     this._languageCode, {
     bool storageUnavailable = false,
-  }) : _storageUnavailable = storageUnavailable;
+    Map<String, String> compatibilityVersions = const {},
+  }) : _storageUnavailable = storageUnavailable,
+       _compatibilityVersions = Map<String, String>.from(compatibilityVersions);
 
   factory PlayerPreferences.memory({String languageCode = 'zh'}) {
     _validateLanguageCode(languageCode);
@@ -41,6 +43,7 @@ class PlayerPreferences extends ChangeNotifier {
   final File? _file;
   final bool _storageUnavailable;
   String _languageCode;
+  final Map<String, String> _compatibilityVersions;
   Future<void> _pending = Future<void>.value();
   bool _disposed = false;
 
@@ -80,19 +83,73 @@ class PlayerPreferences extends ChangeNotifier {
       throw _storageFailure;
     }
     var languageCode = _defaultLanguageCode;
+    final compatibilityVersions = <String, String>{};
     try {
       final value = jsonDecode(await preferencesFile.readAsString());
       if (value is Map &&
           value['schemaVersion'] == _schemaVersion &&
           _isSupportedLanguageCode(value['languageCode'])) {
         languageCode = value['languageCode'] as String;
+        if (value['compatibilityVersions'] is Map) {
+          for (final entry in (value['compatibilityVersions'] as Map).entries) {
+            if (entry.key is String &&
+                entry.value is String &&
+                (entry.value as String).isNotEmpty) {
+              compatibilityVersions[entry.key as String] =
+                  entry.value as String;
+            }
+          }
+        }
       }
     } on FileSystemException {
       // Missing and unreadable files preserve the source.
     } on FormatException {
       // Invalid UTF-8/JSON also preserves the source.
     }
-    return PlayerPreferences._(preferencesFile, languageCode);
+    return PlayerPreferences._(
+      preferencesFile,
+      languageCode,
+      compatibilityVersions: compatibilityVersions,
+    );
+  }
+
+  String compatibilityVersionFor(
+    String projectKey, {
+    String fallback = '0.0.1',
+  }) => _compatibilityVersions[projectKey] ?? fallback;
+
+  Future<void> setCompatibilityVersion(String projectKey, String version) {
+    if (projectKey.trim().isEmpty || version.trim().isEmpty) {
+      return Future<void>.error(
+        const PlayerPreferencesException(
+          'ERR_PREFERENCES_COMPATIBILITY',
+          'Project key and compatibility version must be nonempty.',
+        ),
+      );
+    }
+    if (_disposed) {
+      return Future<void>.error(
+        const PlayerPreferencesException(
+          'ERR_PREFERENCES_DISPOSED',
+          'Player preferences are no longer available.',
+        ),
+      );
+    }
+    if (_storageUnavailable) return Future<void>.error(_storageFailure);
+    final operation = _pending.then((_) async {
+      if (_compatibilityVersions[projectKey] == version) return;
+      final next = {..._compatibilityVersions, projectKey: version};
+      await _savePreferences(compatibilityVersions: next);
+      _compatibilityVersions
+        ..clear()
+        ..addAll(next);
+      if (!_disposed) notifyListeners();
+    });
+    _pending = operation.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
+    return operation;
   }
 
   /// Changes settle in request order; a failed write never poisons the queue.
@@ -125,10 +182,13 @@ class PlayerPreferences extends ChangeNotifier {
         await file.parent.create(recursive: true);
         staging = await file.parent.createTemp('.preferences-');
         final temporary = File(p.join(staging.path, 'preferences.json'));
-        await temporary.writeAsString(
-          jsonEncode({'schemaVersion': _schemaVersion, 'languageCode': value}),
-          flush: true,
-        );
+        final payload = <String, Object?>{
+          'schemaVersion': _schemaVersion,
+          'languageCode': value,
+          if (_compatibilityVersions.isNotEmpty)
+            'compatibilityVersions': _compatibilityVersions,
+        };
+        await temporary.writeAsString(jsonEncode(payload), flush: true);
         // The temporary file shares the destination filesystem. Readers see
         // either the prior complete preference file or the replacement.
         await temporary.rename(file.path);
@@ -150,6 +210,40 @@ class PlayerPreferences extends ChangeNotifier {
     if (_languageCode != value) {
       _languageCode = value;
       if (!_disposed) notifyListeners();
+    }
+  }
+
+  Future<void> _savePreferences({
+    required Map<String, String> compatibilityVersions,
+  }) async {
+    final file = _file;
+    if (file == null) return;
+    Directory? staging;
+    try {
+      await file.parent.create(recursive: true);
+      staging = await file.parent.createTemp('.preferences-');
+      final temporary = File(p.join(staging.path, 'preferences.json'));
+      await temporary.writeAsString(
+        jsonEncode({
+          'schemaVersion': _schemaVersion,
+          'languageCode': _languageCode,
+          if (compatibilityVersions.isNotEmpty)
+            'compatibilityVersions': compatibilityVersions,
+        }),
+        flush: true,
+      );
+      await temporary.rename(file.path);
+    } catch (_) {
+      throw const PlayerPreferencesException(
+        'ERR_PREFERENCES_WRITE',
+        'Player preferences could not be saved.',
+      );
+    } finally {
+      if (staging != null) {
+        try {
+          await staging.delete(recursive: true);
+        } catch (_) {}
+      }
     }
   }
 

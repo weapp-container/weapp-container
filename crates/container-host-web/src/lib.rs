@@ -17,7 +17,9 @@ use std::collections::BTreeMap;
 /// The browser embedding never inherits deterministic sandbox identity, payment,
 /// files or hardware. Only real configuration snapshots are available before an
 /// explicit browser host adapter installs the host-services protocol.
-struct BrowserNativeProvider;
+struct BrowserNativeProvider {
+    compatibility_version: String,
+}
 impl HostApiProvider for BrowserNativeProvider {
     fn name(&self) -> &'static str {
         "browser-native"
@@ -54,6 +56,7 @@ impl HostApiProvider for BrowserNativeProvider {
                 if name != "wx.getWindowInfo" {
                     value["platform"] = serde_json::json!(host.platform);
                     value["system"] = serde_json::json!(host.version);
+                    value["SDKVersion"] = serde_json::json!(self.compatibility_version);
                 }
                 if matches!(name, "wx.getSystemInfo" | "wx.getSystemInfoAsync") {
                     value["errMsg"] =
@@ -74,7 +77,7 @@ impl HostApiProvider for BrowserNativeProvider {
                 Ok(serde_json::json!({"platform":host.platform,"system":host.version}))
             }
             "wx.getAppBaseInfo" => Ok(
-                serde_json::json!({"SDKVersion":env!("CARGO_PKG_VERSION"),"host":host.kind,"version":host.version,"enableDebug":false}),
+                serde_json::json!({"SDKVersion":self.compatibility_version,"host":host.kind,"version":host.version,"enableDebug":false}),
             ),
             "wx.getSystemSetting" => Ok(host
                 .display_metrics
@@ -449,6 +452,7 @@ impl WebHost {
             }
             WebRendererMode::Software => container_render_skia::PageRenderMode::Raster,
         };
+        let compatibility_version = config.compatibility_version.clone();
         let mut next = HostSession::from_manifest_json(manifest_json, config)?;
         if let Some(font) = &self.text_font {
             next.session_mut()
@@ -458,7 +462,9 @@ impl WebHost {
         if !self.development_sandbox {
             next.session_mut()
                 .expect("constructed host session")
-                .set_provider(Box::new(BrowserNativeProvider));
+                .set_provider(Box::new(BrowserNativeProvider {
+                    compatibility_version,
+                }));
         }
         self.session = next;
         self.renderer_mode = options.renderer_mode;

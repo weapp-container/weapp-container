@@ -39,6 +39,7 @@ try {
 const container = await createContainer({
   pack: artifact.packPath,
   artifact,
+  compatibilityVersion: '0.0.1',
   nowMs: 1000,
   syncValues: { 'wx.getDeviceInfo': { model: 'test' } },
   host: {
@@ -54,6 +55,8 @@ const { pendingHostCalls } = await container.flush()
 Handlers install before business execution, including App startup requests. Synchronous APIs use `syncValues`; asynchronous APIs use the provider completion protocol. Unmatched `wx.request` calls fail without real network access. Declare other mock APIs before the first mount; existing handlers can then be replaced. Handlers must observe cancellation or eventually finish, because disposal waits for them.
 
 `flush()` processes microtasks, setData, completed host callbacks and View updates until ready work converges. It neither advances future timers nor waits for unfinished external mocks. It returns `pendingHostCalls` for assertions and fails after `flushBudget` rounds (default 100). `clock.advanceBy` advances session Date, guest `performance.now()` and timers, then flushes. Real execution budgets, provider deadlines, process watchdogs and Node time remain independent.
+
+`compatibilityVersion` selects the host-owned SDK compatibility profile. The default `0.0.1` profile targets the WeChat base-library `3.17.4` baseline, while `0.0.0` remains available for the historical `3.17.3` behavior; unknown versions fail with `ERR_UNSUPPORTED_COMPATIBILITY_VERSION`. It controls the guest-visible `SDKVersion` and remains separate from the container package release.
 
 Ordinary wx requests preserve the existing callback compatibility contract after page unload; late results cannot reuse a new page instance. Explicit RequestTask abort and container disposal cancel host work.
 

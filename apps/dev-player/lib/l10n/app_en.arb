@@ -63,6 +63,7 @@
   "openMiniProgram": "Open mini program",
   "returnToMiniProgram": "Return to mini program",
   "toolsHeading": "Developer tools / Logs / Performance",
+  "compatibilityVersion": "SDK compatibility version",
   "scanConnection": "Scan development connection",
   "cameraUnavailable": "Camera is unavailable or permission was denied. Return to Tools and paste the connection link.",
   "phaseDisconnected": "Disconnected",

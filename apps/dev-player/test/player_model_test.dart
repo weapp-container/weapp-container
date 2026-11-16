@@ -1189,8 +1189,19 @@ void main() {
           'runId': fixture.descriptor['runId'],
         }),
       );
-      await until(() => reports.any((r) => r['phase'] == 'started'));
-      expect((reports.last['details'] as Map)['reattached'], true);
+      await until(
+        () => reports.any(
+          (r) =>
+              r['phase'] == 'started' &&
+              (r['details'] as Map?)?['reattached'] == true,
+        ),
+      );
+      final reattached = reports.lastWhere(
+        (r) =>
+            r['phase'] == 'started' &&
+            (r['details'] as Map?)?['reattached'] == true,
+      );
+      expect((reattached['details'] as Map)['reattached'], true);
       sockets.single.add(
         jsonEncode({
           'protocolVersion': '1.0',

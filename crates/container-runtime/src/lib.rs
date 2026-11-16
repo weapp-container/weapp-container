@@ -391,6 +391,10 @@ pub struct SessionConfig {
     pub session_id: String,
     #[serde(default = "default_engine")]
     pub engine: EngineKind,
+    /// Guest-visible mini-program compatibility profile, independent of the
+    /// native container package release.
+    #[serde(default = "default_compatibility_version")]
+    pub compatibility_version: String,
     /// Page presentation ownership. Native GPU mode prepares resources at
     /// commit and leaves drawing to the host; raster remains the compatible
     /// headless/default path. This is separate from a page's semantic profile.
@@ -425,6 +429,10 @@ fn default_engine() -> EngineKind {
     EngineKind::Quickjs
 }
 
+fn default_compatibility_version() -> String {
+    "0.0.1".into()
+}
+
 fn default_session_id() -> String {
     "session-1".into()
 }
@@ -434,6 +442,7 @@ impl Default for SessionConfig {
         Self {
             session_id: default_session_id(),
             engine: EngineKind::Quickjs,
+            compatibility_version: default_compatibility_version(),
             page_render_mode: container_render_skia::PageRenderMode::Raster,
             renderer_override: None,
             browser_view_enabled: false,
@@ -16108,7 +16117,7 @@ mod tests {
                     model: "container-test".into(),
                     pixel_ratio: 2.0,
                     language: "en_US".into(),
-                    sdk_version: "3.17.3".into(),
+                    sdk_version: "3.17.4".into(),
                     status_bar_height: 24,
                     device_orientation: "landscape".into(),
                     theme: "dark".into(),
@@ -16172,7 +16181,7 @@ mod tests {
         ));
         assert_eq!(system.messages[0].payload["ok"], true);
         assert_eq!(system.messages[0].payload["provider"], "sandbox");
-        assert_eq!(system.messages[0].payload["result"]["SDKVersion"], "3.17.3");
+        assert_eq!(system.messages[0].payload["result"]["SDKVersion"], "3.17.4");
         assert_eq!(
             system.messages[0].payload["result"]["brand"],
             "Weapp Container Test Device"
@@ -17161,7 +17170,7 @@ mod tests {
             op::MODULE_CALL,
             json!({"moduleId":"module:app.js", "export":"run", "args": []}),
         ));
-        assert_eq!(run.messages[0].payload["result"][0]["sdk"], "3.17.3");
+        assert_eq!(run.messages[0].payload["result"][0]["sdk"], "3.17.4");
         assert_eq!(run.messages[0].payload["result"][0]["width"], 0);
         assert_eq!(run.messages[0].payload["result"][0]["menuWidth"], 0);
         assert_eq!(run.messages[0].payload["result"][0]["menuHeight"], 0);

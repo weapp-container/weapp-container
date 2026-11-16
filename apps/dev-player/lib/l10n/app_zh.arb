@@ -63,6 +63,7 @@
   "openMiniProgram": "打开小程序",
   "returnToMiniProgram": "返回小程序",
   "toolsHeading": "开发工具 / 日志 / 性能",
+  "compatibilityVersion": "SDK 兼容版本",
   "scanConnection": "扫描开发连接地址",
   "cameraUnavailable": "相机不可用或未获得权限。请返回开发工具并粘贴连接地址。",
   "phaseDisconnected": "未连接",

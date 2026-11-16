@@ -1605,7 +1605,7 @@
       },
       "runtime": {
         "path": "crates/container-runtime/src/lib.rs",
-        "sha256": "d23d9274ad94f4c5fdbcc2b86b057babcf8b8b9f7dcf66eae0614426640624c8"
+        "sha256": "26170be193bb11ca1430384f3c670d1c4876f6c11bc1c551848712edb1163662"
       },
       "snapshots": {
         "path": "crates/container-runtime/src/host_environment.rs",
@@ -1625,7 +1625,7 @@
       },
       "nativeProvider": {
         "path": "crates/container-sdk/src/lib.rs",
-        "sha256": "81ef905a37908face8798be6868d0d7ff93b7a08deacf2d62c9a223eaa6a144a"
+        "sha256": "97228bb61a986a66b184d9990e2468109fd04501cb018607d6cdfeb259aa1a25"
       },
       "hostServices": {
         "path": "crates/container-runtime/src/host_services.rs",
@@ -1805,7 +1805,7 @@
       },
       "webHost": {
         "path": "crates/container-host-web/src/lib.rs",
-        "sha256": "c37244c8a1f1adc51b2b023e0b9a148c602c8666e8fdb9509f545462b728f126"
+        "sha256": "79bdc7781e961d37b88cdb3fe7ea76555d9191902eb5f1484da53d8740b788d3"
       },
       "selectorQueries": {
         "path": "crates/container-core/src/selector-query.js",
@@ -2021,7 +2021,7 @@
       },
       "flutterController": {
         "path": "sdk/flutter/weapp_container/lib/src/controller.dart",
-        "sha256": "cd34b19682e59d141d0badb76d9b93a6df7afc0c810eb3b1c95c963b55daec86"
+        "sha256": "940397a705cc15780a73bf93f74aa326e98adf4d96754423d9cee6007d437319"
       },
       "flutterView": {
         "path": "sdk/flutter/weapp_container/lib/src/view.dart",
@@ -2029,7 +2029,7 @@
       },
       "playerModel": {
         "path": "apps/dev-player/lib/src/player_model.dart",
-        "sha256": "0c7661df6da20ec958f2487c3b4d8714a213fbb6822774618238e279c36cec6b"
+        "sha256": "7a3665b9bfb66c444e443adff2b5366a0db1dd2dc7a89d7c927a5b471e5a9343"
       },
       "playerChrome": {
         "path": "apps/dev-player/lib/src/mini_program_chrome.dart",
@@ -2037,27 +2037,27 @@
       },
       "playerMain": {
         "path": "apps/dev-player/lib/main.dart",
-        "sha256": "f3f9f7f369cbd2c2b535e2f5c479ac0fc510a9d74063884878a474b9e0969234"
+        "sha256": "076ba37469e98b84790e7450c86f4f315d9467de422bcf18b2204a8006f74484"
       },
       "flutterAndroid": {
         "path": "sdk/flutter/weapp_container_android/android/src/main/kotlin/dev/weapp/container/flutter/WeappContainerAndroidPlugin.kt",
-        "sha256": "97f66c4e571011e76650678cf48ccb3b96be8c4b465ac1f9adc6be21447c38de"
+        "sha256": "14fc08ad559ac3afc7c592bc95a86baa1e49bc3ab42efe77f9470410b08e1a4f"
       },
       "androidSession": {
         "path": "sdk/android/library/src/main/java/com/sonofmagic/weapp/container/sdk/WeappContainerSession.kt",
-        "sha256": "3a19445c06a7f47cff08fe818bf3afa47fb6053542a26308d81ee96f5ea43908"
+        "sha256": "b05e9e36db753a9b0d9f356499e3b8f8c61d845c218821b0fc8450d403237fe8"
       },
       "flutterIos": {
         "path": "sdk/flutter/weapp_container_ios/ios/Classes/WeappContainerIosPlugin.swift",
-        "sha256": "1879615bd70eec10080a2cae3eb2b96ffa039f6ba4a18e904b7af6bbc3c5ce23"
+        "sha256": "931a07564bc9d24ca588e330ff1e027b3103569e36b85192a4dc478b7a4649b6"
       },
       "iosTypes": {
         "path": "sdk/ios/Sources/WeappContainer/Types.swift",
-        "sha256": "61987b57486b4042c0cd783ea14048135df26515bba9c0d57b7ca50073e3fe38"
+        "sha256": "a31e688f4ac956963fa4b25e3f6b64a3298feb7dcb71645977d64bf13156bcc4"
       },
       "iosSession": {
         "path": "sdk/ios/Sources/WeappContainer/Session.swift",
-        "sha256": "151cdd4e984296dee491c24f50fcb8e18a3bb2e89966d35b200e275c784a0a05"
+        "sha256": "d38e580f7017d4744f9ebcdd881980d5cf5a28b05b0529a135de322243ff050a"
       },
       "flutterMacos": {
         "path": "sdk/flutter/weapp_container_macos/macos/Classes/WeappContainerMacosPlugin.mm",
@@ -2065,7 +2065,7 @@
       },
       "desktopRegistry": {
         "path": "sdk/flutter/native_desktop/src/registry.cpp",
-        "sha256": "6513d09f48e7ccc5257ddbe90bfd4fd53a00f28763681fd3be05b33e0f5e925b"
+        "sha256": "0fa5a649cb524aa3a28e981e24007360182d73544d394a49a84738d00c25ca66"
       },
       "nativePreview": {
         "path": "sdk/flutter/native_desktop/include/native_preview_texture.hpp",
