@@ -1896,8 +1896,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/host-validation.md"
       },
-      "reviewedChineseSummary": "主机验证边界；手动 CI；本地检查；原生应用集成骨架；后续设备验收所需证据",
-      "reviewedChineseSha256": "ae768da425827e12ae42862e3ac6e45f4b11c23f8414b039a0a1872af07d36ba",
+      "reviewedChineseSummary": "主机验证边界；手动 CI；本地检查；Skia 0.157.0 原生编译边界；原生应用集成骨架与设备验收证据",
+      "reviewedChineseSha256": "0f0eda6cd631516b9be02e7c84ef10824e05f134f3ac0d9a9c0136b1beb06b43",
       "legacyHeadingIds": [
         "evidence-required-for-a-future-device-gate",
         "host-validation-boundary",
@@ -3384,7 +3384,7 @@
         "path": "packages/node/README.md"
       },
       "reviewedChineseSummary": "测试运行时、工具链、安装与执行边界",
-    "reviewedChineseSha256": "1ad9d8d9afeee56b29946159248f60b6d0ab2cf1e0f4b2606f72e514054bdf2a"
+      "reviewedChineseSha256": "1ad9d8d9afeee56b29946159248f60b6d0ab2cf1e0f4b2606f72e514054bdf2a"
     },
     {
       "id": "packages/vitest/README",
@@ -3568,6 +3568,21 @@
       "path": "scripts/fixtures/worker-dual-renderer/README.md",
       "reason": "Fixed test or conformance input; prose and bytes belong to the original fixture.",
       "sha256": "3d5b48cd7dec8a02fde5b3a031e5f1c4ec86a798a646605b1cf9f77caf65aaeb"
+    },
+    {
+      "path": "sdk/licenses/objc2-0.6.5/LICENSE.md",
+      "reason": "Original license or third-party notice; legal text is not translated.",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54"
+    },
+    {
+      "path": "sdk/licenses/objc2-foundation-0.3.2/LICENSE.md",
+      "reason": "Original license or third-party notice; legal text is not translated.",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54"
+    },
+    {
+      "path": "sdk/licenses/objc2-metal-0.3.2/LICENSE.md",
+      "reason": "Original license or third-party notice; legal text is not translated.",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54"
     },
     {
       "path": "sdk/licenses/objc2-encode-4.1.0/LICENSE.md",
