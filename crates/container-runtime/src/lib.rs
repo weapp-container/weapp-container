@@ -16117,7 +16117,7 @@ mod tests {
                     model: "container-test".into(),
                     pixel_ratio: 2.0,
                     language: "en_US".into(),
-                    sdk_version: "3.17.3".into(),
+                    sdk_version: "3.17.4".into(),
                     status_bar_height: 24,
                     device_orientation: "landscape".into(),
                     theme: "dark".into(),
