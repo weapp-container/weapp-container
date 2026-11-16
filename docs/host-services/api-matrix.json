@@ -1549,11 +1549,11 @@
     "core": {
       "workspaceManifest": {
         "path": "Cargo.toml",
-        "sha256": "b4b42531ff0258486c26f055c2d614f8431e686c13b430928d814c0c2484194b"
+        "sha256": "9557a58db6519a98a7206e99ce79de4c8260abf0765f0f0a3f16171cef5d9463"
       },
       "workspaceLock": {
         "path": "Cargo.lock",
-        "sha256": "010461656092c5f08cf8622efe1760837ef239067d66310fb7f31aa4890e5834"
+        "sha256": "27d1dbbb6ef9518641a093a20e1543e44a8c2ff128be2df46295dfbfd61fab9e"
       },
       "coreAssembly": {
         "path": "crates/container-core/src/lib.rs",
@@ -1597,7 +1597,7 @@
       },
       "coreManifest": {
         "path": "crates/container-core/Cargo.toml",
-        "sha256": "7d1ea5920ce8f189074e99405f4325843831412aee5e0239c9a15efe62d7511a"
+        "sha256": "db56876a3d5907bd67c3d5aa9ccff70222858570342dd1c84d376e2a58333a8f"
       },
       "commonHost": {
         "path": "crates/container-host-common/src/lib.rs",
@@ -1653,7 +1653,7 @@
       },
       "simulatorWeb": {
         "path": "crates/container-simulator/src/web.rs",
-        "sha256": "99815135af22c7c208a385cdc64bfb7f765a50f0afd47db4b67063c25b206a05"
+        "sha256": "12eea47fc3d518ce53768b28fc4fb277a68d15841d4ac6384eaaf3507675cdf6"
       },
       "environment": {
         "path": "crates/container-core/src/host_environment.rs",
@@ -1865,7 +1865,7 @@
       },
       "irAssembly": {
         "path": "crates/container-ir/src/lib.rs",
-        "sha256": "e61e197da99a861f8005f95a01971481cb24028877926e63275b68892619957f"
+        "sha256": "0b67f3899f3f1839a12be338c6c13307c81aede9eb694557c131784afd2e5553"
       },
       "irMarkup": {
         "path": "crates/container-ir/src/markup.rs",
@@ -1977,7 +1977,7 @@
       },
       "canvasRaster": {
         "path": "crates/container-render-skia/src/lib.rs",
-        "sha256": "df9ae033e95121932c83e57755f437f28ad10185e6daeae1d07aaf1d950290b7"
+        "sha256": "ea392e2d60b0efdb193ccf74c2d13d34d9a65b0bf6405f04f2f2cb285063dd95"
       },
       "canvasStroke": {
         "path": "crates/container-render-skia/src/canvas_stroke.rs",
