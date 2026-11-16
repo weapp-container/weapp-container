@@ -204,6 +204,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toolsHeading => 'Developer tools / Logs / Performance';
 
   @override
+  String get compatibilityVersion => 'SDK compatibility version';
+
+  @override
   String get scanConnection => 'Scan development connection';
 
   @override

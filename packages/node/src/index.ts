@@ -223,6 +223,7 @@ export class Container implements AsyncDisposable {
       if (!this.#options.pack) throw new TypeError('A portable pack is required; use packArtifact or the Vitest artifact plugin');
       const handle = await this.#rpc<HandleIdentity>('load', { packPath: this.#options.pack, route, options,
         testing: { nowMs: this.#options.nowMs ?? 1_700_000_000_000, apis: [...this.#handlers.keys()], syncValues: this.#options.syncValues ?? {},
+          ...(this.#options.compatibilityVersion === undefined ? {} : { compatibilityVersion: this.#options.compatibilityVersion }),
           turnTimeoutMs: this.#options.turnTimeoutMs ?? 1000, bootstrapTimeoutMs: this.#options.bootstrapTimeoutMs ?? 5000 } });
       this.#loaded = true;
       await this.#flush();
@@ -237,6 +238,7 @@ export class Container implements AsyncDisposable {
       this.#ownedArtifacts.add(artifact);
       const handle = await this.#rpc<HandleIdentity>('load', { packPath: artifact.packPath, route: '__container_test__/index',
         testing: { nowMs: this.#options.nowMs ?? 1_700_000_000_000, apis: [...this.#handlers.keys()], syncValues: this.#options.syncValues ?? {},
+          ...(this.#options.compatibilityVersion === undefined ? {} : { compatibilityVersion: this.#options.compatibilityVersion }),
           turnTimeoutMs: this.#options.turnTimeoutMs ?? 1000, bootstrapTimeoutMs: this.#options.bootstrapTimeoutMs ?? 5000 } });
       this.#loaded = true;
       await this.#flush();

@@ -476,6 +476,12 @@ abstract class AppLocalizations {
   /// **'开发工具 / 日志 / 性能'**
   String get toolsHeading;
 
+  /// No description provided for @compatibilityVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'SDK 兼容版本'**
+  String get compatibilityVersion;
+
   /// No description provided for @scanConnection.
   ///
   /// In zh, this message translates to:

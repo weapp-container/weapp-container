@@ -391,6 +391,10 @@ pub struct SessionConfig {
     pub session_id: String,
     #[serde(default = "default_engine")]
     pub engine: EngineKind,
+    /// Guest-visible mini-program compatibility profile, independent of the
+    /// native container package release.
+    #[serde(default = "default_compatibility_version")]
+    pub compatibility_version: String,
     /// Page presentation ownership. Native GPU mode prepares resources at
     /// commit and leaves drawing to the host; raster remains the compatible
     /// headless/default path. This is separate from a page's semantic profile.
@@ -425,6 +429,10 @@ fn default_engine() -> EngineKind {
     EngineKind::Quickjs
 }
 
+fn default_compatibility_version() -> String {
+    "0.0.1".into()
+}
+
 fn default_session_id() -> String {
     "session-1".into()
 }
@@ -434,6 +442,7 @@ impl Default for SessionConfig {
         Self {
             session_id: default_session_id(),
             engine: EngineKind::Quickjs,
+            compatibility_version: default_compatibility_version(),
             page_render_mode: container_render_skia::PageRenderMode::Raster,
             renderer_override: None,
             browser_view_enabled: false,

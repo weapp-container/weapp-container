@@ -1,10 +1,14 @@
 //! Native SDK ownership boundary. UI adapters own surfaces; this crate owns
 //! verified pack startup, navigation, JS, persistence and asynchronous work.
 mod chrome;
+mod compatibility_profile;
 mod dev_attempt;
 mod host_layout;
 mod http;
 pub use chrome::{ContentRect, HostChromeGeometry};
+pub use compatibility_profile::{
+    CompatibilityProfile, COMPATIBILITY_PROFILES, DEFAULT_COMPATIBILITY_VERSION,
+};
 pub use dev_attempt::{
     AcceptedPackIdentity, DevPackAttemptMissing, DevPackAttemptMissingStatus, DevPackAttemptQuery,
     DevPackAttemptReceipt,
@@ -114,6 +118,9 @@ fn require_full_distribution() -> Result<(), SdkError> {
 #[serde(default, rename_all = "camelCase", deny_unknown_fields)]
 pub struct ContainerConfig {
     pub engine: EngineKind,
+    /// Guest-visible SDK compatibility profile, independent of this package's
+    /// native release version.
+    pub compatibility_version: String,
     pub host: HostMetadata,
     pub session_id: Option<String>,
     pub storage_key: Option<String>,
@@ -140,6 +147,7 @@ impl Default for ContainerConfig {
     fn default() -> Self {
         Self {
             engine: EngineKind::Quickjs,
+            compatibility_version: DEFAULT_COMPATIBILITY_VERSION.into(),
             host: HostMetadata {
                 window_width: 375,
                 window_height: 667,
@@ -181,16 +189,24 @@ pub struct LoadOptions {
     pub initial_host_layout: Option<HostLayout>,
 }
 
-struct NativeProvider;
+struct NativeProvider {
+    compatibility_version: String,
+}
 impl NativeProvider {
-    fn metadata(name: &str, host: &HostMetadata) -> Option<Value> {
+    fn new(compatibility_version: impl Into<String>) -> Self {
+        Self {
+            compatibility_version: compatibility_version.into(),
+        }
+    }
+
+    fn metadata(&self, name: &str, host: &HostMetadata) -> Option<Value> {
         if !matches!(
             name,
             "wx.getSystemInfo" | "wx.getSystemInfoAsync" | "wx.getSystemInfoSync"
         ) {
             return None;
         }
-        let mut observed = json!({"SDKVersion":env!("CARGO_PKG_VERSION")});
+        let mut observed = json!({"SDKVersion":self.compatibility_version.as_str()});
         if !host.platform.is_empty() {
             observed["platform"] = json!(host.platform);
         }
@@ -229,7 +245,7 @@ impl HostApiProvider for NativeProvider {
         }
         for name in container_runtime::HOST_GEOMETRY_APIS {
             let support =
-                if container_runtime::merge_host_geometry(name, Self::metadata(name, host), host)
+                if container_runtime::merge_host_geometry(name, self.metadata(name, host), host)
                     .is_ok_and(|value| value.is_some())
                 {
                     CapabilitySupport::Partial
@@ -267,7 +283,7 @@ impl HostApiProvider for NativeProvider {
             // Real non-geometry metadata can be partial before first layout;
             // physical screen/DPR still require a complete accepted display.
             if let Some(value) =
-                container_runtime::merge_host_geometry(name, Self::metadata(name, host), host)?
+                container_runtime::merge_host_geometry(name, self.metadata(name, host), host)?
             {
                 return Ok(value);
             }
@@ -285,7 +301,7 @@ impl HostApiProvider for NativeProvider {
             }
         }
         if name == "wx.getAppBaseInfo" {
-            return Ok(json!({"SDKVersion":env!("CARGO_PKG_VERSION")}));
+            return Ok(json!({"SDKVersion":self.compatibility_version.as_str()}));
         }
         Err(ProviderError {
             code: ProviderErrorCode::Unsupported,
@@ -469,8 +485,32 @@ pub struct ContainerSession {
     _thread_affinity: PhantomData<Rc<()>>,
 }
 
+fn pin_compatibility_snapshots(version: &str, values: &mut BTreeMap<String, Value>) {
+    for name in ["wx.getSystemInfoSync", "wx.getAppBaseInfo"] {
+        if let Some(Value::Object(snapshot)) = values.get_mut(name) {
+            snapshot.insert("SDKVersion".into(), json!(version));
+        }
+    }
+}
+
 impl ContainerSession {
-    pub fn new(config: ContainerConfig) -> Result<Self, SdkError> {
+    fn pin_compatibility_version(&self, values: &mut BTreeMap<String, Value>) {
+        pin_compatibility_snapshots(&self.config.compatibility_version, values);
+    }
+
+    pub fn new(mut config: ContainerConfig) -> Result<Self, SdkError> {
+        if compatibility_profile::find(&config.compatibility_version).is_none() {
+            return Err(SdkError::new(
+                "ERR_UNSUPPORTED_COMPATIBILITY_VERSION",
+                format!(
+                    "unsupported compatibility version: {}",
+                    config.compatibility_version
+                ),
+            ));
+        }
+        if let Some(services) = config.host_services.as_mut() {
+            pin_compatibility_snapshots(&config.compatibility_version, &mut services.sync_values);
+        }
         if config.dev_diagnostics {
             require_full_distribution()?;
         }
@@ -743,6 +783,7 @@ impl ContainerSession {
                 view_execution: self.test_view_execution.clone().unwrap_or_default(),
                 session_id: format!("{}-{generation}", self.base_id),
                 engine: self.config.engine,
+                compatibility_version: self.config.compatibility_version.clone(),
                 #[cfg(feature = "testing")]
                 engine_execution: self
                     .test_options
@@ -772,7 +813,9 @@ impl ContainerSession {
         // readback occur only when a consumer explicitly asks for a snapshot.
         session.ensure_view_execution_supported()?;
         session.set_dev_console_enabled(self.config.dev_diagnostics)?;
-        session.set_provider(Box::new(NativeProvider));
+        session.set_provider(Box::new(NativeProvider::new(
+            self.config.compatibility_version.clone(),
+        )));
         #[cfg(feature = "testing")]
         if let Some(options) = &self.test_options {
             session.testing_control(json!({"action":"clock", "now":options.now_ms}))?;
@@ -1082,6 +1125,10 @@ impl ContainerSession {
             return Err(SdkError::invalid("configure host services before load"));
         }
         // Validate the entire configuration before touching account or storage.
+        let mut config = config;
+        let mut compatibility_snapshots = config.sync_values.clone();
+        self.pin_compatibility_version(&mut compatibility_snapshots);
+        config.sync_values = compatibility_snapshots;
         container_runtime::validate_host_services_config(&config)?;
         let manager = HostAccountManager::for_domain(
             &config.application.host_app_id,
@@ -1709,6 +1756,7 @@ impl ContainerSession {
         Ok(
             json!({"schemaVersion":1,"status":if self.closed {"closed"} else if self.closing.is_some(){"closing"}else if self.identity_blocked(){"identitySwitching"}else if active.is_some() {"ready"} else {"empty"},
             "sessionId":active.map(|a|a.session.config().session_id.as_str()),"generation":self.generation,"engine":self.config.engine,
+            "compatibility":{"version":self.config.compatibility_version,"wechatBaselineVersion":compatibility_profile::find(&self.config.compatibility_version).map(|profile|profile.wechat_baseline_version)},
             "page":page,"frameRevision":self.revision,"frameId":active.and_then(|a|a.session.view().last_frame_id),
             "foreground":active.is_some_and(|a|a.foreground),"storagePersistent":self.config.storage_key.is_some(),
             "surface":self.surface,"inputEnabled":!self.identity_blocked() && !self.preview_occluded && !self.staged_chrome_pending && self.chrome_geometry_matches() && self.host_layout_ready() && active.is_some_and(|a|a.foreground && !a.session.requires_dev_restart() && a.session.pending_navigation().is_none() && a.session.is_current_frame_presented()),
@@ -1728,10 +1776,13 @@ impl ContainerSession {
     }
     pub fn capabilities(&self) -> Result<Value, SdkError> {
         self.check_owner()?;
-        let mut methods = NativeProvider.capabilities_for_host(&self.config.host);
+        let mut methods = NativeProvider::new(self.config.compatibility_version.clone())
+            .capabilities_for_host(&self.config.host);
         container_runtime::restrict_published_capabilities(&mut methods);
+        let profile = compatibility_profile::find(&self.config.compatibility_version)
+            .expect("session compatibility profile is validated at construction");
         Ok(
-            json!({"schemaVersion":1,"sdkVersion":env!("CARGO_PKG_VERSION"),"protocolVersion":container_bridge::PROTOCOL_VERSION,
+            json!({"schemaVersion":1,"sdkVersion":env!("CARGO_PKG_VERSION"),"containerVersion":env!("CARGO_PKG_VERSION"),"compatibility":{"version":profile.version,"wechatBaselineVersion":profile.wechat_baseline_version,"availableVersions":COMPATIBILITY_PROFILES.iter().map(|profile|json!({"version":profile.version,"wechatBaselineVersion":profile.wechat_baseline_version})).collect::<Vec<_>>()},"protocolVersion":container_bridge::PROTOCOL_VERSION,
             "distributionProfile":container_runtime::distribution_identity().distribution_profile,
             "policySha256":container_runtime::distribution_identity().policy_sha256,
             "build":{"quickjs":engine_provider_compiled(EngineKind::Quickjs),"v8":engine_provider_compiled(EngineKind::V8),
@@ -2229,13 +2280,17 @@ impl ContainerSession {
                     .clone()
                     .ok_or_else(|| SdkError::invalid("host services not configured"))?;
                 config.sync_values.extend(values);
+                let mut compatibility_snapshots = config.sync_values.clone();
+                self.pin_compatibility_version(&mut compatibility_snapshots);
+                config.sync_values = compatibility_snapshots;
                 container_runtime::validate_host_services_config(&config)?;
                 self.config.host_services = Some(config);
             }
             "updateHostServiceSnapshots" => {
-                let values: BTreeMap<String, Value> =
+                let mut values: BTreeMap<String, Value> =
                     serde_json::from_value(payload.get("values").cloned().unwrap_or(json!({})))
                         .map_err(SdkError::invalid)?;
+                self.pin_compatibility_version(&mut values);
                 self.ensure_lifecycle_open()?;
                 self.ensure_current_account_epoch()?;
                 if self.identity_blocked()
@@ -2257,6 +2312,9 @@ impl ContainerSession {
                     .clone()
                     .ok_or_else(|| SdkError::invalid("host services not configured"))?;
                 config.sync_values.extend(values.clone());
+                let mut compatibility_snapshots = config.sync_values.clone();
+                self.pin_compatibility_version(&mut compatibility_snapshots);
+                config.sync_values = compatibility_snapshots;
                 container_runtime::validate_host_services_config(&config)?;
                 if let Some(active) = self.active.as_mut() {
                     active.session.update_host_service_snapshots(values)?;

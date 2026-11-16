@@ -480,49 +480,49 @@ packages:
       path: "../../sdk/flutter/weapp_container"
       relative: true
     source: path
-    version: "0.1.0-preview.6.0"
+    version: "0.1.0-preview.7.1"
   weapp_container_android:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../sdk/flutter/weapp_container_android"
       relative: true
     source: path
-    version: "0.1.0-preview.6.0"
+    version: "0.1.0-preview.7.1"
   weapp_container_ios:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../sdk/flutter/weapp_container_ios"
       relative: true
     source: path
-    version: "0.1.0-preview.6.0"
+    version: "0.1.0-preview.7.1"
   weapp_container_linux:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../sdk/flutter/weapp_container_linux"
       relative: true
     source: path
-    version: "0.1.0-preview.6.0"
+    version: "0.1.0-preview.7.1"
   weapp_container_macos:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../sdk/flutter/weapp_container_macos"
       relative: true
     source: path
-    version: "0.1.0-preview.6.0"
+    version: "0.1.0-preview.7.1"
   weapp_container_platform_interface:
     dependency: "direct dev"
     description:
       path: "../../sdk/flutter/weapp_container_platform_interface"
       relative: true
     source: path
-    version: "0.1.0-preview.6.0"
+    version: "0.1.0-preview.7.1"
   weapp_container_windows:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../../sdk/flutter/weapp_container_windows"
       relative: true
     source: path
-    version: "0.1.0-preview.6.0"
+    version: "0.1.0-preview.7.1"
   web:
     dependency: transitive
     description:

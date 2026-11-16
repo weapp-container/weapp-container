@@ -1798,7 +1798,7 @@ fn measured_layout(
 
 #[test]
 fn native_provider_geometry_rejects_unobserved_displays_and_omits_unknown_identity() {
-    let mut provider = NativeProvider;
+    let mut provider = NativeProvider::new(DEFAULT_COMPATIBILITY_VERSION);
     let host = HostMetadata {
         platform: String::new(),
         version: String::new(),
@@ -1827,9 +1827,34 @@ fn native_provider_geometry_rejects_unobserved_displays_and_omits_unknown_identi
     let base = provider
         .call("wx.getAppBaseInfo", &Map::new(), &context)
         .unwrap();
-    assert_eq!(base["SDKVersion"], env!("CARGO_PKG_VERSION"));
+    assert_eq!(base["SDKVersion"], DEFAULT_COMPATIBILITY_VERSION);
     assert!(base.get("host").is_none());
     assert!(base.get("version").is_none());
+}
+
+#[test]
+fn compatibility_version_is_reported_separately_and_unknown_profiles_are_rejected() {
+    let sdk = ContainerSession::new(ContainerConfig::default()).unwrap();
+    let state = sdk.state().unwrap();
+    let capabilities = sdk.capabilities().unwrap();
+    assert_eq!(state["compatibility"]["version"], "0.0.1");
+    assert_eq!(state["compatibility"]["wechatBaselineVersion"], "3.17.4");
+    assert_eq!(capabilities["sdkVersion"], env!("CARGO_PKG_VERSION"));
+    assert_eq!(capabilities["containerVersion"], env!("CARGO_PKG_VERSION"));
+    assert_eq!(capabilities["compatibility"]["version"], "0.0.1");
+    assert_eq!(
+        capabilities["compatibility"]["availableVersions"][0]["version"],
+        "0.0.1"
+    );
+
+    let error = match ContainerSession::new(ContainerConfig {
+        compatibility_version: "9.9.9".into(),
+        ..ContainerConfig::default()
+    }) {
+        Ok(_) => panic!("unknown compatibility profile must be rejected"),
+        Err(error) => error,
+    };
+    assert_eq!(error.code(), "ERR_UNSUPPORTED_COMPATIBILITY_VERSION");
 }
 
 #[cfg(feature = "quickjs-native")]
@@ -1935,7 +1960,7 @@ fn production_geometry_public_sdk_chain(engine: EngineKind) {
     services.apis.clear();
     services.sync_values.insert(
         "wx.getSystemInfoSync".into(),
-        json!({"brand":"OS-observed-brand","windowWidth":999,"pixelRatio":1}),
+        json!({"SDKVersion":"9.9.9","brand":"OS-observed-brand","windowWidth":999,"pixelRatio":1}),
     );
     let mut sdk = ContainerSession::new(ContainerConfig {
         engine,
@@ -1961,6 +1986,8 @@ fn production_geometry_public_sdk_chain(engine: EngineKind) {
     assert_eq!(first["window"]["windowWidth"], 375);
     assert_eq!(first["system"]["windowWidth"], 375);
     assert_eq!(first["system"]["brand"], "OS-observed-brand");
+    assert_eq!(first["system"]["SDKVersion"], DEFAULT_COMPATIBILITY_VERSION);
+    assert_eq!(first["base"]["SDKVersion"], DEFAULT_COMPATIBILITY_VERSION);
     assert_eq!(first["asyncSystem"]["brand"], "OS-observed-brand");
     assert_eq!(first["asyncSystem"]["windowWidth"], 375);
     assert_eq!(first["asyncSystem"]["errMsg"], "getSystemInfoAsync:ok");

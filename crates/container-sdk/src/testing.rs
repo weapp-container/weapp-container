@@ -7,6 +7,7 @@ use container_render_skia::RenderNode;
 #[derive(Clone, Debug, Deserialize)]
 #[serde(default, rename_all = "camelCase", deny_unknown_fields)]
 pub struct TestOptions {
+    pub compatibility_version: String,
     pub now_ms: u64,
     pub turn_timeout_ms: u64,
     pub bootstrap_timeout_ms: u64,
@@ -16,6 +17,7 @@ pub struct TestOptions {
 impl Default for TestOptions {
     fn default() -> Self {
         Self {
+            compatibility_version: DEFAULT_COMPATIBILITY_VERSION.into(),
             now_ms: 1_700_000_000_000,
             turn_timeout_ms: 1000,
             bootstrap_timeout_ms: 5000,
@@ -104,6 +106,16 @@ impl TestSession {
                 let options: TestOptions =
                     serde_json::from_value(payload.get("testing").cloned().unwrap_or(json!({})))
                         .map_err(SdkError::invalid)?;
+                if compatibility_profile::find(&options.compatibility_version).is_none() {
+                    return Err(SdkError::new(
+                        "ERR_UNSUPPORTED_COMPATIBILITY_VERSION",
+                        format!(
+                            "unsupported compatibility version: {}",
+                            options.compatibility_version
+                        ),
+                    ));
+                }
+                self.sdk.config.compatibility_version = options.compatibility_version.clone();
                 if options.now_ms > 9_007_199_254_740_991 {
                     return Err(SdkError::invalid("nowMs exceeds safe integer range"));
                 }

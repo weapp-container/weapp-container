@@ -3,6 +3,8 @@ import type { ContainerArtifact } from './artifact.ts'
 export interface HostCallContext { signal: AbortSignal; callId: string; api: string }
 export type HostHandler = (payload: Record<string, unknown>, context: HostCallContext) => unknown | Promise<unknown>
 export interface ContainerOptions {
+  /** Guest-visible compatibility profile; independent of the native package version. */
+  compatibilityVersion?: string
   pack?: string
   artifact?: ContainerArtifact
   binaryPath?: string

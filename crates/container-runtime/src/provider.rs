@@ -387,7 +387,7 @@ impl Default for SystemInfoSnapshot {
             model: "container-sandbox".to_owned(),
             pixel_ratio: 1.0,
             language: "zh_CN".to_owned(),
-            sdk_version: "3.17.3".to_owned(),
+            sdk_version: "3.17.4".to_owned(),
             status_bar_height: 0,
             device_orientation: "portrait".to_owned(),
             theme: "light".to_owned(),

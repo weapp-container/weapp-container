@@ -63,7 +63,10 @@ class PlayerHome extends StatefulWidget {
 }
 
 class _PlayerHomeState extends State<PlayerHome> with WidgetsBindingObserver {
-  final model = PlayerModel(hostServices: const DevelopmentDeviceServices());
+  late final model = PlayerModel(
+    hostServices: const DevelopmentDeviceServices(),
+    preferences: widget.preferences,
+  );
   final connection = TextEditingController();
   final route = TextEditingController();
   final toolsScroll = ScrollController();
@@ -171,6 +174,24 @@ class _PlayerHomeState extends State<PlayerHome> with WidgetsBindingObserver {
       padding: const EdgeInsets.all(24),
       children: [
         PlayerLanguageSelector(preferences: widget.preferences),
+        const SizedBox(height: 12),
+        DropdownButtonFormField<String>(
+          key: ValueKey(model.compatibilityVersion),
+          initialValue: model.compatibilityVersion,
+          decoration: InputDecoration(labelText: s.compatibilityVersion),
+          items: model.compatibilityVersionOptions
+              .map(
+                (version) =>
+                    DropdownMenuItem(value: version, child: Text(version)),
+              )
+              .toList(),
+          onChanged: model.busy || !model.connected
+              ? null
+              : (version) {
+                  if (version != null)
+                    _run(() => model.selectCompatibilityVersion(version));
+                },
+        ),
         const SizedBox(height: 16),
         if (model.error != null) PlayerDiagnosticDetails(message: model.error!),
         Text(

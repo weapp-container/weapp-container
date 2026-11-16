@@ -24,6 +24,31 @@ test('real QuickJS drives View events, bubbling, input and data', async t => {
   assert.equal(await page.data('missing'), undefined);
 });
 
+test('compatibilityVersion controls guest SDK metadata and rejects unknown profiles', async t => {
+  const current = await launch(t, { compatibilityVersion: '0.0.1' });
+  const currentPage = await current.renderPage('/pages/counter/index');
+  assert.deepEqual(await currentPage.callMethod('compatibility'), {
+    system: '0.0.1',
+    base: '0.0.1',
+  });
+
+  const container = await launch(t, {
+    compatibilityVersion: '0.0.0',
+    syncValues: { 'wx.getSystemInfoSync': { SDKVersion: '9.9.9' } },
+  });
+  const page = await container.renderPage('/pages/counter/index');
+  assert.deepEqual(await page.callMethod('compatibility'), {
+    system: '0.0.0',
+    base: '0.0.0',
+  });
+
+  const unsupported = await launch(t, { compatibilityVersion: '9.9.9' });
+  await assert.rejects(
+    unsupported.renderPage('/pages/counter/index'),
+    { code: 'ERR_UNSUPPORTED_COMPATIBILITY_VERSION' },
+  );
+});
+
 test('controlled Date, timer registration and nested microtasks share one clock', async t => {
   const container = await launch(t, { nowMs: 1000 });
   const page = await container.renderPage('/pages/counter/index');

@@ -18,6 +18,7 @@ Page({
   remember() { wx.setStorageSync('count',this.data.count); },
   recalled() { return wx.getStorageSync('count'); },
   appData() { return getApp().globalData; },
+  compatibility() { return {system: wx.getSystemInfoSync().SDKVersion, base: wx.getAppBaseInfo().SDKVersion}; },
   device() { return wx.getDeviceInfo(); },
   beginAbortableRequest() { this.__requestTask=wx.request({url:'https://example.invalid/count'}); },
   abortRequest() { this.__requestTask.abort(); }

@@ -62,6 +62,25 @@ void main() {
   );
 
   test(
+    'compatibility selection persists separately for each project',
+    () async {
+      final preferences = await PlayerPreferences.load(file: file);
+      addTearDown(preferences.dispose);
+      expect(preferences.compatibilityVersionFor('project-a'), '0.0.1');
+      await preferences.setCompatibilityVersion('project-a', '0.0.0');
+      await preferences.setCompatibilityVersion('project-b', '0.0.1');
+      expect(preferences.compatibilityVersionFor('project-a'), '0.0.0');
+      expect(preferences.compatibilityVersionFor('project-b'), '0.0.1');
+
+      final restored = await PlayerPreferences.load(file: file);
+      addTearDown(restored.dispose);
+      expect(restored.compatibilityVersionFor('project-a'), '0.0.0');
+      expect(restored.compatibilityVersionFor('project-b'), '0.0.1');
+      expect(restored.compatibilityVersionFor('project-c'), '0.0.1');
+    },
+  );
+
+  test(
     'unavailable preferences open in Chinese and never claim a saved choice',
     () async {
       final preferences = PlayerPreferences.unavailable();
