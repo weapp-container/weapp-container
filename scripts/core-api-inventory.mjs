@@ -4,7 +4,7 @@ import { sha256 } from './host-api-matrix.mjs'
 const { parse: parseJavaScript, tokenizer: tokenizeJavaScript, version: parserVersion } = createRequire(
   new URL('../tools/container-manifest/package.json', import.meta.url),
 )('acorn')
-if (parserVersion !== '8.15.0') throw new Error('Core source inventory requires the reviewed Acorn 8.15.0 parser')
+if (parserVersion !== '8.19.0') throw new Error('Core source inventory requires the reviewed Acorn 8.19.0 parser')
 
 const sourcePaths = {
   workspaceManifest: 'Cargo.toml',
