@@ -1,0 +1,35 @@
+<wxs module="tools" src="../../view/page.wxs" />
+<wxs module="literal">exports.value = 1 < 2 ? '{{notData}}' : '<tag>';</wxs>
+<import src="../../templates/card.wxml" />
+<view id="oracle-root">
+  <text wx:if="{{phase === 'ready'}}" id="snapshot-ready">ready</text>
+  <text id="page-headline">{{tools.mark('headline', marker)}}</text>
+  <text id="inline-literal">{{literal.value}}</text>
+  <view id="style-probe" style="background-color: {{background}}">
+    <text id="style-value">{{tools.mark('style-value', marker)}}</text>
+  </view>
+  <view wx:if="{{showBranch}}" id="branch-true"><text>{{tools.mark('branch:true', marker)}}</text></view>
+  <view wx:else id="branch-false"><text>{{tools.mark('branch:false', marker)}}</text></view>
+  <view id="rows">
+    <block wx:for="{{rows}}" wx:for-item="row" wx:for-index="position" wx:key="id">
+      <text wx:if="{{row.visible}}" id="row-{{row.id}}">{{tools.mark('row:' + position + ':' + row.id, row.label)}}</text>
+    </block>
+  </view>
+  <template is="card" data="{{marker: marker}}" />
+  <include src="../../fragments/section.wxml" />
+  <block wx:if="{{showSlots}}">
+    <probe-shell id="shell-supplied" label="supplied" marker="{{marker}}">
+      <text id="light-header" slot="header">{{tools.mark('parent:named-slot', marker)}}</text>
+      <text id="light-default">{{tools.mark('parent:default-slot', marker)}}</text>
+      <text id="light-unused" slot="unused">{{tools.mark('parent:unused-slot', marker)}}</text>
+    </probe-shell>
+    <probe-shell id="shell-fallback" label="fallback" marker="{{marker}}" />
+    <probe-shell id="shell-header-only" label="header-only" marker="{{marker}}">
+      <text id="light-header-only" slot="header">{{tools.mark('parent:header-only', marker)}}</text>
+    </probe-shell>
+    <probe-no-slot id="shell-no-slot" label="no-slot" marker="{{marker}}">
+      <text id="light-without-slot">{{tools.mark('parent:without-slot', marker)}}</text>
+    </probe-no-slot>
+  </block>
+  <text id="page-history">{{tools.history(marker, showBranch, rows, showSlots, background, phase)}}</text>
+</view>

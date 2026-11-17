@@ -1,0 +1,7 @@
+{
+  "appid": "touristappid",
+  "projectname": "player-chrome-app",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": "."
+}

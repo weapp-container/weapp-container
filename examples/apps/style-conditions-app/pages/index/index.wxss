@@ -1,0 +1,13 @@
+@import '../../shared/palette.wxss' screen and (min-width: 150px);
+page { background: #ffffff; }
+.panel { position: absolute; left: 10px; top: 10px; width: 40px; height: 40px; background: #e53935; }
+.imported { position: absolute; left: 75px; top: 60px; width: 20px; height: 20px; }
+.inspect { position: absolute; left: 10px; top: 75px; width: 60px; height: 20px; background: #eeeeee; font-size: 10px; }
+@media screen and (min-width: 150px) {
+  .panel { width: 80px; background: #1976d2; }
+  @media (min-height: 150px) { .panel { height: 60px; background: #00a060; } }
+}
+@media print { .panel { width: 99px !important; background: #000000 !important; } }
+@media not (future-feature: value) { .panel { width: 99px !important; } }
+@media (width < 1px) { @supports (display: grid) { .panel { display: grid; } } }
+@keyframes sample { from { opacity: 0; } to { opacity: 1; } }

@@ -1,0 +1,15 @@
+#surface {
+  position: relative;
+  width: 200px;
+  height: 160px;
+  background-color: #ffffff;
+}
+
+#probe {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 24px;
+  height: 24px;
+  background-color: #111111;
+}

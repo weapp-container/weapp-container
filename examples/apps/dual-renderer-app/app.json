@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/dom/index",
+    "pages/skia/index",
+    "pages/return/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "双渲染开发示例",
+    "navigationBarBackgroundColor": "#172b4d",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f4f6f9"
+  }
+}

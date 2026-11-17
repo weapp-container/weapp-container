@@ -1,0 +1,5 @@
+<wxs module="legacy" src="./kind.wxs" />
+<view class="legacy">
+  <text id="legacy-kind">Legacy WXS constructor: {{legacy.kind(value)}}</text>
+  <slot />
+</view>

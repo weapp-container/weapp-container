@@ -1,0 +1,3 @@
+<view id="panel" class="panel" bindtap="onPanelTap" />
+<view id="imported" class="imported" />
+<view id="inspect" class="inspect" bindtap="onInspect">inspect {{ count }}</view>

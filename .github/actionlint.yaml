@@ -1,0 +1,4 @@
+self-hosted-runner:
+  # Existing Apple production runner with /Applications/Xcode_27.2.app.
+  labels:
+    - xcode-27

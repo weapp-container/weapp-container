@@ -1,0 +1,52 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": [
+    "repoctl.config.ts",
+    "tsconfig.json",
+    "eslint.config.mjs",
+    "pnpm-lock.yaml"
+  ],
+  "globalPassThroughEnv": [
+    "WEAPP_CONTAINER_TEST_BINARY"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "test:types": {
+      "dependsOn": [
+        "build",
+        "^build"
+      ],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": [
+        "build",
+        "^build"
+      ],
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

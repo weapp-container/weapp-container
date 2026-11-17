@@ -1,0 +1,5 @@
+<view class="scene">
+  <view id="increment" class="increment" bindtap="increment">Increment</view>
+  <view id="feedback" class="feedback" style="background-color: {{count ? '#1e8449' : '#1f4b99'}};"></view>
+  <text id="count" class="count">Count: {{count}}</text>
+</view>

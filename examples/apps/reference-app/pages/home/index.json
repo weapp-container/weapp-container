@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "managed-counter": "../../components/managed-counter/index"
+  }
+}

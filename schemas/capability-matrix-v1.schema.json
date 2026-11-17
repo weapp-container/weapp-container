@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/capability-matrix-v1.schema.json",
+  "title": "Weapp Container capability matrix",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "protocolVersion", "hosts", "engines", "capabilities"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "protocolVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "hosts": { "type": "array", "const": ["web", "desktop", "android", "ios", "harmony"] },
+    "engines": { "type": "array", "const": ["quickjs", "v8"] },
+    "capabilities": {
+      "type": "object",
+      "propertyNames": { "pattern": "^(wx\\.[A-Za-z0-9]+(?:\\.[A-Za-z0-9]+)*|(?:Page|Component)\\.[A-Za-z_$][A-Za-z0-9_$]*|object:[A-Za-z_$][A-Za-z0-9_$]*\\.[A-Za-z_$][A-Za-z0-9_$]*|component:[A-Za-z_$][A-Za-z0-9_$]*(?:-[A-Za-z_$][A-Za-z0-9_$]*)*(?:\\.[A-Za-z_$][A-Za-z0-9_$]*(?:-[A-Za-z_$][A-Za-z0-9_$]*)*)*|weappContainer\\.[A-Za-z_$][A-Za-z0-9_$]*(?:\\.[A-Za-z_$][A-Za-z0-9_$]*)*|[A-Za-z_$][A-Za-z0-9_$]*)$" },
+      "additionalProperties": { "$ref": "#/$defs/capability" }
+    }
+  },
+  "$defs": {
+    "status": { "enum": ["full", "partial", "unsupported"] },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "hosts", "engines", "minManifestVersion", "minProtocolVersion", "conformance"],
+      "properties": {
+        "status": { "$ref": "#/$defs/status" },
+        "hosts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["web", "desktop", "android", "ios", "harmony"],
+          "properties": {
+            "web": { "$ref": "#/$defs/status" },
+            "desktop": { "$ref": "#/$defs/status" },
+            "android": { "$ref": "#/$defs/status" },
+            "ios": { "$ref": "#/$defs/status" },
+            "harmony": { "$ref": "#/$defs/status" }
+          }
+        },
+        "engines": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["quickjs", "v8"],
+          "properties": {
+            "quickjs": { "$ref": "#/$defs/status" },
+            "v8": { "$ref": "#/$defs/status" }
+          }
+        },
+        "permission": { "type": "string", "minLength": 1 },
+        "minManifestVersion": { "const": 1 },
+        "minProtocolVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+        "conformance": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      }
+    }
+  }
+}

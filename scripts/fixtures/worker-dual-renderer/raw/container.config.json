@@ -1,0 +1,10 @@
+{
+  "renderer": {
+    "default": "webview",
+    "pages": {
+      "pages/dom/index": "webview",
+      "pages/skia/index": "skia",
+      "pages/return/index": "webview"
+    }
+  }
+}

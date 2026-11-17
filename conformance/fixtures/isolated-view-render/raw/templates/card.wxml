@@ -1,0 +1,1 @@
+<wxs module="tools">exports.label = function(value) { return 'card:' + value; };</wxs><template name="card"><text>{{tools.label(label)}}|</text></template>

@@ -1,0 +1,3 @@
+<view id="surface">
+  <view id="probe" class="probe" style="{{boxStyle}}" bindtap="changeStyle" data-count="{{count}}" data-module-identity="{{moduleIdentity}}" data-json-identity="{{jsonIdentity}}" data-module-label="{{moduleLabel}}" data-module-total="{{moduleTotal}}" data-event-type="{{eventType}}" data-event-target="{{eventTarget}}" data-event-token="{{eventToken}}"></view>
+</view>

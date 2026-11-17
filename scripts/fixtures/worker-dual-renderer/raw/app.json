@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "pages/dom/index",
+    "pages/skia/index",
+    "pages/return/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "Worker renderer transaction fixture"
+  }
+}

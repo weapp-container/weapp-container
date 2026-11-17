@@ -1,0 +1,10 @@
+var shared = require('./shared.wxs');
+var count = 0;
+var log = [];
+exports.mark = function(label, value) {
+  count = count + 1;
+  var sample = 'page:' + label + '#' + count + '=' + value + ';shared=' + shared.next();
+  log.push(sample);
+  return sample;
+};
+exports.history = function() { return log.join('|'); };

@@ -1,0 +1,19 @@
+{
+  "description": "Weapp Container dual renderer development example",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "appid": "touristappid",
+  "libVersion": "trial",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "postcss": false,
+    "enhance": true,
+    "ignoreUploadUnusedFiles": true
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  }
+}

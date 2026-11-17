@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "scopes": [
+    { "name": "root-pnpm", "kind": "pnpm", "path": ".", "recursive": true },
+    { "name": "website-pnpm", "kind": "pnpm", "path": "website" },
+    { "name": "sdk-react-native-npm", "kind": "npm", "path": "sdk/react-native" },
+    { "name": "website-react-native-npm", "kind": "npm", "path": "website/hosts/react-native", "blocked": "The local @weapp-container/react-native file dependency points to generated .runtime output." },
+    { "name": "root-cargo", "kind": "cargo", "path": "." },
+    { "name": "embed-runner-cargo", "kind": "cargo", "path": "examples/apps/embed-runner" },
+    { "name": "conformance-desktop-cargo", "kind": "cargo", "path": "examples/hosts/conformance-desktop" },
+    { "name": "conformance-web-cargo", "kind": "cargo", "path": "examples/hosts/conformance-web/projection" },
+    { "name": "desktop-metal-cargo", "kind": "cargo", "path": "examples/hosts/desktop-metal" },
+    { "name": "desktop-cargo", "kind": "cargo", "path": "examples/hosts/desktop" },
+    { "name": "flutter-sdk", "kind": "flutter", "path": "sdk/flutter/weapp_container" },
+    { "name": "flutter-platform-interface", "kind": "flutter", "path": "sdk/flutter/weapp_container_platform_interface" },
+    { "name": "flutter-android", "kind": "flutter", "path": "sdk/flutter/weapp_container_android" },
+    { "name": "flutter-ios", "kind": "flutter", "path": "sdk/flutter/weapp_container_ios" },
+    { "name": "flutter-linux", "kind": "flutter", "path": "sdk/flutter/weapp_container_linux" },
+    { "name": "flutter-macos", "kind": "flutter", "path": "sdk/flutter/weapp_container_macos" },
+    { "name": "flutter-windows", "kind": "flutter", "path": "sdk/flutter/weapp_container_windows" },
+    { "name": "flutter-dev-player", "kind": "flutter", "path": "apps/dev-player" },
+    { "name": "flutter-sdk-example", "kind": "flutter", "path": "sdk/flutter/example", "lockfilePolicy": "optional" },
+    { "name": "flutter-acceptance-example", "kind": "flutter", "path": "examples/sdk/flutter", "lockfilePolicy": "optional" },
+    { "name": "flutter-website-showcase", "kind": "flutter", "path": "website/hosts/flutter", "blocked": "Path dependency ../../.runtime/sdk/flutter/weapp_container is generated and is not present in a source checkout." }
+  ],
+  "reportOnly": [
+    { "name": "android-sdk", "kind": "gradle", "path": "sdk/android" },
+    { "name": "dev-player-android", "kind": "gradle", "path": "apps/dev-player/android" },
+    { "name": "website-android", "kind": "gradle", "path": "website/hosts/native-android" },
+    { "name": "website-react-native-android", "kind": "gradle", "path": "website/hosts/react-native/android" },
+    { "name": "dev-player-ios", "kind": "cocoapods", "path": "apps/dev-player/ios" },
+    { "name": "dev-player-macos", "kind": "cocoapods", "path": "apps/dev-player/macos" },
+    { "name": "flutter-website-ios", "kind": "cocoapods", "path": "website/hosts/flutter/ios" },
+    { "name": "flutter-website-macos", "kind": "cocoapods", "path": "website/hosts/flutter/macos" },
+    { "name": "website-react-native-ios", "kind": "cocoapods", "path": "website/hosts/react-native/ios" },
+    { "name": "sdk-ios-swiftpm", "kind": "swiftpm", "path": "sdk/ios" },
+    { "name": "ios-example-swiftpm", "kind": "swiftpm", "path": "examples/hosts/ios" },
+    { "name": "website-react-native-bundler", "kind": "bundler", "path": "website/hosts/react-native" }
+  ],
+  "exclusions": [
+    "vendor/**",
+    "node_modules/**",
+    "**/node_modules/**",
+    "conformance/**",
+    "**/.dart_tool/**",
+    "**/build/**",
+    "**/ios/Flutter/ephemeral/**",
+    "**/macos/Flutter/ephemeral/**",
+    "**/.runtime/**",
+    "artifacts/**",
+    "website/artifacts/**"
+  ],
+  "protected": [
+    { "path": "examples/hosts/web-wasm/renderer-dependency-pins.json", "reason": "CanvasKit renderer bytes and checksums are evidence-bound." },
+    { "path": "sdk/ios/Package.swift", "reason": "The binary SDK URL and checksum are release evidence-bound." },
+    { "path": "sdk/react-native/runtime-artifacts.lock.json", "reason": "Published runtime artifact integrity is release evidence-bound." }
+  ]
+}

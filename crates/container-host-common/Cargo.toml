@@ -1,0 +1,23 @@
+[package]
+name = "container-host-common"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+repository.workspace = true
+description = "Shared host session and JSON bridge boundary for the Weapp Container"
+
+[dependencies]
+container-bridge = { path = "../container-bridge" }
+container-core = { path = "../container-core" }
+container-ir = { path = "../container-ir" }
+container-render-skia = { path = "../container-render-skia" }
+container-runtime = { path = "../container-runtime" }
+serde_json.workspace = true
+thiserror.workspace = true
+
+[features]
+default = []
+skia-gpu-metal = ["container-runtime/skia-gpu-metal"]
+skia-gpu-gles = ["container-runtime/skia-gpu-gles"]
+

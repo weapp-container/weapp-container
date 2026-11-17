@@ -1,0 +1,19 @@
+<view id="page-root" class="page-root">
+  <text id="title">Component selection oracle</text>
+  <view id="plain-view" class="plain target">plain native view</view>
+  <view id="wrapper" class="wrapper">
+    <probe-leaf id="direct" class="target target2 child" label="direct" data-role="direct" />
+  </view>
+  <probe-parent id="parent" class="target parent">
+    <probe-leaf id="slotted" class="target slotted" label="slotted" />
+    <view class="slot-wrapper"><probe-leaf id="slotted-wrapped" class="target slotted-wrapped" label="slotted-wrapped" /></view>
+  </probe-parent>
+  <probe-exporter id="export-undefined" class="export" kind="undefined" />
+  <probe-exporter id="export-null" class="export" kind="null" />
+  <probe-exporter id="export-false" class="export" kind="false" />
+  <probe-exporter id="export-zero" class="export" kind="zero" />
+  <probe-exporter id="export-object" class="export" kind="object" />
+  <probe-nested-exporter id="export-nested-behavior" kind="object" />
+  <probe-plain-exporter id="export-plain" />
+  <text id="snapshot-ready">{{phase}}</text>
+</view>

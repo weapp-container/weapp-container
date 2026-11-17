@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "execution": "worker",
+  "engine": "quickjs",
+  "viewport": {
+    "width": 375,
+    "height": 667
+  },
+  "rendererPolicy": {
+    "mode": "manifest"
+  },
+  "rendererTransitions": {
+    "version": "1.0"
+  }
+}

@@ -1,0 +1,10 @@
+var calls = 0;
+exports.label = function(prefix, value) { return prefix + ':' + value; };
+exports.next = function(value) { calls++; return value + ':' + calls; };
+exports.fail = function() { throw new Error('inactive branch executed'); };
+exports.hostOnly = function() {
+  if (typeof wx === 'undefined' && typeof App === 'undefined' &&
+      typeof Page === 'undefined' && typeof getApp === 'undefined' &&
+      typeof globalThis.__appServiceSentinel === 'undefined') return 'isolated';
+  throw new Error('AppService globals leaked into View');
+};

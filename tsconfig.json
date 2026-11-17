@@ -1,0 +1,11 @@
+{
+  "extends": "repoctl/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2024",
+    "types": [
+      "node"
+    ],
+    "allowImportingTsExtensions": true
+  },
+  "files": []
+}

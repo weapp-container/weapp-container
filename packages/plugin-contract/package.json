@@ -1,0 +1,54 @@
+{
+  "name": "@weapp-container/plugin-contract",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Build-time plugin manifest contract for Weapp Container hosts",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=24.22.2 <25"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.en.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weapp-container/weapp-container.git",
+    "directory": "packages/plugin-contract"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown -w",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint src tsdown.config.ts",
+    "test:types": "tsd --files test-d/**/*.test-d.ts",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "tsd": "0.33.0"
+  },
+  "tsd": {
+    "compilerOptions": {
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "skipLibCheck": true
+    }
+  }
+}

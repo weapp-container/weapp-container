@@ -1,0 +1,1 @@
+<wxs module="tools">exports.label = function(value) { return 'leaf:' + value; };</wxs><text>{{tools.label(title)}}|</text>

@@ -1,0 +1,13 @@
+{
+  "view": {
+    "documents": {
+      "page.wxml": {
+        "mode": "modern",
+        "modules": {
+          "tools": "./main.view.ts",
+          "shared": "./shared.view.js"
+        }
+      }
+    }
+  }
+}

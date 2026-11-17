@@ -1,0 +1,62 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Weapp Container · 设备联调</title>
+<style>body{margin:0;background:#10171e;color:#dbe5ed;font:15px system-ui}main{max-width:1150px;margin:40px auto;padding:0 24px}header{display:flex;align-items:center;justify-content:space-between}h1{font-size:25px}button{background:#42d9b2;border:0;border-radius:5px;padding:8px 15px;cursor:pointer}section{margin:24px 0;padding:20px;background:#19242e;border:1px solid #2b3b48;border-radius:8px}select{padding:8px;background:#10171e;color:#dbe5ed}input{width:95%;padding:10px;background:#10171e;color:#dbe5ed;border:1px solid #496071}table{width:100%;text-align:left;border-collapse:collapse}td,th{padding:10px;border-bottom:1px solid #30404e}pre{white-space:pre-wrap;max-height:360px;overflow:auto}.muted{color:#91a7b8}#error{color:#ffa1a1}</style>
+<main><header><div><h1>Weapp Container Dev Player</h1><p class="muted">设备本地运行 · 构建共享 · 会话独立</p></div><button id="pair">生成配对连接</button></header><div id="error" role="alert"></div><section><b>连接客户端</b><p id="endpoint"></p><img id="qr" alt="一次性配对二维码" hidden><input id="ticket" readonly aria-label="一次性配对连接"><p class="muted">配对链接两分钟内有效且仅可使用一次。请仅交给你要连接的设备。手机也可在 Player 中粘贴。</p></section><section><h2>设备</h2><table><thead><tr><th>名称</th><th>平台</th><th>连接／运行阶段</th><th>操作</th></tr></thead><tbody id="devices"></tbody></table></section><section><h2>项目与诊断</h2><p id="project"></p><label for="device-filter">按设备查看 </label><select id="device-filter"><option value="">全部设备与构建</option></select><pre id="logs"></pre></section><section><h2>设备页面数据 · 只读</h2><p class="muted">点击设备的“查看数据”获取一次批量快照。只读取该设备已接受版本的页面数据；凭据字段会遮盖，存储与运行库配置不导出。响应成功不代表画面已呈现。</p><p id="inspection-status">尚未请求设备数据</p><pre id="inspection"></pre></section></main>
+<script>const key=__ADMIN_SECRET__;const byId=id=>document.getElementById(id);let latest;function renderLogs(){const id=byId('device-filter').value;byId('logs').textContent=(latest?.history??[]).filter(e=>!id||e.deviceId===id).map(e=>JSON.stringify(e,null,2)).join('\n')}byId('device-filter').onchange=renderLogs;async function api(path,body){const r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+key,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});const v=await r.json();if(!r.ok)throw Error(v.error);return v}async function pair(){const p=await api('/pair',{});byId('ticket').value=p.uri;byId('qr').src=p.qr;byId('qr').hidden=false}byId('pair').onclick=()=>pair().catch(showError);function showError(e){byId('error').textContent=e.message}function button(label,action){const b=document.createElement('button');b.textContent=label;b.onclick=()=>action().catch(showError);return b}let inspectionEpoch=0;
+let inspectionSelection=null;
+function currentInspection(selection){return selection===inspectionSelection&&selection.epoch===inspectionEpoch}
+function invalidateInspection(selection,message){
+  if(!currentInspection(selection))return;
+  inspectionSelection=null;
+  byId('inspection').textContent='';
+  byId('inspection-status').textContent='未取得有效设备快照：'+message;
+}
+function applyInspectionResult(selection,result){
+  if(!currentInspection(selection))return;
+  for(const key of ['requestId','deviceId','projectId','runId','generation']){
+    if(result[key]!==selection.identity[key])throw Error('ERR_DEV_STALE_INSPECTION');
+  }
+  if(result.status==='pending'){
+    byId('inspection').textContent='';
+    byId('inspection-status').textContent='等待设备响应…';
+    return;
+  }
+  if(result.status!=='completed')throw Error(result.error||'ERR_DEV_TIMEOUT');
+  byId('inspection-status').textContent='设备 '+result.deviceId+' · Generation '+result.generation+' · 只读快照（持续检查有效性）';
+  byId('inspection').textContent=JSON.stringify(result.snapshot,null,2);
+}
+async function inspectDevice(deviceId){
+  const selection={epoch:++inspectionEpoch,deviceId,identity:null};
+  inspectionSelection=selection;
+  byId('inspection').textContent='';
+  byId('inspection-status').textContent='等待设备响应…';
+  try{
+    let result=await api('/inspect',{deviceId});
+    if(!currentInspection(selection))return;
+    if(result.deviceId!==deviceId)throw Error('ERR_DEV_STALE_INSPECTION');
+    selection.identity={requestId:result.requestId,deviceId,projectId:result.projectId,runId:result.runId,generation:result.generation};
+    const deadline=Date.now()+8000;
+    while(result.status==='pending'&&Date.now()<deadline){
+      await new Promise(r=>setTimeout(r,200));
+      if(!currentInspection(selection))return;
+      result=await api('/inspections/'+selection.identity.requestId);
+      if(!currentInspection(selection))return;
+    }
+    if(result.status==='pending')throw Error('ERR_DEV_TIMEOUT');
+    applyInspectionResult(selection,result);
+  }catch(e){invalidateInspection(selection,e.message)}
+}
+async function refreshInspection(devices,epoch){
+  const selection=inspectionSelection;
+  if(!selection||epoch!==selection.epoch)return;
+  if(!devices.some(d=>d.id===selection.deviceId&&d.connected)){
+    invalidateInspection(selection,'ERR_DEV_DISCONNECTED');
+    return;
+  }
+  if(!selection.identity)return;
+  try{
+    const result=await api('/inspections/'+selection.identity.requestId);
+    if(!currentInspection(selection))return;
+    applyInspectionResult(selection,result);
+  }catch(e){invalidateInspection(selection,e.message)}
+}
+async function refresh(){const inspectionAtStart=inspectionEpoch;try{const s=await api('/state');latest=s;const selected=byId('device-filter').value;const all=document.createElement('option');all.value='';all.textContent='全部设备与构建';byId('device-filter').replaceChildren(all);for(const d of s.devices){const o=document.createElement('option');o.value=d.id;o.textContent=d.name+' / '+d.platform;byId('device-filter').append(o)}if(s.devices.some(d=>d.id===selected))byId('device-filter').value=selected;byId('endpoint').textContent=s.endpoint;byId('project').textContent=s.project?'Generation '+s.project.generation+' · '+s.project.blobs.length+' 个资源':'等待首次成功构建';byId('devices').replaceChildren();for(const d of s.devices){const row=document.createElement('tr');for(const text of [d.name,d.platform,(d.connected?'在线':'离线')+' / '+d.phase]){const td=document.createElement('td');td.textContent=text;row.append(td)}const ops=document.createElement('td');if(d.connected){ops.append(button('重载',()=>api('/command',{deviceId:d.id,name:'reload'})));ops.append(button('查看数据',()=>inspectDevice(d.id)))}ops.append(button('查看日志',async()=>{byId('device-filter').value=d.id;renderLogs()}));ops.append(button('撤销配对',()=>api('/revoke',{deviceId:d.id})));row.append(ops);byId('devices').append(row)}renderLogs();await refreshInspection(s.devices,inspectionAtStart)}catch(e){showError(e);if(inspectionAtStart===inspectionEpoch&&inspectionSelection)invalidateInspection(inspectionSelection,'ERR_DEV_DISCONNECTED')}finally{setTimeout(refresh,1000)}}refresh();</script></html>

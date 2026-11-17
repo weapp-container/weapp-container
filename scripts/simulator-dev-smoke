@@ -1,0 +1,7 @@
+#!/bin/sh
+# Stable executable entry point for the development simulator smoke. Keep the
+# implementation in the ESM script so it remains easy to reuse from pnpm and
+# CI while allowing contributors to run `scripts/simulator-dev-smoke` directly.
+set -eu
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+exec node "$root/scripts/simulator-dev-smoke.mjs" "$@"

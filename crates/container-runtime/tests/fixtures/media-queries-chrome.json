@@ -1,0 +1,1479 @@
+{
+  "schemaVersion": 1,
+  "boundary": "Auxiliary Chrome matchMedia baseline; not official WeChat DevTools evidence. Only portable px/vw/vh subset.",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+  "cases": [
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "print",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "all",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not screen",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not print",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "only screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not future-type",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(min-width: 150px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(max-width: 150px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 377px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(height: 200px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(orientation: portrait)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(orientation: landscape)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(aspect-ratio: 1/1)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(min-aspect-ratio: 1/2)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(max-aspect-ratio: 2/1)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width >= 100px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(100px <= width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(100px < width < 377px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(400px > width > 100px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(height >= 100px) and (width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(height < 150px) or (width > 300px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not (width: 123px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not all and (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not (width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: -1px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not (width: -1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 1.2.3px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 1e2px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 1px), screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "print, (width >= 1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 100px), (future-feature: value)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width >= 1px) and ((height >= 1px) or (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width >= 1px) or ((height >= 1px) and (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width > 1px) and (height > 1px) or (width < 99999px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "not not (width: 123px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 25vw)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 100vw)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(height: 100vh)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width > 0px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width < 99999px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(width: 0)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 100,
+        "height": 200
+      },
+      "query": "(aspect-ratio: 0/1)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "print",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "all",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not screen",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not print",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "only screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not future-type",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(min-width: 150px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(max-width: 150px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 377px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(height: 200px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(orientation: portrait)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(orientation: landscape)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(aspect-ratio: 1/1)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(min-aspect-ratio: 1/2)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(max-aspect-ratio: 2/1)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width >= 100px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(100px <= width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(100px < width < 377px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(400px > width > 100px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(height >= 100px) and (width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(height < 150px) or (width > 300px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not (width: 123px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not all and (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not (width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: -1px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not (width: -1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 1.2.3px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 1e2px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 1px), screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "print, (width >= 1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 100px), (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width >= 1px) and ((height >= 1px) or (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width >= 1px) or ((height >= 1px) and (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width > 1px) and (height > 1px) or (width < 99999px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "not not (width: 123px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 25vw)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 100vw)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(height: 100vh)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width > 0px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width < 99999px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(width: 0)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 100
+      },
+      "query": "(aspect-ratio: 0/1)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "print",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "all",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not screen",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not print",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "only screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not future-type",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(min-width: 150px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(max-width: 150px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 377px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(height: 200px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(orientation: portrait)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(orientation: landscape)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(aspect-ratio: 1/1)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(min-aspect-ratio: 1/2)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(max-aspect-ratio: 2/1)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width >= 100px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(100px <= width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(100px < width < 377px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(400px > width > 100px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(height >= 100px) and (width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(height < 150px) or (width > 300px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not (width: 123px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not all and (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not (width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: -1px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not (width: -1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 1.2.3px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 1e2px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 1px), screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "print, (width >= 1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 100px), (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width >= 1px) and ((height >= 1px) or (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width >= 1px) or ((height >= 1px) and (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width > 1px) and (height > 1px) or (width < 99999px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "not not (width: 123px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 25vw)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 100vw)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(height: 100vh)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width > 0px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width < 99999px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(width: 0)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 200,
+        "height": 200
+      },
+      "query": "(aspect-ratio: 0/1)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "print",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "all",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not screen",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not print",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "only screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not future-type",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(min-width: 150px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(max-width: 150px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 377px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(height: 200px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(orientation: portrait)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(orientation: landscape)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(aspect-ratio: 1/1)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(min-aspect-ratio: 1/2)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(max-aspect-ratio: 2/1)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width >= 100px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(100px <= width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(100px < width < 377px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(400px > width > 100px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(height >= 100px) and (width <= 400px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(height < 150px) or (width > 300px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not (width: 123px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not all and (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not (width: bad-value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: -1px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not (width: -1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 1.2.3px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 1e2px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 1px), screen",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "print, (width >= 1px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 100px), (future-feature: value)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width >= 1px) and ((height >= 1px) or (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width >= 1px) or ((height >= 1px) and (future-feature: value))",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width > 1px) and (height > 1px) or (width < 99999px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "not not (width: 123px)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 25vw)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 100vw)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(height: 100vh)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width > 0px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width < 99999px)",
+      "matches": true
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(width: 0)",
+      "matches": false
+    },
+    {
+      "viewport": {
+        "width": 377,
+        "height": 812
+      },
+      "query": "(aspect-ratio: 0/1)",
+      "matches": false
+    }
+  ]
+}

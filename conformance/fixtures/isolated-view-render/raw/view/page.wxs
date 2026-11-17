@@ -1,0 +1,5 @@
+var dep = require('./dep.wxs');
+exports.label = function(value) { return dep.label('page', value); };
+exports.next = dep.next;
+exports.fail = dep.fail;
+exports.hostOnly = dep.hostOnly;

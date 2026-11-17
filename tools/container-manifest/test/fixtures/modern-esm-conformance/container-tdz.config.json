@@ -1,0 +1,10 @@
+{
+  "view": {
+    "documents": {
+      "page.wxml": {
+        "mode": "modern",
+        "modules": { "tools": "./tdz.view.ts" }
+      }
+    }
+  }
+}

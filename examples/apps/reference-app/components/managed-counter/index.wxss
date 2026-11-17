@@ -1,0 +1,17 @@
+.component-panel {
+  margin-top: 32rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #edf6f0;
+}
+
+.component-label,
+.component-count,
+.component-button {
+  display: block;
+}
+
+.component-count,
+.component-button {
+  margin-top: 16rpx;
+}

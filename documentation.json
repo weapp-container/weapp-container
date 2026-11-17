@@ -1,0 +1,656 @@
+{
+  "schemaVersion": 1,
+  "repository": "weapp-container/weapp-container",
+  "defaultLocale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "pages": [
+    {
+      "id": ".github/PULL_REQUEST_TEMPLATE",
+      "zh": ".github/PULL_REQUEST_TEMPLATE.md",
+      "en": ".github/PULL_REQUEST_TEMPLATE.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": ".github/PULL_REQUEST_TEMPLATE.md"
+      },
+      "reviewedChineseSummary": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reviewedChineseSha256": "b79e958f56c46459d3eefbdb4eb34c932ef9f773143dd1573a3ebce760b6ea7e",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "CODE_OF_CONDUCT",
+      "zh": "CODE_OF_CONDUCT.md",
+      "en": "CODE_OF_CONDUCT.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "CODE_OF_CONDUCT.md"
+      },
+      "reviewedChineseSummary": "行为准则",
+      "reviewedChineseSha256": "2a16ac12767d2889f8119e026c3857e84093220d70525664c7ffabec2f0bc07a",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "CONTRIBUTING",
+      "zh": "CONTRIBUTING.md",
+      "en": "CONTRIBUTING.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "CONTRIBUTING.md"
+      },
+      "reviewedChineseSummary": "参与贡献",
+      "reviewedChineseSha256": "e1a3805019b9d4ed5f2632b6fcdd9435e5b78321de366587659cef6074a54f50",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "README",
+      "zh": "README.md",
+      "en": "README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "README.md"
+      },
+      "reviewedChineseSummary": "weapp-container",
+      "reviewedChineseSha256": "e4f9d1f69722cec13dde8523b17dd83e073406cacbe050e409a421a7ebc0fc10",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "SECURITY",
+      "zh": "SECURITY.md",
+      "en": "SECURITY.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "SECURITY.md"
+      },
+      "reviewedChineseSummary": "安全问题报告",
+      "reviewedChineseSha256": "51b388e81f0c8e4a2d5b23dd97097fb057d2cd236ad542bcdf5e7437111e809b",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-engine-quickjs/README",
+      "zh": "crates/container-engine-quickjs/README.md",
+      "en": "crates/container-engine-quickjs/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-engine-quickjs/README.md"
+      },
+      "reviewedChineseSummary": "container-engine-quickjs",
+      "reviewedChineseSha256": "6f5141ee317d95ad447ff1b373b39798f5d4cbe6e98a85e09dbfb537888f5f91",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-engine-v8/README",
+      "zh": "crates/container-engine-v8/README.md",
+      "en": "crates/container-engine-v8/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-engine-v8/README.md"
+      },
+      "reviewedChineseSummary": "container-engine-v8",
+      "reviewedChineseSha256": "405f392984430acc4cd731eb9fd78b4f75ffdd9e21dac0ebd53f9bbfb342ffe9",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-host-android/README",
+      "zh": "crates/container-host-android/README.md",
+      "en": "crates/container-host-android/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-android/README.md"
+      },
+      "reviewedChineseSummary": "container-host-android",
+      "reviewedChineseSha256": "b4cafee79dfea0b539e62638ede60b6d508bb8e38ec53552116e0d4525301c00",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-host-common/README",
+      "zh": "crates/container-host-common/README.md",
+      "en": "crates/container-host-common/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-common/README.md"
+      },
+      "reviewedChineseSummary": "container-host-common",
+      "reviewedChineseSha256": "10238f9f5bfa7d4dbf4d88278cc1f1e25b1a95944f21439732e96124a000858d",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-host-desktop/README",
+      "zh": "crates/container-host-desktop/README.md",
+      "en": "crates/container-host-desktop/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-desktop/README.md"
+      },
+      "reviewedChineseSummary": "container-host-desktop",
+      "reviewedChineseSha256": "80b9b62d2580358007c88e6c25f0ba56007f09bb5c8b08b6b20c199c513a87a5",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-host-harmony/README",
+      "zh": "crates/container-host-harmony/README.md",
+      "en": "crates/container-host-harmony/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-harmony/README.md"
+      },
+      "reviewedChineseSummary": "container-host-harmony",
+      "reviewedChineseSha256": "b1f71fa6f979abc892355f499fa250c59388ce68d03eb186a42213da601930a2",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-host-ios/README",
+      "zh": "crates/container-host-ios/README.md",
+      "en": "crates/container-host-ios/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-ios/README.md"
+      },
+      "reviewedChineseSummary": "container-host-ios",
+      "reviewedChineseSha256": "495e3b841c65bc69cb329a3707aac08acbad4df88ef01c5835a48be80aede3bf",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-host-web/README",
+      "zh": "crates/container-host-web/README.md",
+      "en": "crates/container-host-web/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-host-web/README.md"
+      },
+      "reviewedChineseSummary": "container-host-web",
+      "reviewedChineseSha256": "60642f936235b3adb0a082bfd2137b9df7bc9aada397aa8f5e2eb33929df80cc",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-ir/README",
+      "zh": "crates/container-ir/README.md",
+      "en": "crates/container-ir/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-ir/README.md"
+      },
+      "reviewedChineseSummary": "container-ir",
+      "reviewedChineseSha256": "2ae5941befe3f50cc8ce4be698a7537bd50f291e3a7b28e592c3d89089c1b8e1",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-render-skia/README",
+      "zh": "crates/container-render-skia/README.md",
+      "en": "crates/container-render-skia/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-render-skia/README.md"
+      },
+      "reviewedChineseSummary": "container-render-skia",
+      "reviewedChineseSha256": "bf068933fba6e23781e54f95163abe0494b597b1b1c57b14700e1a44613776f3",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-runtime/README",
+      "zh": "crates/container-runtime/README.md",
+      "en": "crates/container-runtime/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-runtime/README.md"
+      },
+      "reviewedChineseSummary": "container-runtime",
+      "reviewedChineseSha256": "5c5f26b402baef5bad59c28d23413ed5a54f3d3ac0382c05c32805db369cd674",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-sdk-ffi/README",
+      "zh": "crates/container-sdk-ffi/README.md",
+      "en": "crates/container-sdk-ffi/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-sdk-ffi/README.md"
+      },
+      "reviewedChineseSummary": "Weapp 容器 C ABI v1",
+      "reviewedChineseSha256": "028e2c3dd372e65be0b5aa1ab67e8a772480e0d46f39b4413413711845cb0123",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-sdk/README",
+      "zh": "crates/container-sdk/README.md",
+      "en": "crates/container-sdk/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-sdk/README.md"
+      },
+      "reviewedChineseSummary": "container-sdk",
+      "reviewedChineseSha256": "30ee9ddee73939afa69ae9b34146993948958948671a2a6b885957c6ecca3f1e",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "crates/container-simulator/README",
+      "zh": "crates/container-simulator/README.md",
+      "en": "crates/container-simulator/README.en.md",
+      "section": "crates",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "crates/container-simulator/README.md"
+      },
+      "reviewedChineseSummary": "container-simulator",
+      "reviewedChineseSha256": "24e5c4dd5805b9ee188a48d9e121f2edef80b86457b388c7ff615e5f448359c0",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/dataset-values-app/README",
+      "zh": "examples/apps/dataset-values-app/README.md",
+      "en": "examples/apps/dataset-values-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/dataset-values-app/README.md"
+      },
+      "reviewedChineseSummary": "数据集和标记固定装置",
+      "reviewedChineseSha256": "7f491f400e35acf57881613bc726240cc2f7337f3c8f3be6eea42855fbbfead4",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/dual-renderer-app/README",
+      "zh": "examples/apps/dual-renderer-app/README.md",
+      "en": "examples/apps/dual-renderer-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/dual-renderer-app/README.md"
+      },
+      "reviewedChineseSummary": "双渲染开发示例",
+      "reviewedChineseSha256": "d48d44970a19a8375cb1f7c289741c270a27b5c7471cde6c80776c7477f6038f",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/embed-runner/README",
+      "zh": "examples/apps/embed-runner/README.md",
+      "en": "examples/apps/embed-runner/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/embed-runner/README.md"
+      },
+      "reviewedChineseSummary": "应用嵌入示例",
+      "reviewedChineseSha256": "4b3274afe386fbcf8e31ae9abd0a1f81db4401ef59bd226b05d4f9267b421853",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/flex-layout-app/README",
+      "zh": "examples/apps/flex-layout-app/README.md",
+      "en": "examples/apps/flex-layout-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/flex-layout-app/README.md"
+      },
+      "reviewedChineseSummary": "Flex 布局测试 fixture",
+      "reviewedChineseSha256": "b5b61548522f024458ec270bc9da1d61b5fc2e25fed2660d335cda85be875ad0",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/flex-order-app/README",
+      "zh": "examples/apps/flex-order-app/README.md",
+      "en": "examples/apps/flex-order-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/flex-order-app/README.md"
+      },
+      "reviewedChineseSummary": "Flex 订单固定装置",
+      "reviewedChineseSha256": "b324836595e1d4145d8ed9b0db500d0bfc94347b121c9b4af602cdbac5994b6e",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/group-opacity-app/README",
+      "zh": "examples/apps/group-opacity-app/README.md",
+      "en": "examples/apps/group-opacity-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/group-opacity-app/README.md"
+      },
+      "reviewedChineseSummary": "组透明度测试fixture",
+      "reviewedChineseSha256": "60322390481a46872893745eb9f4eaf49dee431a7cd86bb16a5972463abe9460",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/ios-interaction-app/README",
+      "zh": "examples/apps/ios-interaction-app/README.md",
+      "en": "examples/apps/ios-interaction-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/ios-interaction-app/README.md"
+      },
+      "reviewedChineseSummary": "iOS 交互固定装置",
+      "reviewedChineseSha256": "f38179b0a3ee589b5fd93884799e73fae1ea459357abb4947b6d4914c82d2ba8",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/modern-view-app/README",
+      "zh": "examples/apps/modern-view-app/README.md",
+      "en": "examples/apps/modern-view-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/modern-view-app/README.md"
+      },
+      "reviewedChineseSummary": "现代同步 View 示例",
+      "reviewedChineseSha256": "a658d7a409d4450899268f5dc8e4546969eb929ef9216ea12c8883e5c9684adb",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/player-chrome-app/README",
+      "zh": "examples/apps/player-chrome-app/README.md",
+      "en": "examples/apps/player-chrome-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/player-chrome-app/README.md"
+      },
+      "reviewedChineseSummary": "Dev Player chrome 修复工具",
+      "reviewedChineseSha256": "b9827eca54bcb22021012d6b719ff4762903eaf80690c50615310369ad4fe3d3",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/player-correctness-app/README",
+      "zh": "examples/apps/player-correctness-app/README.md",
+      "en": "examples/apps/player-correctness-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/player-correctness-app/README.md"
+      },
+      "reviewedChineseSummary": "开发播放器正确性测试套件（预览版.5 源码）",
+      "reviewedChineseSha256": "e126e9827c362dce286d4ef75499d6f4d1b347fa3b955cb69e4492d615adbbb8",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/reference-app/README",
+      "zh": "examples/apps/reference-app/README.md",
+      "en": "examples/apps/reference-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/reference-app/README.md"
+      },
+      "reviewedChineseSummary": "参考小程序",
+      "reviewedChineseSha256": "db222b593bad623edc4e734d776913c0e8536e2fc7f0a6e32a25c901184b7f3c",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/scroll-contract-app/README",
+      "zh": "examples/apps/scroll-contract-app/README.md",
+      "en": "examples/apps/scroll-contract-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/scroll-contract-app/README.md"
+      },
+      "reviewedChineseSummary": "Weapp 容器滚动测试fixture",
+      "reviewedChineseSha256": "b9fd276000954d44948855fa9b1b5b86356f2cddfaa7c29a4b2c12c1b52f995e",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/style-conditions-app/README",
+      "zh": "examples/apps/style-conditions-app/README.md",
+      "en": "examples/apps/style-conditions-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/style-conditions-app/README.md"
+      },
+      "reviewedChineseSummary": "WXSS 条件固定装置",
+      "reviewedChineseSha256": "a5a39508f1395ad27b036332f29619e8949119a18459ca2e962c6c6f5ee890d4",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/text-controls-app/README",
+      "zh": "examples/apps/text-controls-app/README.md",
+      "en": "examples/apps/text-controls-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/text-controls-app/README.md"
+      },
+      "reviewedChineseSummary": "DOM 文本编辑开发示例",
+      "reviewedChineseSha256": "db214ed113f3af03f3ba89bc05a83e87375f2869b078db8eb9a4e31ca45206fd",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/text-flow-app/README",
+      "zh": "examples/apps/text-flow-app/README.md",
+      "en": "examples/apps/text-flow-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/text-flow-app/README.md"
+      },
+      "reviewedChineseSummary": "文本流固定装置",
+      "reviewedChineseSha256": "87ec201083ecf0330c4fd0665edd58d29ccdeda333bfe625f0fff39122374901",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/transform-app/README",
+      "zh": "examples/apps/transform-app/README.md",
+      "en": "examples/apps/transform-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/transform-app/README.md"
+      },
+      "reviewedChineseSummary": "转换交互小程序",
+      "reviewedChineseSha256": "104797b6fe557b23ee9ac3ede8c1a885a39e2ad1a68326759aa9399d8cdf074a",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "examples/apps/typography-app/README",
+      "zh": "examples/apps/typography-app/README.md",
+      "en": "examples/apps/typography-app/README.en.md",
+      "section": "examples",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "examples/apps/typography-app/README.md"
+      },
+      "reviewedChineseSummary": "字体固定装置",
+      "reviewedChineseSha256": "f5e46755cc195e0424f0c7e79397fcb57c0beeab877aa988856b181728ecbffc",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "packages/node/README",
+      "zh": "packages/node/README.md",
+      "en": "packages/node/README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/node/README.md"
+      },
+      "reviewedChineseSummary": "@weapp-container/node",
+      "reviewedChineseSha256": "058f746b219470eac888c5e9755ad6b5f35b31fb73b7fd744fdc2ba6011e3802",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "packages/runtime/darwin-arm64/README",
+      "zh": "packages/runtime/darwin-arm64/README.md",
+      "en": "packages/runtime/darwin-arm64/README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/runtime/darwin-arm64/README.md"
+      },
+      "reviewedChineseSummary": "@weapp-container/runtime-darwin-arm64",
+      "reviewedChineseSha256": "192386be538c288ab5a72297b05bc03baf9c9a0c49756391a28e923eae316608",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "packages/runtime/linux-x64/README",
+      "zh": "packages/runtime/linux-x64/README.md",
+      "en": "packages/runtime/linux-x64/README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/runtime/linux-x64/README.md"
+      },
+      "reviewedChineseSummary": "@weapp-container/runtime-linux-x64",
+      "reviewedChineseSha256": "298efa058a9f66b1f70a568c0aab08389feecf9c00d86509c3a071849c974aa5",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "packages/vitest/README",
+      "zh": "packages/vitest/README.md",
+      "en": "packages/vitest/README.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "packages/vitest/README.md"
+      },
+      "reviewedChineseSummary": "@weapp-container/vitest",
+      "reviewedChineseSha256": "198eec98fdd3455454dc1347d2827a043de57991e9db2a9c6821a7f7ac31ed38",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "tools/container-manifest/README",
+      "zh": "tools/container-manifest/README.md",
+      "en": "tools/container-manifest/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "tools/container-manifest/README.md"
+      },
+      "reviewedChineseSummary": "`container-manifest`",
+      "reviewedChineseSha256": "e4c63b718a10d63a887a6d5b43a4a3abdbaba174f8cf03d13d44151e90c344f6",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "tools/documentation/README",
+      "zh": "tools/documentation/README.md",
+      "en": "tools/documentation/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "tools/documentation/README.md"
+      },
+      "reviewedChineseSummary": "双语文档维护",
+      "reviewedChineseSha256": "6c0d12dd12a6cd4a1076e912f2a09d959772638769da314e76d1708cc7c5a64e",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "tools/runtime-artifacts/README",
+      "zh": "tools/runtime-artifacts/README.md",
+      "en": "tools/runtime-artifacts/README.en.md",
+      "section": "tools",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "tools/runtime-artifacts/README.md"
+      },
+      "reviewedChineseSummary": "运行库发行工具",
+      "reviewedChineseSha256": "6b35bb0c448ba209b2bdedfb46c394e47d7be35f79f0e2b14088e9b10d3aa9ee",
+      "legacyHeadingIds": []
+    }
+  ],
+  "excluded": [
+    {
+      "path": "conformance/fixtures/component-relations/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "8a90d840f3106c4d0b74e3c27216d30b26fed8c01f93da31999051954320dc55"
+    },
+    {
+      "path": "conformance/fixtures/isolated-view-render/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "18c8a0ce031affefd94b20c9e130d0083c43ea880e394a89cf06252779382835"
+    },
+    {
+      "path": "conformance/fixtures/wxs-dialect/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "78db5f3a0077fc3ba1209e58eaf79888576275b9a13b83e17eaa0af01c3641e7"
+    },
+    {
+      "path": "conformance/fixtures/wxs-execution-oracle/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "b3454eaa523cb27e81d2205e52b4b67c13e72e10ff4f2f722fe0eb5ac0a53ed4"
+    },
+    {
+      "path": "conformance/fixtures/wxs-graph/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "d80ca47c77fceaf9748c20bcecc65cbc971d1f149a2d26f56a14ee17386a01f1"
+    },
+    {
+      "path": "scripts/fixtures/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "f9f7f29443d1df2e5aa9565328e8d48ee4a520192edd76413f6ffc2bdfee1ecd"
+    },
+    {
+      "path": "scripts/fixtures/player-correctness-startup-failure/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "f9c96ec4dd0d845c257cd009e1718c6954cdbb1887ee31417be6605507ee94db"
+    },
+    {
+      "path": "scripts/fixtures/worker-dual-renderer/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "3d5b48cd7dec8a02fde5b3a031e5f1c4ec86a798a646605b1cf9f77caf65aaeb"
+    },
+    {
+      "path": "tools/container-manifest/test/fixtures/modern-esm-conformance/README.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "b57711e753a1e4ccf0b40e2db4df4bedd762f377205e6fd9390555a695eb43cd"
+    },
+    {
+      "path": "tools/runtime-artifacts/THIRD-PARTY-NOTICES.md",
+      "reason": "unpaired fixture or third-party notice",
+      "sha256": "33987d6e12dd5cefd49c139535a1d95e00b9dc9bedfc0404f76cb9d3524360d8"
+    }
+  ],
+  "assets": [
+    {
+      "path": "assets/brand/png/weapp-container-avatar-1024.png",
+      "sha256": "4b1224e6b9a97e8f32185e0449f019e423a1c4092c262d820cd87d7cce0b93b2"
+    },
+    {
+      "path": "assets/brand/png/weapp-container-avatar-128.png",
+      "sha256": "fecde68de7fc30d6386c1648395347535dbbaa2c9850fff4f7fa50da2719fb2f"
+    },
+    {
+      "path": "assets/brand/png/weapp-container-avatar-512.png",
+      "sha256": "91919376821485ef32d2e29d0a2cbbaf76cba74c45d3a3374c64488f29cddf95"
+    },
+    {
+      "path": "assets/brand/png/weapp-container-avatar-64.png",
+      "sha256": "8a7cb20961816bbdde58d4d063e3f1f19adc8cef89462cda2810ca8ddb69f7a1"
+    },
+    {
+      "path": "assets/brand/weapp-container-avatar.svg",
+      "sha256": "e9cc10702f6ab5856a0b21dfa0f1f7f77aaecceb8b2c914a39b079f53fae5c84"
+    },
+    {
+      "path": "assets/brand/weapp-container-lockup.svg",
+      "sha256": "73fb4da5d97adae2ca5ddd0083247270a25ecc0a1fdb6e16ed5b080c2370e84d"
+    },
+    {
+      "path": "assets/brand/weapp-container-mark-dark.svg",
+      "sha256": "bedb53b2c36ac9f6d62e44f74319225d953ee06a5f1f1dbc33df9af15f2a73df"
+    },
+    {
+      "path": "assets/brand/weapp-container-mark.svg",
+      "sha256": "fc2a231269890624c732118d3939a56eae858cb7e435ecc1c224f8c62b07f8db"
+    }
+  ]
+}

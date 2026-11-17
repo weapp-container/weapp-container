@@ -1,0 +1,23 @@
+name: Cache Rust build dependencies
+description: Reuse compiled dependencies; rebuild workspace crates and regenerate all artifacts and evidence
+inputs:
+  key:
+    description: Stable workflow, target and feature group (never a commit SHA)
+    required: true
+  workspaces:
+    description: Cargo workspace to target-directory mappings
+    default: . -> target
+runs:
+  using: composite
+  steps:
+    - uses: Swatinem/rust-cache@e9d7b9f1e587218970671bac74e5511ed9506e6a # v2
+      with:
+        prefix-key: build-deps-v1
+        shared-key: ${{ inputs.key }}
+        workspaces: ${{ inputs.workspaces }}
+        cache-bin: 'false'
+        cache-workspace-crates: 'false'
+        cache-on-failure: 'false'
+        # PRs restore main's caches without accumulating one cache per PR.
+        save-if: ${{ github.ref == 'refs/heads/main' }}
+        env-vars: 'CC CXX CFLAGS CXXFLAGS AR SDKROOT DEVELOPER_DIR ANDROID_NDK_HOME'

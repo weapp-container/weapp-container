@@ -1,0 +1,9 @@
+# The simulator performs the canonical app.init -> launch -> page.push ->
+# render.commit sequence before replaying this fixture. Keep requests batched
+# and deterministic so native QuickJS/V8 traces can be compared directly.
+{"protocolVersion":"1.0","sessionId":"simulator-1","requestId":"capabilities","kind":"request","op":"api.call","payload":{"name":"wx.canIUse","capability":"wx.request"}}
+{"protocolVersion":"1.0","sessionId":"simulator-1","requestId":"system-info","kind":"request","op":"api.call","payload":{"name":"wx.getSystemInfoSync"}}
+{"protocolVersion":"1.0","sessionId":"simulator-1","requestId":"storage-set","kind":"request","op":"api.call","payload":{"name":"wx.setStorageSync","key":"engine-conformance","data":{"value":42,"nested":[true,"ok"]}}}
+{"protocolVersion":"1.0","sessionId":"simulator-1","requestId":"storage-get","kind":"request","op":"api.call","payload":{"name":"wx.getStorageSync","key":"engine-conformance"}}
+{"protocolVersion":"1.0","sessionId":"simulator-1","requestId":"storage-info","kind":"request","op":"api.call","payload":{"name":"wx.getStorageInfoSync"}}
+{"protocolVersion":"1.0","sessionId":"simulator-1","requestId":"route","kind":"request","op":"api.call","payload":{"name":"wx.reLaunch","url":"/pages/index/index","query":{"source":"engine-conformance"}}}

@@ -1,0 +1,5 @@
+function run(enabled) {
+  if (enabled) { while (true) {} }
+  return 'View healthy';
+}
+module.exports = { run: run };

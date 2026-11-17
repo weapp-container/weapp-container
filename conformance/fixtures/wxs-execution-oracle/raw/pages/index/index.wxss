@@ -1,0 +1,4 @@
+page { background: #ffffff; color: #182027; font-size: 14px; }
+#oracle-root { padding: 8px; }
+text { display: block; }
+#style-probe { border-left-style: solid; border-left-color: #227744; border-left-width: 1px; /* oracle-wxss-border */ }

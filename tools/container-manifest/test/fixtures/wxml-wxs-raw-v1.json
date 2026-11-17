@@ -1,0 +1,38 @@
+{
+  "source": "<view><wxs module=\"script\">\r\n  var label = \"微信 🧪 <view>{{literal}}</view>\";\r\n  var sentinel = '</wxs-extra><wxs>';\r\n  module.exports = { test: function(a, b) { return a < b && a <= b && b > 0; }, label: label };\r\n\t</wxs><text>{{script.label}}</text></view>",
+  "ast": {
+    "version": 1,
+    "nodes": [
+      {
+        "kind": "element",
+        "tag": "view",
+        "attrs": {},
+        "bindings": [],
+        "children": [
+          {
+            "kind": "element",
+            "tag": "wxs",
+            "attrs": { "module": "script" },
+            "bindings": [],
+            "children": [
+              {
+                "kind": "text",
+                "value": "\r\n  var label = \"微信 🧪 <view>{{literal}}</view>\";\r\n  var sentinel = '</wxs-extra><wxs>';\r\n  module.exports = { test: function(a, b) { return a < b && a <= b && b > 0; }, label: label };\r\n\t",
+                "bindings": []
+              }
+            ]
+          },
+          {
+            "kind": "element",
+            "tag": "text",
+            "attrs": {},
+            "bindings": [],
+            "children": [
+              { "kind": "text", "value": "{{script.label}}", "bindings": ["script.label"] }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

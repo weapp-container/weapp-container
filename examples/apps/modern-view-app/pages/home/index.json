@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "legacy-badge": "../../components/legacy-badge/index"
+  }
+}

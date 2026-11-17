@@ -1,0 +1,43 @@
+name: Cache dependency downloads
+description: Cache pnpm and Cargo downloads without retaining compiled outputs or evidence
+inputs:
+  pnpm-project:
+    description: Project directory whose selected pnpm store should be cached (empty to skip)
+    default: ''
+  cargo:
+    description: Cache Cargo registry and Git downloads after installing the Rust toolchain
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Locate the selected pnpm store
+      id: pnpm
+      if: ${{ inputs.pnpm-project != '' }}
+      shell: bash
+      working-directory: ${{ inputs.pnpm-project }}
+      run: |
+        store=$(pnpm store path --silent)
+        pnpm_version=$(pnpm --version)
+        node_version=$(node --version)
+        printf 'store=%s\nversion=%s\nnode=%s\n' "$store" "$pnpm_version" "$node_version" >> "$GITHUB_OUTPUT"
+    - name: Cache pnpm downloads
+      if: ${{ inputs.pnpm-project != '' }}
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm.outputs.store }}
+        key: downloads-v1-${{ runner.os }}-${{ runner.arch }}-node-${{ steps.pnpm.outputs.node }}-pnpm-${{ steps.pnpm.outputs.version }}-${{ inputs.pnpm-project }}-${{ hashFiles(format('{0}/pnpm-lock.yaml', inputs.pnpm-project)) }}
+    - name: Identify the installed Rust toolchain
+      id: cargo
+      if: ${{ inputs.cargo == 'true' }}
+      shell: bash
+      run: |
+        rust_version=$(rustc --version | tr ' ' '-')
+        printf 'version=%s\n' "$rust_version" >> "$GITHUB_OUTPUT"
+    - name: Cache Cargo downloads
+      if: ${{ inputs.cargo == 'true' }}
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+        key: downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.cargo.outputs.version }}-cargo-${{ hashFiles('Cargo.lock') }}

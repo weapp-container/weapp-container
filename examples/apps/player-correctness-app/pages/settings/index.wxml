@@ -1,0 +1,15 @@
+<wxs module="probe" src="../../shared/probe.wxs" />
+<view class="page"><view class="heading">存储 Tab / Storage</view>
+<view class="status">count {{count}} / saved {{stored}} / timer {{ticks}}</view>
+<view class="controls">
+  <button id="p0-increment" class="p0-control p0-target" bindtap="increment">计数 +1</button>
+  <button id="p0-save" class="p0-control p0-target" bindtap="save">保存计数</button>
+  <button id="p0-custom" class="p0-control p0-target" bindtap="custom">自定义导航</button>
+  <button id="p0-normal" class="p0-control p0-target" bindtap="normal">普通导航</button>
+  <button id="p0-back" class="p0-control p0-target" bindtap="back">返回上一页</button>
+  <button id="p0-tab" class="p0-control p0-target" bindtap="tab">存储 Tab</button>
+  <button id="p0-scroll" class="p0-control p0-target" bindtap="scrollPage">滚动页面</button>
+  <button id="p0-fault" class="p0-control p0-target danger" bindtap="fault">触发 View 超时</button>
+</view><button id="p0-home" class="p0-control p0-target" bindtap="home">返回首页 Tab</button>
+<view class="probe">{{probe.run(triggerViewFault)}}</view>
+</view>

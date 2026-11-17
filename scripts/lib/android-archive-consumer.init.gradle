@@ -1,0 +1,47 @@
+// External acceptance harness. The reviewed SDK consumer sources stay intact.
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+
+def options = gradle.startParameter.projectProperties
+def required = ['weappSdkMavenDir', 'weappArchiveAar', 'weappArchiveAarSha256', 'weappArchiveDependencyReceipt']
+required.each { if (!options[it]) throw new GradleException("Missing archive consumer option: ${it}") }
+def digest = { File file -> MessageDigest.getInstance('SHA-256').digest(file.bytes).encodeHex().toString() }
+
+settingsEvaluated { settings ->
+    def repositories = settings.dependencyResolutionManagement.repositories
+    def archiveRepository = repositories.maven {
+        name = 'VerifiedInstalledWeappArchive'
+        url = new File(options.weappSdkMavenDir).toURI()
+    }
+    repositories.exclusiveContent {
+        forRepositories(archiveRepository)
+        filter { includeModule('com.sonofmagic.weapp', 'weapp-container-android') }
+    }
+}
+
+beforeProject { project ->
+    project.pluginManager.withPlugin('com.android.application') {
+        // Preserve the original JNI wrapper as well as the existing runtime and
+        // libc++ keep rules. No SDK library/publication task is part of this build.
+        project.extensions.getByName('android').packaging.jniLibs.keepDebugSymbols.add('**/libweapp_container_android.so')
+        project.tasks.register('weappArchiveDependencyReceipt') {
+            doLast {
+                def artifacts = project.configurations.getByName('releaseRuntimeClasspath').resolvedConfiguration.resolvedArtifacts.collect { artifact ->
+                    def module = artifact.moduleVersion.id
+                    [group: module.group, name: module.name, version: module.version,
+                     classifier: artifact.classifier, extension: artifact.extension,
+                     file: artifact.file.canonicalPath, size: artifact.file.length(), sha256: digest(artifact.file)]
+                }.sort { a, b -> (a.group + ':' + a.name + ':' + a.version + ':' + a.extension) <=> (b.group + ':' + b.name + ':' + b.version + ':' + b.extension) }
+                def sdk = artifacts.findAll { it.group == 'com.sonofmagic.weapp' && it.name == 'weapp-container-android' }
+                if (sdk.size() != 1 || sdk[0].extension != 'aar' || sdk[0].sha256 != options.weappArchiveAarSha256
+                    || digest(new File(options.weappArchiveAar)) != options.weappArchiveAarSha256) {
+                    throw new GradleException('Resolved SDK does not match the original installed archive AAR')
+                }
+                new File(options.weappArchiveDependencyReceipt).text = JsonOutput.prettyPrint(JsonOutput.toJson([
+                    schemaVersion: 1, configuration: 'releaseRuntimeClasspath',
+                    sdkRepository: new File(options.weappSdkMavenDir).canonicalPath,
+                    sdkRepositoryPolicy: 'exclusive-installed-Maven-module', artifacts: artifacts])) + '\n'
+            }
+        }
+    }
+}

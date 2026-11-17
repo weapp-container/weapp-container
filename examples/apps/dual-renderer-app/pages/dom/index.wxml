@@ -1,0 +1,14 @@
+<view id="dual-renderer-dom" class="screen">
+  <view class="kicker">DOM / CSS</view>
+  <view class="title">保留这个 DOM 页面</view>
+  <view id="instance" class="meta instance">实例 {{instance}} · ready {{readyCount}} · 显示 {{showCount}}</view>
+  <view id="shared" class="meta shared">共享点击 {{sharedTaps}} · App 时钟 {{ticks}} s</view>
+  <view id="timer" class="meta timer">timer #{{timerId}} · App 启动 {{launches}} 次</view>
+  <view id="session" class="meta token">{{token}}</view>
+  <view id="count" class="counter" style="background:{{color}}">当前页面计数：{{count}}</view>
+  <view id="increment" class="button increment" bindtap="increment">当前页 +1，同时写入共享存储</view>
+  <view id="to-skia" class="button navigate" bindtap="toSkia">打开 Skia 页面</view>
+  <view id="refresh" class="button refresh refresh-short" bindtap="refresh">刷新共享存储与时钟</view>
+  <view class="hint">先点击计数，再打开 Skia 并返回。此页的计数、实例及 ready 次数应保持。</view>
+  <view id="last-event" class="trace">最近生命周期：{{lastEvent}}</view>
+</view>

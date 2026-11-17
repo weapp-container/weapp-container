@@ -1,0 +1,3 @@
+.other { width: 240px; height: 200px; background: #20a0a0; }
+.control { position: absolute; left: 10px; top: 110px; width: 65px; height: 24px; background: #ececec; }
+.back { left: 80px; }

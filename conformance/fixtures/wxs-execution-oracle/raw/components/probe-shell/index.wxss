@@ -1,0 +1,2 @@
+.shell { margin: 4px 0; padding-left: 4px; border-left: 1px solid #8899aa; }
+text { display: block; }

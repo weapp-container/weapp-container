@@ -1,0 +1,18 @@
+{
+  "name": "@weapp-container/runtime-artifact-tools",
+  "version": "0.1.0-preview.7.0",
+  "private": true,
+  "type": "module",
+  "description": "Local verified packaging tools for Weapp Container runtime distributions",
+  "scripts": {
+    "test": "python3 -m unittest discover -s test -p \"test_*.py\" -v && node --test test/*.test.mjs",
+    "check": "node --check tools/package-artifacts.mjs && node --check tools/verify-offline.mjs && node --check tools/publish.mjs",
+    "package:runtime": "node tools/package-artifacts.mjs",
+    "verify:offline": "node tools/verify-offline.mjs",
+    "typecheck": "node --check tools/package-artifacts.mjs && node --check tools/verify-offline.mjs && node --check tools/publish.mjs"
+  },
+  "engines": {
+    "node": ">=24.22.2 <25"
+  },
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,14 @@
+<view id="group" class="measured group" style="opacity:{{groupOpacity}}">
+  <view id="green" class="measured green"/>
+  <view id="blue" class="measured blue"/>
+</view>
+<view id="outer" class="measured outer">
+  <view id="inner" class="measured inner">
+    <view id="nested-blue" class="measured nested-blue"/>
+  </view>
+</view>
+<view id="ghost" class="measured ghost" style="opacity:{{ghostOpacity}}" data-case="ancestor" bindtap="onGhostBubble">
+  <view id="ghost-child" class="measured ghost-child" data-case="invisible-child" bindtap="onGhost"/>
+</view>
+<view id="reset" class="control reset" bindtap="onReset"/>
+<view id="inspect" class="control inspect" bindtap="onInspect"/>

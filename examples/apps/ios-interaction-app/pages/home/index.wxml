@@ -1,0 +1,4 @@
+<view class="screen">
+  <view id="increment" class="button" bindtap="onTap">Tap to verify input and timer</view>
+  <text class="status">count={{count}} timer={{timerCount}} microtask={{microtaskCount}}</text>
+</view>

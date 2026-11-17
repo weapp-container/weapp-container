@@ -1,0 +1,2 @@
+<wxs module="tools" src="../../view/main.wxs"/>
+<view id="probe" data-result="{{tools.read(value)}}">WXS graph probe</view>

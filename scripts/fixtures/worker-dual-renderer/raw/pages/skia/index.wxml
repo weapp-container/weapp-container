@@ -1,0 +1,8 @@
+<view id="fixture-root" style="position:relative;width:375px;height:600px;background:white">
+  <view id="count" style="position:absolute;left:20px;top:12px;width:300px;height:28px">Count: {{count}}</view>
+  <view id="ready" style="position:absolute;left:20px;top:42px;width:300px;height:28px">Ready: {{readyCount}}</view>
+  <view id="increment" bindtap="increment" style="position:absolute;left:20px;top:80px;width:250px;height:44px;background:#243f75;color:white">Increment</view>
+  <view id="back" bindtap="back" style="position:absolute;left:20px;top:145px;width:250px;height:44px;background:#243f75;color:white">Back to preserved DOM</view>
+  <view id="to-return" bindtap="toReturn" style="position:absolute;left:20px;top:210px;width:250px;height:44px;background:#243f75;color:white">Redirect to new DOM</view>
+  <view id="feedback" style="position:absolute;left:20px;top:280px;width:250px;height:72px;background:{{color}}"/>
+</view>

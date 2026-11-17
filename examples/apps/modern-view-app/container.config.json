@@ -1,0 +1,13 @@
+{
+  "view": {
+    "documents": {
+      "pages/home/index.wxml": {
+        "mode": "modern",
+        "modules": {
+          "fmt": "./view/format.view.ts",
+          "stats": "./view/stats.view.js"
+        }
+      }
+    }
+  }
+}

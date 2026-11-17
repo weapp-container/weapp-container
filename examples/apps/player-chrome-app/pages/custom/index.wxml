@@ -1,0 +1,1 @@
+<view class="custom"><view class="title">自定义导航</view><view class="line">没有普通导航栏，右上角胶囊保持可用。</view><view class="metrics">{{capsule}}</view><view>{{error}}</view><button bindtap="back">返回首页</button></view>

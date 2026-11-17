@@ -1,0 +1,12 @@
+# Skia's C++ shim crosses a C ABI into Rust. Keep it consistent with Skia's
+# exception-free build. With -fno-rtti plus exceptions, Apple's libc++ headers
+# emit private standard-exception RTTI in the shim; embedding that static
+# archive can then break typed catches in the host's unrelated C++ code.
+# Target-specific flags leave the host application's own compiler untouched.
+[env]
+CXXFLAGS_aarch64_apple_darwin = { value = "-fno-exceptions", force = false }
+CXXFLAGS_x86_64_apple_darwin = { value = "-fno-exceptions", force = false }
+CXXFLAGS_aarch64_apple_ios = { value = "-fno-exceptions", force = false }
+CXXFLAGS_aarch64_apple_ios_sim = { value = "-fno-exceptions", force = false }
+CXXFLAGS_x86_64_apple_ios = { value = "-fno-exceptions", force = false }
+MACOSX_DEPLOYMENT_TARGET = { value = "12.0", force = false }

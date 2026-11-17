@@ -1,0 +1,10 @@
+{
+  "description": "Weapp Container actual compiled scrolling fixture",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "appid": "touristappid",
+  "libVersion": "3.17.3",
+  "setting": { "es6": true, "minified": false, "postcss": false, "enhance": true },
+  "packOptions": { "ignore": [], "include": [] }
+}

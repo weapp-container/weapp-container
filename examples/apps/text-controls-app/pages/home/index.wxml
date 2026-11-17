@@ -1,0 +1,36 @@
+<view class="screen">
+  <text class="title">Native DOM text controls</text>
+  <text class="hint">Input updates AppService data. The textarea keeps Enter as a newline.</text>
+
+  <view class="field">
+    <text class="label">Single line · 80 characters</text>
+    <input id="single-line" class="editor" type="text" value="{{singleValue}}" placeholder="Edit a single line" maxlength="80" disabled="{{editorDisabled}}" aria-label="Single line editor" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" bindconfirm="onConfirm" />
+  </view>
+
+  <view class="field">
+    <text class="label">Multiple lines · 240 characters</text>
+    <textarea id="multiline" class="editor multiline" value="{{multiValue}}" placeholder="Edit multiple lines" maxlength="240" disabled="{{editorDisabled}}" aria-label="Multiline editor" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field">
+    <text class="label">Password · native masking, no application logging</text>
+    <input id="password" class="editor" password="{{true}}" placeholder="Use demonstration text only" maxlength="32" aria-label="Demonstration password" />
+  </view>
+
+  <view class="field">
+    <text class="label">Always disabled</text>
+    <input id="disabled" class="editor" value="Disabled native control" disabled="{{true}}" aria-label="Disabled editor" />
+  </view>
+
+  <view class="actions">
+    <button id="disable-toggle" class="action" bindtap="toggleDisabled">{{editorDisabled ? 'Enable editors' : 'Disable editors'}}</button>
+    <button id="replace-value" class="action" bindtap="replaceValue">Replace values from AppService</button>
+    <button id="refresh-log" class="action" bindtap="refreshLog">Refresh focus / blur log</button>
+    <button id="clear-log" class="action" bindtap="clearLog">Clear log</button>
+  </view>
+
+  <text id="event-count" class="status">Input events: {{eventCount}} · Confirm events: {{confirmCount}}</text>
+  <text id="focus-count" class="status">Focus events: {{focusCount}} · Blur events: {{blurCount}}</text>
+  <text id="selection-state" class="status">{{lastControl}} · cursor {{lastCursor}} · selection {{lastSelectionStart}}–{{lastSelectionEnd}}</text>
+  <text id="event-log" class="event-log">{{logText}}</text>
+</view>

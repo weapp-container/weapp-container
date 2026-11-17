@@ -1,0 +1,4 @@
+<view id="other" class="other">
+  <view id="other-inspect" class="control" bindtap="onInspect">Inspect</view>
+  <view id="other-back" class="control back" bindtap="onBack">Back</view>
+</view>

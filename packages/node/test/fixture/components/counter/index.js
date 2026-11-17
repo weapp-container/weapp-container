@@ -1,0 +1,1 @@
+Component({properties:{value:Number},data:{local:0},methods:{request(){wx.request({url:"https://example.invalid/component",success:()=>this.setData({local:99})})},increment(){this.setData({local:this.data.local+1});this.triggerEvent("change",{value:this.data.local});}}});

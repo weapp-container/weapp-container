@@ -1,0 +1,15 @@
+<wxs module="tools">
+var shared = require('../view/shared.wxs');
+var count = 0;
+var log = [];
+exports.mark = function(label, value) {
+  count = count + 1;
+  var sample = 'include:' + label + '#' + count + '=' + value + ';shared=' + shared.next();
+  log.push(sample);
+  return sample;
+};
+exports.history = function() { return log.join('|'); };
+</wxs>
+<text id="include-headline">{{tools.mark('headline', marker)}}</text>
+<include src="./leaf.wxml" />
+<text id="include-history">{{tools.history(marker)}}</text>

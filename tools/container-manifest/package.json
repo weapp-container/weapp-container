@@ -1,0 +1,93 @@
+{
+  "name": "@sonofmagic/container-manifest",
+  "type": "module",
+  "description": "Deterministic portable manifest and content-addressed blob packer",
+  "bin": {
+    "container-pack": "./dist/cli.mjs"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "node --test test/*.test.mjs",
+    "dev": "tsdown -w",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint src tsdown.config.ts",
+    "test:types": "tsd --files test-d/**/*.test-d.ts"
+  },
+  "dependencies": {
+    "@babel/parser": "8.1.2",
+    "@babel/traverse": "8.1.2",
+    "acorn": "8.19.0",
+    "rolldown": "1.3.2"
+  },
+  "license": "Apache-2.0",
+  "version": "0.1.0",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./json-integrity": {
+      "import": {
+        "types": "./dist/json-integrity.d.mts",
+        "default": "./dist/json-integrity.mjs"
+      }
+    },
+    "./rendering": {
+      "import": {
+        "types": "./dist/rendering.d.mts",
+        "default": "./dist/rendering.mjs"
+      }
+    },
+    "./wxs-compiler": {
+      "import": {
+        "types": "./dist/wxs-compiler.d.mts",
+        "default": "./dist/wxs-compiler.mjs"
+      }
+    },
+    "./wxs-dependencies": {
+      "import": {
+        "types": "./dist/wxs-dependencies.d.mts",
+        "default": "./dist/wxs-dependencies.mjs"
+      }
+    },
+    "./modern-view": {
+      "import": {
+        "types": "./dist/modern-view.d.mts",
+        "default": "./dist/modern-view.mjs"
+      }
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.en.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "engines": {
+    "node": ">=24.22.2 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weapp-container/weapp-container.git",
+    "directory": "tools/container-manifest"
+  },
+  "devDependencies": {
+    "@babel/types": "8.1.2"
+  },
+  "tsd": {
+    "compilerOptions": {
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "skipLibCheck": true
+    }
+  }
+}

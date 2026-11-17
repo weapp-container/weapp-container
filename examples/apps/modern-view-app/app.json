@@ -1,0 +1,9 @@
+{
+  "pages": ["pages/home/index"],
+  "window": {
+    "navigationBarTitleText": "Modern View",
+    "navigationBarBackgroundColor": "#15202b",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f3f5f7"
+  }
+}

@@ -1,0 +1,16 @@
+page { background-color:#fff; }
+.row, .column, .wrap, .stack { position:absolute; display:flex; }
+.row { left:10px; top:10px; width:120px; height:30px; }
+.row-item, .wrap-item { width:40px; height:30px; flex-shrink:0; }
+.column { left:150px; top:10px; width:30px; height:90px; flex-direction:column; }
+.column-item { width:30px; height:30px; flex-shrink:0; }
+.wrap { left:10px; top:60px; width:80px; height:60px; flex-wrap:wrap; }
+.stack { left:10px; top:150px; width:40px; height:40px; }
+.stack-item { width:40px; height:40px; margin-right:-40px; flex-shrink:0; }
+.red { background-color:#dc143c; }
+.blue { background-color:#1450dc; }
+.green { background-color:#00a046; }
+.orange { background-color:#ff8000; }
+.control { position:absolute; top:220px; width:70px; height:30px; }
+.toggle { left:10px; background-color:#334155; }
+.inspect { left:100px; background-color:#64748b; }

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/conformance-host-drivers-v1.schema.json",
+  "title": "Explicit conformance host drivers v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "baselineId", "drivers"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "const": "weapp-container-host-drivers" },
+    "baselineId": { "type": "string", "minLength": 1 },
+    "drivers": { "type": "array", "items": { "$ref": "#/$defs/driver" } }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "driver": {
+      "type": "object", "additionalProperties": false,
+      "required": ["host", "engine", "module", "inputs"],
+      "properties": {
+        "host": { "enum": ["web", "macos", "windows", "linux", "android", "ios", "harmony"] },
+        "engine": { "enum": ["quickjs", "v8"] },
+        "module": { "$ref": "#/$defs/artifact" },
+        "inputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+        "timeoutMs": { "type": "integer", "minimum": 1000 }
+      }
+    }
+  }
+}

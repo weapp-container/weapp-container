@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "runtimeVersion": "0.1.0-preview.6.0",
+  "repository": "weapp-container/weapp-container",
+  "pack": {
+    "releaseTag": "showcase-v0.1.0-preview.6.0-candidate3",
+    "fileName": "showcase-miniapp-0.1.0-preview.6.0-03ebf262fee0.tar.gz",
+    "sha256": "bc2d8291d39cbc2e3dffea9e10edbbc3b38ffcbb2d49d0bb0ee83cb5209cf7e8",
+    "size": 11796063,
+    "packRoot": "03ebf262fee087367eda3ba4b5c326035d952db73253fa321e4dd8892a29ea88",
+    "policySha256": "cd3a5e4b093c91b7bf903025cb1fbbe4acce3b809be60947eec81825456ac3f4"
+  },
+  "font": {
+    "path": "fonts/NotoSansSC.ttf",
+    "size": 17772300,
+    "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+    "license": {
+      "path": "fonts/OFL.txt",
+      "size": 4388,
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+    }
+  },
+  "sources": [
+    {
+      "path": "sdk/contract",
+      "repository": "weapp-container/sdk-contract",
+      "sourceCommit": "b7739d287684b56765fcc9fb5f21ee031afb6d9b",
+      "releaseTag": "showcase-v0.1.0-preview.6.0",
+      "fileName": "showcase-sdk-contract-b7739d287684b56765fcc9fb5f21ee031afb6d9b.bundle",
+      "size": 93208,
+      "sha256": "ccf8193d0460a8b9ce03f5732aaf7cdfd4b3b2fc86462bf8fe4fa7c68f01998a"
+    },
+    {
+      "path": "sdk/desktop",
+      "repository": "weapp-container/sdk-desktop",
+      "sourceCommit": "e3ee3de285b35a5ba3b50a4b3dc471645ff09b24",
+      "releaseTag": "showcase-v0.1.0-preview.6.0",
+      "fileName": "showcase-sdk-desktop-e3ee3de.bundle",
+      "size": 626002,
+      "sha256": "6dfcc0820328a9a2453b868616d96f70227890c81bc1cbc0e6d2b43d137361eb"
+    }
+  ],
+  "reviewStatus": "reviewed-final-pack"
+}

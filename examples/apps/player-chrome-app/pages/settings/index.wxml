@@ -1,0 +1,1 @@
+<view class="page"><view class="title">设置</view><view class="line">已保存计数 {{stored}}</view><view class="line">关闭后再次进入：页面计数重置，持久存储保留。</view></view>

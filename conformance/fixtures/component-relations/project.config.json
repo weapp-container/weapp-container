@@ -1,0 +1,8 @@
+{
+  "description": "Hand-authored component relations fixture",
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "setting": { "es6": true, "minified": false, "postcss": false }
+}

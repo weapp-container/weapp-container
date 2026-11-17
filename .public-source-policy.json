@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "allowedSecrets": [
+    {
+      "path": "docs/dual-renderer/baseline-v1.json",
+      "rule": "generic-api-key",
+      "sha256": "fb0822b4c32b5e3bdfca8065437a44e3e8932c717dafafca6ff20b38ba9e7668",
+      "reason": "API inventory SHA-256, not an authentication key"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "rule": "generic-api-key",
+      "sha256": "457ecdc91f2db156cfea248e212873f916e52bb68a3cabeb3ce514ccaea00cb6",
+      "reason": "Released local DevTools process ownership record in an anonymized inert fixture; not a service credential"
+    },
+    {
+      "path": "scripts/device-dev-server.test.mjs",
+      "rule": "generic-api-key",
+      "sha256": "15cef4b629cc2d07a4563df9516739d4c8d6097eb283e5260fd59299a3c99c56",
+      "reason": "RFC WebSocket example nonce; test Bearer authorization is generated at runtime"
+    },
+    {
+      "path": "tools/host-services-reference/test/providers.test.mjs",
+      "rule": "generic-api-key",
+      "sha256": "3eb1bd439947eb762998e566ccc2e099c791118b2f40579cc4f7da2b5061b7f9",
+      "reason": "Authored sequential test key with RSA keys generated inside the test"
+    }
+  ],
+  "allowedLocalPaths": [
+    {
+      "path": "conformance/recipes/template-format-dependencies/postcss/lib/input.d.ts",
+      "sha256": "e04920b4baaf91fcc75144e6e41e4bb8c9ec9309ce5f86687b031f9e2dfb3ba3",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "conformance/recipes/template-format-dependencies/postcss/lib/node.d.ts",
+      "sha256": "bee4b7c43a89b10dcea2d43947a4b1f32e91ffd5a88a7bf38f0e7b430b207f1b",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/README.md",
+      "sha256": "a94cfc73098b39fd3c4091a8ad8272d53d137c4670cd8e9bacdaf47aedfd01f0",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/conformance-npm-support-capture.json.gz",
+      "sha256": "a063c6987cf5c29aa419eda43f3c7db75e9af1dc6836e07c2197ce78ac3f3228",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/conformance-npm-support-capture.json.gz",
+      "sha256": "cf6f1f565c577d4be0d479c5bdf53f7cb479f5e215f838c47b3fe20c7d171181",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/conformance-npm-support-capture.json.gz",
+      "sha256": "db2be44eb716b8efaccb534ac8b9991c836f36448277c6357f518537f3373b68",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/conformance-npm-support-capture.json.gz",
+      "sha256": "826b823cfe2b477bd8ec9445cd7258713ed96e18d46001f4c668e6eaf1e713aa",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/conformance-npm-support-capture.json.gz",
+      "sha256": "268265ae2c8288984396a39ed60406161ad14f818dd37dd384c3d376516a4865",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/conformance-npm-support-capture.json.gz",
+      "sha256": "c026fab7cb3bf40917680bc1cb672671737f04f8444250b29ac561838d2f0fea",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/conformance-npm-support-capture.json.gz",
+      "sha256": "8468974080735cbd564c101a966018b83b2f17d90024ce56fa62a1d7efb01080",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5b-v1/provenance/04-evidence-test.log",
+      "sha256": "3e2760d32922b7dd586f3e179169858c83eb24ad28133ceb3653b2e45c1894a4",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/02-completion-summary.json",
+      "sha256": "a063c6987cf5c29aa419eda43f3c7db75e9af1dc6836e07c2197ce78ac3f3228",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/02-completion-summary.json",
+      "sha256": "f0bcda49a5bfd9541e5ecf0588bbad6f38cb454232f28c59a253a96ffb37235a",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/02-completion-summary.json",
+      "sha256": "d3b4edfd53e518e382e8ffda554751fa61197a3ef1408bd4c0756f2cd2d5be2c",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5c-v1/provenance/02-completion-summary.json",
+      "sha256": "1f6e8f7c9e82ac563e696b0b74b8af28f5fbfb94d08b04f09ec54db8da2e9978",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "sha256": "a063c6987cf5c29aa419eda43f3c7db75e9af1dc6836e07c2197ce78ac3f3228",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "sha256": "d4e1e5550ec114ff54a1e32642b9c281ee6d04182b4cc87e0c7d38169b5d5bde",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "sha256": "0499f5f4612b3a27e4ab74cc655d22d41b3a84817723e805c5c5da755d4a74d3",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "sha256": "7d40ecfc27861b23eaaf3e2dbee70b16e83b05b638589fe472fbfe671c7e4c6c",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "sha256": "8c74294ef439aba199cbce79e47d25e42fade1e02ec420eb1314c2cde719a3bd",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "sha256": "2f09a681b9b83d98d027d01b56f2bea6b1e9be7a58f593d664a180ac82c1d9fc",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/01-run.json",
+      "sha256": "4ad6816eeace384fabdc42d11a7d402b740a32b667426fbf514f0a01ec64d6b7",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/04-independent-official-review.json",
+      "sha256": "0499f5f4612b3a27e4ab74cc655d22d41b3a84817723e805c5c5da755d4a74d3",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/09-completion-summary.json",
+      "sha256": "a063c6987cf5c29aa419eda43f3c7db75e9af1dc6836e07c2197ce78ac3f3228",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/09-completion-summary.json",
+      "sha256": "0499f5f4612b3a27e4ab74cc655d22d41b3a84817723e805c5c5da755d4a74d3",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/09-completion-summary.json",
+      "sha256": "7d40ecfc27861b23eaaf3e2dbee70b16e83b05b638589fe472fbfe671c7e4c6c",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v4-r5f-v1/provenance/09-completion-summary.json",
+      "sha256": "8c74294ef439aba199cbce79e47d25e42fade1e02ec420eb1314c2cde719a3bd",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/cjs-v5-r10-before-core-transform-v1/provenance/sfc-full-review.json",
+      "sha256": "08d3f13e47d81ed3a7c6d3701dcb5c403bd378ccf201d76423fa5b0d36f42d53",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/01-1058-r3-independent-review-v1-report.json",
+      "sha256": "a063c6987cf5c29aa419eda43f3c7db75e9af1dc6836e07c2197ce78ac3f3228",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/01-1058-r3-independent-review-v1-report.json",
+      "sha256": "7a3df05405b6eb1c5d548d6bea2f94439bb31014c2d626d0f95484e52b6cc8ca",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/01-1058-r3-independent-review-v1-report.json",
+      "sha256": "3b7962da12654b01c777ae09e6d8d253c88633657dd77ebb436f8c977fad0b24",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/01-1058-r3-independent-review-v1-report.json",
+      "sha256": "e106ab6f6e06649b10e3539f760c3cd0e09f6363171cf3c0b4d87b066873b2a1",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/03-1185-r3-independent-review-v1-report.json",
+      "sha256": "a063c6987cf5c29aa419eda43f3c7db75e9af1dc6836e07c2197ce78ac3f3228",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/03-1185-r3-independent-review-v1-report.json",
+      "sha256": "360045bbabb6d29d19e04bcc6f1b1a1cb2b98a1fdf215b73c68e53cefcbdde97",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/03-1185-r3-independent-review-v1-report.json",
+      "sha256": "5002ea73fb4e1779e79bd30a3441333c2b8cc442e0077b7983cb934e8b527318",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/fixtures/reviewed-producers/sealed-esm-v2-r3-v1/provenance/03-1185-r3-independent-review-v1-report.json",
+      "sha256": "8718aa17cba7ef1c1cd45ea9f5f1e507d69d8bd6402bc1722acd6a9cdf3c44d2",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/lib/device-dev/source-maps.test.mjs",
+      "sha256": "8fb2c01b5673d1859a600f73d8acf67dab58da6cf76bd61f46aa5108706475b2",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/lib/sdk-darwin-hardening.test.mjs",
+      "sha256": "1b44a88f2aca14f583742ebe770d1fe94a0e0ac5dd3f84afa25355a764044591",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/lib/sdk-darwin-hardening.test.mjs",
+      "sha256": "f2fc17decab7f803541ee4829db74cd9835c7329766e4967d71f6d8ff74f6ecb",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/lib/sdk-native-hardening.test.mjs",
+      "sha256": "0d9f74285dfd125ba0536fc6f1719fc58502de65ba596ef1700a01005ea0f42c",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/lib/sdk-native-hardening.test.mjs",
+      "sha256": "b301f3c25c7cb3c1ea74aa0dee8db0d73857573743cbf4a9035d1bdd314d6b98",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/scan-public-source.test.mjs",
+      "sha256": "ae2109b7c07c487fbbd54ada432483956118a428dd6986a890481fa2c893bbed",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/scan-public-source.test.mjs",
+      "sha256": "db3e9fa5c4f5354778d8dba082f6117012ee7fd98987fd19d133fd2e54c8140b",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "scripts/sdk-native-harden-retained.mjs",
+      "sha256": "0d9f74285dfd125ba0536fc6f1719fc58502de65ba596ef1700a01005ea0f42c",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "tools/runtime-artifacts/test/test_package_artifacts.py",
+      "sha256": "0e4f8702367784b707f00ae2fdb7cc2cafad3d89b35c4f400d957b0186a6898b",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "tools/runtime-artifacts/test/test_package_artifacts.py",
+      "sha256": "988947004dddebec51d05b7a4e02c896f51a1ddb9153e256cfd6e7998b15d3e8",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "tools/runtime-artifacts/test/test_package_artifacts.py",
+      "sha256": "9307c76fd1807e73f1cec843eacf3ab127a9c7d1f3801f41e7af302dcd41bb6d",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    },
+    {
+      "path": "tools/runtime-artifacts/test/test_package_artifacts.py",
+      "sha256": "29bba0eec38846ed6007cfc2409a08dbc4f6f0614f8baca5855b1cc6a3ffe9e5",
+      "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
+    }
+  ]
+}

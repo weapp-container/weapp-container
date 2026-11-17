@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ticketed Raster preview · weapp-container</title>
+<style>
+  :root{color-scheme:dark;font:14px/1.5 system-ui,sans-serif;background:#111318;color:#e6e8ee}
+  *{box-sizing:border-box}body{margin:0}header{padding:18px 24px;border-bottom:1px solid #313640;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  h1{margin:0;font-size:17px;font-weight:600}header p{margin:0;color:#aeb5c1}nav{display:flex;gap:8px;margin-left:auto}
+  button{font:inherit;color:inherit;background:#252b35;border:1px solid #47505e;border-radius:5px;padding:6px 14px;cursor:pointer}button:disabled{opacity:.45;cursor:default}
+  main{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);min-height:calc(100vh - 80px)}section{padding:24px;overflow:auto;display:grid;place-items:start center;background:#171b22}
+  canvas{display:block;background:white;max-width:100%;height:auto;box-shadow:0 6px 32px #0005;touch-action:manipulation}aside{padding:24px;border-left:1px solid #313640;overflow-wrap:anywhere}
+  h2{font-size:13px;letter-spacing:.03em;color:#aeb5c1;margin:0 0 10px}output{white-space:pre-wrap;font:12px/1.6 ui-monospace,monospace}aside p{color:#aeb5c1;font-size:12px}#diagnostic{color:#ffbf9d}
+  @media(max-width:750px){main{grid-template-columns:1fr}aside{border-left:0;border-top:1px solid #313640}}
+</style>
+<header>
+  <div><h1>weapp-container</h1><p>Experimental ticketed Raster preview</p></div>
+  <nav aria-label="Preview connection"><button id="connect">Connect</button><button id="claim" disabled>Make primary</button><button id="stop" disabled>Disconnect</button></nav>
+</header>
+<main>
+  <section aria-label="Mini program preview"><canvas id="screen" width="375" height="667" aria-label="Mini program: experimental tap input"></canvas></section>
+  <aside>
+    <h2>CONNECTION AND PRESENTATION</h2><output id="state" role="status">Waiting for the explicit developer Raster profile.</output>
+    <p>This experimental surface supports taps. Continuous gestures, settings controls and device rendering require separate verification.</p>
+    <p>A draw receipt means Canvas2D returned inside RAF and the runtime accepted its ticket. Browser compositor and physical GPU completion are unmeasured.</p>
+    <h2>DIAGNOSTIC</h2><output id="diagnostic" role="alert"></output>
+  </aside>
+</main>
+<script type="module">
+import { DevRasterPreview } from '/dev-raster-preview.mjs'
+
+const node = id => document.getElementById(id)
+const canvas = node('screen')
+let state = null, stopping = false
+function diagnostic(error) {
+  node('diagnostic').textContent = `${error?.code ?? 'ERR_RENDER'}: ${error?.message ?? String(error)}`
+}
+function invoke(action) {
+  // Enter the manager now so input captures this click's accepted ticket,
+  // while still reporting both synchronous throws and asynchronous failures.
+  try { return Promise.resolve(action()).catch(diagnostic) }
+  catch (error) { diagnostic(error); return Promise.resolve() }
+}
+const preview = new DevRasterPreview({ canvas, onDiagnostic: diagnostic, onState(value) {
+  state = value
+  node('state').textContent = [
+    `Phase: ${value.phase}`, `Primary: ${Boolean(value.owner)}`, `Input: ${Boolean(value.inputEnabled)}`,
+    `Session: ${value.sessionId ?? '—'}`, `Page: ${value.pageId ?? '—'}`,
+    `Configuration: ${value.configGeneration ?? '—'}`, `Preview epoch: ${value.previewEpoch ?? '—'}`,
+  ].join('\n')
+  node('connect').disabled = Boolean(value.connected) || stopping
+  node('claim').disabled = !value.connected || value.owner || stopping
+  node('stop').disabled = !value.connected || stopping
+  const target = value.presentationTicket?.target
+  if (target) {
+    canvas.style.width = `${target.logicalWidth}px`
+    node('state').textContent += `\nLogical: ${target.logicalWidth}×${target.logicalHeight}\nPixels: ${target.width}×${target.height}`
+  }
+} })
+globalThis.__weappDevRasterPreview = preview
+node('connect').onclick = () => invoke(() => preview.connect())
+node('claim').onclick = () => invoke(() => preview.claim())
+node('stop').onclick = () => invoke(() => preview.disconnect())
+
+// This thin example deliberately exposes taps only. It does not relabel a
+// buffered gesture with a newer frame or claim continuous-input conformance.
+canvas.addEventListener('click', event => {
+  const target = state?.presentationTicket?.target
+  if (!target || !state.inputEnabled || document.hidden || stopping) return
+  const bounds = canvas.getBoundingClientRect()
+  if (bounds.width <= 0 || bounds.height <= 0) return
+  const x = (event.clientX - bounds.left) * target.logicalWidth / bounds.width
+  const y = (event.clientY - bounds.top) * target.logicalHeight / bounds.height
+  if (x < 0 || y < 0 || x >= target.logicalWidth || y >= target.logicalHeight) return
+  invoke(() => preview.events([{ type: 'tap', x, y }]))
+})
+function dispose() {
+  if (!globalThis.__weappDevRasterCleanup) {
+    stopping = true
+    for (const id of ['connect', 'claim', 'stop']) node(id).disabled = true
+    let complete, fail
+    globalThis.__weappDevRasterCleanup = new Promise((resolve, reject) => { complete = resolve; fail = reject })
+    // Claim the barrier before callbacks, then close local resources within
+    // pagehide itself. Remote retirement still belongs to the server's lane.
+    try { Promise.resolve(preview.dispose()).then(complete, fail) }
+    catch (error) { fail(error) }
+    globalThis.__weappDevRasterCleanup.catch(diagnostic)
+  }
+  return globalThis.__weappDevRasterCleanup
+}
+window.addEventListener('pagehide', dispose, { once: true })
+window.addEventListener('pageshow', event => {
+  if (!event.persisted) return
+  // BFCache restores this already disposed instance. Reconnect from a new
+  // document only after observing its original local cleanup result.
+  dispose().then(() => location.reload(), error => {
+    diagnostic(error)
+    node('connect').textContent = 'Reload preview'
+    node('connect').disabled = false
+    node('connect').onclick = () => location.reload()
+  })
+})
+globalThis.__weappDisposeDevRaster = dispose
+invoke(() => preview.connect())
+</script>
+</html>

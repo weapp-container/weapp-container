@@ -1,0 +1,6 @@
+{
+  "label": "portable-json",
+  "numbers": [2, 3, 5],
+  "initial": { "left": 12, "top": 16, "width": 96, "height": 40, "color": "#e11d48" },
+  "updated": { "left": 20, "top": 24, "width": 128, "height": 56, "color": "#2563eb" }
+}

@@ -1,0 +1,2 @@
+var dep = require('./dep.wxs');
+exports.label = function(value) { return dep.label('include', value); };

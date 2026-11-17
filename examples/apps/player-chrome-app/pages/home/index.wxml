@@ -1,0 +1,7 @@
+<view class="page">
+ <view class="title">全屏与胶囊验证</view><view class="line">页面计数 {{count}} · 持久存储 {{stored}}</view>
+ <button bindtap="increment">计数 +1</button><button bindtap="save">保存计数</button>
+ <button bindtap="title">修改导航标题</button><button bindtap="dark">深色导航栏</button>
+ <button bindtap="detail">进入普通二级页</button><button bindtap="custom">进入自定义导航页</button>
+ <button bindtap="refreshMetrics">刷新窗口与胶囊坐标</button><view class="metrics">{{geometry}}</view><view class="metrics">{{error}}</view>
+</view>
