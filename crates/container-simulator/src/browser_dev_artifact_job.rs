@@ -19,8 +19,6 @@ use std::time::{Duration, Instant};
 const MAX_REQUEST_BYTES: usize = 2 * 1024 * 1024;
 const MAX_RESULT_BYTES: usize = 16 * 1024 * 1024;
 const MAX_ENTRY_BYTES: u64 = 1024 * 1024;
-const EMPTY_RENDERER_PINS: &[u8] = b"{}\n";
-
 // Complete static Node import closure of the finite entry. Runtime/app inputs
 // are separately byte-verified by these tools and never imported as Node code.
 // Embed the trusted tool bytes in the simulator build, rather than executing a
@@ -48,7 +46,7 @@ const EMBEDDED_TOOL_FILES: &[(&str, &[u8])] = &[
     ),
     (
         "examples/hosts/web-wasm/renderer-dependency-pins.json",
-        EMPTY_RENDERER_PINS,
+        include_bytes!("../../../examples/hosts/web-wasm/renderer-dependency-pins.json"),
     ),
 ];
 
