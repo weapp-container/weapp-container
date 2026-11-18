@@ -121,6 +121,7 @@ const initialMetrics = viewport => windowMetrics({ windowWidth: viewport.width, 
  */
 export class WorkerWebSession {
   #root; #document; #window; #mount = null; #sinks; #factories; #admit; #assetsLoader; #raf; #caf
+  #storagePersistence = null
   #phase = 'new'; #owner = null; #admission = null; #loadResult = null; #latest = null; #eventSequence = 0n
   #rpc = null; #observedRpc = null; #bridge = null; #adapter = null; #scheduler = null; #assetLease = null
   #input = null; #inputAuthority = null; #inputProof = null; #reportedInputEnabled = false
@@ -137,19 +138,19 @@ export class WorkerWebSession {
   #inputTimingOptions = null; #inputLedger = null; #inputTimingClock; #inputTimingFailures = 0
   #identityRevocation = null
 
-  constructor({ surfaceRoot, onBatch, onState, onDiagnostic, onError, onInput, onSurface,
+  constructor({ surfaceRoot, onBatch, onState, onDiagnostic, onError, onInput, onSurface, onStorageSnapshot,
     admitPack = admitWorkerPack, loadRendererAssets = loadPinnedCanvasKit,
     requestFrame = callback => globalThis.requestAnimationFrame(callback),
     cancelFrame = handle => globalThis.cancelAnimationFrame(handle), factories = {}, inputTiming,
     inputTimingClock = () => globalThis.performance.now() } = {}) {
     check(surfaceRoot && typeof surfaceRoot.append === 'function' && typeof surfaceRoot.ownerDocument?.createElement === 'function',
       'ERR_RENDER', 'a borrowed surfaceRoot with an ownerDocument is required')
-    check([onBatch, onState, onDiagnostic, onError, onInput, onSurface].every(value => value === undefined || typeof value === 'function')
+    check([onBatch, onState, onDiagnostic, onError, onInput, onSurface, onStorageSnapshot].every(value => value === undefined || typeof value === 'function')
       && [admitPack, loadRendererAssets, requestFrame, cancelFrame].every(value => typeof value === 'function')
       && record(factories) && Object.entries(factories).every(([key, value]) => Object.hasOwn(defaultFactories, key) && typeof value === 'function'),
     'ERR_INVALID_REQUEST', 'owner hooks, admission, assets and factories must be explicit functions')
     this.#root = surfaceRoot; this.#document = surfaceRoot.ownerDocument; this.#window = this.#document.defaultView
-    this.#sinks = { onBatch, onState, onDiagnostic, onError, onInput, onSurface }
+    this.#sinks = { onBatch, onState, onDiagnostic, onError, onInput, onSurface, onStorageSnapshot }
     this.#admit = admitPack; this.#assetsLoader = loadRendererAssets; this.#raf = requestFrame; this.#caf = cancelFrame
     this.#factories = Object.freeze({ ...defaultFactories, ...factories })
     check(inputTiming === undefined || inputTimingRequestValid(inputTiming), 'ERR_PROTOCOL_VERSION', 'unsupported input timing request')
@@ -269,6 +270,22 @@ export class WorkerWebSession {
       check(!this.#inputTimingOptions, 'ERR_UNSUPPORTED_CAPABILITY', 'mixed presenter input timing is not negotiated')
       this.#rendererTransitions = WORKER_RENDERER_TRANSITION_CONTRACT
     }
+    if (options.storagePersistence !== undefined) {
+      const persistence = copy(options.storagePersistence)
+      check(record(persistence) && (Object.keys(persistence).length === 1 || Object.keys(persistence).length === 2)
+        && persistence.version === '1.0' && (Object.keys(persistence).length === 1 || Object.hasOwn(persistence, 'snapshot')),
+      'ERR_PROTOCOL_VERSION', 'storagePersistence requires version 1.0 and an optional snapshot')
+      if (persistence.snapshot !== undefined) {
+        check(record(persistence.snapshot) && Object.keys(persistence.snapshot).length === 2
+          && record(persistence.snapshot.values) && Array.isArray(persistence.snapshot.undefinedKeys)
+          && persistence.snapshot.undefinedKeys.length <= 16384
+          && persistence.snapshot.undefinedKeys.every(key => typeof key === 'string' && key.length > 0 && key.length <= 1024),
+        'ERR_STORAGE', 'invalid initial storage snapshot')
+        check(measureWorkerPayload(persistence.snapshot, { maxBytes: 4 * 1024 * 1024 }) <= 4 * 1024 * 1024,
+          'ERR_STORAGE', 'initial storage snapshot exceeds the browser persistence budget')
+      }
+      this.#storagePersistence = persistence
+    }
     this.#presenterOptions = { timeoutMs: options.timeoutMs ?? 5000, rendererAssets: options.rendererAssets }
     const viewport = logicalViewport(options.viewport ?? { width: 375, height: 667 })
     const requestedScale = options.renderScale === undefined ? undefined : copy(options.renderScale)
@@ -341,6 +358,7 @@ export class WorkerWebSession {
       ...(this.#inputTimingOptions ? { inputTiming: this.#inputTimingOptions } : {}),
       ...(this.#browserQueries ? { browserQueries: this.#browserQueries } : {}),
       ...(this.#rendererTransitions ? { rendererTransitions: { version: '1.0' } } : {}),
+      ...(this.#storagePersistence ? { storagePersistence: this.#storagePersistence } : {}),
       // Only an explicit host observation may seed native synchronous APIs.
       // initialMetrics() is a layout fallback and must stay local to this owner.
       ...(options.metrics === undefined ? {} : { metrics: this.#metrics }),
@@ -899,6 +917,19 @@ export class WorkerWebSession {
         this.#deliverBatch(payload)
       } else if (message.op === 'dirty') {
         if (payload?.observation === undefined) throw invalid('dirty event omitted original Worker observation')
+      } else if (message.op === 'storage.snapshot') {
+        check(this.#storagePersistence && record(payload) && Object.keys(payload).length === 3
+          && payload.version === '1.0' && payload.packSha256 === this.#owner?.packSha256,
+        'ERR_PROTOCOL_VERSION', 'storage snapshot belongs to another product or Worker owner')
+        check(record(payload.snapshot) && Object.keys(payload.snapshot).length === 2
+          && record(payload.snapshot.values) && Array.isArray(payload.snapshot.undefinedKeys)
+          && payload.snapshot.undefinedKeys.length <= 16384
+          && payload.snapshot.undefinedKeys.every(key => typeof key === 'string' && key.length > 0 && key.length <= 1024),
+        'ERR_STORAGE', 'Worker emitted an invalid storage snapshot')
+        check(measureWorkerPayload(payload.snapshot, { maxBytes: 4 * 1024 * 1024 }) <= 4 * 1024 * 1024,
+          'ERR_STORAGE', 'Worker storage snapshot exceeds the browser persistence budget')
+        const returned = this.#sinks.onStorageSnapshot?.(copy(payload.snapshot))
+        if (returned && typeof returned.then === 'function') throw invalid('storage snapshot callback must be synchronous')
       } else if (message.op === 'diagnostic') this.#record(payload)
       else if (message.op === 'fault') this.#fault(new WorkerWebSessionError(payload?.error?.code ?? payload?.code ?? 'ERR_ENGINE',
         payload?.error?.message ?? payload?.message ?? 'Worker fault', { details: payload }))

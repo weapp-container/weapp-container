@@ -12,12 +12,13 @@ const deferred = () => {
   const promise = new Promise((done, failed) => { resolve = done; reject = failed })
   return { promise, resolve, reject }
 }
-function fixture({ loadBarrier, closeBarrier, loadError } = {}) {
+function fixture({ loadBarrier, closeBarrier, loadError, storagePersistence, storageMap = new Map() } = {}) {
   const elements = Object.fromEntries(['surface-root', 'status', 'summary', 'error', 'dispose'].map(id => [id,
     { textContent: '', hidden: true, disabled: true, listeners: new Map(),
       addEventListener(name, listener) { this.listeners.set(name, listener) },
       removeEventListener(name, listener) { if (this.listeners.get(name) === listener) this.listeners.delete(name) } }]))
-  const document = { querySelector: selector => elements[selector.slice(1)] }
+  const document = { defaultView: { localStorage: { getItem: key => storageMap.get(key) ?? null,
+    setItem: (key, value) => storageMap.set(key, value) } }, querySelector: selector => elements[selector.slice(1)] }
   const calls = [], owner = { workerEpoch: 'worker-1', sessionId: 'session-1', transportBackend: 'browser-view', packSha256: 'a'.repeat(64) }
   let hooks
   const session = {
@@ -25,7 +26,7 @@ function fixture({ loadBarrier, closeBarrier, loadError } = {}) {
     async load(options) { calls.push(['load', options]); if (loadError) throw loadError; if (loadBarrier) await loadBarrier.promise; return { runtimeReady: true, owner } },
     async close() { calls.push(['close']); if (closeBarrier) await closeBarrier.promise; return { closed: true } },
   }
-  const app = bootstrapWorkerApp({ config: config(), document,
+  const app = bootstrapWorkerApp({ config: { ...config(), ...(storagePersistence ? { storagePersistence } : {}) }, document,
     createSession(value) { hooks = value; return session } })
   return { app, session, elements, calls, owner, hooks,
     emit(value) { session.status = { ...session.status, ...value }; hooks.onState(session.status) } }
@@ -44,6 +45,21 @@ test('pinned config maps explicitly to frozen owner load arguments without legac
   assert.throws(() => workerProductOptions({ ...config(), execution: 'legacy' }), { code: 'ERR_INVALID_MANIFEST' })
   assert.throws(() => workerProductOptions({ ...config(), rendererPolicy: { mode: 'force', profile: 'software' } }), { code: 'ERR_UNSUPPORTED_CAPABILITY' })
   assert.throws(() => workerProductOptions({ ...config(), index: { ...config().index, sha256: '' } }), { code: 'ERR_INVALID_MANIFEST' })
+})
+
+test('browser storage restores a bounded snapshot and saves Worker updates under the app key', async () => {
+  const persistence = { version: '1.0', key: 'morrow-supply-shop' }
+  const key = 'weapp-container:storage:v1:morrow-supply-shop'
+  const initial = { values: { 'shop-demo:cart': [{ id: 'atlas', quantity: 1 }] }, undefinedKeys: [] }
+  const storageMap = new Map([[key, JSON.stringify(initial)]])
+  const f = fixture({ storagePersistence: persistence, storageMap })
+  await f.app.ready
+  const loadOptions = f.calls.find(([name]) => name === 'load')[1]
+  assert.deepEqual(loadOptions.storagePersistence, { version: '1.0', snapshot: initial })
+  const updated = { values: { 'shop-demo:cart': [{ id: 'atlas', quantity: 2 }] }, undefinedKeys: [] }
+  f.hooks.onStorageSnapshot(updated)
+  assert.deepEqual(JSON.parse(storageMap.get(key)), updated)
+  await f.app.close()
 })
 
 test('explicit pinned force policy and development startup payload use the real owner load path', () => {

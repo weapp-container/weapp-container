@@ -22,7 +22,8 @@ export const WASM_REQUIRED_EXPORTS = ['webwasmhost_new', 'webwasmhost_load_manif
   'webwasmhost_render_target_json', 'webwasmhost_acknowledge_presentation_outcome_json', 'webwasmhost_unload',
   'webwasmhost_host_services_protocol_json', 'webwasmhost_configure_host_services_json', 'webwasmhost_take_host_requests_json',
   'webwasmhost_complete_host_api_call_json', 'webwasmhost_dispatch_host_api_event_json', 'webwasmhost_revoke_host_services_json',
-  'webwasmhost_authorize_phone_button_json', 'webwasmhost_dispatch_host_component_event_json', 'webwasmhost_update_host_service_snapshots_json', 'webwasmhost_host_component_snapshots_json', 'webwasmhost_submit_host_component_frame', 'webwasmhost_host_component_resource']
+  'webwasmhost_authorize_phone_button_json', 'webwasmhost_dispatch_host_component_event_json', 'webwasmhost_update_host_service_snapshots_json', 'webwasmhost_host_component_snapshots_json', 'webwasmhost_submit_host_component_frame', 'webwasmhost_host_component_resource',
+  'webwasmhost_storage_snapshot_json', 'webwasmhost_restore_storage_snapshot_json']
 export const GLUE_REQUIRED_METHODS = ['load_manifest_json_with_config', 'capabilities_json', 'poll_timers',
   'dispatch_json', 'dispatch_batch_json', 'render_frame_json', 'render_frame_binary', 'render_revision', 'view_revision', 'acknowledge_presentation', 'render_snapshot_rgba',
   'browser_view_resource', 'notify_window_metrics_json', 'retire_browser_preview', 'set_render_scale', 'runtime_state_json',
@@ -30,7 +31,8 @@ export const GLUE_REQUIRED_METHODS = ['load_manifest_json_with_config', 'capabil
   'last_frame_input_json', 'render_target_json', 'acknowledge_presentation_outcome_json', 'unload', 'free',
   'host_services_protocol_json', 'configure_host_services_json', 'take_host_requests_json', 'complete_host_api_call_json',
   'dispatch_host_api_event_json', 'revoke_host_services_json', 'authorize_phone_button_json', 'dispatch_host_component_event_json',
-  'update_host_service_snapshots_json', 'host_component_snapshots_json', 'submit_host_component_frame', 'host_component_resource']
+  'update_host_service_snapshots_json', 'host_component_snapshots_json', 'submit_host_component_frame', 'host_component_resource',
+  'storage_snapshot_json', 'restore_storage_snapshot_json']
 const CANVASKIT_ARCHIVE = Object.freeze({ version: '0.42.0', variant: 'full', license: 'BSD-3-Clause',
   url: 'https://registry.npmjs.org/canvaskit-wasm/-/canvaskit-wasm-0.42.0.tgz',
   sha256: 'ba667f46830ac2a70c6d76ab2c1ac790b0d15a2bf6ed2c842ce97231478b1f80',
@@ -424,7 +426,7 @@ export function parseWorkerStartupIntent(text) {
   }
   requireCondition(record(value) && value.schemaVersion === 1 && value.execution === 'worker' && value.engine === 'quickjs',
     'Worker startup intent requires schema 1 and QuickJS Worker execution')
-  const allowed = new Set(['schemaVersion', 'execution', 'engine', 'viewport', 'rendererPolicy', 'rendererTransitions', 'renderScale', 'viewExecution', 'route', 'data', 'query', 'launchOptions', 'metrics'])
+  const allowed = new Set(['schemaVersion', 'execution', 'engine', 'viewport', 'rendererPolicy', 'rendererTransitions', 'renderScale', 'viewExecution', 'storagePersistence', 'route', 'data', 'query', 'launchOptions', 'metrics'])
   requireCondition(Object.keys(value).every(key => allowed.has(key)), 'Unknown Worker startup intent field')
   requireCondition(record(value.viewport) && Object.keys(value.viewport).length === 2
     && ['width', 'height'].every(key => Number.isSafeInteger(value.viewport[key]) && value.viewport[key] > 0 && value.viewport[key] <= 4096),
@@ -450,6 +452,12 @@ export function parseWorkerStartupIntent(text) {
       && Number.isSafeInteger(value.viewExecution.batchTimeoutMs) && value.viewExecution.batchTimeoutMs > 0
       && value.viewExecution.batchTimeoutMs <= 5000, 'Worker viewExecution requires batchTimeoutMs between 1 and 5000')
   }
+  if (value.storagePersistence !== undefined) {
+    requireCondition(record(value.storagePersistence) && Object.keys(value.storagePersistence).length === 2
+      && value.storagePersistence.version === '1.0' && typeof value.storagePersistence.key === 'string'
+      && /^[A-Za-z0-9._:-]{1,128}$/.test(value.storagePersistence.key),
+    'Worker storagePersistence requires version 1.0 and a bounded application key')
+  }
   requireCondition(value.route === undefined || workerStartupRoute(value.route), 'Invalid Worker startup route')
   for (const key of ['data', 'query', 'launchOptions']) requireCondition(value[key] === undefined || record(value[key]), `Worker ${key} must be an object`)
   if (value.metrics !== undefined) {
@@ -471,7 +479,7 @@ export async function stageWorkerProductConfig(outDir, { index, rendererConfig, 
   const value = { schemaVersion: 1, execution: 'worker', engine: 'quickjs',
     index: { url: './pack-index.json', sha256: index.sha256, size: index.size }, rendererPolicy: intent.value.rendererPolicy,
     viewport: intent.value.viewport, rendererAssets: rendererConfig.renderer === 'canvaskit' ? rendererConfig : null }
-  for (const key of ['rendererTransitions', 'renderScale', 'viewExecution', 'route', 'data', 'query', 'launchOptions', 'metrics']) if (intent.value[key] !== undefined) value[key] = intent.value[key]
+  for (const key of ['rendererTransitions', 'renderScale', 'viewExecution', 'storagePersistence', 'route', 'data', 'query', 'launchOptions', 'metrics']) if (intent.value[key] !== undefined) value[key] = intent.value[key]
   // The supervisor may have explicitly diagnosed a missing requested route and
   // selected a valid fallback in this pack. Bind that resolved route into the
   // actual config without changing the hash of the original startup intent.

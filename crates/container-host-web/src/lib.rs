@@ -4,8 +4,8 @@
 //! useful for protocol and capability tests without requiring a browser toolchain.
 
 use container_bridge::{BridgeBatch, BridgeEnvelope};
-use container_core::EngineKind;
 use container_core::LifecycleState;
+use container_core::{EngineKind, StorageSnapshot};
 use container_host_common::{HostSession, HostSessionError};
 use container_ir::CapabilitySupport;
 use container_ir::PresentationKey;
@@ -477,6 +477,29 @@ impl WebHost {
 
     pub fn has_session(&self) -> bool {
         self.session.has_session()
+    }
+
+    /// Export the AppService storage using the same bounded snapshot shape as
+    /// the native SDK. The browser host persists this opaque JSON between
+    /// Worker lifetimes; application code never receives a second storage
+    /// implementation.
+    pub fn storage_snapshot_json(&self) -> Result<Vec<u8>, HostSessionError> {
+        let session = self.session.session().ok_or(HostSessionError::NotLoaded)?;
+        Ok(serde_json::to_vec(&session.storage_snapshot())?)
+    }
+
+    /// Restore browser-owned storage before app.init. Session enforces that
+    /// restoration cannot happen after guest code has started.
+    pub fn restore_storage_snapshot_json(
+        &mut self,
+        snapshot: &[u8],
+    ) -> Result<(), HostSessionError> {
+        let snapshot: StorageSnapshot = serde_json::from_slice(snapshot)?;
+        self.session
+            .session_mut()
+            .ok_or(HostSessionError::NotLoaded)?
+            .restore_storage(snapshot)?;
+        Ok(())
     }
 
     /// Install the explicit host capability protocol before app.init. The host
@@ -1169,6 +1192,25 @@ impl WebWasmHost {
             .map_err(|error| wasm_bindgen::JsValue::from_str(&error.to_string()))
     }
 
+    pub fn storage_snapshot_json(&self) -> Result<String, wasm_bindgen::JsValue> {
+        self.inner
+            .storage_snapshot_json()
+            .map_err(|error| wasm_bindgen::JsValue::from_str(&error.to_string()))
+            .and_then(|bytes| {
+                String::from_utf8(bytes)
+                    .map_err(|error| wasm_bindgen::JsValue::from_str(&error.to_string()))
+            })
+    }
+
+    pub fn restore_storage_snapshot_json(
+        &mut self,
+        snapshot: String,
+    ) -> Result<(), wasm_bindgen::JsValue> {
+        self.inner
+            .restore_storage_snapshot_json(snapshot.as_bytes())
+            .map_err(|error| wasm_bindgen::JsValue::from_str(&error.to_string()))
+    }
+
     pub fn configure_host_services_json(
         &mut self,
         config: String,
@@ -1735,6 +1777,34 @@ mod tests {
             Err(HostSessionError::NotLoaded)
         ));
         assert!(!host.has_session());
+    }
+
+    #[test]
+    fn browser_storage_snapshot_round_trips_before_application_start() {
+        use serde_json::{json, Value};
+
+        let mut host = WebHost::new();
+        host.load_manifest_json(
+            serde_json::to_vec(&owner_api_manifest()).unwrap(),
+            test_session_config(),
+        )
+        .unwrap();
+        let snapshot = json!({
+            "values": {"shop:cart": [{"id": "atlas", "quantity": 1}]},
+            "undefinedKeys": ["legacy"]
+        });
+
+        host.restore_storage_snapshot_json(&serde_json::to_vec(&snapshot).unwrap())
+            .unwrap();
+
+        let actual: Value = serde_json::from_slice(&host.storage_snapshot_json().unwrap()).unwrap();
+        assert_eq!(actual["undefinedKeys"], snapshot["undefinedKeys"]);
+        assert_eq!(
+            actual["values"]["shop:cart"],
+            snapshot["values"]["shop:cart"]
+        );
+        assert_eq!(actual["values"]["legacy"], Value::Null);
+        assert!(!host.session_initialized());
     }
 
     #[test]

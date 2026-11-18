@@ -7,6 +7,33 @@ const freeze = value => {
   if (record(value) || Array.isArray(value)) { Object.values(value).forEach(freeze); Object.freeze(value) }
   return value
 }
+const STORAGE_PERSISTENCE_LIMIT = 4 * 1024 * 1024
+const storageKey = key => `weapp-container:storage:v1:${key}`
+function browserStoragePersistence(document, config) {
+  requireValue(record(config) && Object.keys(config).length === 2 && config.version === '1.0'
+    && typeof config.key === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(config.key),
+  'ERR_PROTOCOL_VERSION', 'storagePersistence requires version 1.0 and a bounded application key')
+  let storage
+  let snapshot
+  try {
+    storage = document?.defaultView?.localStorage
+    const raw = storage?.getItem(storageKey(config.key))
+    if (raw && new TextEncoder().encode(raw).length <= STORAGE_PERSISTENCE_LIMIT) {
+      const value = JSON.parse(raw)
+      if (record(value) && Object.keys(value).length === 2 && record(value.values) && Array.isArray(value.undefinedKeys)
+        && value.undefinedKeys.length <= 16384 && value.undefinedKeys.every(key => typeof key === 'string' && key.length > 0 && key.length <= 1024)) snapshot = value
+    }
+  } catch { snapshot = undefined }
+  return {
+    persistence: { version: '1.0', ...(snapshot === undefined ? {} : { snapshot }) },
+    save(value) {
+      try {
+        const text = JSON.stringify(value)
+        if (new TextEncoder().encode(text).length <= STORAGE_PERSISTENCE_LIMIT) storage?.setItem(storageKey(config.key), text)
+      } catch { /* Browser storage is an optional persistence boundary. */ }
+    },
+  }
+}
 
 export function workerProductOptions(config, route) {
   requireValue(record(config) && config.schemaVersion === 1 && config.execution === 'worker',
@@ -25,6 +52,10 @@ export function workerProductOptions(config, route) {
     && config.rendererPolicy.mode === 'manifest', 'ERR_PROTOCOL_VERSION', 'renderer transitions require explicit 1.0 and manifest policy')
   requireValue(record(config.viewport) && ['width', 'height'].every(key => Number.isInteger(config.viewport[key])
     && config.viewport[key] > 0 && config.viewport[key] <= 4096), 'ERR_RENDER', 'invalid product logical viewport')
+  requireValue(config.storagePersistence === undefined || record(config.storagePersistence)
+    && Object.keys(config.storagePersistence).length === 2 && config.storagePersistence.version === '1.0'
+    && typeof config.storagePersistence.key === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(config.storagePersistence.key),
+  'ERR_PROTOCOL_VERSION', 'storagePersistence requires version 1.0 and a bounded application key')
   requireValue(config.renderScale === undefined || config.renderScale === 'auto' || [1, 1.5, 2, 3, 4].includes(config.renderScale),
     'ERR_RENDER', 'product renderScale must be auto, 1, 1.5, 2, 3 or 4')
   requireValue(config.renderScale === undefined || config.rendererPolicy.mode !== 'force' || config.rendererPolicy.profile !== 'webview',
@@ -212,6 +243,7 @@ export function bootstrapWorkerApp({ config, route, document = globalThis.docume
   requireValue(surfaceRoot && statusElement && summary && errorElement && dispose,
     'ERR_RENDER', 'the Worker product entry is missing its owned controls or borrowed surface root')
   const options = workerProductOptions(config, route), first = deferred()
+  const storage = config.storagePersistence === undefined ? null : browserStoragePersistence(document, config.storagePersistence)
   const trace = createWorkerUiTrace()
   let session = null, retired = false, firstSettled = false, firstAccepted = false, closePromise = null
   const add = (kind, value) => {
@@ -272,6 +304,7 @@ export function bootstrapWorkerApp({ config, route, document = globalThis.docume
   dispose.addEventListener('click', onDispose)
   try {
     session = createSession({ surfaceRoot, onState: state, onBatch: batch => add('batch', batch),
+      onStorageSnapshot: storage?.save,
       onDiagnostic: error => add('diagnostic', errorFact(error)), onError: fail })
     requireValue(session && typeof session.load === 'function' && typeof session.close === 'function',
       'ERR_PROTOCOL_VERSION', 'session factory must transfer one async Worker owner')
@@ -281,7 +314,7 @@ export function bootstrapWorkerApp({ config, route, document = globalThis.docume
   }
   const ready = Promise.resolve().then(() => {
     if (retired) throw problem('ERR_CANCELLED', 'closed before Worker load')
-    return session.load(options)
+    return session.load(storage ? { ...options, storagePersistence: storage.persistence } : options)
   }).then(result => {
     if (retired) throw problem('ERR_CANCELLED', 'Worker load completed after entry retirement')
     dispose.disabled = false; add('runtime-ready', result)

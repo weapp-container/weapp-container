@@ -13,6 +13,7 @@ const INDEX_LIMIT = 2 * 1024 * 1024
 const MANIFEST_LIMIT = 8 * 1024 * 1024
 const RESOURCE_LIMIT = 16 * 1024 * 1024
 const TEXT_FONT_LIMIT = 32 * 1024 * 1024
+const STORAGE_SNAPSHOT_LIMIT = 4 * 1024 * 1024
 const MAX_BLOBS = 16384
 const PACK_FETCH_CONCURRENCY = 6
 const ORDINARY_LIMIT = 64
@@ -52,6 +53,22 @@ function parseRendererTransitions(value) {
   check(record(value) && Object.keys(value).length === 1 && value.version === '1.0',
     'ERR_PROTOCOL_VERSION', 'rendererTransitions requires explicit version 1.0')
   return WORKER_RENDERER_TRANSITION_CONTRACT
+}
+
+function parseStoragePersistence(value) {
+  if (value === undefined) return null
+  check(record(value) && (Object.keys(value).length === 1 || Object.keys(value).length === 2)
+    && value.version === '1.0' && (Object.keys(value).length === 1 || Object.hasOwn(value, 'snapshot')),
+  'ERR_PROTOCOL_VERSION', 'storagePersistence requires version 1.0 and an optional snapshot')
+  if (!Object.hasOwn(value, 'snapshot')) return Object.freeze({ version: '1.0' })
+  const snapshot = boundedJsonCopy(value.snapshot)
+  check(record(snapshot) && Object.keys(snapshot).length === 2 && record(snapshot.values)
+    && Array.isArray(snapshot.undefinedKeys) && snapshot.undefinedKeys.length <= 16384
+    && snapshot.undefinedKeys.every(key => typeof key === 'string' && key.length > 0 && key.length <= 1024),
+  'ERR_STORAGE', 'invalid initial storage snapshot')
+  check(encoder.encode(JSON.stringify(snapshot)).length <= STORAGE_SNAPSHOT_LIMIT,
+    'ERR_STORAGE', 'initial storage snapshot exceeds the browser persistence budget')
+  return Object.freeze({ version: '1.0', snapshot })
 }
 
 export function copyWorkerPresenterBinding(value, sessionId) {
@@ -576,6 +593,7 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
   const ordinary = [], controls = [], pending = new Map()
   const outstandingEvents = new Map(), acknowledgedEvents = new Set()
   let identity = null, host = null, manifest = null, viewport = logicalViewport(), renderer = null
+  let storagePackSha256 = null, lastStorageSnapshot = null
   let browserQueries = null
   let nativeServices = null, nativeRevoked = false
   let pendingRenderScale = null
@@ -604,6 +622,24 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
       'ERR_ENGINE', 'Worker monotonic clock must return finite nondecreasing milliseconds')
     lastMonotonic = now
     return now
+  }
+
+  function publishStorageSnapshot() {
+    if (!host || typeof host.storage_snapshot_json !== 'function' || !storagePackSha256) return
+    try {
+      const text = host.storage_snapshot_json()
+      check(typeof text === 'string' && encoder.encode(text).length <= STORAGE_SNAPSHOT_LIMIT,
+        'ERR_STORAGE', 'Worker storage snapshot exceeds the browser persistence budget')
+      if (text === lastStorageSnapshot) return
+      const snapshot = JSON.parse(text)
+      check(record(snapshot) && Object.keys(snapshot).length === 2 && record(snapshot.values)
+        && Array.isArray(snapshot.undefinedKeys), 'ERR_STORAGE', 'Worker returned an invalid storage snapshot')
+      lastStorageSnapshot = text
+      event('storage.snapshot', { version: '1.0', packSha256: storagePackSha256, snapshot })
+    } catch (error) {
+      storagePackSha256 = null
+      event('diagnostic', { code: diagnostic(error).code, message: 'Browser storage persistence was disabled for this session' })
+    }
   }
 
   function post(message, transfers) {
@@ -1086,6 +1122,7 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
     const requestedRendererTransitions = parseRendererTransitions(options.rendererTransitions)
     const requestedSurfaceRecovery = surfaceRecoveryRequest(options.surfaceRecovery)
     const requestedBrowserQueries = browserQueriesRequest(options.browserQueries)
+    const requestedStoragePersistence = parseStoragePersistence(options.storagePersistence)
     check(!requestedRendererTransitions || requestedRendererPolicy?.mode === 'manifest'
       && requestedObservation && requestedExternalPresentation && options.inputTiming === undefined,
     'ERR_PROTOCOL_VERSION', 'rendererTransitions requires manifest policy, observation and externalPresentation; causal input timing is not negotiated for mixed owners')
@@ -1160,6 +1197,7 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
     phase = 'loading'
     try {
       const pack = await verifiedPack(options, dependencies, entry.controller.signal)
+      storagePackSha256 = requestedStoragePersistence ? pack.provenance.indexSha256 : null
       remainingMilliseconds()
       await abortable(initializeWasm(), entry.controller.signal)
       remainingMilliseconds()
@@ -1246,6 +1284,14 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
             ...(initialDisplayMetrics === undefined ? {} : { displayMetrics: initialDisplayMetrics }) },
         }))
       })
+      if (requestedStoragePersistence) startupStage(() => {
+        check(typeof host.storage_snapshot_json === 'function' && typeof host.restore_storage_snapshot_json === 'function',
+          'ERR_PROTOCOL_VERSION', 'Worker host is missing storage snapshot persistence exports')
+        if (requestedStoragePersistence.snapshot !== undefined) {
+          host.restore_storage_snapshot_json(JSON.stringify(requestedStoragePersistence.snapshot))
+          lastStorageSnapshot = JSON.stringify(requestedStoragePersistence.snapshot)
+        }
+      })
       if (options.hostServices !== undefined) startupStage(() => {
         check(record(options.hostServices) && record(options.hostServices.application)
           && options.hostServices.application.packRoot === pack.provenance.integrityRoot,
@@ -1300,6 +1346,7 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
       launched = true; startupStage(() => startupBatch(launch.batch))
       const page = startupDispatch('page.push', { path: route.path, data: options.data ?? {}, query: options.query ?? {} })
       startupStage(() => startupBatch(page.batch))
+      startupStage(publishStorageSnapshot)
       const state = startupStage(() => runtimeState())
       check(!runtimeFault && !workerFault, 'ERR_ENGINE', 'Worker failed during startup')
       if (rendererRestart) throw rendererRestartError()
@@ -1469,6 +1516,8 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
           if (result.batch.messages.length) diagnostics.push({ phase: 'lifecycle', batch: result.batch })
         }
       } catch (error) { diagnostics.push({ phase: 'lifecycle', ...diagnostic(error) }) }
+      try { publishStorageSnapshot() }
+      catch (error) { diagnostics.push({ phase: 'storage', ...diagnostic(error) }) }
       if (observationLive) {
         try { captureObservation({ emit: false }) }
         catch (error) { diagnostics.push({ phase: 'observation', ...diagnostic(error) }) }
@@ -1701,6 +1750,9 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
   }
   function finish(entry, result, error) {
     if (pending.get(entry.message.requestId) !== entry) return
+    if (['bridge', 'native.complete', 'native.event', 'native.phone', 'native.component'].includes(entry.message.op)) {
+      publishStorageSnapshot()
+    }
     // Reuse the already minted Worker observation, including for an older
     // response/late cleanup. Response arrival never creates a sequence.
     const observation = observationContract ? latestObservation : null
@@ -1784,6 +1836,7 @@ export function createWorkerRuntime({ initializeWasm, createHost, send,
       try {
         ensureHealthy()
         batch = parseBatch(host.poll_timers(workerUnixNanos(clock())))
+        publishStorageSnapshot()
         if (observationLive) {
           let observation
           try { observation = captureObservation() }
