@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/detail/index",
+    "pages/cart/index",
+    "pages/order/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "Morrow Supply",
+    "navigationBarBackgroundColor": "#17212b",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f7f4"
+  }
+}

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Weapp Container · Legacy main-thread WASM</title>
+<style>
+:root{font:14px system-ui,sans-serif;color:#182126;background:#eef0f2}body{margin:24px}main{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}canvas{max-width:100%;height:auto;background:white;border:1px solid #aab0b5;touch-action:manipulation}section{max-width:640px}h1{font-size:22px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:16px;border:1px solid #c8cdd1;max-height:480px;overflow:auto}button{font:inherit;padding:8px 16px}#error{display:none;color:#9d1717}
+</style>
+<main>
+<canvas id="surface" width="375" height="667" aria-label="小程序画面"></canvas>
+<section><h1>Weapp Container / Legacy</h1>
+<p>显式兼容入口：AppService 在主线程执行。同步 WeappWebSession 导出继续位于 app.mjs。</p>
+<p>该入口使用构建时软件 RGBA 或 CanvasKit 配置；不作为 Worker 产品执行证据。</p>
+<p id="status" role="status">加载中…</p>
+<button id="dispose" disabled>卸载小程序</button>
+<pre id="summary"></pre><pre id="error" role="alert"></pre>
+</section>
+</main>
+<script type="module" src="./app.mjs"></script>
+</html>

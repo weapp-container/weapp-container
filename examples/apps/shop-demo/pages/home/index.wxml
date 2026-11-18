@@ -1,0 +1,29 @@
+<view class="screen">
+  <view class="topbar">
+    <view>
+      <text class="brand">Morrow Supply</text>
+      <text class="eyebrow">Small goods, well chosen</text>
+    </view>
+    <button id="open-cart" class="text-button" bindtap="openCart">Cart ({{cartCount}})</button>
+  </view>
+
+  <view class="hero">
+    <text class="hero-title">Useful objects for the way you work.</text>
+    <text class="hero-copy">A quiet collection of carry, desk and paper goods. Browse the catalog, build a cart and finish a local checkout.</text>
+  </view>
+
+  <text class="section-label">Featured this week</text>
+  <view class="product-grid">
+    <view wx:for="{{products}}" wx:key="id" class="product-card" data-id="{{item.id}}" bindtap="openDetail">
+      <image class="product-image" src="{{item.image}}" mode="aspectFit" />
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <text class="product-meta">{{item.category}}</text>
+        <view class="product-footer">
+          <text class="price">¥{{item.price}}</text>
+          <button class="small-button" data-id="{{item.id}}" catchtap="addToCart">Add</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

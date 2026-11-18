@@ -1,0 +1,40 @@
+/** Original complete static expectations, applied only after actual observations. */
+import { descriptor } from '../../../conformance/recipes/issue289-descriptor.mjs'
+import { loadGithubStaticInputs, validateGithubStaticInputs } from './github-static-inputs.mjs'
+const require = (ok, message) => { if (!ok) throw new Error(message) }
+export const issue289AssertionIds = () => descriptor.plans.map(plan => plan.fullName)
+export const loadIssue289Inputs = options => loadGithubStaticInputs({ ...options, descriptor, assertionIds: issue289AssertionIds(), label: 'Issue289' })
+export function assertIssue289StaticOutputs(input) {
+  require(input?.caseId === descriptor.caseId, 'Issue289 static input belongs to another source case')
+  validateGithubStaticInputs({ input, descriptor, label: 'Issue289' })
+  const files = new Map(input.files.map(file => [file.path, file.bytes.toString('utf8')]))
+  require(files.get("pages/issue-289/object-literal/index.wxml").includes("issue289-object-toggle-list"), 'Issue289 original static assertion at line 29 failed')
+  require(files.get("pages/issue-289/object-literal/index.wxml").includes("issue289-object-toggle-compact"), 'Issue289 original static assertion at line 30 failed')
+  require(files.get("pages/issue-289/object-literal/index.wxml").includes("ObjectLiteralExample"), 'Issue289 original static assertion at line 31 failed')
+  require(files.get("pages/issue-289/object-literal/index.js").includes("runE2E"), 'Issue289 original static assertion at line 32 failed')
+  require(files.get("pages/issue-289/object-literal/index.js").includes("compactChanged"), 'Issue289 original static assertion at line 33 failed')
+  require(files.get("pages/issue-289/object-literal/index.js").includes("showListRoundTripWorked"), 'Issue289 original static assertion at line 34 failed')
+  require(files.get("pages/issue-289/map-class/index.wxml").includes("class=\"{{__wv_cls_0}}\""), 'Issue289 original static assertion at line 42 failed')
+  require(files.get("pages/issue-289/map-class/index.wxml").includes("class=\"{{__wv_cls_1}}\""), 'Issue289 original static assertion at line 43 failed')
+  require(files.get("pages/issue-289/map-class/index.wxml").includes("issue289-map-switch-expanded"), 'Issue289 original static assertion at line 44 failed')
+  require(files.get("pages/issue-289/map-class/index.wxml").includes("issue289-map-switch-list"), 'Issue289 original static assertion at line 45 failed')
+  require(files.get("pages/issue-289/map-class/index.wxml").includes("MapClassExample"), 'Issue289 original static assertion at line 46 failed')
+  require(files.get("pages/issue-289/map-class/index.js").includes("issue289-map-toggle-expanded"), 'Issue289 original static assertion at line 47 failed')
+  require(files.get("pages/issue-289/map-class/index.js").includes("issue289-map-toggle-list"), 'Issue289 original static assertion at line 48 failed')
+  require(files.get("pages/issue-289/map-class/index.js").includes("calloutExpandedChanged"), 'Issue289 original static assertion at line 49 failed')
+  require(files.get("pages/issue-289/root-class/index.wxml").includes("issue289-root-toggle-options"), 'Issue289 original static assertion at line 57 failed')
+  require(files.get("pages/issue-289/root-class/index.wxml").includes("issue289-root-cycle-option"), 'Issue289 original static assertion at line 58 failed')
+  require(files.get("pages/issue-289/root-class/index.wxml").includes("RootClassExample"), 'Issue289 original static assertion at line 59 failed')
+  require(files.get("pages/issue-289/root-class/index.js").includes("selectedIndexChanged"), 'Issue289 original static assertion at line 60 failed')
+  require(files.get("pages/issue-289/root-class/index.js").includes("showOptionsChanged"), 'Issue289 original static assertion at line 61 failed')
+  require(files.get("pages/issue-289/computed-class/index.wxml").includes("class=\"{{__wv_cls_0}}\""), 'Issue289 original static assertion at line 69 failed')
+  require(files.get("pages/issue-289/computed-class/index.wxml").includes("class=\"{{__wv_cls_1}}\""), 'Issue289 original static assertion at line 70 failed')
+  require(files.get("pages/issue-289/computed-class/index.wxml").includes("issue289-computed-switch-source"), 'Issue289 original static assertion at line 71 failed')
+  require(files.get("pages/issue-289/computed-class/index.wxml").includes("issue289-computed-switch-items"), 'Issue289 original static assertion at line 72 failed')
+  require(files.get("pages/issue-289/computed-class/index.wxml").includes("ComputedClassExample"), 'Issue289 original static assertion at line 73 failed')
+  require(files.get("pages/issue-289/computed-class/index.js").includes("issue289-computed-toggle-source"), 'Issue289 original static assertion at line 74 failed')
+  require(files.get("pages/issue-289/computed-class/index.js").includes("issue289-computed-toggle-items"), 'Issue289 original static assertion at line 75 failed')
+  require(files.get("pages/issue-289/computed-class/index.js").includes("sourceChanged"), 'Issue289 original static assertion at line 76 failed')
+  require(files.get("pages/issue-289/computed-class/index.js").includes("showItemsChanged"), 'Issue289 original static assertion at line 77 failed')
+  return { caseId: descriptor.caseId, sourceSha256: input.sourceSha256, originalStaticExpectations: 28, files: input.files.map(({path,sha256,length:bytes})=>({path,sha256,bytes})) }
+}

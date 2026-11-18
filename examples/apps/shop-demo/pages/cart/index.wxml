@@ -1,0 +1,35 @@
+<view class="screen">
+  <view class="topbar">
+    <view>
+      <text class="brand">Your cart</text>
+      <text class="eyebrow">Ready when you are</text>
+    </view>
+    <text class="back-link" bindtap="refresh">Refresh</text>
+  </view>
+
+  <view wx:if="{{lines.length}}" class="panel">
+    <view wx:for="{{lines}}" wx:key="id" class="cart-row">
+      <image class="cart-image" src="{{item.image}}" mode="aspectFit" />
+      <view class="cart-details">
+        <text class="cart-name">{{item.name}}</text>
+        <text class="cart-price">¥{{item.price}} each · ¥{{item.lineTotal}}</text>
+        <view class="quantity">
+          <button class="quantity-button" data-id="{{item.id}}" catchtap="decrease">−</button>
+          <text class="quantity-value">{{item.quantity}}</text>
+          <button class="quantity-button" data-id="{{item.id}}" catchtap="increase">+</button>
+        </view>
+      </view>
+      <button class="danger-button" data-id="{{item.id}}" bindtap="remove">Remove</button>
+    </view>
+    <view class="cart-total">
+      <text class="total-label">Subtotal</text>
+      <text class="total-value">¥{{total}}</text>
+    </view>
+    <button id="checkout" class="primary-button" bindtap="checkout">Continue to checkout</button>
+  </view>
+
+  <view wx:else class="panel empty">
+    <text class="panel-title">Your cart is clear.</text>
+    <text class="muted">Pick something useful from the catalog and it will show up here.</text>
+  </view>
+</view>

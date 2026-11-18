@@ -1,0 +1,28 @@
+<view class="screen">
+  <view wx:if="{{!submitted}}">
+    <view class="topbar">
+      <view>
+        <text class="brand">Checkout</text>
+        <text class="eyebrow">A local demo order</text>
+      </view>
+    </view>
+    <view class="panel">
+      <text class="panel-title">Shipping</text>
+      <text class="muted">Demo address · 18 Morrow Street · No payment is collected.</text>
+    </view>
+    <view class="panel">
+      <view class="cart-total">
+        <text class="total-label">Order total</text>
+        <text class="total-value">¥{{total}}</text>
+      </view>
+      <button id="place-order" class="primary-button" bindtap="placeOrder">Place demo order</button>
+    </view>
+  </view>
+
+  <view wx:else class="panel empty">
+    <text class="success-mark">✓</text>
+    <text class="panel-title">Order received.</text>
+    <text class="muted">Reference {{orderNumber}} · Your cart is ready for another browse.</text>
+    <button class="secondary-button" bindtap="backHome">Back to catalog</button>
+  </view>
+</view>

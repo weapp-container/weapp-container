@@ -1,0 +1,4 @@
+module WeappContainerFFI {
+    header "weapp_container_ios_ffi.h"
+    export *
+}

@@ -1,0 +1,1 @@
+{"nodes":[{"attrs":{"class":"page"},"bindings":[],"children":[{"attrs":{},"bindings":[],"children":[{"bindings":["message"],"kind":"text","value":"{{message}}"}],"kind":"element","tag":"text"}],"kind":"element","tag":"view"},{"bindings":[],"kind":"text","value":"\n"}],"version":1}

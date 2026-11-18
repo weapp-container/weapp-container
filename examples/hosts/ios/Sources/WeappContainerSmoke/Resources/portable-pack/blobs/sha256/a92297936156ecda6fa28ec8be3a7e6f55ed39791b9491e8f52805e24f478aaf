@@ -1,0 +1,12 @@
+//#region examples/apps/reference-app/app.js
+App({
+	globalData: { bootCount: 0 },
+	onLaunch(options) {
+		this.globalData.bootCount += 1;
+		console.log("reference-app:onLaunch", options);
+	},
+	onShow() {
+		console.log("reference-app:onShow");
+	}
+});
+//#endregion

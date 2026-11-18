@@ -1,0 +1,17 @@
+<view class="screen">
+  <view class="topbar">
+    <text class="back-link" bindtap="back">Back to catalog</text>
+    <button class="text-button" bindtap="openCart">Cart ({{cartCount}})</button>
+  </view>
+
+  <view wx:if="{{product}}" class="panel product-detail">
+    <image class="detail-image" src="{{product.image}}" mode="aspectFit" />
+    <text class="eyebrow">{{product.category}}</text>
+    <text class="detail-title">{{product.name}}</text>
+    <text class="detail-price">¥{{product.price}}</text>
+    <text class="detail-copy">{{product.description}}</text>
+    <button id="add-detail" class="primary-button" bindtap="addToCart">Add to cart</button>
+  </view>
+
+  <view wx:else class="panel empty">This product is no longer available.</view>
+</view>

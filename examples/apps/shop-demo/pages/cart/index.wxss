@@ -1,0 +1,10 @@
+.cart-row {
+  align-items: flex-start;
+}
+
+.danger-button {
+  width: 100rpx;
+  min-width: 100rpx;
+  margin: 0;
+  padding: 0;
+}

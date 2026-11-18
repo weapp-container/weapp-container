@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+cd "$root"
+out_base=${WEAPP_CONTAINER_IOS_APP_OUT_DIR:-"$root/artifacts/ios-app-metal"}
+run_id=$(python3 -c 'import uuid; print(uuid.uuid4().hex[:12])')
+out_dir="$out_base/run-$run_id"
+rust_target=${WEAPP_CONTAINER_IOS_RUST_TARGET:-aarch64-apple-ios-sim}
+bundle_id=${WEAPP_CONTAINER_IOS_BUNDLE_ID:-com.sonofmagic.weapp.container.ios.appmetal.run-$run_id}
+engine=${WEAPP_CONTAINER_IOS_ENGINE:-quickjs}
+app_mode=${WEAPP_CONTAINER_IOS_APP_MODE:-smoke}
+build_only=${WEAPP_CONTAINER_IOS_BUILD_ONLY:-0}
+ui_observation=${WEAPP_CONTAINER_IOS_UI_OBSERVATION:-0}
+case "$build_only:$ui_observation" in
+  0:0|0:1|1:0|1:1) ;;
+  *) echo "[ios-app] BUILD_ONLY and UI_OBSERVATION must be 0 or 1" >&2; exit 2 ;;
+esac
+ui_observation_plist=false
+if [[ "$ui_observation" == 1 ]]; then ui_observation_plist=true; fi
+case "$app_mode" in
+  smoke|embedding) ;;
+  *) echo "[ios-app] unsupported app mode $app_mode" >&2; exit 2 ;;
+esac
+session_id="ios-app-$run_id"
+case "$engine" in
+  quickjs) engine_feature=quickjs-native-ios ;;
+  v8) engine_feature=v8-native ;;
+  *) echo "[ios-app] ERR_ENGINE: unsupported engine $engine" >&2; exit 2 ;;
+esac
+sdk=$(xcrun --sdk iphonesimulator --show-sdk-path)
+arch=${WEAPP_CONTAINER_IOS_ARCH:-arm64}
+deployment_target=${WEAPP_CONTAINER_IOS_DEPLOYMENT_TARGET:-16.0}
+if [[ ! "$deployment_target" =~ ^[0-9]+\.[0-9]+$ ]]; then
+  echo "[ios-app] invalid iOS deployment target" >&2
+  exit 2
+fi
+rustup_cargo=$(rustup which cargo)
+rustup_rustc=$(rustup which rustc)
+rustup_rustdoc=$(rustup which rustdoc)
+mkdir -p "$out_dir"
+# Resolve the environment once and override Cargo config explicitly. The
+# linker consumes only the exact archive selected from this build's messages.
+cargo_target_dir=$(node "$root/scripts/ios-app-execution-evidence.mjs" target-dir "$root" "${CARGO_TARGET_DIR:-}")
+python3 - "$bundle_id" <<'PY_BUNDLE'
+import re, sys
+if not re.fullmatch(r"[A-Za-z0-9.-]+", sys.argv[1]):
+    raise SystemExit("[ios-app] invalid bundle identifier")
+PY_BUNDLE
+
+# This validates/copies the same checked-in pack used by the Swift package.
+# Override the source to exercise another actual container-pack output.
+node "$root/scripts/sync-ios-portable-pack.mjs" \
+  --source "${WEAPP_CONTAINER_IOS_PACK:-$root/examples/hosts/ios/Sources/WeappContainerSmoke/Resources/portable-pack}" \
+  --destination "$out_dir/portable-pack"
+
+echo "[ios-app] building Rust staticlib ($rust_target)"
+node "$root/scripts/ios-app-execution-evidence.mjs" begin "$out_dir"
+PATH="$(dirname "$rustup_cargo"):$PATH" RUSTC="$rustup_rustc" RUSTDOC="$rustup_rustdoc" \
+  IPHONEOS_DEPLOYMENT_TARGET="$deployment_target" \
+  cargo build -p container-host-ios --no-default-features --features "ios,metal,$engine_feature" \
+    --target "$rust_target" --target-dir "$cargo_target_dir" --locked \
+    --message-format=json-render-diagnostics > "$out_dir/cargo-build.jsonl"
+native_archive=$(node "$root/scripts/ios-app-execution-evidence.mjs" archive "$out_dir" \
+  "$out_dir/cargo-build.jsonl" "$cargo_target_dir" "$rust_target" "$engine")
+
+app="$out_dir/WeappContainerApp.app"
+rm -rf "$app"
+mkdir -p "$app"
+
+echo "[ios-app] compiling UIKit + CAMetalLayer app"
+PATH="$(dirname "$rustup_cargo"):$PATH" xcrun --sdk iphonesimulator swiftc \
+  -target "$arch-apple-ios$deployment_target-simulator" -sdk "$sdk" -module-name WeappContainerApp \
+  -parse-as-library -O -g \
+  -I "$root/examples/hosts/ios/Sources/WeappContainerFFI/include" \
+  "$root/examples/hosts/ios/Sources/WeappContainerHost/Bridge.swift" \
+  "$root/examples/hosts/ios/Sources/WeappContainerHost/PortablePack.swift" \
+  "$root/examples/hosts/ios/Sources/WeappContainerHost/ContainerSession.swift" \
+  "$root/examples/hosts/ios/Sources/WeappContainerHost/MetalSnapshotPresenter.swift" \
+  "$root/examples/hosts/ios/Sources/WeappContainerHost/WeappContainerView.swift" \
+  "$root/examples/hosts/ios-app/Sources/EmbeddingViewController.swift" \
+  "$root/examples/hosts/ios-app/Sources/main.swift" \
+  "$native_archive" \
+  -Xlinker -dead_strip \
+  -Xlinker -lc++ \
+  -framework UIKit -framework Metal -framework QuartzCore -framework CoreGraphics \
+  -framework CoreText -o "$app/WeappContainerApp"
+
+cp -R "$out_dir/portable-pack" "$app/portable-pack"
+
+cat > "$app/Info.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleExecutable</key><string>WeappContainerApp</string>
+  <key>CFBundleIdentifier</key><string>$bundle_id</string>
+  <key>CFBundleName</key><string>Weapp Container iOS Metal App</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>0.1.0</string>
+  <key>CFBundleVersion</key><string>1</string>
+  <key>WeappContainerEngine</key><string>$engine</string>
+  <key>WeappContainerSessionID</key><string>$session_id</string>
+  <key>WeappContainerAppMode</key><string>$app_mode</string>
+  <key>WeappContainerUIObservation</key><$ui_observation_plist/>
+  <key>MinimumOSVersion</key><string>$deployment_target</string>
+  <key>LSRequiresIPhoneOS</key><true/>
+  <key>UILaunchScreen</key><dict/>
+  <key>UISupportedInterfaceOrientations</key><array>
+    <string>UIInterfaceOrientationPortrait</string>
+    <string>UIInterfaceOrientationLandscapeLeft</string>
+    <string>UIInterfaceOrientationLandscapeRight</string>
+  </array>
+  <key>UIApplicationSceneManifest</key><dict>
+    <key>UIApplicationSupportsMultipleScenes</key><false/>
+    <key>UISceneConfigurations</key><dict>
+      <key>UIWindowSceneSessionRoleApplication</key><array><dict>
+        <key>UISceneConfigurationName</key><string>Default Configuration</string>
+        <key>UISceneDelegateClassName</key><string>WeappContainerApp.WeappContainerSceneDelegate</string>
+      </dict></array>
+    </dict>
+  </dict>
+</dict></plist>
+PLIST
+
+codesign --force --sign - "$app" >/dev/null
+node "$root/scripts/ios-app-execution-evidence.mjs" finish "$out_dir" "$app/WeappContainerApp" "$engine" "$app_mode"
+python3 - "$out_dir" "$app" "$run_id" "$bundle_id" "$session_id" "$engine" "$app_mode" <<'PY_PRODUCT'
+import hashlib, json, os, sys
+directory, app, run_id, bundle, session, engine, mode = sys.argv[1:]
+directory, app = os.path.abspath(directory), os.path.abspath(app)
+receipt_path = os.path.join(directory, 'build.json')
+with open(receipt_path, 'rb') as stream:
+    receipt_bytes = stream.read()
+receipt = json.loads(receipt_bytes)
+value = dict(schemaVersion=1, appPath=app, buildReceiptPath=receipt_path,
+             buildReceiptSha256=hashlib.sha256(receipt_bytes).hexdigest(),
+             artifactSha256=receipt['artifactSha256'], runDirectory=directory,
+             runID=run_id, bundleId=bundle, sessionId=session, engine=engine, appMode=mode)
+with open(os.path.join(directory, 'build-product.json'), 'w') as stream:
+    json.dump(value, stream, indent=2)
+PY_PRODUCT
+if [[ "$build_only" == 1 ]]; then
+  echo "[ios-app] signed build ready: $out_dir/build-product.json"
+  exit 0
+fi
+
+booted_json=$(xcrun simctl list devices booted --json)
+udid=$(printf '%s' "$booted_json" | python3 -c 'import json,sys; devices=json.load(sys.stdin).get("devices",{}); ids=[d["udid"] for group in devices.values() for d in group if d.get("state")=="Booted"]; requested=sys.argv[1]; sys.exit("requested simulator is not booted") if requested and requested not in ids else print(requested or (ids[0] if len(ids)==1 else ""))' "${WEAPP_CONTAINER_IOS_SIMULATOR_UDID:-}")
+if [[ -z "$udid" ]]; then
+  echo "[ios-app] select exactly one booted simulator with WEAPP_CONTAINER_IOS_SIMULATOR_UDID" >&2
+  exit 2
+fi
+
+# Borrow the booted simulator, and install a unique task bundle only. Even an
+# explicitly supplied identifier must be absent; never overwrite another app.
+node "$root/scripts/ios-simulator-apps.mjs" "$udid" "$bundle_id"
+ownership="$out_dir/resources.json"
+write_ownership() {
+  python3 - "$ownership" "$udid" "$bundle_id" "${1:-false}" "${2:-}" <<'PY_OWNERSHIP'
+import json, os, sys
+path, udid, bundle, installed, pid = sys.argv[1:]
+value = {"schemaVersion": 1, "owned": True, "udid": udid, "bundleId": bundle,
+         "installed": installed == "true", "installAttempted": installed in ("attempt", "true"),
+         "pid": int(pid) if pid else None,
+         "simulatorOwned": False}
+with open(path + ".tmp", "w") as stream:
+    json.dump(value, stream, indent=2)
+os.replace(path + ".tmp", path)
+PY_OWNERSHIP
+}
+write_ownership false
+finish() {
+  original_status=$1
+  trap - EXIT INT TERM
+  if ! node "$root/scripts/ios-app-resource-cleanup.mjs" "$ownership" "$out_dir/cleanup.json"; then
+    echo "[ios-app] task app cleanup failed; resource identity: $ownership" >&2
+    exit 1
+  fi
+  exit "$original_status"
+}
+trap 'finish $?' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+# Recording an attempt is diagnostic, not permission to uninstall. Only an
+# acknowledged successful install grants cleanup ownership; interruption in
+# this interval preserves the ambiguous bundle and fails cleanup explicitly.
+write_ownership attempt
+echo "[ios-app] installing $app on borrowed simulator $udid (bundle $bundle_id)"
+xcrun simctl install "$udid" "$app"
+write_ownership true
+echo "[ios-app] launching $bundle_id"
+launch_output=$(xcrun simctl launch --stdout="$out_dir/app-stdout.log" --stderr="$out_dir/app-stderr.log" "$udid" "$bundle_id")
+printf '%s\n' "$launch_output"
+launch_pid=$(python3 -c 'import re,sys; value=sys.stdin.read().strip(); match=re.fullmatch(re.escape(sys.argv[1])+r": (\d+)",value); sys.exit("unrecognized simctl launch output") if match is None else print(match.group(1))' "$bundle_id" <<< "$launch_output")
+write_ownership true "$launch_pid"
+container=$(xcrun simctl get_app_container "$udid" "$bundle_id" data)
+evidence="$container/Library/Caches/weapp-ios-evidence.json"
+node "$root/scripts/ios-app-startup.mjs" "$ownership" "$evidence" "$out_dir" \
+  "$session_id" "$engine" "${WEAPP_CONTAINER_IOS_APP_WAIT_SECONDS:-12}"
+if [[ -f "$container/Library/Caches/weapp-ios-frame.png" ]]; then
+  cp "$container/Library/Caches/weapp-ios-frame.png" "$out_dir/frame.png"
+fi
+if [[ -f "$container/Library/Caches/weapp-ios-embedding-trace.json" ]]; then
+  cp "$container/Library/Caches/weapp-ios-embedding-trace.json" "$out_dir/embedding-trace.json"
+fi
+node "$root/scripts/ios-app-screen.mjs" "$ownership" "$out_dir/app-screen.png" "$out_dir/screen-capture.json"
+cat "$evidence"
+node "$root/scripts/validate-ios-app-evidence.mjs" "$evidence" "$out_dir/portable-pack/manifest.json" "$app_mode"
+node "$root/scripts/ios-app-execution-evidence.mjs" collect "$out_dir" "$out_dir/portable-pack/manifest.json" \
+  "$udid" "${WEAPP_CONTAINER_IOS_FIXTURE_ID:-portable-pack-reference-v1}"
+echo "[ios-app] passed: direct Rust Skia CAMetalLayer probe emitted; evidence $out_dir/evidence.json"

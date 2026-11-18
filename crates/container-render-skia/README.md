@@ -5,7 +5,7 @@
 
 `RenderNode.dataset` 和 `RenderNode.mark` 传递 JSON 值，而不仅仅是字符串。旧的字符串条目和省略的映射仍有效作为帧输入；类型化的输出需要更新的消费者。运行时从 WXML 中获取这些值，并使用已验收的树进行选择器和输入处理。渲染器不会从属性字符串中推断出 JSON。有关兼容性和证据限制，请参见 [事件元数据](../../docs/event-metadata.md)。
 
-渲染合约用于便携容器。`SoftwareRenderer` 是 CI 中使用的确定性无界面备用方案。`SkiaRenderer` 是稳定且面向宿主的类型；启用 `skia-backend` 可启用 `skia-safe` 0.153.3。位图模式将已验收的帧树绘制到 CPU 绘制表面；外部帧和原生 GPU 模式保持其独立的呈现器合约，无需常规的全页 CPU 位图绘制/读回。该功能为可选，因为其需要下载或构建大型 Skia 工具链；为每个目标提供匹配的 `skia-binaries` 缓存或源码构建。默认构建保持确定性和无界面。原生 Skia/设备验证与软件测试分开报告。
+渲染合约用于便携容器。`SoftwareRenderer` 是 CI 中使用的确定性无界面备用方案。`SkiaRenderer` 是稳定且面向宿主的类型；启用 `skia-backend` 可启用 `skia-safe` 0.157.0。位图模式将已验收的帧树绘制到 CPU 绘制表面；外部帧和原生 GPU 模式保持其独立的呈现器合约，无需常规的全页 CPU 位图绘制/读回。该功能为可选，因为其需要下载或构建大型 Skia 工具链；为每个目标提供匹配的 `skia-binaries` 缓存或源码构建。默认构建保持确定性和无界面。原生 Skia/设备验证与软件测试分开报告。
 
 <a id="image-resources"></a>
 ## 图像资源
