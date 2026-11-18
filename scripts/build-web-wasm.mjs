@@ -424,7 +424,7 @@ export function parseWorkerStartupIntent(text) {
   }
   requireCondition(record(value) && value.schemaVersion === 1 && value.execution === 'worker' && value.engine === 'quickjs',
     'Worker startup intent requires schema 1 and QuickJS Worker execution')
-  const allowed = new Set(['schemaVersion', 'execution', 'engine', 'viewport', 'rendererPolicy', 'rendererTransitions', 'renderScale', 'route', 'data', 'query', 'launchOptions', 'metrics'])
+  const allowed = new Set(['schemaVersion', 'execution', 'engine', 'viewport', 'rendererPolicy', 'rendererTransitions', 'renderScale', 'viewExecution', 'route', 'data', 'query', 'launchOptions', 'metrics'])
   requireCondition(Object.keys(value).every(key => allowed.has(key)), 'Unknown Worker startup intent field')
   requireCondition(record(value.viewport) && Object.keys(value.viewport).length === 2
     && ['width', 'height'].every(key => Number.isSafeInteger(value.viewport[key]) && value.viewport[key] > 0 && value.viewport[key] <= 4096),
@@ -444,6 +444,11 @@ export function parseWorkerStartupIntent(text) {
     const width = Math.ceil(value.viewport.width * value.renderScale), height = Math.ceil(value.viewport.height * value.renderScale)
     requireCondition(width <= 4096 && height <= 4096 && width * height * 4 <= 16 * 1024 * 1024,
       'Worker renderScale exceeds the physical target budget')
+  }
+  if (value.viewExecution !== undefined) {
+    requireCondition(record(value.viewExecution) && Object.keys(value.viewExecution).length === 1
+      && Number.isSafeInteger(value.viewExecution.batchTimeoutMs) && value.viewExecution.batchTimeoutMs > 0
+      && value.viewExecution.batchTimeoutMs <= 5000, 'Worker viewExecution requires batchTimeoutMs between 1 and 5000')
   }
   requireCondition(value.route === undefined || workerStartupRoute(value.route), 'Invalid Worker startup route')
   for (const key of ['data', 'query', 'launchOptions']) requireCondition(value[key] === undefined || record(value[key]), `Worker ${key} must be an object`)
@@ -466,7 +471,7 @@ export async function stageWorkerProductConfig(outDir, { index, rendererConfig, 
   const value = { schemaVersion: 1, execution: 'worker', engine: 'quickjs',
     index: { url: './pack-index.json', sha256: index.sha256, size: index.size }, rendererPolicy: intent.value.rendererPolicy,
     viewport: intent.value.viewport, rendererAssets: rendererConfig.renderer === 'canvaskit' ? rendererConfig : null }
-  for (const key of ['rendererTransitions', 'renderScale', 'route', 'data', 'query', 'launchOptions', 'metrics']) if (intent.value[key] !== undefined) value[key] = intent.value[key]
+  for (const key of ['rendererTransitions', 'renderScale', 'viewExecution', 'route', 'data', 'query', 'launchOptions', 'metrics']) if (intent.value[key] !== undefined) value[key] = intent.value[key]
   // The supervisor may have explicitly diagnosed a missing requested route and
   // selected a valid fallback in this pack. Bind that resolved route into the
   // actual config without changing the hash of the original startup intent.

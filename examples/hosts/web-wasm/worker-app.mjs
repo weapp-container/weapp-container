@@ -39,7 +39,7 @@ export function workerProductOptions(config, route) {
     indexSha256: config.index.sha256, indexSize: config.index.size, viewport: config.viewport,
     rendererPolicy: config.rendererPolicy, rendererAssets: config.rendererAssets,
     ...(selected === undefined ? {} : { route: selected }) }
-  for (const key of ['rendererTransitions', 'renderScale', 'metrics', 'data', 'query', 'launchOptions']) if (config[key] !== undefined) options[key] = config[key]
+  for (const key of ['rendererTransitions', 'renderScale', 'viewExecution', 'metrics', 'data', 'query', 'launchOptions']) if (config[key] !== undefined) options[key] = config[key]
   return freeze(structuredClone(options))
 }
 

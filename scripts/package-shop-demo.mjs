@@ -102,7 +102,11 @@ async function packageWebWasm(pack, platformDir) {
   const result = platformResult('web-wasm', 'blocked', { renderer: 'software', execution: 'worker', missingTools })
   if (missingTools.length) return result
   const site = resolve(platformDir, 'site')
-  const command = runCommand(process.execPath, [resolve(ROOT, 'scripts/build-web-wasm.mjs'), '--execution', 'worker', '--renderer', 'software', '--pack', pack, '--out-dir', site, '--wasm-bindgen', wasmBindgen, '--llvm-bin', llvmBin])
+  const startupIntent = resolve(platformDir, 'worker-startup-intent.json')
+  await writeFile(startupIntent, json({ schemaVersion: 1, execution: 'worker', engine: 'quickjs',
+    viewport: { width: 375, height: 667 }, rendererPolicy: { mode: 'manifest' },
+    viewExecution: { batchTimeoutMs: 1000 } }))
+  const command = runCommand(process.execPath, [resolve(ROOT, 'scripts/build-web-wasm.mjs'), '--execution', 'worker', '--renderer', 'software', '--pack', pack, '--out-dir', site, '--wasm-bindgen', wasmBindgen, '--llvm-bin', llvmBin, '--startup-intent', startupIntent])
   result.command = command
   result.status = command.status === 'passed' ? 'passed' : 'failed'
   result.artifact = site

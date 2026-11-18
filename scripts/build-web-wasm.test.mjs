@@ -36,6 +36,8 @@ test('startup intent binds exact input bytes without depending on generated pack
   assert.notEqual(parseWorkerStartupIntent(compact).sha256, parseWorkerStartupIntent(formatted).sha256)
   for (const changed of [{ engine: 'v8' }, { index: { sha256: 'a'.repeat(64) } }, { viewport: { width: 0, height: 667 } },
     { rendererPolicy: { mode: 'force', profile: 'software' } }, { route: '../escape' }, { data: [] },
+    { viewExecution: { batchTimeoutMs: 0 } }, { viewExecution: { batchTimeoutMs: 5001 } },
+    { viewExecution: { batchTimeoutMs: 1000, extra: true } },
     { metrics: { windowWidth: 400, windowHeight: 667 } }]) {
     assert.throws(() => parseWorkerStartupIntent(JSON.stringify({ ...value, ...changed })))
   }
@@ -93,6 +95,20 @@ test('Skia startup preserves physical density independently of viewport and simu
     { renderScale: 4, viewport: { width: 400, height: 700 } }, { rendererPolicy: { mode: 'force', profile: 'webview' } }]) {
     assert.throws(() => parseWorkerStartupIntent(JSON.stringify({ ...value, ...changed })))
   }
+})
+
+test('Worker product preserves a bounded View execution budget', async t => {
+  const directory = await realpath(await mkdtemp(resolve(tmpdir(), 'worker-view-execution-config-')))
+  t.after(() => rm(directory, { recursive: true, force: true }))
+  const value = { schemaVersion: 1, execution: 'worker', engine: 'quickjs', viewport: { width: 375, height: 667 },
+    rendererPolicy: { mode: 'manifest' }, viewExecution: { batchTimeoutMs: 1000 } }
+  assert.deepEqual(parseWorkerStartupIntent(JSON.stringify(value)).value.viewExecution, value.viewExecution)
+  const staged = await stageWorkerProductConfig(directory, { index: { path: 'pack-index.json', sha256: 'a'.repeat(64), size: 200 },
+    rendererConfig: rendererRuntimeConfig('software'), startupIntentJson: JSON.stringify(value) })
+  const config = JSON.parse(await readFile(resolve(directory, staged.startupJson.path), 'utf8'))
+  assert.deepEqual(config.viewExecution, value.viewExecution)
+  const { workerProductOptions } = await import('../examples/hosts/web-wasm/worker-app.mjs')
+  assert.deepEqual(workerProductOptions(config).viewExecution, value.viewExecution)
 })
 
 test('generated startup module preserves JSON own prototype-named keys and string contents', async t => {
