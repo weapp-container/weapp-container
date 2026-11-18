@@ -378,6 +378,19 @@ internal class PortablePackStartup(
 
     fun snapshotSummary(): ByteArray = operations.getJSONObject("render.snapshot").getString("json").toByteArray(UTF_8)
 
-    internal fun renderPayload(): JSONObject = JSONObject(operations.getJSONObject("render.commit")
-        .getJSONObject("request").getJSONObject("payload").toString())
+    internal fun renderPayload(route: String, frameId: Long, width: Int, height: Int): JSONObject {
+        check((0 until manifest.getJSONArray("routes").length()).any {
+            manifest.getJSONArray("routes").getJSONObject(it).getString("path") == route
+        }) { "route is not declared: $route" }
+        val templateId = "template:$route.wxml"
+        check((0 until manifest.getJSONArray("templates").length()).any {
+            manifest.getJSONArray("templates").getJSONObject(it).getString("id") == templateId
+        }) { "route template is not declared: $templateId" }
+        val payload = JSONObject(operations.getJSONObject("render.commit")
+            .getJSONObject("request").getJSONObject("payload").toString())
+        payload.put("frameId", frameId)
+            .put("templateId", templateId)
+            .put("viewport", JSONObject().put("x", 0).put("y", 0).put("width", width).put("height", height))
+        return payload
+    }
 }

@@ -207,7 +207,7 @@ image {
 }
 
 .back-link {
-  display: inline-block;
+  display: block;
   margin-bottom: 28rpx;
   color: #3a63f3;
   font-size: 24rpx;

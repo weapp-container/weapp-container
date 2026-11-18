@@ -66,9 +66,9 @@ internal class PortablePackSession(
     private var sequence = 0L
     private var presentationSequence = 0L
     private var frameId = 1L
-    private val render = started.renderPayload()
-    private var width = render.getJSONObject("viewport").getInt("width")
-    private var height = render.getJSONObject("viewport").getInt("height")
+    private val initialFrame = CommittedFrame.parse(initialPresentation)
+    private var width = initialFrame.width
+    private var height = initialFrame.height
     private var surface = JSONObject.NULL as Any
     private var windowObservation: AndroidWindowObservation? = null
     private var inspected = JSONObject()
@@ -278,6 +278,19 @@ internal class PortablePackSession(
         publish()
     }
 
+    /** Route system back through the same native page-stack protocol as wx.navigateBack. */
+    fun navigateBack(): Boolean {
+        checkOwner()
+        if (!canPumpTimers()) return false
+        val depth = PortablePack.integer(inspected.opt("pageStackDepth")) ?: return false
+        if (depth <= 1) return false
+        transaction {
+            dispatch("page.pop", JSONObject().put("delta", 1))
+            renderFrame()
+        }
+        return PortablePack.integer(inspected.opt("pageStackDepth")) == depth - 1
+    }
+
     fun reportFailure(error: Throwable) { checkOwner(); if (!closed) fail(error) }
 
     /** Surface/submit failures suspend input and redraws, never the JS clock. */
@@ -301,8 +314,13 @@ internal class PortablePackSession(
         if (presentationSuspended && !retry) return
         presentationEffectsDirty = false
         val candidate = frameId + 1
-        val payload = JSONObject(render.toString()).put("frameId", candidate)
-            .put("viewport", JSONObject().put("x", 0).put("y", 0).put("width", width).put("height", height))
+        // Navigation and setData can commit before this presentation turn. Read
+        // the authoritative page route after the business transaction, then
+        // bind the next native frame to that route's verified WXML template.
+        inspect()
+        val route = inspected.optJSONObject("page")?.optString("route")
+            ?.takeIf { it.isNotBlank() } ?: started.route
+        val payload = started.renderPayload(route, candidate, width, height)
         val body = dispatch("render.commit", payload)
         check(body.opt("committed") == true && body.optString("source") == "manifest" &&
             PortablePack.integer(body.opt("frameId")) == candidate) { "manifest render did not commit requested frame" }

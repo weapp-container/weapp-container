@@ -14,6 +14,7 @@
   "scripts": {
     "demo:shop:pack": "node scripts/package-shop-demo.mjs --platform web-wasm",
     "demo:shop:browser": "node scripts/shop-demo-browser-smoke.mjs",
+    "demo:shop:static-browser": "node scripts/shop-demo-static-browser-smoke.mjs",
     "demo:shop:package": "node scripts/package-shop-demo.mjs",
     "demo:shop:test": "pnpm demo:shop:package -- --platform web-wasm --out artifacts/shop-demo-test && pnpm demo:shop:browser -- --pack artifacts/shop-demo-test/pack --out artifacts/shop-demo-browser-test",
     "container:pack": "node tools/container-manifest/bin/container-pack.mjs",

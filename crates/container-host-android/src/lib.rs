@@ -317,6 +317,10 @@ impl AndroidHost {
     /// page data or render-tree nodes cross this boundary.
     pub fn presentation_state_json(&self) -> Result<Vec<u8>, HostSessionError> {
         let session = self.session.session().ok_or(HostSessionError::NotLoaded)?;
+        let pages = session.app_service().pages();
+        let page = pages.current().map(|page| {
+            serde_json::json!({"id": page.id.0, "route": page.path})
+        });
         let frame = session
             .accepted_page_observation()
             .map(|observation| observation.frame)
@@ -329,6 +333,8 @@ impl AndroidHost {
             "viewport": {"width": session.config().host.window_width, "height": session.config().host.window_height},
             "viewRevision": session.view().revision,
             "renderRevision": session.render_revision(),
+            "page": page,
+            "pageStackDepth": pages.len(),
             "frame": frame,
         }))?)
     }

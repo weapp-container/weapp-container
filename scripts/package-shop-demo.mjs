@@ -12,6 +12,7 @@ import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { syncPortablePack } from './portable-pack.mjs'
+import { canonicalize } from '../tools/container-manifest/src/json-integrity.mjs'
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const APP = resolve(ROOT, 'examples/apps/shop-demo')
@@ -89,6 +90,27 @@ async function packagePack(source, destination) {
   return syncPortablePack({ source, destination })
 }
 
+async function adaptAndroidPack(pack) {
+  const manifestPath = resolve(pack, 'manifest.json')
+  const manifest = JSON.parse(await readFile(manifestPath))
+  if (manifest.schemaVersion !== 3 || !manifest.rendering || !Array.isArray(manifest.routes)) {
+    throw new Error('Android packaging requires a schema v3 pack with rendering routes')
+  }
+  const sourceRendering = manifest.rendering
+  const pages = Object.fromEntries(manifest.routes.map(route => [route.path, 'skia']))
+  manifest.rendering = { version: '1.0', default: 'skia', pages }
+  const unsigned = structuredClone(manifest)
+  unsigned.integrity.root = ''
+  manifest.integrity.root = createHash('sha256').update(canonicalize(unsigned)).digest('hex')
+  await writeFile(manifestPath, json(manifest))
+  return {
+    source: sourceRendering,
+    effective: manifest.rendering,
+    manifestSha256: sha256(await readFile(manifestPath)),
+    integrityRoot: manifest.integrity.root,
+  }
+}
+
 async function packageWebWasm(pack, platformDir) {
   const llvmBin = process.env.WEAPP_CONTAINER_LLVM_BIN
     || commandPath('llvm-config')?.replace(/\/llvm-config$/, '')
@@ -134,7 +156,7 @@ async function packageDesktop(pack, platformDir) {
   return result
 }
 
-async function packageAndroid(pack, platformDir) {
+async function packageAndroid(platformDir, platformPack) {
   const gradle = commandPath('gradle') || (await exists(resolve(ROOT, 'examples/hosts/android/gradlew')) ? resolve(ROOT, 'examples/hosts/android/gradlew') : null)
   if (!gradle) return platformResult('android', 'blocked', { missingTools: ['Gradle or examples/hosts/android/gradlew'] })
   const nativeDir = resolve(platformDir, 'native')
@@ -151,9 +173,10 @@ async function packageAndroid(pack, platformDir) {
   if (!(await Promise.all(Object.values(rustLibs).map(exists))).every(Boolean)) {
     return platformResult('android', 'failed', { nativeCommands, error: `missing Rust libraries: ${Object.values(rustLibs).join(', ')}` })
   }
+  const rendering = await adaptAndroidPack(platformPack)
   const project = resolve(platformDir, 'project')
   await cp(resolve(ROOT, 'examples/hosts/android'), project, { recursive: true, filter: source => !['.gradle', 'build', 'local.properties'].includes(source.split('/').at(-1)) })
-  await packagePack(pack, resolve(project, 'app/src/main/assets/portable-pack'))
+  await packagePack(platformPack, resolve(project, 'app/src/main/assets/portable-pack'))
   const androidSdk = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT
     || resolve(homedir(), 'Library/Android/sdk')
   const gradleCommand = runCommand(gradle, [':app:assembleDebug', '--no-daemon',
@@ -163,7 +186,9 @@ async function packageAndroid(pack, platformDir) {
     env: await exists(androidSdk) ? { ANDROID_HOME: androidSdk, ANDROID_SDK_ROOT: androidSdk } : {},
   })
   const apk = resolve(project, 'app/build/outputs/apk/debug/app-debug.apk')
-  const result = platformResult('android', gradleCommand.status === 'passed' && await exists(apk) ? 'passed' : 'failed', { nativeCommands, gradleCommand, apk, abis: Object.keys(rustLibs) })
+  const result = platformResult('android', gradleCommand.status === 'passed' && await exists(apk) ? 'passed' : 'failed', {
+    nativeCommands, gradleCommand, apk, abis: Object.keys(rustLibs), rendering,
+  })
   if (result.status === 'passed') result.apkSha256 = sha256(await readFile(apk))
   return result
 }
@@ -232,12 +257,13 @@ async function main() {
     let result
     if (platform === 'web-wasm') result = await packageWebWasm(pack, platformDir)
     else if (platform === 'desktop') result = await packageDesktop(pack, platformDir)
-    else if (platform === 'android') result = await packageAndroid(pack, platformDir)
+    else if (platform === 'android') result = await packageAndroid(platformDir, platformPack)
     else if (platform === 'ios-simulator') result = await packageIOS(pack, platformDir)
     else result = await packageHarmony(pack, platformDir)
     result.pack = platformPack
-    result.manifestSha256 = sha256(manifestBytes)
-    result.integrityRoot = manifest.integrity.root
+    const effectiveManifest = JSON.parse(await readFile(resolve(platformPack, 'manifest.json')))
+    result.manifestSha256 = sha256(await readFile(resolve(platformPack, 'manifest.json')))
+    result.integrityRoot = effectiveManifest.integrity.root
     platforms.push(result)
     await writeReport(resolve(platformDir, 'platform-report.json'), result)
   }

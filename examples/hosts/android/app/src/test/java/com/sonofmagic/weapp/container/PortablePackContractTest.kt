@@ -719,7 +719,7 @@ object PortablePackContractTest {
             session.resize(8, 12, 2.0, 0, 0)
             check(frames.size == 2 && frames.last().width == 4 && frames.last().height == 6)
             val metadata = runtime.presentationState().toString(UTF_8)
-            check(!metadata.contains("pixels") && !metadata.contains("root") && !metadata.contains("page"))
+            check(!metadata.contains("pixels") && !metadata.contains("root") && !metadata.contains("data"))
             check(frames.last().sessionId == started.sessionId)
             session.close()
         }
@@ -962,6 +962,49 @@ object PortablePackContractTest {
             session.resize(12, 8, 2.0, 8, 12)
             check(runtime.resizeCalls == 1)
         }
+        test("navigation renders the inspected route template instead of the startup template") {
+            val alternateRoute = "pages/other/index"
+            val routeFiles = changedManifest { changed ->
+                val routes = changed.getJSONArray("routes")
+                routes.put(JSONObject(routes.getJSONObject(0).toString())
+                    .put("id", "route:$alternateRoute").put("path", alternateRoute))
+                val templates = changed.getJSONArray("templates")
+                templates.put(JSONObject(templates.getJSONObject(0).toString())
+                    .put("id", "template:$alternateRoute.wxml"))
+            }
+            val runtime = RecordingRuntime()
+            val started = load(routeFiles).start(runtime, width = 2, height = 3)
+            val session = PortablePackSession(started, runtime, runtime.presentationState(), onFrame = {}, onReceipt = {})
+            runtime.currentRoute = alternateRoute
+            session.setForeground(false)
+            session.setForeground(true)
+            val render = runtime.requests.last { it.getString("op") == "render.commit" }
+                .getJSONObject("payload")
+            check(render.getLong("frameId") == 2L)
+            check(render.getString("templateId") == "template:$alternateRoute.wxml")
+        }
+        test("Android system back pops one page and renders the restored route") {
+            val alternateRoute = "pages/other/index"
+            val routeFiles = changedManifest { changed ->
+                val routes = changed.getJSONArray("routes")
+                routes.put(JSONObject(routes.getJSONObject(0).toString())
+                    .put("id", "route:$alternateRoute").put("path", alternateRoute))
+                val templates = changed.getJSONArray("templates")
+                templates.put(JSONObject(templates.getJSONObject(0).toString())
+                    .put("id", "template:$alternateRoute.wxml"))
+            }
+            val runtime = RecordingRuntime()
+            val started = load(routeFiles).start(runtime, width = 2, height = 3)
+            runtime.previousRoute = started.route
+            runtime.currentRoute = alternateRoute
+            runtime.pageStackDepth = 2
+            val session = PortablePackSession(started, runtime, runtime.presentationState(), onFrame = {}, onReceipt = {})
+            check(session.navigateBack())
+            check(runtime.currentRoute == started.route && runtime.pageStackDepth == 1)
+            val operations = runtime.requests.takeLast(2).map { it.getString("op") }
+            check(operations == listOf("page.pop", "render.commit"))
+            check(runtime.requests.last().getJSONObject("payload").getString("templateId") == "template:${started.route}.wxml")
+        }
         test("presentation receipt acknowledges only successful matching frame") {
             val (session, _, receipts) = interactive()
             val geometry = JSONObject().put("width", 4).put("height", 6).put("density", 2).put("screenX", 7).put("screenY", 11)
@@ -1136,6 +1179,9 @@ object PortablePackContractTest {
         private var width = 1
         private var height = 1
         private var count = 0
+        var currentRoute = "pages/index/index"
+        var previousRoute: String? = null
+        var pageStackDepth = 1
 
         override fun loadManifest(manifest: ByteArray, config: ByteArray): ByteArray {
             loaded = manifest.copyOf()
@@ -1166,6 +1212,12 @@ object PortablePackContractTest {
                 frameId = request.getJSONObject("payload").getLong("frameId")
                 payload.put("committed", true).put("source", "manifest")
                     .put("templateId", request.getJSONObject("payload").getString("templateId")).put("frameId", frameId).put("backend", "skia-raster")
+            }
+            if (operation == "page.pop") {
+                check(pageStackDepth > 1)
+                currentRoute = previousRoute ?: currentRoute
+                previousRoute = null
+                pageStackDepth -= 1
             }
             if (operation == "event.batch") {
                 val events = request.getJSONObject("payload").getJSONArray("events")
@@ -1216,6 +1268,7 @@ object PortablePackContractTest {
         override fun presentationState(): ByteArray = JSONObject().put("schemaVersion", 1)
             .put("sessionId", config.getString("session_id")).put("viewRevision", frameId + ackDataRevision).put("renderRevision", frameId)
             .put("viewport", JSONObject().put("width", width).put("height", height))
+            .put("page", JSONObject().put("route", currentRoute)).put("pageStackDepth", pageStackDepth)
             .put("frame", JSONObject().put("frame_id", frameId).put("viewport", JSONObject().put("width", width).put("height", height)))
             .also(presentationMutation)
             .toString().toByteArray(UTF_8)
@@ -1235,7 +1288,8 @@ object PortablePackContractTest {
             inspections += 1
             return JSONObject().put("sessionId", config.getString("session_id")).put("viewport", JSONObject().put("width", width).put("height", height))
                 .put("displayMetrics", config.getJSONObject("host").opt("displayMetrics") ?: JSONObject.NULL)
-                .put("page", JSONObject().put("route", "pages/index/index").put("data", JSONObject().put("count", count)))
+                .put("page", JSONObject().put("route", currentRoute).put("data", JSONObject().put("count", count)))
+                .put("pageStackDepth", pageStackDepth)
                 .put("frame", JSONObject().put("frame_id", frameId).put("viewport", JSONObject().put("width", width).put("height", height))
                     .put("root", JSONObject().put("id", "root").put("bounds", JSONObject().put("width", width).put("height", height))))
                 .toString().toByteArray(UTF_8)

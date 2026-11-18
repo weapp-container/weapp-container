@@ -167,6 +167,12 @@ class MainActivity : Activity() {
         super.onPause()
     }
 
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        if (live?.navigateBack() == true) return
+        super.onBackPressed()
+    }
+
     override fun onDestroy() {
         resumed = false
         Choreographer.getInstance().removeFrameCallback(frameCallback)
