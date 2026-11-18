@@ -134,21 +134,32 @@ async function packageAndroid(pack, platformDir) {
   const gradle = commandPath('gradle') || (await exists(resolve(ROOT, 'examples/hosts/android/gradlew')) ? resolve(ROOT, 'examples/hosts/android/gradlew') : null)
   if (!gradle) return platformResult('android', 'blocked', { missingTools: ['Gradle or examples/hosts/android/gradlew'] })
   const nativeDir = resolve(platformDir, 'native')
-  const nativeCommand = runCommand(process.execPath, [resolve(ROOT, 'scripts/build-native-hosts.mjs'), '--build', '--platform', 'android', '--out', nativeDir])
-  if (nativeCommand.status !== 'passed') return platformResult('android', 'failed', { nativeCommand })
-  const rustLib = resolve(ROOT, 'target/aarch64-linux-android/debug/libcontainer_host_android.so')
-  if (!await exists(rustLib)) return platformResult('android', 'failed', { nativeCommand, error: `missing Rust library: ${rustLib}` })
+  const nativeBuilds = [
+    { abi: 'arm64-v8a', target: 'aarch64-linux-android', report: resolve(nativeDir, 'arm64-build.json') },
+    { abi: 'armeabi-v7a', target: 'armv7-linux-androideabi', report: resolve(nativeDir, 'armv7-build.json') },
+  ]
+  const nativeCommands = nativeBuilds.map(({ abi, report }) => ({
+    abi,
+    ...runCommand(process.execPath, [resolve(ROOT, 'scripts/build-native-hosts.mjs'), '--build', '--platform', 'android', '--android-abi', abi, '--out', report]),
+  }))
+  if (nativeCommands.some(command => command.status !== 'passed')) return platformResult('android', 'failed', { nativeCommands })
+  const rustLibs = Object.fromEntries(nativeBuilds.map(({ abi, target }) => [abi, resolve(ROOT, `target/${target}/debug/libcontainer_host_android.so`)]))
+  if (!(await Promise.all(Object.values(rustLibs).map(exists))).every(Boolean)) {
+    return platformResult('android', 'failed', { nativeCommands, error: `missing Rust libraries: ${Object.values(rustLibs).join(', ')}` })
+  }
   const project = resolve(platformDir, 'project')
   await cp(resolve(ROOT, 'examples/hosts/android'), project, { recursive: true, filter: source => !['.gradle', 'build', 'local.properties'].includes(source.split('/').at(-1)) })
   await packagePack(pack, resolve(project, 'app/src/main/assets/portable-pack'))
   const androidSdk = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT
     || resolve(homedir(), 'Library/Android/sdk')
-  const gradleCommand = runCommand(gradle, [':app:assembleDebug', '--no-daemon', `-PweappContainerAndroidRustLib=${rustLib}`], {
+  const gradleCommand = runCommand(gradle, [':app:assembleDebug', '--no-daemon',
+    `-PweappContainerAndroidRustLibArm64=${rustLibs['arm64-v8a']}`,
+    `-PweappContainerAndroidRustLibArmv7=${rustLibs['armeabi-v7a']}`], {
     cwd: project,
     env: await exists(androidSdk) ? { ANDROID_HOME: androidSdk, ANDROID_SDK_ROOT: androidSdk } : {},
   })
   const apk = resolve(project, 'app/build/outputs/apk/debug/app-debug.apk')
-  const result = platformResult('android', gradleCommand.status === 'passed' && await exists(apk) ? 'passed' : 'failed', { nativeCommand, gradleCommand, apk })
+  const result = platformResult('android', gradleCommand.status === 'passed' && await exists(apk) ? 'passed' : 'failed', { nativeCommands, gradleCommand, apk, abis: Object.keys(rustLibs) })
   if (result.status === 'passed') result.apkSha256 = sha256(await readFile(apk))
   return result
 }

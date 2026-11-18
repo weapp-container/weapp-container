@@ -62,6 +62,7 @@ function rustTargetProbe() {
     'aarch64-apple-ios',
     'aarch64-apple-ios-sim',
     'aarch64-linux-android',
+    'armv7-linux-androideabi',
     'x86_64-linux-android',
     'aarch64-unknown-linux-ohos',
   ]

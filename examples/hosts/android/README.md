@@ -152,13 +152,27 @@ uses NDK/bindgen bindings for the actual Android ABI; plain desktop QuickJS
 bindings are not reused. An explicit `--engine v8` requests V8 and must fail
 when that target's native provider cannot build; it never substitutes QuickJS.
 
-With Android Gradle Plugin, the NDK and an installed Gradle wrapper available,
-assemble the arm64 APK by passing the artifact explicitly:
+With Android Gradle Plugin, the NDK and an installed Gradle available,
+assemble the APK by passing one Rust artifact per selected ABI. The sample
+defaults to `arm64-v8a` when only the legacy property is supplied, and accepts
+both 64-bit and 32-bit ARM libraries for a universal APK:
 
 ```sh
-./gradlew :app:assembleDebug \
-  -PweappContainerAndroidRustLib="$PWD/../../../target/aarch64-linux-android/debug/libcontainer_host_android.so"
+gradle :app:assembleDebug \
+  -PweappContainerAndroidRustLibArm64="$PWD/../../../target/aarch64-linux-android/debug/libcontainer_host_android.so" \
+  -PweappContainerAndroidRustLibArmv7="$PWD/../../../target/armv7-linux-androideabi/debug/libcontainer_host_android.so"
 ```
+
+Build the 32-bit Rust host explicitly when it is needed outside the demo
+packager:
+
+```sh
+node scripts/build-native-hosts.mjs --build --platform android \
+  --android-abi armeabi-v7a --out artifacts/android-armv7.json
+```
+
+The native ABI target is `armv7-linux-androideabi`; its Android deployment
+floor remains API 26 because the pinned Skia backend requires that floor.
 
 The Gradle/CMake project is an integration skeleton. APK signing, installation
 and emulator/device validation remain separate gates.

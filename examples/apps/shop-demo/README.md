@@ -12,6 +12,6 @@ pnpm demo:shop:browser -- --out artifacts/shop-demo-browser
 pnpm demo:shop:test
 ```
 
-`demo:shop:package` 会生成一个 portable pack，并在 `artifacts/shop-demo/package-report.json` 中记录 Web/WASM、桌面、Android、iOS Simulator 和 HarmonyOS 的 `passed`、`blocked` 或 `failed` 状态。缺少本机 SDK/工具链时保留为 `blocked`，不会借用旧产物。
+`demo:shop:package` 会生成一个 portable pack，并在 `artifacts/shop-demo/package-report.json` 中记录 Web/WASM、桌面、Android、iOS Simulator 和 HarmonyOS 的 `passed`、`blocked` 或 `failed` 状态。Android APK 同时包含 `arm64-v8a` 与 `armeabi-v7a`；最低系统版本为 API 26。缺少本机 SDK/工具链时保留为 `blocked`，不会借用旧产物。
 
 浏览器验收覆盖首页、详情、加入购物车、数量调整、结算、订单完成和刷新后的购物车持久化，默认测试 375×667 和 1024×768。原生构建结果只表示对应平台的编译/打包边界通过；设备、GPU 和物理 iOS 安装仍需独立证据。

@@ -55,11 +55,12 @@ if (name === 'rustup') {
   fs.appendFileSync(path.join(process.cwd(), 'cargo-history.jsonl'), receipt + '\\n');
   const targetArg = process.argv.indexOf('--target-dir');
   const targetDir = path.resolve(process.cwd(), targetArg < 0 ? process.env.CARGO_TARGET_DIR || 'target' : process.argv[targetArg + 1]);
+  const requestedTarget = process.argv.indexOf('--target');
   const target = path.join(targetDir, (process.argv.includes('container-host-ios')
     ? 'aarch64-apple-ios-sim/debug/libcontainer_host_ios.a'
     : process.argv.includes('container-host-harmony')
       ? 'aarch64-unknown-linux-ohos/debug/libcontainer_host_harmony.so'
-      : 'aarch64-linux-android/debug/libcontainer_host_android.so').replace('/debug/', process.argv.includes('--release') ? '/release/' : '/debug/'));
+      : (requestedTarget >= 0 ? process.argv[requestedTarget + 1] : 'aarch64-linux-android') + '/debug/libcontainer_host_android.so').replace('/debug/', process.argv.includes('--release') ? '/release/' : '/debug/'));
   fs.mkdirSync(path.dirname(target), { recursive: true });
   let bytes = Buffer.from('recording fixture, not a native library');
   if (process.env.WEAPP_SHOWCASE_POLICY) bytes = Buffer.concat([bytes, Buffer.from('weapp-container-distribution:restricted-showcase:' + require('node:crypto').createHash('sha256').update(fs.readFileSync(process.env.WEAPP_SHOWCASE_POLICY)).digest('hex') + String.fromCharCode(0))]);
@@ -96,6 +97,10 @@ if (name === 'rustup') {
       writeFileSync(resolve(prebuilt, 'bin', `aarch64-linux-android${api}-${suffix}`), '')
     }
     mkdirSync(resolve(prebuilt, 'sysroot/usr/lib/aarch64-linux-android', String(api)), { recursive: true })
+    for (const suffix of ['clang', 'clang++']) {
+      writeFileSync(resolve(prebuilt, 'bin', `armv7a-linux-androideabi${api}-${suffix}`), '')
+    }
+    mkdirSync(resolve(prebuilt, 'sysroot/usr/lib/arm-linux-androideabi', String(api)), { recursive: true })
   }
   const harmonySdk = resolve(dir, 'harmony-sdk')
   mkdirSync(resolve(harmonySdk, 'native/llvm/bin'), { recursive: true })
@@ -119,6 +124,7 @@ function run(value, api, extraEnv = {}, additionalPlatforms = [], extraArgs = []
   }
   delete env.ANDROID_API_LEVEL
   delete env.BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android
+  delete env.BINDGEN_EXTRA_CLANG_ARGS_armv7_linux_androideabi
   // Recording fixtures own their synthetic target tree. A workspace test
   // runner's cache path must not leak into the fixtures; explicit per-scenario
   // overrides below exercise inherited and CLI-selected shared caches.
@@ -331,6 +337,21 @@ test('Android explicit API reaches Rust, QuickJS and JNI with a separate pinned 
   const args = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8')).env.BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android
   assert.ok(args.startsWith('-DWEAPP_BINDGEN_TEST=1 '))
   assert.ok(args.lastIndexOf('--target=aarch64-linux-android30') > args.indexOf('--target=aarch64-linux-android35'))
+})
+
+test('Android selects the armeabi-v7a Rust target and matching NDK tools', { skip: unsupportedShell }, (t) => {
+  const value = fixture(t)
+  const { result, platform } = run(value, undefined, {}, [], ['--android-abi', 'armeabi-v7a'])
+  assert.equal(result.status, 0, result.stderr)
+  assert.equal(platform.target, 'armv7-linux-androideabi')
+  assert.equal(platform.toolchain.abi, 'armeabi-v7a')
+  const cargo = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8'))
+  const linker = resolve(value.prebuilt, 'bin', 'armv7a-linux-androideabi26-clang')
+  assert.equal(cargo.env.CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER, linker)
+  assert.equal(cargo.env.CC_armv7_linux_androideabi, linker)
+  assert.equal(cargo.env.CXX_armv7_linux_androideabi, `${linker}++`)
+  assert.match(cargo.env.BINDGEN_EXTRA_CLANG_ARGS_armv7_linux_androideabi, /--target=armv7-linux-androideabi26(?: |$)/)
+  assert.ok(cargo.args.includes('--target') && cargo.args[cargo.args.indexOf('--target') + 1] === 'armv7-linux-androideabi')
 })
 
 for (const exitCode of [0, 39]) {

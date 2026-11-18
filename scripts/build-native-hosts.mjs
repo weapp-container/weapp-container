@@ -110,6 +110,24 @@ const engineIndex = args.indexOf('--engine')
 const engine = engineIndex < 0 ? 'quickjs' : args[engineIndex + 1]
 if (!['quickjs', 'v8'].includes(engine)) throw new Error('ERR_ENGINE: --engine must be quickjs or v8')
 
+const androidAbi = option('--android-abi', 'arm64-v8a')
+const androidAbiSpecs = {
+  'arm64-v8a': {
+    target: 'aarch64-linux-android',
+    linkerPrefix: 'aarch64-linux-android',
+    sysrootLibDir: 'aarch64-linux-android',
+    envTarget: 'aarch64_linux_android',
+  },
+  'armeabi-v7a': {
+    target: 'armv7-linux-androideabi',
+    linkerPrefix: 'armv7a-linux-androideabi',
+    sysrootLibDir: 'arm-linux-androideabi',
+    envTarget: 'armv7_linux_androideabi',
+  },
+}
+if (!androidAbiSpecs[androidAbi]) throw new Error(`--android-abi must be one of ${Object.keys(androidAbiSpecs).join(', ')}`)
+const selectedAndroid = androidAbiSpecs[androidAbi]
+
 const specs = {
   android: {
     crate: 'container-host-android',
@@ -117,7 +135,8 @@ const specs = {
     // native deployment floor. Explicit overrides apply to Rust and JNI.
     minimumApi: 26,
     feature: 'android,gles,skia-gpu-gles,quickjs-native-android',
-    target: 'aarch64-linux-android',
+    abi: androidAbi,
+    target: selectedAndroid.target,
     project: 'examples/hosts/android',
     files: [
       'settings.gradle.kts',
@@ -134,7 +153,7 @@ const specs = {
       'app/src/main/cpp/weapp_container_android_ffi.h',
     ],
     ffiSymbols: ['weapp_container_android_host_new', 'weapp_container_android_host_capabilities', 'weapp_container_android_host_load_manifest', 'weapp_container_android_host_load_manifest_with_config', 'weapp_container_android_host_start', 'weapp_container_android_host_dispatch_batch_json', 'weapp_container_android_host_render_snapshot', 'weapp_container_android_host_inspect_state', 'weapp_container_android_host_resize_viewport', 'weapp_container_android_host_update_window_metrics_json', 'weapp_container_android_host_poll_timers', 'weapp_container_android_host_canvas_snapshot', 'weapp_container_android_host_attach_gles_context', 'weapp_container_android_host_render_gles_framebuffer', 'weapp_container_android_host_detach_gles_context'],
-    artifact: 'target/aarch64-linux-android/debug/libcontainer_host_android.so',
+    artifact: `target/${selectedAndroid.target}/debug/libcontainer_host_android.so`,
   },
   ios: {
     crate: 'container-host-ios',
@@ -281,7 +300,7 @@ function nativeToolchain(name) {
     const validApi = /^[1-9][0-9]*$/.test(rawApi) && Number.isSafeInteger(Number(rawApi))
       && Number(rawApi) >= specs.android.minimumApi
     const apiLevel = validApi ? Number(rawApi) : null
-    const base = { env: {}, linker: null, sdk: ndk, apiLevel, apiSource, minimumApi: specs.android.minimumApi }
+    const base = { env: {}, linker: null, sdk: ndk, abi: androidAbi, apiLevel, apiSource, minimumApi: specs.android.minimumApi }
     if (!validApi) return {
       ...base,
       error: `ANDROID_API_LEVEL must be an integer >= ${specs.android.minimumApi}; received ${JSON.stringify(rawApi)}`,
@@ -294,14 +313,14 @@ function nativeToolchain(name) {
         ? ['linux-x86_64']
         : ['darwin-aarch64', 'darwin-x86_64']
     const hosts = hostCandidates.find(host => existsSync(resolve(prebuilt, host))) || null
-    const linker = hosts ? resolve(prebuilt, hosts, 'bin', `aarch64-linux-android${apiLevel}-clang`) : null
+    const linker = hosts ? resolve(prebuilt, hosts, 'bin', `${selectedAndroid.linkerPrefix}${apiLevel}-clang`) : null
     const cxx = linker ? `${linker}++` : null
     const sysroot = hosts ? resolve(prebuilt, hosts, 'sysroot') : null
     if (!linker || !existsSync(linker) || !cxx || !existsSync(cxx)) return {
       ...base,
       error: `Android NDK C/C++ compiler for API ${apiLevel} is unavailable`,
     }
-    if (!sysroot || !existsSync(resolve(sysroot, 'usr/lib/aarch64-linux-android', String(apiLevel)))) return {
+    if (!sysroot || !existsSync(resolve(sysroot, 'usr/lib', selectedAndroid.sysrootLibDir, String(apiLevel)))) return {
       ...base,
       error: `Android NDK sysroot libraries for API ${apiLevel} are unavailable`,
     }
@@ -318,24 +337,24 @@ function nativeToolchain(name) {
         // Apple host dependencies can still discover their SDK via xcrun.
         SDKROOT: null,
         SDKTARGETSYSROOT: null,
-        CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER: linker,
+        [`CARGO_TARGET_${selectedAndroid.envTarget.toUpperCase()}_LINKER`]: linker,
         // skia-bindings compiles C++ locally through cc-rs. Cargo's linker
         // setting does not configure it, so select both NDK drivers.
-        CC_aarch64_linux_android: linker,
-        CXX_aarch64_linux_android: cxx,
+        [`CC_${selectedAndroid.envTarget}`]: linker,
+        [`CXX_${selectedAndroid.envTarget}`]: cxx,
         PATH: `${dirname(linker)}:${process.env.PATH || ''}`,
         // skia-bindings needs ANDROID_NDK when the target binary cache is
         // unavailable and it must build its GLES backend locally.
         ANDROID_NDK: ndk,
         // QuickJS Android bindgen must use the same target and libc ABI.
         ...(libclang ? { LIBCLANG_PATH: libclang } : {}),
-        BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android: [
-          process.env.BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android,
+        [`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`]: [
+          process.env[`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`],
           // Keep the selected target/sysroot last, so extra include or
           // define flags cannot silently switch QuickJS to another ABI.
-          `--target=aarch64-linux-android${apiLevel}`,
+          `--target=${selectedAndroid.target}${apiLevel}`,
           `--sysroot=${JSON.stringify(sysroot)}`,
-          `-isystem ${JSON.stringify(resolve(sysroot, 'usr/include/aarch64-linux-android'))}`,
+          `-isystem ${JSON.stringify(resolve(sysroot, 'usr/include', selectedAndroid.sysrootLibDir))}`,
         ].filter(Boolean).join(' '),
       },
     }
@@ -479,16 +498,17 @@ function nativeToolchain(name) {
 function buildProjectIntegration(name, spec, toolchain, artifactPath) {
   if (mode !== 'build') return { status: 'not-run', reason: 'check mode' }
   if (name === 'android' && toolchain.sdk) {
-    const cmakeBuild = resolve(root, 'target/native-host-integration/android')
+    const cmakeBuild = resolve(root, 'target/native-host-integration/android', toolchain.abi)
     const cmakeToolchain = resolve(toolchain.sdk, 'build/cmake/android.toolchain.cmake')
     const configureArgs = [
       '-S', resolve(root, spec.project, 'app/src/main/cpp'),
       '-B', cmakeBuild,
       '-G', 'Ninja',
       `-DCMAKE_TOOLCHAIN_FILE=${cmakeToolchain}`,
-      '-DANDROID_ABI=arm64-v8a',
+      `-DANDROID_ABI=${toolchain.abi}`,
       `-DANDROID_PLATFORM=android-${toolchain.apiLevel}`,
       `-DWEAPP_CONTAINER_ANDROID_RUST_LIB=${artifactPath}`,
+      `-DWEAPP_CONTAINER_ANDROID_RUST_LIB_${toolchain.abi === 'armeabi-v7a' ? 'ARMV7' : 'ARM64'}=${artifactPath}`,
     ]
     let configure = run('cmake', configureArgs, toolchain.env)
     let recovery = null
@@ -621,6 +641,7 @@ function runPlatform(name) {
       linker: toolchain.linker,
       ...(name === 'harmony' ? { skia: toolchain.skiaBuild, error: toolchain.error || null } : {}),
       ...(name === 'android' ? {
+        abi: toolchain.abi,
         apiLevel: toolchain.apiLevel,
         apiSource: toolchain.apiSource,
         sampleMinSdk: toolchain.minimumApi,

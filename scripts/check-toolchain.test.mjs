@@ -12,7 +12,8 @@ async function withTools(verify) {
     await mkdir(bin)
     const log = join(root, 'probes.log')
     for (const name of ['rustc', 'cargo', 'node', 'git', 'rustup', 'xcodebuild', 'hdc']) {
-      await writeFile(join(bin, name), `#!/bin/sh\nprintf '%s\\n' '${name}' >> "$WEAPP_CONTAINER_TEST_PROBE_LOG"\nprintf '%s\\n' 'fixture-version'\nexit 0\n`, { mode: 0o755 })
+      const rustup = name === 'rustup' ? `if [ "$1" = "target" ]; then printf '%s\\n' 'armv7-linux-androideabi'; exit 0; fi\n` : ''
+      await writeFile(join(bin, name), `#!/bin/sh\nprintf '%s\\n' '${name}' >> "$WEAPP_CONTAINER_TEST_PROBE_LOG"\n${rustup}printf '%s\\n' 'fixture-version'\nexit 0\n`, { mode: 0o755 })
     }
     const env = { ...process.env, PATH: bin, WEAPP_CONTAINER_TEST_PROBE_LOG: log,
       ANDROID_HOME: join(root, 'missing-android'), ANDROID_SDK_ROOT: join(root, 'missing-android'),
@@ -33,6 +34,7 @@ test('ordinary setup requires base tools and reports optional SDKs separately', 
     assert.deepEqual(Object.keys(report).sort(), ['optional', 'required', 'rustTargets', 'strict'])
     assert.equal(report.required.length, 4)
     assert.ok(report.required.every(item => item.available))
+    assert.equal(report.rustTargets.targets.find(item => item.target === 'armv7-linux-androideabi').installed, true)
     assert.ok(report.optional.every(item => !item.complete))
     const commands = (await readFile(log, 'utf8')).trim().split('\n')
     assert.deepEqual([...new Set(commands)].sort(), ['cargo', 'git', 'hdc', 'node', 'rustc', 'rustup', 'xcodebuild'])

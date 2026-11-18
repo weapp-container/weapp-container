@@ -9,13 +9,23 @@ target_compile_definitions(weapp_container PRIVATE WEAPP_CONTAINER_ANDROID_SKIA_
 # The Rust cdylib is produced by scripts/build-native-hosts.mjs and copied into
 # this directory before an Android Gradle build.  Keeping the location
 # explicit prevents Gradle from silently selecting a stale architecture.
-set(WEAPP_CONTAINER_ANDROID_RUST_LIB "" CACHE FILEPATH "Path to libcontainer_host_android.so")
-if(NOT WEAPP_CONTAINER_ANDROID_RUST_LIB)
-    message(FATAL_ERROR "WEAPP_CONTAINER_ANDROID_RUST_LIB is required; run pnpm native:build first")
+set(WEAPP_CONTAINER_ANDROID_RUST_LIB "" CACHE FILEPATH "Legacy arm64 path to libcontainer_host_android.so")
+set(WEAPP_CONTAINER_ANDROID_RUST_LIB_ARM64 "" CACHE FILEPATH "arm64-v8a path to libcontainer_host_android.so")
+set(WEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7 "" CACHE FILEPATH "armeabi-v7a path to libcontainer_host_android.so")
+if(ANDROID_ABI STREQUAL "armeabi-v7a")
+    set(WEAPP_CONTAINER_ANDROID_RUST_LIB_SELECTED "${WEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7}")
+else()
+    set(WEAPP_CONTAINER_ANDROID_RUST_LIB_SELECTED "${WEAPP_CONTAINER_ANDROID_RUST_LIB_ARM64}")
+    if(NOT WEAPP_CONTAINER_ANDROID_RUST_LIB_SELECTED)
+        set(WEAPP_CONTAINER_ANDROID_RUST_LIB_SELECTED "${WEAPP_CONTAINER_ANDROID_RUST_LIB}")
+    endif()
+endif()
+if(NOT WEAPP_CONTAINER_ANDROID_RUST_LIB_SELECTED)
+    message(FATAL_ERROR "A Rust library for ${ANDROID_ABI} is required; run pnpm native:build first")
 endif()
 add_library(weapp_container_rust SHARED IMPORTED)
 set_target_properties(weapp_container_rust PROPERTIES
-    IMPORTED_LOCATION "${WEAPP_CONTAINER_ANDROID_RUST_LIB}"
+    IMPORTED_LOCATION "${WEAPP_CONTAINER_ANDROID_RUST_LIB_SELECTED}"
     # Rust's cdylib has no SONAME by default.  Without an explicit imported
     # SONAME the linker records the developer's absolute checkout path in
     # DT_NEEDED and Android's linker cannot load the APK on a device.

@@ -6,6 +6,16 @@ plugins {
 val rustJniLibsDir = layout.buildDirectory.dir("generated/rust-jni-libs")
 val configuredRustLib = providers.gradleProperty("weappContainerAndroidRustLib")
     .orElse(providers.environmentVariable("WEAPP_CONTAINER_ANDROID_RUST_LIB"))
+val configuredRustLibArm64 = providers.gradleProperty("weappContainerAndroidRustLibArm64")
+    .orElse(providers.environmentVariable("WEAPP_CONTAINER_ANDROID_RUST_LIB_ARM64"))
+val configuredRustLibArmv7 = providers.gradleProperty("weappContainerAndroidRustLibArmv7")
+    .orElse(providers.environmentVariable("WEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7"))
+val rustLibArm64 = (configuredRustLibArm64.orNull ?: configuredRustLib.orNull)?.takeIf { it.isNotBlank() }
+val rustLibArmv7 = configuredRustLibArmv7.orNull?.takeIf { it.isNotBlank() }
+val configuredAbis = buildList {
+    if (rustLibArm64 != null) add("arm64-v8a")
+    if (rustLibArmv7 != null) add("armeabi-v7a")
+}
 
 android {
     namespace = "com.sonofmagic.weapp.container"
@@ -31,7 +41,7 @@ android {
         versionName = "0.1.0"
 
         ndk {
-            abiFilters += listOf("arm64-v8a")
+            abiFilters += configuredAbis.ifEmpty { listOf("arm64-v8a") }
         }
 
         externalNativeBuild {
@@ -40,6 +50,8 @@ android {
                 val rustLib = providers.gradleProperty("weappContainerAndroidRustLib").orNull
                     ?: System.getenv("WEAPP_CONTAINER_ANDROID_RUST_LIB")
                 arguments += "-DWEAPP_CONTAINER_ANDROID_RUST_LIB=${rustLib ?: ""}"
+                arguments += "-DWEAPP_CONTAINER_ANDROID_RUST_LIB_ARM64=${configuredRustLibArm64.orNull ?: rustLib ?: ""}"
+                arguments += "-DWEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7=${configuredRustLibArmv7.orNull ?: ""}"
             }
         }
     }
@@ -64,15 +76,27 @@ android {
 // does not package that imported target automatically. Copy the exact Rust
 // artifact into Gradle's generated jniLibs directory so Android's linker can
 // resolve the SONAME at runtime without mutating the source tree.
-val copyWeappContainerRustLib = tasks.register<Copy>("copyWeappContainerRustLib") {
-    val rustLib = configuredRustLib.orNull?.takeIf { it.isNotBlank() }
-        ?: throw GradleException("weappContainerAndroidRustLib or WEAPP_CONTAINER_ANDROID_RUST_LIB is required")
-    from(file(rustLib))
-    into(rustJniLibsDir.map { it.dir("arm64-v8a") })
-    rename { "libcontainer_host_android.so" }
+val copyWeappContainerRustLibArm64 = rustLibArm64?.let { rustLib ->
+    tasks.register<Copy>("copyWeappContainerRustLibArm64") {
+        from(file(rustLib))
+        into(rustJniLibsDir.map { it.dir("arm64-v8a") })
+        rename { "libcontainer_host_android.so" }
+    }
+}
+
+val copyWeappContainerRustLibArmv7 = rustLibArmv7?.let { rustLib ->
+    tasks.register<Copy>("copyWeappContainerRustLibArmv7") {
+        from(file(rustLib))
+        into(rustJniLibsDir.map { it.dir("armeabi-v7a") })
+        rename { "libcontainer_host_android.so" }
+    }
 }
 
 tasks.named("preBuild") {
-    dependsOn(copyWeappContainerRustLib)
+    copyWeappContainerRustLibArm64?.let { dependsOn(it) }
+    copyWeappContainerRustLibArmv7?.let { dependsOn(it) }
+    if (copyWeappContainerRustLibArm64 == null && copyWeappContainerRustLibArmv7 == null) {
+        throw GradleException("at least one Android Rust library path is required")
+    }
 }
 
