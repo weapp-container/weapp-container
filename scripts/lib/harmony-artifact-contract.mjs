@@ -64,7 +64,8 @@ export function collectHarmonyGeneratedMetadata(project) {
   const rpc = read('syscap/default/rpcid.sc'), input = parseHarmonyMetadataJson(read('syscap/default/rpcid.json'))
   assert.deepEqual(Object.keys(input).sort(), ['api_version', 'syscap'])
   const context = read('loader/default/pkgContextInfo.json')
-  assert.deepEqual(parseHarmonyMetadataJson(context), compilerPackageContext(), 'Unreviewed compiler package context fields')
+  const parsedContext = parseHarmonyMetadataJson(context)
+  assert.ok([compilerPackageContext(), packagedPackageContext()].some(value => deepEqualJson(value, parsedContext)), 'Unreviewed compiler package context fields')
   // Official packing-tool serializes the typed context in this field order.
   // Retain the compiler input digest while binding the expected packaged bytes.
   const packagedContext = Buffer.from(JSON.stringify(packagedPackageContext()))
@@ -72,6 +73,10 @@ export function collectHarmonyGeneratedMetadata(project) {
     { path: 'rpcid.sc', size: rpc.length, sha256: sha(rpc), kind: 'ohos-rpcid-v2', apiVersion: input.api_version, systemCapabilities: input.syscap },
     { path: 'pkgContextInfo.json', size: packagedContext.length, sha256: sha(packagedContext), kind: 'ohos-package-context-v1', inputSha256: sha(context) },
   ]
+}
+
+function deepEqualJson(left, right) {
+  try { assert.deepEqual(left, right); return true } catch { return false }
 }
 export function assertHarmonyNativeRelease(report, rustLibrary, expectedDistribution) {
   const identity = assertDistributionIdentity(report, expectedDistribution)

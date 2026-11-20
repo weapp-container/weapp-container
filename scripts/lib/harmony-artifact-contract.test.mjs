@@ -101,6 +101,14 @@ test('Harmony accepts the current Hvigor package context entry path', t => {
   assert.equal(inspectHarmonyHap(f.make(new Map(f.entries).set('pkgContextInfo.json', bytes)), f.expected, { metadata }).length, 7)
 })
 
+test('Harmony metadata collection accepts the current Hvigor compiler context', t => {
+  const f = fixture(t)
+  const current = context()
+  current['libentry.so'].entryPath = 'index'
+  writeFileSync(resolve(f.intermediate, 'loader/default/pkgContextInfo.json'), json(current))
+  assert.equal(collectHarmonyGeneratedMetadata(f.directory).find(item => item.path === 'pkgContextInfo.json').kind, 'ohos-package-context-v1')
+})
+
 test('Rehashed package metadata cannot smuggle unknown fields, duplicate fields, paths or boolean coercions', t => {
   const f = fixture(t)
   for (const mutate of [
