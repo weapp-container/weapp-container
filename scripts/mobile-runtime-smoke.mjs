@@ -180,6 +180,24 @@ function firstAndroidSerial(stdout) {
     .find(parts => parts[0] && parts[1] === 'device')?.[0] || null
 }
 
+function blockedAndroidRun({ serial, gate, reason, probes }) {
+  return {
+    platform: 'android',
+    status: 'blocked',
+    runtimeStatus: 'blocked',
+    gate,
+    reason,
+    environment: runtimeEnvironment(serial),
+    serial,
+    package: 'com.sonofmagic.weapp.container',
+    artifact: androidApk,
+    artifactDigestFile: androidApk,
+    artifactSha256: artifactDigest(androidApk),
+    expectedEngine,
+    probes,
+  }
+}
+
 function parsePlistValue(path, key) {
   const result = run('/usr/libexec/PlistBuddy', ['-c', `Print :${key}`, path])
   return result.status === 'passed' ? result.stdout.trim() : null
@@ -212,6 +230,23 @@ function androidSmoke() {
     }
   }
   const install = run('adb', ['-s', serial, 'install', '-r', androidApk])
+  if (install.status !== 'passed') {
+    return blockedAndroidRun({
+      serial,
+      gate: 'blocked-install',
+      reason: 'APK installation failed; the installed app was not started',
+      probes: [list, install],
+    })
+  }
+  const receiptAccess = run('adb', ['-s', serial, 'shell', 'run-as', 'com.sonofmagic.weapp.container', 'id'])
+  if (receiptAccess.status !== 'passed') {
+    return blockedAndroidRun({
+      serial,
+      gate: 'blocked-runtime-receipt',
+      reason: 'the installed app does not allow private execution receipt access; runtime smoke was not started',
+      probes: [list, install, receiptAccess],
+    })
+  }
   const clear = run('adb', ['-s', serial, 'logcat', '-c'])
   const stop = run('adb', ['-s', serial, 'shell', 'am', 'force-stop', 'com.sonofmagic.weapp.container'])
   const clearReceipt = run('adb', ['-s', serial, 'shell', 'run-as', 'com.sonofmagic.weapp.container', 'rm', '-f', 'files/portable-pack-execution.json'])

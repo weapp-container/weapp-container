@@ -223,6 +223,9 @@ explicit `WEAPP_CONTAINER_ANDROID_SERIAL` is set. It uses a unique session,
 polls the app's atomic receipt for the matching engine, fixture and attached
 Skia GLES frame, then force-stops only this sample package. The report keeps
 the APK digest, runtime receipt, renderer probes and command diagnostics.
+The runner requires a debuggable APK because it reads the app-owned receipt
+through `run-as`. It blocks before launching an already installed package when
+installation fails or a release APK does not expose that receipt boundary.
 
 For the bundled reference fixture, add the explicit interaction plan on a
 selected official emulator and a debuggable APK:
