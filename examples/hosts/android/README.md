@@ -141,7 +141,34 @@ is not persisted by release builds. GPU rerenders pass committed frame metadata
 without RGBA readback; the startup screenshot remains an explicit diagnostic.
 Input/frame latency has not passed a performance gate.
 
-Build the native artifact first:
+Build a clean, source-bound debug APK and retain its build receipt outside the
+checkout:
+
+```sh
+node scripts/build-android-apk.mjs \
+  --out-dir /absolute/path/to/android-build \
+  --engine quickjs
+```
+
+The producer builds the Rust host, runs Gradle from an isolated Android project
+copy, verifies the exact native library embedded in the APK, and records the
+source-file inventory and APK digest in `android-apk-build.json`. It requires a
+clean Git worktree. The output directory must be outside the repository.
+
+Run the source-bound APK on an explicitly selected target:
+
+```sh
+node scripts/mobile-runtime-smoke.mjs --platform android \
+  --android-apk /absolute/path/to/android-build/app-debug.apk \
+  --build-receipt /absolute/path/to/android-build/android-apk-build.json \
+  --expected-source-commit "$(git rev-parse HEAD)" \
+  --engine quickjs --out /absolute/path/to/android-build/android-runtime-smoke.json
+```
+
+The source gate passes only when the receipt's clean source commit, source-file
+inventory, Rust ABI, Gradle output and APK hash all match the executed APK.
+
+For lower-level native boundary diagnostics, build the native artifact directly:
 
 ```sh
 node scripts/build-native-hosts.mjs --build --platform android --engine quickjs \
@@ -177,14 +204,6 @@ floor remains API 26 because the pinned Skia backend requires that floor.
 
 The Gradle/CMake project is an integration skeleton. APK signing, installation
 and emulator/device validation remain separate gates.
-
-Run an APK on an explicitly selected target from the repository root:
-
-```sh
-node scripts/mobile-runtime-smoke.mjs --platform android \
-  --android-apk /absolute/path/to/app-debug.apk \
-  --engine quickjs --out /absolute/path/to/android-runtime-smoke.json
-```
 
 The smoke runner installs the APK on the first online adb target unless an
 explicit `WEAPP_CONTAINER_ANDROID_SERIAL` is set. It uses a unique session,

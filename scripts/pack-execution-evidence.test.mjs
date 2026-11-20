@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { EXECUTION_HOSTS, MOBILE_EXECUTION_HOSTS, collectPackExecutionEvidence, inspectExecutionFixture, inspectPackExecutionMatrix, inspectPackExecutionReceipt } from './pack-execution-evidence.mjs'
+import { inspectAndroidApkBuildReceipt, sourceInventorySha256 } from './lib/android-apk-build-receipt.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim()
@@ -487,4 +488,58 @@ else if (args.includes('logcat') && args.includes('-d')) {
     const read = invoked.findIndex(args => args.includes('cat') && args.includes('files/portable-pack-execution.json'))
     assert.ok(clear >= 0 && clear < start && start < read)
   } finally { rmSync(directory, { recursive: true, force: true }) }
+})
+
+test('Android APK build receipts bind clean source inputs, native ABI, engine and exact APK bytes', () => {
+  const paths = [...new Set([
+    ...git(['ls-files', '--', 'examples/hosts/android']).split(/\r?\n/).filter(Boolean),
+    'scripts/build-android-apk.mjs',
+    'scripts/lib/android-apk-build-receipt.mjs',
+    'scripts/mobile-runtime-smoke.mjs',
+    'scripts/pack-execution-evidence.mjs',
+  ])].sort()
+  const sourceFiles = paths.map(path => ({ path, sha256: createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex') }))
+  const artifactSha256 = 'f'.repeat(64)
+  const nativeArtifactSha256 = 'e'.repeat(64)
+  const receipt = {
+    schemaVersion: 1,
+    scope: 'android-apk-build',
+    status: 'passed',
+    host: 'android',
+    engine: 'quickjs',
+    variant: 'debug',
+    sourceCommit: expectedCommit,
+    workingTreeDirty: false,
+    sourceFiles,
+    sourceInventorySha256: sourceInventorySha256(sourceFiles),
+    native: {
+      status: 'passed',
+      sourceCommit: expectedCommit,
+      workingTreeDirty: false,
+      host: 'android',
+      engine: 'quickjs',
+      abi: 'arm64-v8a',
+      artifactSha256: nativeArtifactSha256,
+    },
+    gradle: { status: 'passed', variant: 'debug' },
+    package: {
+      status: 'passed',
+      abi: 'arm64-v8a',
+      nativeArtifactSha256,
+      embeddedNativeArtifactSha256: nativeArtifactSha256,
+    },
+    apk: { sha256: artifactSha256 },
+  }
+  const expected = { root, expectedSourceCommit: expectedCommit, engine: 'quickjs', artifactSha256 }
+  assert.equal(inspectAndroidApkBuildReceipt(receipt, expected).status, 'passed')
+  assert.equal(inspectAndroidApkBuildReceipt(receipt, { ...expected, artifactSha256: 'd'.repeat(64) }).checks.artifact, false)
+
+  const tampered = structuredClone(receipt)
+  tampered.sourceFiles[0].sha256 = '0'.repeat(64)
+  assert.equal(inspectAndroidApkBuildReceipt(tampered, expected).checks.sourceFiles, false)
+
+  const wrongEngine = structuredClone(receipt)
+  wrongEngine.native.engine = 'v8'
+  assert.equal(inspectAndroidApkBuildReceipt(wrongEngine, expected).checks.engine, true)
+  assert.equal(inspectAndroidApkBuildReceipt(wrongEngine, expected).checks.nativeBuild, false)
 })

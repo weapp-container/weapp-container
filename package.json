@@ -21,6 +21,8 @@
     "container:manifest:test": "pnpm --dir tools/container-manifest test",
     "container:build": "pnpm --dir tools/container-manifest build && cargo build --workspace",
     "container:test": "pnpm --dir tools/container-manifest test && cargo test --workspace",
+    "android:build": "node scripts/build-android-apk.mjs",
+    "android:smoke": "node scripts/mobile-runtime-smoke.mjs --platform android",
     "rust:check": "cargo check --locked",
     "rust:cache:clean": "cargo clean",
     "simulator:build": "cargo build -p container-simulator",

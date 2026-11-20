@@ -17,16 +17,20 @@ import process from 'node:process'
 import { parseGpuProbe, parseSurfaceProbe } from './mobile-gpu-probe.mjs'
 import { hasHarmonyRuntimeCrash } from './mobile-runtime-parser.mjs'
 import { collectPackExecutionEvidence, inspectPackExecutionReceipt } from './pack-execution-evidence.mjs'
+import { inspectAndroidApkBuildReceipt } from './lib/android-apk-build-receipt.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = process.argv.slice(2)
 const outIndex = args.indexOf('--out')
 const outPath = outIndex >= 0 && args[outIndex + 1] ? resolve(args[outIndex + 1]) : null
 const apkIndex = args.indexOf('--android-apk')
+const buildReceiptIndex = args.indexOf('--build-receipt')
 const iosAppIndex = args.indexOf('--ios-app')
 const androidApk = resolve(apkIndex >= 0 && args[apkIndex + 1]
   ? args[apkIndex + 1]
   : 'examples/hosts/android/app/build/outputs/apk/debug/app-debug.apk')
+const buildReceiptPath = buildReceiptIndex >= 0 && args[buildReceiptIndex + 1]
+  ? resolve(args[buildReceiptIndex + 1]) : null
 const iosApp = resolve(iosAppIndex >= 0 && args[iosAppIndex + 1]
   ? args[iosAppIndex + 1]
   : 'artifacts/ios-app-metal/WeappContainerApp.app')
@@ -34,6 +38,11 @@ const requireAll = args.includes('--require-all')
 const engineIndex = args.indexOf('--engine')
 const expectedEngine = engineIndex >= 0 ? args[engineIndex + 1] : 'quickjs'
 if (!['quickjs', 'v8'].includes(expectedEngine)) throw new Error('--engine must be quickjs or v8')
+const sourceCommitIndex = args.indexOf('--expected-source-commit')
+const expectedSourceCommit = sourceCommitIndex >= 0 ? args[sourceCommitIndex + 1] : null
+if (expectedSourceCommit !== null && !/^[0-9a-f]{40}$/.test(expectedSourceCommit)) {
+  throw new Error('--expected-source-commit must be a 40-character lowercase Git SHA')
+}
 const compilerCommitIndex = args.indexOf('--expected-compiler-commit')
 const expectedCompilerCommit = compilerCommitIndex >= 0 ? args[compilerCommitIndex + 1] : null
 if (expectedCompilerCommit !== null && !/^[0-9a-f]{40}$/.test(expectedCompilerCommit)) {
@@ -213,9 +222,38 @@ function androidSmoke() {
   }
   const executionTarget = { host: 'android', id: serial, kind: serial.startsWith('emulator-') ? 'official-simulator' : 'device' }
   const artifactSha256 = artifactDigest(androidApk)
-  const runtimeReceipt = executionReceipt && inspectPackExecutionReceipt({
-    ...executionReceipt, target: executionTarget, artifactSha256,
-  }, executionReceipt.fixture, { root, expectedCommit: gitRevision(), expectedCompilerCommit: pinnedCompilerCommit() })
+  let buildReceipt = null
+  let buildReceiptError = null
+  if (buildReceiptPath) {
+    try { buildReceipt = JSON.parse(readFileSync(buildReceiptPath, 'utf8')) }
+    catch (error) { buildReceiptError = error.message || String(error) }
+  }
+  const expectedBuildSource = expectedSourceCommit || gitRevision()
+  const buildReceiptInspection = buildReceipt
+    ? inspectAndroidApkBuildReceipt(buildReceipt, {
+        root, artifactSha256, engine: expectedEngine, expectedSourceCommit: expectedBuildSource,
+      })
+    : { status: 'incomplete', reason: buildReceiptError || 'build receipt was not supplied', missing: ['buildReceipt'] }
+  const sourceEvidenceReceipt = executionReceipt && buildReceiptInspection.status === 'passed'
+    ? {
+        ...executionReceipt,
+        sourceCommit: buildReceipt.sourceCommit,
+        artifactSha256,
+        build: {
+          status: 'passed',
+          sourceCommit: buildReceipt.sourceCommit,
+          workingTreeDirty: false,
+          host: 'android',
+          engine: expectedEngine,
+          artifactSha256,
+        },
+      }
+    : executionReceipt
+  const runtimeReceipt = sourceEvidenceReceipt && inspectPackExecutionReceipt({
+    ...sourceEvidenceReceipt, target: executionTarget, artifactSha256,
+  }, sourceEvidenceReceipt.fixture, {
+    root, expectedCommit: expectedBuildSource, expectedCompilerCommit: pinnedCompilerCommit(),
+  })
   const runtimeBodyPassed = runtimeReceipt && Object.entries(runtimeReceipt.checks)
     .filter(([name]) => !['source', 'build'].includes(name)).every(([, passed]) => passed)
   const smokeLines = logcat.stdout.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SMOKE'))
@@ -266,6 +304,10 @@ function androidSmoke() {
     expectedEngine,
     expectedSessionId,
     executionReceipt,
+    executionEvidenceReceipt: sourceEvidenceReceipt,
+    buildReceiptPath,
+    buildReceiptInspection,
+    artifactBuildSourcesVerified: buildReceiptInspection.status === 'passed',
     executionTarget,
     executionReceiptInspection: runtimeReceipt,
     operations,
@@ -695,7 +737,9 @@ const report = {
   scope: 'native-mobile-runtime-smoke',
   sourceCommit: gitRevision(),
   sourceCommitScope: 'smoke-harness-checkout',
-  artifactBuildSourcesVerified: false,
+  expectedSourceCommit: expectedSourceCommit || gitRevision(),
+  artifactBuildSourcesVerified: platformReports.length > 0
+    && platformReports.every(platform => platform.artifactBuildSourcesVerified === true),
   weappViteCommit: gitRevision(resolve(root, 'vendor/weapp-vite')),
   expectedCompilerCommit: pinnedCompilerCommit(),
   expectedCompilerCommitSource: expectedCompilerCommit ? 'explicit' : 'gitlink',
@@ -705,7 +749,7 @@ const report = {
   platforms: platformReports,
   executionEvidence: collectPackExecutionEvidence(platformReports),
   notes: [
-    'sourceCommit identifies the smoke harness checkout; artifactSha256 identifies each tested binary. This run does not rebuild or verify the source provenance of prebuilt APK, app or HAP artifacts.',
+    'sourceCommit identifies the smoke harness checkout; artifactSha256 identifies each tested binary. Android source provenance is accepted only when --build-receipt passes its clean-input and exact-APK checks.',
     'A passed entry proves the selected app smoke harness ran on the selected emulator/device; nativeSurface and the GPU gate remain separate fields.',
     'runtimeStatus=passed with status=blocked is diagnostic bridge evidence that did not satisfy the native renderer gate.',
     'gpuProbe is an independent platform EGL/Metal/ArkUI device-context observation; containerSurfaceAttached must remain false until the host adapter owns the runtime surface.',

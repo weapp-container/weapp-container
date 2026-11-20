@@ -384,7 +384,7 @@ export function collectPackExecutionEvidence(platforms) {
   let fixture = null
   const receipts = []
   for (const platform of platforms) {
-    const raw = platform?.executionReceipt
+    const raw = platform?.executionEvidenceReceipt || platform?.executionReceipt
     if (!object(raw) || raw.schemaVersion !== 1 || !object(raw.fixture)) continue
     if (!fixture) fixture = raw.fixture
     const { fixture: _fixture, ...receipt } = raw
