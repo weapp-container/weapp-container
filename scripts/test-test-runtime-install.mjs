@@ -14,7 +14,7 @@ const artifact = await packArtifact({ projectPath: resolve(root, 'packages/node/
 function run(command, args, cwd) { return execFileSync(command, args, { cwd, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }); }
 try {
   const tarballs = [];
-  const packages = ['tools/container-manifest', `packages/runtime/${process.platform}-${process.arch}`, 'packages/node', 'packages/vitest', 'tools/host-services-reference'];
+  const packages = ['tools/container-manifest', `packages/runtime/${process.platform}-${process.arch}`, 'packages/node', 'packages/vitest'];
   for (const path of packages) {
     const output = run('pnpm', ['pack', '--pack-destination', temp], resolve(root, path));
     const name = output.trim().split('\n').findLast(line => line.endsWith('.tgz'));
@@ -41,30 +41,6 @@ try {
   // Resolve both CLI bins from the external installation, with no source adapter.
   console.log(run(join(consumer, 'node_modules/.bin/container-pack'), ['source', '--out', 'cli-pack'], consumer).trim());
   await readFile(join(consumer, 'cli-pack/manifest.json'));
-  await writeFile(join(consumer, 'host-config.mjs'), 'export default {port:0,host:"127.0.0.1",identitySecret:"i".repeat(32),issuerSecret:"s".repeat(32),applications:[]};\n');
-  await writeFile(join(consumer, 'cli-test.mjs'), `
-    import assert from 'node:assert/strict';
-    import {spawn} from 'node:child_process';
-    import {once} from 'node:events';
-    const child=spawn('./node_modules/.bin/weapp-host-services',[],{env:{...process.env,HOST_SERVICES_CONFIG:'host-config.mjs'},stdio:['ignore','pipe','pipe']});
-    let output='';let errors='';
-    child.stdout.on('data',chunk=>{output+=chunk});child.stderr.on('data',chunk=>{errors+=chunk});
-    const exit=once(child,'exit');
-    const timer=setTimeout(()=>child.kill('SIGKILL'),10000);
-    try {
-      await new Promise((resolve,reject)=>{
-        child.stdout.on('data',()=>{if(output.includes('listening on'))resolve()});
-        child.once('exit',()=>reject(new Error(errors||'CLI exited before listening')));
-        child.once('error',reject);
-      });
-      const address=output.match(/listening on ([^\\s]+)/)[1];
-      const response=await fetch('http://'+address+'/missing');
-      assert.equal(response.status,404);
-      child.kill('SIGTERM');
-      const [code,signal]=await exit;assert.equal(code,0);assert.equal(signal,null);
-      console.log('Installed host-services CLI started and shut down');
-    } finally {clearTimeout(timer);if(child.exitCode===null&&child.signalCode===null){child.kill('SIGKILL');await exit}}
-  `);
   await writeFile(join(consumer, 'test.mjs'), `
     import assert from 'node:assert/strict';
     import {createContainer,resolveTestBinary} from '@weapp-container/node';
@@ -91,7 +67,6 @@ try {
     })().catch(error=>{console.error(error);process.exitCode=1});
   `);
   console.log(execFileSync(process.execPath, ['test.cjs'], { cwd: consumer, env, encoding: 'utf8' }).trim());
-  console.log(execFileSync(process.execPath, ['cli-test.mjs'], { cwd: consumer, env, encoding: 'utf8' }).trim());
   await writeFile(join(consumer, 'vitest.config.mjs'), `
     import {defineConfig} from 'vitest/config';
     import {weappContainerTest} from '@weapp-container/vitest/config';

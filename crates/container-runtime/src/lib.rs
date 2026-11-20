@@ -8047,6 +8047,13 @@ impl Session {
     }
 
     fn resolve_loaded_page_modules(&mut self) -> Result<(), BridgeError> {
+        // The default runtime is intentionally a headless protocol boundary.
+        // It can initialize manifests and drive Rust-owned navigation without
+        // a JavaScript provider, so there is no registration snapshot to
+        // resolve until a native engine has actually loaded modules.
+        if !self.engine_provider_available() || self.loaded_modules.is_empty() {
+            return Ok(());
+        }
         if !self.manifest.routes.is_empty() {
             let registrations = self
                 .call_engine(

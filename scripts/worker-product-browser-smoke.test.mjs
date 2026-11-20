@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import test from 'node:test'
 import { deflateSync } from 'node:zlib'
-import { PARSER_FILES, WORKER_PRODUCT_FILES, canonical, classifyRequest, inspectImportGraph, inspectProductSite,
+import { PARSER_PIN, PARSER_FILES, WORKER_PRODUCT_FILES, canonical, classifyRequest, inspectImportGraph, inspectProductSite,
   installWindowWasmAudit, localPath, parseArgs, productConfigBytes, regularBytes, runProductBrowserSmoke,
   screenshotPixels, withPageDeadline } from './worker-product-browser-smoke.mjs'
 
@@ -87,11 +87,11 @@ async function fixture(t) {
       pack: index, packIndex: indexDescriptor, workerProductConfig: { ...generatedConfig, value: config, startupJson },
       browserAssets: { ...assetValue, status: 'passed', retainedStatus: 'passed', inventory: descriptor('browser-assets.json', assetBytes) },
       generatedPackage: { status: 'passed', retainedStatus: 'passed', files: [glueDescriptor, wasmDescriptor] },
-      generatedModuleParser: { name: 'acorn', version: '8.15.0', license: 'MIT', status: 'passed', retainedStatus: 'passed',
-        npmIntegrity: 'sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==',
+      generatedModuleParser: { name: PARSER_PIN.name, version: PARSER_PIN.version, license: PARSER_PIN.license, status: 'passed', retainedStatus: 'passed',
+        npmIntegrity: PARSER_PIN.npmIntegrity,
         archiveVerifiedAtBuild: false, files: PARSER_FILES, evidenceDirectory: resolve(directory, 'validation/generated-module-parser') },
       generatedModuleClosure: { schemaVersion: 1, status: 'passed', entry: 'pkg/container_host_web.js',
-        parser: { name: 'acorn', version: '8.15.0', sha256: PARSER_FILES[1].sha256 },
+        parser: { name: PARSER_PIN.name, version: PARSER_PIN.version, sha256: PARSER_FILES[1].sha256 },
         modules: [{ ...glueDescriptor, references: [] }], reachable: ['pkg/container_host_web.js'], totalJavaScriptBytes: glue.length },
       artifacts: { glue: glueDescriptor, wasm: wasmDescriptor }, rendererDependencies: { status: 'passed', retainedStatus: 'passed',
         files: profile === 'skia' ? Object.entries(pins).map(([id, pin]) => ({ id, ...pin, verified: true })) : [],

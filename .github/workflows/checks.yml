@@ -1,0 +1,79 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.1
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Linux native build dependencies
+        uses: ./.github/actions/setup-linux-native
+
+      - name: Install Rust lint component
+        run: rustup component add clippy --toolchain stable
+
+      - name: Cache Rust dependencies
+        uses: ./.github/actions/cache-rust-build
+        with:
+          key: checks-linux
+
+      - name: Verify portable fixtures and API inventory
+        run: |
+          pnpm conformance:verify
+          pnpm api:inventory:verify
+          node scripts/check-toolchain.mjs --strict --json
+
+      - name: Verify dependency and source policies
+        run: |
+          pnpm deps:check:strict
+          pnpm opensource:check
+
+      - name: Build and check TypeScript packages
+        run: |
+          pnpm build
+          pnpm typecheck
+          pnpm test:types
+          pnpm lint
+
+      - name: Test TypeScript packages and real QuickJS runtime
+        run: pnpm test
+
+      - name: Verify published tarballs in an external consumer
+        run: pnpm testing:install:test
+
+      - name: Test Rust workspace
+        run: cargo test --workspace --locked -- --test-threads=2
+
+      - name: Enforce Rust lint cleanliness
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings

@@ -60,7 +60,7 @@ host handler 在业务执行前安装，覆盖 App 启动期请求。同步 API 
 
 普通 wx 请求在页面卸载后仍遵守现有回调兼容性契约，迟到结果不能重用新页面实例。RequestTask 显式 abort 与容器销毁会取消宿主工作。
 
-默认单轮执行预算 1000 ms、启动预算 5000 ms、RPC / 回收 watchdog 10000 ms，分别通过 `turnTimeoutMs`、`bootstrapTimeoutMs`、`timeout` 设置。无限执行中断后该 Session 必须重建。
+默认单轮执行预算 1000 ms、业务启动预算 5000 ms、测试宿主进程握手预算 10000 ms、RPC / 回收 watchdog 10000 ms，分别通过 `turnTimeoutMs`、`bootstrapTimeoutMs`、`processStartupTimeoutMs`、`timeout` 设置。无限执行中断后该 Session 必须重建。
 
 ## 二进制
 

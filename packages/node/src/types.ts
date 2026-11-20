@@ -12,6 +12,7 @@ export interface ContainerOptions {
   syncValues?: Record<string, unknown>
   nowMs?: number
   timeout?: number
+  processStartupTimeoutMs?: number
   flushBudget?: number
   turnTimeoutMs?: number
   bootstrapTimeoutMs?: number

@@ -3,7 +3,7 @@ use crate::host_services::{HostApiDescriptor, HostServicesConfig, TrustedApplica
 use crate::plugin::{
     PluginApiDescriptor, PluginDescriptor, RuntimePlugin, PLUGIN_PROTOCOL_VERSION,
 };
-use crate::provider::{HostApiProvider, ProviderContext, ProviderStart, SandboxProvider};
+use crate::provider::{HostApiProvider, ProviderContext, ProviderStart};
 use container_ir::CapabilitySupport;
 use serde_json::{json, Map, Value};
 use std::collections::{BTreeMap, BTreeSet};

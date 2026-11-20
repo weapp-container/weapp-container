@@ -60,7 +60,7 @@ Handlers install before business execution, including App startup requests. Sync
 
 Ordinary wx requests preserve the existing callback compatibility contract after page unload; late results cannot reuse a new page instance. Explicit RequestTask abort and container disposal cancel host work.
 
-Default turn execution budget is 1000 ms, bootstrap budget 5000 ms, and RPC/cleanup watchdog 10000 ms. Configure them with `turnTimeoutMs`, `bootstrapTimeoutMs` and `timeout`. A Session interrupted for infinite execution must be recreated.
+Default turn execution budget is 1000 ms, guest bootstrap budget 5000 ms, test-host process handshake budget 10000 ms, and RPC/cleanup watchdog 10000 ms. Configure them with `turnTimeoutMs`, `bootstrapTimeoutMs`, `processStartupTimeoutMs` and `timeout`. A Session interrupted for infinite execution must be recreated.
 
 ## Binaries
 

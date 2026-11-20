@@ -16,7 +16,11 @@ There is no fallback between modes. A host that requests V8 must build with
 module. Rusty V8 downloads the release archive for the target during the
 feature-enabled build. Set `RUSTY_V8_MIRROR`/`RUSTY_V8_ARCHIVE` and
 `RUSTY_V8_ARCHIVE_SHA256` in a reproducible build environment when the archive
-must come from an internal mirror.
+must come from an internal mirror. iOS simulator builds of V8 152.2.0 also
+must pass the repository input contract in `scripts/ios-v8-build-inputs.mjs`.
+It pins the verified archive, `RUSTY_V8_SRC_BINDING_PATH`, snapshot magic, and
+the lite/jitless GN recipe, and explicitly blocks when any required input is
+missing.
 
 The provider keeps all JavaScript execution on the isolate thread and exposes
 only the batch `container_core::JsEngine` boundary. Module loading wraps the

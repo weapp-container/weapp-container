@@ -4,5 +4,7 @@
   "version": "1.0.0",
   "description": "Weapp Container HarmonyOS entry module",
   "main": "./src/main/ets/Application.ets",
-  "dependencies": {}
+  "dependencies": {
+    "libentry.so": "file:./src/main/cpp/types/libentry"
+  }
 }

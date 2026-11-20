@@ -1,23 +1,31 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { HARMONY_SKIA_FONT_ARGS, harmonySkiaBuild } from './harmony-skia-build.mjs'
+import { HARMONY_SKIA_REQUIRED_GN_ARGS, harmonySkiaBuild } from './harmony-skia-build.mjs'
 
-test('Harmony requires source-built FreeType and the custom-empty manager', () => {
+test('Harmony requires source-built FreeType, the custom-empty manager and no Expat XML writer', () => {
   const result = harmonySkiaBuild({ FORCE_SKIA_BUILD: '0', FORCE_SKIA_BINARIES_DOWNLOAD: '1' })
   assert.equal(result.error, null)
   assert.equal(result.env.FORCE_SKIA_BUILD, '1')
-  assert.equal(result.env.SKIA_GN_ARGS, HARMONY_SKIA_FONT_ARGS.join(' '))
-  assert.equal(result.report.buildMode, 'cargo-lock-pinned-source')
+  assert.equal(result.env.SKIA_GN_ARGS, HARMONY_SKIA_REQUIRED_GN_ARGS.join(' '))
+  assert.equal(result.report.buildMode, 'cargo-lock-pinned-source-sync')
   assert.equal(result.report.fontDecoder, 'bundled-freetype')
   assert.equal(result.report.fontManager, 'custom-empty')
+  assert.equal(result.report.xmlWriter, 'disabled')
+  assert.ok(result.report.requiredGnArgs.includes('skia_use_system_zlib=true'))
   assert.equal(result.report.verified, false)
+})
+
+test('Harmony can use only the explicitly resolved Cargo-pinned source cache', () => {
+  const result = harmonySkiaBuild({}, { lockedSourceDir: '/cargo/cache/skia-bindings-0.157.0/skia' })
+  assert.equal(result.env.SKIA_SOURCE_DIR, '/cargo/cache/skia-bindings-0.157.0/skia')
+  assert.equal(result.report.buildMode, 'cargo-lock-source-cache-offline')
 })
 
 test('Harmony preserves user GN text and puts required settings after comments and conflicts', () => {
   const original = 'skia_use_freetype=false skia_use_system_freetype2=true\ncustom_value="a b" # keep this flag'
   const environment = { SKIA_GN_ARGS: original, FORCE_SKIA_BUILD: '0' }
   const result = harmonySkiaBuild(environment)
-  assert.equal(result.env.SKIA_GN_ARGS, `${original}\n${HARMONY_SKIA_FONT_ARGS.join(' ')}`)
+  assert.equal(result.env.SKIA_GN_ARGS, `${original}\n${HARMONY_SKIA_REQUIRED_GN_ARGS.join(' ')}`)
   assert.equal(result.report.effectiveGnArgs, result.env.SKIA_GN_ARGS)
   assert.deepEqual(environment, { SKIA_GN_ARGS: original, FORCE_SKIA_BUILD: '0' })
 })

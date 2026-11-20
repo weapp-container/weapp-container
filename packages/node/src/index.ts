@@ -29,10 +29,14 @@ export class ContainerError extends Error {
 export function resolveTestBinary(explicit?: string): string {
   const configured = explicit || process.env['WEAPP_CONTAINER_TEST_BINARY'];
   if (configured) return configured;
+  const local = fileURLToPath(new URL(`../../../target/debug/weapp-test-host${process.platform === 'win32' ? '.exe' : ''}`, import.meta.url));
+  // Source checkouts must exercise the binary built from the same revision.
+  // An installed optional runtime package may be older than the workspace
+  // protocol and would otherwise mask stale generated artifacts.
+  if (existsSync(local)) return local;
   try { return packageRequire.resolve(`@weapp-container/runtime-${process.platform}-${process.arch}`); }
   catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'MODULE_NOT_FOUND') throw error;
-    const local = fileURLToPath(new URL(`../../../target/debug/weapp-test-host${process.platform === 'win32' ? '.exe' : ''}`, import.meta.url));
     if (existsSync(local)) return local;
     throw new ContainerError('ERR_BINARY_UNAVAILABLE', `No testing binary for ${process.platform}-${process.arch}. Install the matching runtime package or set WEAPP_CONTAINER_TEST_BINARY. Source checkouts: run pnpm testing:build.`);
   }
@@ -51,11 +55,11 @@ function timed<T>(promise: Promise<T>, milliseconds: number, message: string, co
 export class Container implements AsyncDisposable {
   #child: ChildProcessWithoutNullStreams; #ready = deferred(); #exit = deferred<{ code: number | null; signal: NodeJS.Signals | null }>(); #pending = new Map<number, Deferred<unknown>>(); #sequence = 0;
   #decoder = new StringDecoder('utf8'); #ownedArtifacts = new Set<ContainerArtifact>(); #buffer = ''; #stderr = ''; #queue = Promise.resolve(); #closing: Promise<void> | undefined; #closed = false; #loaded = false;
-  #calls = new Map<string, { controller: AbortController; promise: Promise<void>; event: HostEvent; completing: boolean }>(); #handlers: Map<string, HostHandler | Record<string, unknown>>; #diagnostics: DiagnosticEvent[] = []; #checked = 0; #options: ContainerOptions & { timeout: number; flushBudget: number }; #abortListener: (() => void) | undefined;
+  #calls = new Map<string, { controller: AbortController; promise: Promise<void>; event: HostEvent; completing: boolean }>(); #handlers: Map<string, HostHandler | Record<string, unknown>>; #diagnostics: DiagnosticEvent[] = []; #checked = 0; #options: ContainerOptions & { timeout: number; processStartupTimeoutMs: number; flushBudget: number }; #abortListener: (() => void) | undefined;
   readonly clock: { advanceBy(ms: number): Promise<void> };
   constructor(options: ContainerOptions = {}) {
-    this.#options = { timeout: 10_000, flushBudget: 100, ...options };
-    for (const name of ['timeout', 'flushBudget', 'turnTimeoutMs', 'bootstrapTimeoutMs'] as const) {
+    this.#options = { timeout: 10_000, processStartupTimeoutMs: 10_000, flushBudget: 100, ...options };
+    for (const name of ['timeout', 'processStartupTimeoutMs', 'flushBudget', 'turnTimeoutMs', 'bootstrapTimeoutMs'] as const) {
       const value = this.#options[name];
       if (value !== undefined && (!Number.isSafeInteger(value) || value < 1)) throw new TypeError(`${name} must be a positive safe integer`);
     }
@@ -86,8 +90,10 @@ export class Container implements AsyncDisposable {
     }) });
   }
 
+  #handshaken = false; #startupTermination = false;
+
   async ready() {
-    await timed(this.#ready.promise, this.#options.timeout, 'Test host startup timed out');
+    await timed(this.#ready.promise, this.#options.processStartupTimeoutMs, 'Test host startup timed out', 'ERR_STARTUP_TIMEOUT');
     if (this.#options.signal?.aborted) throw this.#options.signal.reason;
     return this;
   }
@@ -109,6 +115,7 @@ export class Container implements AsyncDisposable {
         const message = JSON.parse(line) as { protocolVersion?: number; engine?: string; testing?: boolean; id: number; events?: RuntimeEvent[]; error?: {code: string; message: string}; result: unknown };
         if (message.protocolVersion) {
           if (message.protocolVersion !== 1 || message.engine !== 'quickjs' || message.testing !== true) throw new Error('Incompatible test host; real QuickJS is required');
+          this.#handshaken = true;
           this.#ready.resolve();
           continue;
         }
@@ -270,11 +277,16 @@ export class Container implements AsyncDisposable {
     if (this.#abortListener) this.#options.signal?.removeEventListener('abort', this.#abortListener);
     for (const record of this.#calls.values()) record.controller.abort(new ContainerError('ERR_CLOSED', 'Container disposed'));
     try { await timed(this.#queue, this.#options.timeout, 'Pending operation did not stop'); } catch (error) { errors.push(error); }
-    try { if (!this.#closed) await this.#rpc('close'); } catch (error) { errors.push(error); }
+    if (!this.#closed && this.#handshaken) {
+      try { await this.#rpc('close'); } catch (error) { errors.push(error); }
+    } else if (!this.#closed) {
+      this.#startupTermination = true;
+      this.#child.kill('SIGKILL');
+    }
     this.#child.stdin.end();
     try {
       const result = await timed(this.#exit.promise, this.#options.timeout, 'Test host failed to exit');
-      if (result.code !== 0) errors.push(new ContainerError('ERR_CLEANUP', `Test host exited with ${result.code ?? result.signal}: ${this.#stderr}`));
+      if (result.code !== 0 && !(this.#startupTermination && result.signal === 'SIGKILL')) errors.push(new ContainerError('ERR_CLEANUP', `Test host exited with ${result.code ?? result.signal}: ${this.#stderr}`));
     } catch (error) {
       errors.push(error);
       this.#child.kill('SIGKILL');

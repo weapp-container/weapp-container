@@ -106,6 +106,13 @@ cancel(){{this.setData({{cancels:this.data.cancels+1}});if(getApp().failCancel)t
                 width: 20.0,
                 height: 20.0,
             },
+            // These tests cover reload and presentation lifecycle contracts,
+            // not cold View latency. Keep a finite budget with headroom for
+            // parallel native-engine startup; deadline behavior has dedicated
+            // tests with explicit limits.
+            view_execution: container_runtime::ViewExecutionPolicy {
+                batch_timeout_ms: 2_000,
+            },
             ..Default::default()
         }
     }

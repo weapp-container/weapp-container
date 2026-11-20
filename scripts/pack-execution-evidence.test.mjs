@@ -11,7 +11,7 @@ import { EXECUTION_HOSTS, MOBILE_EXECUTION_HOSTS, collectPackExecutionEvidence, 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim()
 const expectedCommit = git(['rev-parse', 'HEAD'])
-const expectedCompilerCommit = git(['rev-parse', 'HEAD:vendor/weapp-vite'])
+const expectedCompilerCommit = '0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e'
 const options = { root, expectedCommit, expectedCompilerCommit }
 const digest = 'a'.repeat(64)
 const canonical = value => Array.isArray(value) ? `[${value.map(canonical).join(',')}]`
@@ -414,6 +414,7 @@ test('aggregate CLI accepts repeated independent execution files, reuses mobile 
     const result = spawnSync(process.execPath, ['scripts/check-near-parity-gates.mjs',
       '--mobile', resolve(directory, 'missing-mobile.json'), '--host-bridge', resolve(directory, 'missing-bridge.json'),
       '--host-execution', path, '--host-execution', path,
+      '--expected-compiler-commit', expectedCompilerCommit,
       '--out', aggregatePath,
     ], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'ignore', 'pipe'], maxBuffer: 8 * 1024 * 1024 })
     // Release reports grow with archived evidence. Buffering stdout previously
@@ -424,6 +425,7 @@ test('aggregate CLI accepts repeated independent execution files, reuses mobile 
     assert.equal(result.signal, null, result.stderr)
     assert.equal(result.status, 1, 'unrelated real release gates must remain incomplete')
     const aggregate = JSON.parse(readFileSync(aggregatePath, 'utf8'))
+    assert.deepEqual(aggregate.compilerIdentity, { expectedCommit: expectedCompilerCommit, source: 'explicit' })
     assert.equal(aggregate.gates.mobileModuleExecution.status, 'passed')
     assert.equal(aggregate.gates.hostModuleExecution.status, 'passed')
     assert.equal(aggregate.gates.hostPackGpu.status, 'passed')
@@ -465,7 +467,8 @@ else if (args.includes('logcat') && args.includes('-d')) {
     // The fixture executable uses ESM syntax even when the temp directory is
     // outside the repository's package.json boundary.
     writeFileSync(resolve(directory, 'package.json'), '{"type":"module"}')
-    const result = spawnSync(process.execPath, ['scripts/mobile-runtime-smoke.mjs', '--platform', 'android', '--android-apk', apk], {
+    const result = spawnSync(process.execPath, ['scripts/mobile-runtime-smoke.mjs', '--platform', 'android', '--android-apk', apk,
+      '--expected-compiler-commit', expectedCompilerCommit], {
       cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024,
       env: { ...process.env, PATH: `${directory}:${process.env.PATH}`, WEAPP_CONTAINER_ANDROID_SERIAL: 'emulator-owned', TEST_ADB_RECEIPT: rawPath, TEST_ADB_COMMANDS: commands, TEST_ADB_SESSION: resolve(directory, 'session') },
     })
@@ -475,6 +478,8 @@ else if (args.includes('logcat') && args.includes('-d')) {
     assert.equal(android.checks.realPortablePack, true)
     assert.equal(android.checks.renderSnapshotRgba8, true)
     assert.equal(android.executionReceiptInspection.checks.build, false)
+    assert.equal(aggregate.expectedCompilerCommit, expectedCompilerCommit)
+    assert.equal(aggregate.expectedCompilerCommitSource, 'explicit')
     assert.equal(aggregate.executionEvidence.receipts[0].sourceCommit, null)
     const invoked = readFileSync(commands, 'utf8').trim().split('\n').map(JSON.parse)
     const clear = invoked.findIndex(args => args.includes('rm') && args.includes('files/portable-pack-execution.json'))

@@ -9,7 +9,7 @@
 * `--no-default-features --features v8-native` 链接了固定版本的 `v8 =
   152.2.0`（rusty_v8）提供者，并在 V8 隔离环境中执行 CommonJS 模块。
 
-模式之间没有回退。如果宿主请求 V8，必须在编译时启用 `v8-native`；否则，在加载任何模块之前将收到一个稳定的引擎错误。Rusty V8 在启用特性构建时会下载目标平台的发布归档文件。当归档文件必须来自内部镜像时，在可重现的构建环境中设置 `RUSTY_V8_MIRROR`/`RUSTY_V8_ARCHIVE` 和 `RUSTY_V8_ARCHIVE_SHA256`。
+模式之间没有回退。如果宿主请求 V8，必须在编译时启用 `v8-native`；否则，在加载任何模块之前将收到一个稳定的引擎错误。Rusty V8 在启用特性构建时会下载目标平台的发布归档文件。当归档文件必须来自内部镜像时，在可重现的构建环境中设置 `RUSTY_V8_MIRROR`/`RUSTY_V8_ARCHIVE` 和 `RUSTY_V8_ARCHIVE_SHA256`。iOS simulator 的 V8 152.2.0 构建还必须通过 `scripts/ios-v8-build-inputs.mjs` 输入契约。该契约固定已验证的 archive、`RUSTY_V8_SRC_BINDING_PATH`、snapshot magic 和 lite/jitless GN 配置，缺少任一输入时构建会明确阻塞。
 
 提供商将所有 JavaScript 执行保留在隔离线程中，并仅暴露批处理 `container_core::JsEngine` 边界。模块加载将源代码封装在 CommonJS `module/exports` 作用域内；通过 JSON 序列化单个值批处理并返回单个值批处理，避免每个节点的 FFI 调用。
 

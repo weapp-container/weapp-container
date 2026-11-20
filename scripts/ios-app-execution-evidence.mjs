@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { constants, createReadStream, readFileSync, writeFileSync } from 'node:fs'
+import { constants, createReadStream, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { copyFile, mkdir, stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { validateIOSAppEvidence, validateIOSEmbeddingEvidence } from './validate-ios-app-evidence.mjs'
+import { resolveLockedSkiaSource } from './lib/cargo-skia-source.mjs'
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 // These are the inputs to the Rust staticlib, Swift executable and its build
@@ -15,11 +17,18 @@ const INPUTS = ['Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml', '.cargo', 'cr
   'examples/hosts/ios', 'examples/hosts/ios-app', 'scripts/ios-app-smoke', 'scripts/ios-embedding-smoke',
   'scripts/ios-app-execution-evidence.mjs', 'scripts/sync-ios-portable-pack.mjs', 'scripts/portable-pack.mjs',
   'scripts/ios-simulator-apps.mjs', 'scripts/ios-app-screen.mjs', 'scripts/ios-app-startup.mjs',
-  'scripts/ios-app-resource-cleanup.mjs', 'scripts/validate-ios-app-evidence.mjs']
+  'scripts/ios-app-resource-cleanup.mjs', 'scripts/validate-ios-app-evidence.mjs',
+  'scripts/ios-v8-build-inputs.mjs', 'scripts/lib/cargo-skia-source.mjs']
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex')
 const read = path => JSON.parse(readFileSync(path, 'utf8'))
 const write = (path, value) => writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`)
 const ENGINE_FEATURES = { quickjs: 'quickjs-native-ios', v8: 'v8-native' }
+const IOS_SKIA_CALLER_OVERRIDES = [
+  'SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH', 'SKIA_GN_COMMAND', 'SKIA_NINJA_COMMAND',
+  'SKIA_GN_ARGS', 'SKIA_BUILD_DEFINES', 'SKIA_USE_SYSTEM_LIBRARIES', 'SKIA_BINARIES_URL',
+  'FORCE_SKIA_BUILD', 'FORCE_SKIA_BINARIES_DOWNLOAD', 'SKIA_DEBUG',
+  'CLANGCC', 'CC', 'CLANGCXX', 'CXX', 'SDKROOT', 'SDKTARGETSYSROOT', 'MACOSX_DEPLOYMENT_TARGET',
+]
 
 /** --target-dir overrides both Cargo's environment and its config file. */
 export function iosCargoTargetDirectory(root, environment = process.env) {
@@ -104,23 +113,82 @@ export function captureIOSBuildSource(root = ROOT) {
   }
 }
 
-export function finishIOSBuild(before, after, artifact, engine, nativeArchive, appMode = 'smoke') {
+export function inspectIOSSkiaBuildInputs({ root = ROOT, cargoPath = 'cargo', environment = process.env, run = spawnSync, exists = existsSync } = {}) {
+  const callerOverrides = IOS_SKIA_CALLER_OVERRIDES.filter(key => environment[key] !== undefined)
+  const docsRsEnabled = environment.DOCS_RS !== undefined && environment.DOCS_RS !== '0'
+  if (callerOverrides.length || docsRsEnabled) {
+    return {
+      schemaVersion: 1, status: 'unknown', mode: 'caller-configured', autoConfigured: false,
+      callerOverrides: [...callerOverrides, ...(docsRsEnabled ? ['DOCS_RS'] : [])],
+      sourceDir: environment.SKIA_SOURCE_DIR || null,
+      gnCommand: environment.SKIA_GN_COMMAND || null,
+      librarySearchPath: environment.SKIA_LIBRARY_SEARCH_PATH || null,
+    }
+  }
+
+  const result = run(cargoPath, ['metadata', '--locked', '--format-version', '1'], {
+    cwd: root, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
+  })
+  if (result.status !== 0 || result.error) {
+    return {
+      schemaVersion: 1, status: 'unknown', mode: 'locked-cargo-source-unavailable', autoConfigured: false,
+      reason: result.error?.message || result.stderr?.trim() || 'cargo metadata failed',
+    }
+  }
+  let metadata
+  try { metadata = JSON.parse(result.stdout) }
+  catch (error) {
+    return { schemaVersion: 1, status: 'failed', mode: 'locked-cargo-source-invalid', autoConfigured: false, reason: error.message }
+  }
+  const sourceDir = resolveLockedSkiaSource(metadata, { exists })
+  if (!sourceDir) {
+    return {
+      schemaVersion: 1, status: 'unknown', mode: 'locked-cargo-source-incomplete', autoConfigured: false,
+      reason: 'locked skia-bindings source is unavailable or incomplete',
+    }
+  }
+  const gnCommand = environment.SKIA_GN_COMMAND || resolve(sourceDir, 'third_party/gn/gn')
+  if (!exists(gnCommand)) {
+    return {
+      schemaVersion: 1, status: 'blocked', mode: 'locked-cargo-source-missing-gn', autoConfigured: false,
+      sourceDir, gnCommand, reason: 'the locked Skia source has no usable GN executable',
+    }
+  }
+  return {
+    schemaVersion: 1, status: 'passed', mode: 'locked-cargo-source', autoConfigured: true,
+    sourceDir, gnCommand, forceSourceBuild: true,
+  }
+}
+
+export function finishIOSBuild(before, after, artifact, engine, nativeArchive, appMode = 'smoke', engineInputs, skiaInputs) {
   if (!['quickjs', 'v8'].includes(engine)) throw new Error('invalid iOS engine')
   if (!['smoke', 'embedding'].includes(appMode)) throw new Error('invalid iOS app mode')
   if (nativeArchive?.status !== 'passed' || nativeArchive.engine !== engine
       || !/^[0-9a-f]{64}$/.test(nativeArchive.sha256 || '') || !nativeArchive.linkedPath) {
     throw new Error('verified exact iOS staticlib linker input is required')
   }
+  if (engine === 'v8' && (engineInputs?.status !== 'passed' || engineInputs.target !== nativeArchive.target)) {
+    throw new Error('verified iOS V8 archive and target binding inputs are required')
+  }
+  if (!skiaInputs || !['passed', 'blocked', 'failed', 'unknown'].includes(skiaInputs.status)) {
+    throw new Error('iOS Skia build input receipt is required')
+  }
+  if (skiaInputs.status === 'blocked' || skiaInputs.status === 'failed') {
+    throw new Error(`iOS Skia build inputs are ${skiaInputs.status}`)
+  }
   if (before.sourceCommit !== after.sourceCommit || before.sourceSha256 !== after.sourceSha256) {
     throw new Error('iOS source changed during compilation; refusing a build receipt')
   }
   return {
-    schemaVersion: 1, status: before.workingTreeDirty || after.workingTreeDirty ? 'unknown' : 'passed',
+    schemaVersion: 1,
+    status: before.workingTreeDirty || after.workingTreeDirty || skiaInputs.status === 'unknown' ? 'unknown' : 'passed',
     host: 'ios', engine, appMode, sourceCommit: before.sourceCommit, sourceSha256: before.sourceSha256,
     workingTreeDirty: before.workingTreeDirty || after.workingTreeDirty,
     workingTreeScope: before.workingTreeScope, artifactSha256: sha256(artifact),
     artifactKind: 'signed-mach-o-executable',
     nativeArchive,
+    skiaBuildInputs: skiaInputs,
+    ...(engine === 'v8' ? { engineInputs } : {}),
   }
 }
 
@@ -157,8 +225,10 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       process.stdout.write(`${receipt.linkedPath}\n`)
     } else if (operation === 'finish') {
       const archive = await verifyIOSLinkArchive(read(resolve(out, 'native-archive.json')), args[1])
+      const engineInputs = args[1] === 'v8' ? read(resolve(out, 'v8-build-inputs.json')) : undefined
+      const skiaInputs = read(resolve(out, 'skia-build-inputs.json'))
       write(resolve(out, 'build.json'), finishIOSBuild(read(resolve(out, 'source-before.json')),
-        captureIOSBuildSource(), readFileSync(args[0]), args[1], archive, args[2] ?? 'smoke'))
+        captureIOSBuildSource(), readFileSync(args[0]), args[1], archive, args[2] ?? 'smoke', engineInputs, skiaInputs))
     } else if (operation === 'collect') {
       const [manifestPath, udid, fixtureId] = args
       const build = read(resolve(out, 'build.json'))
@@ -169,6 +239,15 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       write(resolve(out, 'execution-evidence.json'), { sourceCommit: build.sourceCommit, executionEvidence: collectIOSExecution(
         probe, read(manifestPath), build,
         { host: 'ios', kind: 'official-simulator', id: udid }, fixtureId) })
-    } else throw new Error('usage: ios-app-execution-evidence.mjs target-dir|begin|archive|finish|collect <output-dir/root> [...]')
+    } else if (operation === 'skia-inputs') {
+      const [root, cargoPath] = args
+      const receipt = inspectIOSSkiaBuildInputs({ root, cargoPath })
+      write(resolve(out, 'skia-build-inputs.json'), receipt)
+      if (receipt.status === 'passed' && receipt.autoConfigured) process.stdout.write(`${receipt.sourceDir}\n`)
+      else if (receipt.status === 'blocked' || receipt.status === 'failed'
+          || (receipt.status === 'unknown' && receipt.mode !== 'caller-configured')) {
+        throw new Error(`${receipt.status}: ${receipt.reason || receipt.mode}`)
+      }
+    } else throw new Error('usage: ios-app-execution-evidence.mjs target-dir|begin|archive|finish|collect|skia-inputs <output-dir/root> [...]')
   } catch (error) { console.error(error.message); process.exitCode = 1 }
 }

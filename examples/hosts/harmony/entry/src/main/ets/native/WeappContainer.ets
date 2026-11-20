@@ -3,32 +3,11 @@ import * as native from 'libentry.so';
 // The generated N-API module owns the opaque Rust handle and exchanges one
 // complete JSON bridge batch per call. A host can replace the inline fixture
 // with the packed portable manifest loaded from its rawfile/blob store.
-interface NativeContainerOwner {
-  capabilities(): string;
-  loadManifest(manifestJson: string): string;
-  loadManifestWithConfig(manifestJson: string, configJson: string): string;
-  start(manifestJson: string, requestId: string): string;
-  dispatch(envelopeJson: string): string;
-  dispatchBatch(batchJson: string): string;
-  hostServices(commandJson: string): string;
-  inspectState(): string;
-  pollTimers(nowNsDecimalString: string): string;
-  acknowledgePresentation(renderRevisionDecimalString: string): string;
-  resizeViewport(width: number, height: number): string;
-  lifecycle(requestId: string, event: string): string;
-  snapshot(): string;
-  attachSurface(surfaceId: string, width: number, height: number): string;
-  renderSurface(width: number, height: number): string;
-  detachSurface(): string;
-  canvasSnapshot(canvasId: string): string;
-  destroy(): void;
-}
-
 export class WeappContainer {
-  private readonly nativeOwner: NativeContainerOwner;
+  private readonly nativeOwner: native.NativeOwner;
   constructor() {
     if (typeof native.createOwner !== 'function') throw new Error('ERR_PROTOCOL_VERSION: isolated native owners are required');
-    this.nativeOwner = native.createOwner() as NativeContainerOwner;
+    this.nativeOwner = native.createOwner();
   }
   capabilities(): string {
     return this.nativeOwner.capabilities() as string;

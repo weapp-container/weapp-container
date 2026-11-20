@@ -24,7 +24,7 @@ test('subprocess crash rejects its operation and cleanup reports the exit', asyn
 
 test('IPC watchdog terminates a nonresponsive child and waits for its exit', async t => {
   const binaryPath = await host(t, ready + `process.stdin.resume();`);
-  const container = await createContainer({ binaryPath, pack: '/unused', timeout: 500 });
+  const container = await createContainer({ binaryPath, pack: '/unused', timeout: 500, processStartupTimeoutMs: 2000 });
   await assert.rejects(container.renderPage('/index'), { code: 'ERR_RPC_TIMEOUT' });
   await assert.rejects(container.dispose(), AggregateError);
 });
@@ -32,4 +32,11 @@ test('IPC watchdog terminates a nonresponsive child and waits for its exit', asy
 test('startup validates a real QuickJS testing handshake', async t => {
   const binaryPath = await host(t, `console.log(JSON.stringify({protocolVersion:1,engine:'v8',testing:true})); process.stdin.resume();`);
   await assert.rejects(createContainer({ binaryPath, timeout: 500 }), /QuickJS|startup and cleanup/);
+});
+
+test('startup timeout kills a child without spending the RPC cleanup watchdog', async t => {
+  const binaryPath = await host(t, `process.stdin.resume();`);
+  const started = Date.now();
+  await assert.rejects(createContainer({ binaryPath, pack: '/unused', processStartupTimeoutMs: 100, timeout: 2000 }), { code: 'ERR_STARTUP_TIMEOUT' });
+  assert.ok(Date.now() - started < 1500, 'startup timeout should not wait for the RPC watchdog');
 });

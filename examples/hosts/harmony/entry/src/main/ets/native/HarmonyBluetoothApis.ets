@@ -4,6 +4,7 @@ import ble from '@ohos.bluetooth.ble';
 import access from '@ohos.bluetooth.access';
 import constant from '@ohos.bluetooth.constant';
 import promptAction from '@ohos.promptAction';
+import window from '@ohos.window';
 import { BusinessError } from '@ohos.base';
 import { HarmonyHostServices, HarmonyApiCall, HarmonyApiError } from '../session/HostServices';
 
@@ -133,7 +134,8 @@ export class HarmonyBluetoothApis {
       this.opening = true;
       try {
         const app = call.context.application;
-        const consent = await promptAction.showDialog({title:'蓝牙授权',message:`${app.appId}（${app.publisherId}）申请发现并连接附近的蓝牙设备。此授权仅适用于当前账号和小程序。`,buttons:[{text:'允许',color:'#1677ff'},{text:'拒绝',color:'#666666'}]});
+        const prompts=(await window.getLastWindow(this.context)).getUIContext().getPromptAction();
+        const consent = await prompts.showDialog({title:'蓝牙授权',message:`${app.appId}（${app.publisherId}）申请发现并连接附近的蓝牙设备。此授权仅适用于当前账号和小程序。`,buttons:[{text:'允许',color:'#1677ff'},{text:'拒绝',color:'#666666'}]});
         this.current(call,accepted); if (consent.index !== 0) throw new HarmonyApiError('permission_denied','App Bluetooth permission denied',201,'openBluetoothAdapter:fail auth deny');
         const permission = await abilityAccessCtrl.createAtManager().requestPermissionsFromUser(this.context,['ohos.permission.ACCESS_BLUETOOTH']);
         this.current(call,accepted);

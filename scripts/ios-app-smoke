@@ -39,6 +39,19 @@ rustup_cargo=$(rustup which cargo)
 rustup_rustc=$(rustup which rustc)
 rustup_rustdoc=$(rustup which rustdoc)
 mkdir -p "$out_dir"
+# V8's published iOS simulator archive has a startup snapshot/runtime
+# mismatch. Require the statically verified archive and exact target binding.
+if [[ "$engine" == v8 ]]; then
+  node "$root/scripts/ios-v8-build-inputs.mjs" "$out_dir/v8-build-inputs.json" "$rust_target" "$arch"
+fi
+# Use the locked Skia source cache when no caller-provided source/library path
+# exists. This avoids relying on a missing prebuilt release asset.
+skia_source_dir=$(node "$root/scripts/ios-app-execution-evidence.mjs" skia-inputs "$out_dir" "$root" "$rustup_cargo")
+if [[ -n "$skia_source_dir" ]]; then
+  export SKIA_SOURCE_DIR="$skia_source_dir"
+  export SKIA_GN_COMMAND="${SKIA_GN_COMMAND:-$skia_source_dir/third_party/gn/gn}"
+  export FORCE_SKIA_BUILD=1
+fi
 # Resolve the environment once and override Cargo config explicitly. The
 # linker consumes only the exact archive selected from this build's messages.
 cargo_target_dir=$(node "$root/scripts/ios-app-execution-evidence.mjs" target-dir "$root" "${CARGO_TARGET_DIR:-}")

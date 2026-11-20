@@ -1,6 +1,20 @@
 import type { ComponentOptions } from './types.ts'
 export interface ContainerArtifact { packPath: string; sourceRoot: string; generationRoot?: string }
 export interface CompiledArtifact { projectPath: string; miniprogramRootPath?: string; appConfigPath?: string }
+
+export interface ArtifactWatcher {
+  artifact: ContainerArtifact
+  close(): void | Promise<void>
+  generations?: Iterable<ContainerArtifact>
+}
+
+export interface ArtifactFactory {
+  build(): ContainerArtifact | Promise<ContainerArtifact>
+  watch?(hooks: {
+    onRebuilt: (artifact: ContainerArtifact) => void | Promise<void>
+    onError: (error: unknown) => void
+  }): ArtifactWatcher | Promise<ArtifactWatcher>
+}
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -70,11 +84,30 @@ export async function componentArtifact(artifact: ContainerArtifact, componentPa
   } catch (error) { await rm(root, { recursive: true, force: true }); throw error; }
 }
 
+async function ownedGenerationRoot(artifact: ContainerArtifact) {
+  if (!artifact.generationRoot) return undefined;
+  const root = resolve(artifact.generationRoot);
+  if (artifact.packPath !== join(root, 'pack') || artifact.sourceRoot !== join(root, 'source')) return undefined;
+  try {
+    if (await readFile(join(root, marker), 'utf8') !== '1\n') return undefined;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
+    throw error;
+  }
+  return root;
+}
+
+/** Dispose a generation only when it carries this package's ownership marker. */
+export async function disposeOwnedArtifact(artifact: ContainerArtifact): Promise<boolean> {
+  const root = await ownedGenerationRoot(artifact);
+  if (!root) return false;
+  await rm(root, { recursive: true });
+  return true;
+}
+
 /** Call only after every container using the generation has closed. */
 export async function disposeArtifact(artifact: ContainerArtifact) {
   if (!artifact.generationRoot) return;
-  const root = resolve(artifact.generationRoot);
-  if (artifact.packPath !== join(root, 'pack') || artifact.sourceRoot !== join(root, 'source')
-      || await readFile(join(root, marker), 'utf8') !== '1\n') throw new Error('Refusing to remove an unowned artifact generation');
-  await rm(root, { recursive: true });
+  if (!await ownedGenerationRoot(artifact)) throw new Error('Refusing to remove an unowned artifact generation');
+  await rm(resolve(artifact.generationRoot), { recursive: true });
 }

@@ -19,6 +19,7 @@ function fixture(t) {
   cpSync(resolve(root, 'scripts/build-native-hosts.mjs'), resolve(dir, 'scripts/build-native-hosts.mjs'))
   mkdirSync(resolve(dir, 'scripts/lib'))
   cpSync(resolve(root, 'scripts/lib/harmony-skia-build.mjs'), resolve(dir, 'scripts/lib/harmony-skia-build.mjs'))
+  cpSync(resolve(root, 'scripts/lib/cargo-skia-source.mjs'), resolve(dir, 'scripts/lib/cargo-skia-source.mjs'))
   for (const file of ['sdk-current-release.mjs', 'sdk-native-features.mjs', 'showcase-policy.mjs', 'showcase-native-font.mjs']) cpSync(resolve(root, 'scripts/lib', file), resolve(dir, 'scripts/lib', file))
   // CLI/environment wiring uses a finite synthetic font and inert compiler.
   // Production font pins are separately checked against reviewed asset pins.
@@ -49,6 +50,8 @@ const name = path.basename(process.argv[1]);
 if (name === 'rustup') {
   if (process.argv[2] !== 'which') process.exit(1);
   console.log(path.join(path.dirname(process.argv[1]), process.argv[3]));
+} else if (name === 'cargo' && process.argv[2] === 'metadata') {
+  process.stdout.write(process.env.WEAPP_NATIVE_TEST_CARGO_METADATA || '{"packages":[]}');
 } else if (name === 'cargo') {
   const receipt = JSON.stringify({ args: process.argv.slice(2), env: process.env });
   fs.writeFileSync(path.join(process.cwd(), 'cargo.json'), receipt);
@@ -151,6 +154,24 @@ function commitFixture(value) {
   }
 }
 
+test('native host CLI help exits before toolchain discovery or artifact writes', { skip: unsupportedShell }, t => {
+  const value = fixture(t)
+  for (const flag of ['--help', '-h']) {
+    const result = spawnSync(process.execPath, [resolve(value.dir, 'scripts/build-native-hosts.mjs'), flag], {
+      cwd: value.dir,
+      env: { ...process.env, PATH: resolve(value.dir, 'missing-bin') },
+      encoding: 'utf8',
+      timeout: 10_000,
+    })
+    assert.equal(result.status, 0, result.stderr)
+    assert.match(result.stdout, /Usage: node scripts\/build-native-hosts\.mjs \[options\]/)
+    assert.match(result.stdout, /--platform <android\|ios\|harmony>/)
+    assert.equal(result.stderr, '')
+    assert.equal(existsSync(resolve(value.dir, 'report.json')), false)
+    assert.equal(existsSync(resolve(value.dir, 'target')), false)
+  }
+})
+
 test('restricted Harmony producer pins the policy and verifies both Rust and N-API integration bytes', { skip: unsupportedShell }, t => {
   const value = fixture(t), policy = resolve(value.dir, 'policy.json'), output = resolve(value.dir, 'target/showcase/build.json')
   writeFileSync(policy, JSON.stringify({ schemaVersion: 1, allowedPackRoots: ['a'.repeat(64)], allowedApis: ['wx.timer'] }))
@@ -229,6 +250,13 @@ test('restricted Harmony remaps and scans external cache aliases without adoptin
       assert.equal(platform.artifact.hardening.localBuildPaths, false)
       assert.equal(platform.appIntegration.artifacts.length, 2)
       assert.equal(platform.appIntegration.artifacts[1].sha256, platform.artifact.sha256)
+      const cmake = JSON.parse(readFileSync(resolve(value.dir, 'cmake.jsonl'), 'utf8').split('\n')[0])
+      const cxxFlags = cmake.args.find(argument => argument.startsWith('-DCMAKE_CXX_FLAGS='))
+      assert.ok(cxxFlags)
+      for (const mapping of report.buildHardening.sourcePathMappings) {
+        const escapedSource = mapping.source.replaceAll('\\', '\\\\').replaceAll(' ', '\\ ')
+        assert.ok(cxxFlags.includes(`-ffile-prefix-map=${escapedSource}=${mapping.destination}`))
+      }
     }
   }
 })
@@ -244,7 +272,7 @@ test('release native profile records exact bytes and rejects source mutation wit
     assert.match(platform.artifact.path, /\/release\//); assert.match(platform.artifact.sha256, /^[a-f0-9]{64}$/)
     assert.equal(platform.artifact.bytes, Buffer.byteLength('recording fixture, not a native library'))
     assert.ok(JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'))).args.includes('--release'))
-    assert.equal(report.producerTool.files.length, 6)
+    assert.equal(report.producerTool.files.length, 7)
     if (!mutate) assert.notEqual(report.producerTool.sourceCommit, report.sourceBefore.sourceCommit, 'source and externally supplied build tool identities remain distinct')
   }
 })
@@ -256,6 +284,26 @@ test('native discovery rejects malformed profiles and target directory options b
     assert.equal(result.status, 1); assert.equal(existsSync(resolve(value.dir, 'cargo.json')), false)
     assert.match(result.stderr, /profile|target-dir/)
   }
+})
+
+test('Harmony tool aliases stay inside the selected Cargo target directory', { skip: unsupportedShell }, t => {
+  const value = fixture(t)
+  const targetDir = realpathSync(mkdtempSync(resolve(tmpdir(), 'weapp-harmony-tool-alias-target-')))
+  t.after(() => rmSync(targetDir, { recursive: true, force: true }))
+  const output = resolve(value.dir, 'report.json')
+  const env = { ...process.env, PATH: `${value.bin}:${process.env.PATH || ''}`, HARMONY_HOME: value.harmonySdk }
+  for (const key of ['CARGO_TARGET_DIR', 'SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH', 'DOCS_RS']) delete env[key]
+  const result = spawnSync(process.execPath, [resolve(value.dir, 'scripts/build-native-hosts.mjs'), '--platform', 'harmony', '--target-dir', targetDir, '--out', output], {
+    cwd: value.dir, env, encoding: 'utf8', timeout: 30_000,
+  })
+  assert.equal(result.status, 0, result.stderr)
+  const report = JSON.parse(readFileSync(output, 'utf8'))
+  const aliasDir = resolve(targetDir, 'native-host-toolchain/harmony/bin')
+  assert.equal(report.targetDir, targetDir)
+  assert.equal(realpathSync(resolve(aliasDir, 'ar')), resolve(value.harmonySdk, 'native/llvm/bin/llvm-ar'))
+  assert.equal(realpathSync(resolve(aliasDir, 'ranlib')), resolve(value.harmonySdk, 'native/llvm/bin/llvm-ranlib'))
+  assert.ok(JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8')).env.PATH.startsWith(`${aliasDir}:`))
+  assert.equal(existsSync(resolve(value.dir, 'target/native-host-toolchain/harmony/bin')), false)
 })
 
 test('native host artifact discovery follows the selected persistent cache in dev and release', { skip: unsupportedShell }, t => {
@@ -282,6 +330,7 @@ test('native host artifact discovery follows the selected persistent cache in de
       const cargo = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8'))
       assert.equal(cargo.args[cargo.args.indexOf('--target-dir') + 1], targetDir)
       const configure = JSON.parse(readFileSync(resolve(value.dir, 'cmake.jsonl'), 'utf8').split('\n')[0])
+      assert.equal(configure.args[configure.args.indexOf('-B') + 1], resolve(targetDir, 'native-host-integration/android/arm64-v8a'))
       assert.ok(configure.args.includes(`-DWEAPP_CONTAINER_ANDROID_RUST_LIB=${artifactPath}`))
       assert.equal(readFileSync(resolve(targetDir, 'keep-cache.txt'), 'utf8'), 'caller-owned cache')
       assert.equal(existsSync(artifactPath), true, 'persistent build output remains available after the command')
@@ -337,6 +386,15 @@ test('Android explicit API reaches Rust, QuickJS and JNI with a separate pinned 
   const args = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8')).env.BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android
   assert.ok(args.startsWith('-DWEAPP_BINDGEN_TEST=1 '))
   assert.ok(args.lastIndexOf('--target=aarch64-linux-android30') > args.indexOf('--target=aarch64-linux-android35'))
+})
+
+test('Android CLI API selection overrides the environment and records its source', { skip: unsupportedShell }, (t) => {
+  const value = fixture(t)
+  const { result, platform } = run(value, '30', {}, [], ['--android-api-level', '26'])
+  assert.equal(result.status, 0, result.stderr)
+  assert.equal(platform.toolchain.apiLevel, 26)
+  assert.equal(platform.toolchain.apiSource, '--android-api-level')
+  assertConfiguration(value, platform, 26)
 })
 
 test('Android selects the armeabi-v7a Rust target and matching NDK tools', { skip: unsupportedShell }, (t) => {
@@ -436,31 +494,102 @@ test('Android missing API sysroot fails before Cargo can reuse an old artifact',
   assert.equal(existsSync(resolve(value.dir, 'cmake.jsonl')), false)
 })
 
-test('Harmony forces bundled font decoding without mutating the adjacent native host environments', { skip: unsupportedShell }, t => {
+test('Harmony forces its Skia source configuration without mutating the adjacent native host environments', { skip: unsupportedShell }, t => {
   const value = fixture(t)
+  const skiaRoot = resolve(value.dir, 'cargo-registry/skia-bindings-0.157.0/skia')
+  for (const path of [
+    '.gn',
+    'bin/gn',
+    'include/core/SkTypes.h',
+    'third_party/externals/freetype/include/freetype/config/ftheader.h',
+    'third_party/externals/libpng/png.h',
+  ]) {
+    const file = resolve(skiaRoot, path)
+    mkdirSync(dirname(file), { recursive: true })
+    writeFileSync(file, '')
+  }
+  const cargoMetadata = JSON.stringify({ packages: [{
+    name: 'skia-bindings', version: '0.157.0',
+    source: 'registry+https://github.com/rust-lang/crates.io-index',
+    manifest_path: resolve(dirname(skiaRoot), 'Cargo.toml'),
+  }] })
   const inherited = 'custom_value="a b" skia_use_freetype=false # retained user settings'
   const { result, report } = run(value, undefined, {
     SKIA_GN_ARGS: inherited,
     FORCE_SKIA_BUILD: '0',
+    WEAPP_NATIVE_TEST_CARGO_METADATA: cargoMetadata,
   }, ['harmony', 'ios'])
   assert.equal(result.status, 0, result.stderr)
   const history = readFileSync(resolve(value.dir, 'cargo-history.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line))
   assert.equal(history.length, 3)
   assert.ok(history[1].args.includes('container-host-harmony'))
   assert.ok(history[1].args.includes('harmony,arkui,skia-gpu-gles,quickjs-native-harmony'))
-  const required = 'skia_use_freetype=true skia_use_system_freetype2=false skia_enable_fontmgr_custom_empty=true'
+  const required = 'skia_use_freetype=true skia_use_system_freetype2=false skia_enable_fontmgr_custom_empty=true skia_use_expat=false skia_use_system_zlib=true'
   assert.equal(history[1].env.SKIA_GN_ARGS, `${inherited}\n${required}`)
+  assert.equal(history[1].env.SKIA_SOURCE_DIR, skiaRoot)
   assert.equal(history[1].env.FORCE_SKIA_BUILD, '1')
   const harmony = report.platforms[1]
   assert.equal(harmony.status, 'passed')
   assert.equal(harmony.toolchain.skia.effectiveGnArgs, history[1].env.SKIA_GN_ARGS)
   assert.equal(harmony.toolchain.skia.forceSourceBuild, true)
   assert.equal(harmony.toolchain.skia.fontDecoder, 'bundled-freetype')
+  assert.equal(harmony.toolchain.skia.xmlWriter, 'disabled')
+  assert.equal(harmony.toolchain.skia.buildMode, 'cargo-lock-source-cache-offline')
+  assert.ok(harmony.toolchain.skia.requiredGnArgs.includes('skia_use_expat=false'))
+  assert.equal(history[0].env.SKIA_SOURCE_DIR, skiaRoot)
+  assert.equal(history[0].env.FORCE_SKIA_BUILD, '1')
+  assert.equal(history[2].env.SKIA_SOURCE_DIR, skiaRoot)
+  assert.equal(history[2].env.FORCE_SKIA_BUILD, '1')
   assert.equal(harmony.toolchain.skia.verified, false)
   for (const invocation of [history[0], history[2]]) {
     assert.equal(invocation.env.SKIA_GN_ARGS, inherited)
-    assert.equal(invocation.env.FORCE_SKIA_BUILD, '0')
   }
+  assert.equal(report.platforms[0].toolchain.skia.buildMode, 'cargo-lock-source-cache-offline')
+  assert.equal(report.platforms[2].toolchain.skia.buildMode, 'cargo-lock-source-cache-offline')
+})
+
+test('native mobile hosts preserve caller-selected Skia configuration', { skip: unsupportedShell }, t => {
+  const value = fixture(t)
+  const { result, report } = run(value, undefined, {
+    SKIA_SOURCE_DIR: '/caller/skia',
+    WEAPP_NATIVE_TEST_CARGO_METADATA: JSON.stringify({ packages: [{
+      name: 'skia-bindings', version: '0.157.0',
+      source: 'registry+https://github.com/rust-lang/crates.io-index',
+      manifest_path: resolve(value.dir, 'cargo-registry/skia-bindings-0.157.0/Cargo.toml'),
+    }] }),
+  }, ['ios'])
+  assert.equal(result.status, 0, result.stderr)
+  const history = readFileSync(resolve(value.dir, 'cargo-history.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line))
+  assert.equal(history[0].env.SKIA_SOURCE_DIR, '/caller/skia')
+  assert.equal(history[0].env.FORCE_SKIA_BUILD, undefined)
+  assert.equal(history[1].env.SKIA_SOURCE_DIR, '/caller/skia')
+  assert.equal(history[1].env.FORCE_SKIA_BUILD, undefined)
+  assert.equal(report.platforms[0].toolchain.skia.buildMode, 'caller-configured')
+  assert.equal(report.platforms[1].toolchain.skia.buildMode, 'caller-configured')
+})
+
+test('Harmony integration follows an external target directory', { skip: unsupportedShell }, t => {
+  const value = fixture(t)
+  const targetDir = realpathSync(mkdtempSync(resolve(tmpdir(), 'weapp-harmony-integration-target-')))
+  t.after(() => rmSync(targetDir, { recursive: true, force: true }))
+  const output = resolve(value.dir, 'report.json')
+  const env = {
+    ...process.env,
+    PATH: `${value.bin}:${process.env.PATH || ''}`,
+    HARMONY_HOME: value.harmonySdk,
+    WEAPP_NATIVE_TEST_CARGO_METADATA: '{"packages":[]}',
+  }
+  for (const key of ['CARGO_TARGET_DIR', 'SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH', 'DOCS_RS']) delete env[key]
+  const result = spawnSync(process.execPath, [resolve(value.dir, 'scripts/build-native-hosts.mjs'), '--build', '--platform', 'harmony', '--target-dir', targetDir, '--out', output], {
+    cwd: value.dir, env, encoding: 'utf8', timeout: 30_000,
+  })
+  assert.equal(result.status, 0, result.stderr)
+  const report = JSON.parse(readFileSync(output, 'utf8')), platform = report.platforms[0]
+  assert.equal(platform.status, 'passed')
+  assert.equal(platform.appIntegration.status, 'passed')
+  const configure = JSON.parse(readFileSync(resolve(value.dir, 'cmake.jsonl'), 'utf8').split('\n')[0])
+  assert.equal(configure.args[configure.args.indexOf('-B') + 1], resolve(targetDir, 'native-host-integration/harmony'))
+  assert.equal(existsSync(resolve(value.dir, 'target/native-host-integration/harmony')), false)
 })
 
 for (const key of ['SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH', 'DOCS_RS']) {

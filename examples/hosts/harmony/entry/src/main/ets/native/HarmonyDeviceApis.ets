@@ -173,7 +173,8 @@ export class HarmonyDeviceApis {
       case 'wx.showModal': {
         const buttons: Array<promptAction.Button> = [{text:options.confirmText||'确定',color:'#1677ff'}];
         if(options.showCancel!==false)buttons.push({text:options.cancelText||'取消',color:'#666666'});
-        const result=await promptAction.showDialog({title:options.title||'',message:options.content||'',buttons});this.requireCurrent(nativeCall);
+        const prompts=(await window.getLastWindow(this.context)).getUIContext().getPromptAction();
+        const result=await prompts.showDialog({title:options.title||'',message:options.content||'',buttons});this.requireCurrent(nativeCall);
         return this.ok(api,{confirm:result.index===0,cancel:result.index!==0});
       }
       case 'wx.showActionSheet': {
@@ -181,7 +182,8 @@ export class HarmonyDeviceApis {
         if(items===undefined||items.length<1||items.length>6)throw new HarmonyApiError('invalid_request','itemList must contain 1..6 strings');
         const buttons: [promptAction.Button,promptAction.Button?,promptAction.Button?,promptAction.Button?,promptAction.Button?,promptAction.Button?] = [{text:items[0],color:'#111111'}];
         for(let index=1;index<items.length;index++)buttons.push({text:items[index],color:'#111111'});
-        const result: promptAction.ActionMenuSuccessResponse=await promptAction.showActionMenu({buttons});this.requireCurrent(nativeCall);return this.ok(api,{tapIndex:result.index});
+        const prompts=(await window.getLastWindow(this.context)).getUIContext().getPromptAction();
+        const result: promptAction.ActionMenuSuccessResponse=await prompts.showActionMenu({buttons});this.requireCurrent(nativeCall);return this.ok(api,{tapIndex:result.index});
       }
       case 'wx.authorize': {
         const permissions: Array<Permissions> = options.scope==='scope.userLocation'?['ohos.permission.APPROXIMATELY_LOCATION','ohos.permission.LOCATION']:options.scope==='scope.camera'?['ohos.permission.CAMERA']:options.scope==='scope.record'?['ohos.permission.MICROPHONE']:[];

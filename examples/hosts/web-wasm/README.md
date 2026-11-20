@@ -76,7 +76,7 @@ Both commands are called by the existing manifest CI job; they do not launch
 the actual product browser or claim GPU acceptance. `pnpm host:web-worker:smoke`
 remains the earlier standalone Worker probe.
 
-The builder requires the installed, lockfile-pinned Acorn 8.15.0 dependency from
+The builder requires the installed, lockfile-pinned Acorn 8.19.0 dependency from
 `tools/container-manifest/node_modules/acorn`. Run `pnpm install --frozen-lockfile`
 first. It verifies exact executable parser and license bytes, retains them under
 `validation/generated-module-parser/`, and checks the entire generated JavaScript

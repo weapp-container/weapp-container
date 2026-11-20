@@ -46,6 +46,12 @@ PID alone does not establish foreground ownership or visual correctness;
 inspect the OS screenshot separately from the drawable readback.
 `WEAPP_CONTAINER_IOS_ENGINE=quickjs|v8` selects the build feature and
 runtime configuration together; unavailable V8 target builds fail explicitly.
+When no caller-provided Skia path is set, the smoke resolves the Cargo-locked
+`skia-bindings 0.157.0` source and forces a source build. If that source or its
+GN executable is unavailable, the build stops instead of using an unverified
+prebuilt cache. Caller-provided Skia source, library, GN, compiler or cache
+settings remain caller-owned and are recorded as `unknown` build provenance,
+so their receipts cannot satisfy a release gate by themselves.
 The default remains QuickJS. Continuous OS input/timer acceptance and device validation remain separate work. Build or
 source checks alone do not establish simulator, device or GPU conformance.
 

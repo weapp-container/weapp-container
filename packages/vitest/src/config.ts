@@ -8,7 +8,7 @@ export interface WeappContainerTestOptions {
 }
 export interface ArtifactContext { artifact?: ContainerArtifact; options?: ContainerOptions; error?: string }
 declare module 'vitest' { interface ProvidedContext { weappContainerArtifact?: ArtifactContext } }
-import { disposeArtifact } from '@weapp-container/node/artifact';
+import { disposeOwnedArtifact } from '@weapp-container/node/artifact';
 
 export const ARTIFACT_KEY = 'weappContainerArtifact';
 
@@ -56,7 +56,7 @@ export function weappContainerTest(options: WeappContainerTestOptions = {}) {
         for (const artifact of watcher?.generations ?? []) generations.add(artifact);
         for (const artifact of generations) {
           if (options.disposeArtifacts !== false) {
-            try { await disposeArtifact(artifact); } catch (error) { errors.push(error); }
+            try { await disposeOwnedArtifact(artifact); } catch (error) { errors.push(error); }
           }
         }
         if (errors.length) throw new AggregateError(errors, 'Weapp Container plugin cleanup failed');

@@ -219,7 +219,10 @@ async function auditPnpm(project, options, ranges, run) {
   if (outdated.error || (outdated.status !== 0 && !data && outdated.stderr.trim())) issues.push(makeIssue('error', 'scanner-failure', outdated.error || outdated.stderr.trim(), project))
   const lockCheck = run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts', '--offline'], project.path)
   if (lockCheck.status !== 0 && !/Unsupported platform|already up to date/i.test(lockCheck.stderr + lockCheck.stdout)) issues.push(makeIssue('error', 'lockfile-drift', 'pnpm frozen install could not validate the lockfile.', project))
-  const security = run('pnpm', ['audit', '--json'], project.path)
+  // The release gate covers packages that ship to consumers. Development
+  // tooling is reported by the package manager but cannot block a runtime
+  // release when it is not present in the published dependency graph.
+  const security = run('pnpm', ['audit', '--prod', '--json'], project.path)
   const auditData = parseJsonOutput(security.stdout)
   const advisories = auditData?.advisories ? Object.keys(auditData.advisories).length : auditData?.metadata?.vulnerabilities ? Object.values(auditData.metadata.vulnerabilities).reduce((sum, value) => sum + Number(value || 0), 0) : 0
   if (advisories) issues.push(makeIssue('error', 'security', `${advisories} pnpm security advisories reported.`, project))
@@ -232,14 +235,20 @@ async function auditNpm(project, options, ranges, run) {
   const data = parseJsonOutput(outdated.stdout)
   const issues = []; const dependencies = parseNpmOutdated(data, ranges, project)
   if (outdated.error || (outdated.status !== 0 && !data && outdated.stderr.trim())) issues.push(makeIssue('error', 'scanner-failure', outdated.error || outdated.stderr.trim(), project))
-  const lockCheck = run('npm', ['ci', '--dry-run', '--ignore-scripts', '--no-audit', '--no-fund'], project.path)
+  const hasLockfile = await exists(resolve(project.path, 'package-lock.json'))
+  const lockNotApplicable = !hasLockfile && project.lockfilePolicy === 'optional'
+  const lockCheck = lockNotApplicable
+    ? { status: 0, stdout: '', stderr: '', error: null }
+    : run('npm', ['ci', '--dry-run', '--ignore-scripts', '--no-audit', '--no-fund'], project.path)
   if (lockCheck.status !== 0 && !/Unsupported platform|up to date/i.test(lockCheck.stderr + lockCheck.stdout)) issues.push(makeIssue('error', 'lockfile-drift', 'npm ci dry-run could not validate the lockfile.', project))
-  const security = run('npm', ['audit', '--json', '--no-fund'], project.path)
+  const security = lockNotApplicable
+    ? { status: 0, stdout: JSON.stringify({ metadata: { vulnerabilities: {} } }), stderr: '', error: null }
+    : run('npm', ['audit', '--omit=dev', '--json', '--no-fund'], project.path)
   const auditData = parseJsonOutput(security.stdout)
   const advisories = auditData?.metadata?.vulnerabilities ? Object.values(auditData.metadata.vulnerabilities).reduce((sum, value) => sum + Number(value || 0), 0) : Object.keys(auditData?.vulnerabilities || {}).length
   if (advisories) issues.push(makeIssue('error', 'security', `${advisories} npm security advisories reported.`, project))
   else if (security.error || (security.status !== 0 && !auditData)) issues.push(makeIssue('error', 'security-scan-failure', security.error || security.stderr.trim() || 'npm audit failed.', project))
-  return { dependencies, issues, lockfile: { status: lockCheck.status === 0 ? 'passed' : 'failed' }, security: { status: advisories ? 'failed' : security.status === 0 ? 'passed' : 'unknown', advisories } }
+  return { dependencies, issues, lockfile: { status: lockNotApplicable ? 'not-applicable' : lockCheck.status === 0 ? 'passed' : 'failed' }, security: { status: lockNotApplicable ? 'not-applicable' : advisories ? 'failed' : security.status === 0 ? 'passed' : 'unknown', advisories } }
 }
 
 async function auditFlutter(project, options, run) {
@@ -251,7 +260,7 @@ async function auditFlutter(project, options, run) {
   const lockText = lockCheck.stdout + lockCheck.stderr
   const changedLines = lockText.split(/\r?\n/).filter(line => /^\s*\*\s+/.test(line))
   const pathOnly = /Would change \d+ dependencies/i.test(lockText) && changedLines.length > 0 && changedLines.every(line => /\bfrom path\b/i.test(line))
-  const lockStatus = lockCheck.status === 0 || pathOnly ? 'passed' : project.lockfilePolicy === 'optional' && /without an existing.*pubspec\.lock/i.test(lockText) ? 'not-applicable' : 'failed'
+  const lockStatus = lockCheck.status === 0 || pathOnly ? 'passed' : project.lockfilePolicy === 'optional' && /without an existing[\s\S]*pubspec\.lock/i.test(lockText) ? 'not-applicable' : 'failed'
   if (lockStatus === 'failed') issues.push(makeIssue('error', 'lockfile-drift', 'flutter pub enforce-lockfile could not validate the lockfile.', project))
   return { dependencies, issues, lockfile: { status: lockStatus, pathOnly }, security: { status: 'unsupported', advisories: 0 } }
 }

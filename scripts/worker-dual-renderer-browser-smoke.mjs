@@ -6,7 +6,7 @@ import { lstat, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/pr
 import { createServer } from 'node:http'
 import { dirname, extname, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { PARSER_FILES, localPath, regularBytes, canonical, productConfigBytes,
+import { PARSER_PIN, PARSER_FILES, localPath, regularBytes, canonical, productConfigBytes,
   inspectImportGraph, classifyRequest, installWindowWasmAudit, screenshotPixels, withPageDeadline } from './worker-product-browser-smoke.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -92,8 +92,8 @@ export async function inspectMixedProductSite(siteDir, { expectedIndexSha256, ex
   assert.match(build.source.sourceFiles['scripts/generated-package-closure.mjs'] ?? '', HEX, 'Fresh source-bound generated closure gate is required')
   const parser = build.generatedModuleParser
   assert.equal(parser?.status, 'passed'); assert.equal(parser?.retainedStatus, 'passed')
-  assert.equal(parser.name, 'acorn'); assert.equal(parser.version, '8.15.0'); assert.equal(parser.license, 'MIT')
-  assert.equal(parser.npmIntegrity, 'sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==')
+  assert.equal(parser.name, PARSER_PIN.name); assert.equal(parser.version, PARSER_PIN.version); assert.equal(parser.license, PARSER_PIN.license)
+  assert.equal(parser.npmIntegrity, PARSER_PIN.npmIntegrity)
   assert.equal(parser.archiveVerifiedAtBuild, false, 'Package-file verification must not claim archive verification')
   assert.deepEqual(parser.files, PARSER_FILES)
   assert.equal(parser.evidenceDirectory, resolve(root, 'validation/generated-module-parser'))
@@ -105,7 +105,7 @@ export async function inspectMixedProductSite(siteDir, { expectedIndexSha256, ex
   }
   if (!parseModule) {
     const module = await import(`data:text/javascript;base64,${parserModuleBytes.toString('base64')}`)
-    assert.equal(module.version, '8.15.0'); assert.equal(typeof module.parse, 'function'); parseModule = module.parse
+    assert.equal(module.version, PARSER_PIN.version); assert.equal(typeof module.parse, 'function'); parseModule = module.parse
   }
   let total = 0
   const retain = async (path, descriptor, purpose) => {
@@ -188,7 +188,7 @@ export async function inspectMixedProductSite(siteDir, { expectedIndexSha256, ex
   const generatedClosure = build.generatedModuleClosure
   assert.equal(generatedClosure?.schemaVersion, 1); assert.equal(generatedClosure?.status, 'passed')
   assert.equal(generatedClosure.entry, 'pkg/container_host_web.js')
-  assert.deepEqual(generatedClosure.parser, { name: 'acorn', version: '8.15.0', sha256: PARSER_FILES[1].sha256 })
+  assert.deepEqual(generatedClosure.parser, { name: PARSER_PIN.name, version: PARSER_PIN.version, sha256: PARSER_FILES[1].sha256 })
   const allGeneratedJs = generated.files.filter(file => /\.(?:m?js)$/.test(file.path))
   assert.deepEqual(generatedClosure.modules.map(module => module.path).sort(), allGeneratedJs.map(file => file.path).sort())
   for (const module of generatedClosure.modules) {

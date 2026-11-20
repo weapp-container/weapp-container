@@ -34,6 +34,11 @@ const requireAll = args.includes('--require-all')
 const engineIndex = args.indexOf('--engine')
 const expectedEngine = engineIndex >= 0 ? args[engineIndex + 1] : 'quickjs'
 if (!['quickjs', 'v8'].includes(expectedEngine)) throw new Error('--engine must be quickjs or v8')
+const compilerCommitIndex = args.indexOf('--expected-compiler-commit')
+const expectedCompilerCommit = compilerCommitIndex >= 0 ? args[compilerCommitIndex + 1] : null
+if (expectedCompilerCommit !== null && !/^[0-9a-f]{40}$/.test(expectedCompilerCommit)) {
+  throw new Error('--expected-compiler-commit must be a 40-character lowercase Git SHA')
+}
 const requested = []
 for (let index = 0; index < args.length; index += 1) {
   if (args[index] === '--platform' && args[index + 1]) requested.push(args[index + 1])
@@ -70,6 +75,7 @@ function gitRevision(cwd = root) {
 }
 
 function pinnedCompilerCommit() {
+  if (expectedCompilerCommit) return expectedCompilerCommit
   const result = spawnSync('git', ['rev-parse', 'HEAD:vendor/weapp-vite'], { cwd: root, encoding: 'utf8' })
   return result.status === 0 ? result.stdout.trim() : null
 }
@@ -691,6 +697,8 @@ const report = {
   sourceCommitScope: 'smoke-harness-checkout',
   artifactBuildSourcesVerified: false,
   weappViteCommit: gitRevision(resolve(root, 'vendor/weapp-vite')),
+  expectedCompilerCommit: pinnedCompilerCommit(),
+  expectedCompilerCommitSource: expectedCompilerCommit ? 'explicit' : 'gitlink',
   requireAll,
   expectedEngine,
   environment: runtimeEnvironment(),

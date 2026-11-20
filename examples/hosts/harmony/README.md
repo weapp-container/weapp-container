@@ -138,51 +138,25 @@ The command is a reproducible integration entry, not a device claim. DevEco
 must provide the OpenHarmony NDK and ArkUI/N-API libraries; CI uses the Rust
 cross-target check and validates the project files when those SDKs are absent.
 
-The live-session behavioral contracts run without a device:
+The repository's Harmony regression suite runs without a device:
 
 ```sh
-node --test scripts/harmony-live-session.test.mjs scripts/sync-harmony-pack.test.mjs scripts/harmony-native-surface.test.mjs
+pnpm host:harmony:test
 ```
 
-These tests strip types from the production session/pack TypeScript and execute it
-against an instrumented native boundary. They cover startup ordering, inspected
-page state, batch pointer events, timer clocks, lifecycle, resize and failure
-cleanup. They do not replace an official ArkTS/NDK build, an installed HAP run,
-Skia GPU evidence or device interaction.
-The native surface test compiles the unchanged production `RenderSurface`
-function against an instrumented EGL boundary with a host C++ compiler. It
-checks identity ownership after resize destruction, allocation, binding and
-query failures; it opens no native window and is not driver execution evidence.
-They use Node's native `stripTypeScriptTypes` API (Node 22.13+), with temporary
-modules removed after execution; no upstream npm dependency installation is
-needed. The manifest CI job runs `pnpm host:harmony:live:test`, which also
-compiles and executes the native decimal-argument parser contracts with a host
-C++ compiler.
+It runs the Harmony build/artifact contracts and the `container-host-harmony`
+Rust FFI tests. These validate local package boundaries, metadata checks,
+native ownership and session behavior through the enabled runtime providers.
+They do not replace an official ArkTS/NDK build, an installed HAP run, Skia GPU
+evidence or device interaction.
 
-For an installed App interaction smoke, build a dedicated HAP with a previously
-absent bundle such as `com.sonofmagic.weapp.container.smoke1234abcd`, then run:
-
-```sh
-node scripts/harmony-app-smoke.mjs \
-  --target 127.0.0.1:5557 \
-  --hap /absolute/path/to/entry-default-unsigned.hap \
-  --build-receipt /absolute/path/to/build-report.json \
-  --bundle com.sonofmagic.weapp.container.smoke1234abcd \
-  --out-dir artifacts/harmony-os-interaction \
-  --tap-x 250 --tap-y 520 --engine quickjs
-```
-
-Use the reference interaction pack with `count`, `timerCount`, `microtaskCount`
-and `lifecycleTrace`; the default checked-in pack is not that fixture. Choose
-physical tap coordinates for the attached device. The harness checks the HAP
-hash, SDK receipt, unique owned PID/start ticks, foreground layout and surface
-bounds before actual OS input. It verifies input/timer state and hide/show in
-the same session, and saves OS PNGs for independent visual review. Its `finally`
-cleanup removes only the run's previously absent bundle and exact remote
-capture paths, preserving the borrowed emulator, existing apps and global logs.
-It never relabels a captured screenshot as visually passed. Mocked ownership,
-failure, PNG-integrity and cleanup contracts run with
-`pnpm host:harmony:app:test` and do not replace an installed run.
+For installed-app acceptance, build a dedicated HAP with a previously absent
+bundle and install it on a Harmony emulator or device through DevEco. The
+repository currently has no automated installed-app smoke command. Record the
+HAP and source hashes, OS/device identity, session state before and after input,
+timer and lifecycle observations, and screenshots for independent visual
+review. Device, GPU, permission and account-backend results remain separate
+acceptance evidence.
 
 To produce runtime evidence, build and install the HAP from DevEco and capture
 the session receipts while interacting with the sample on an emulator or

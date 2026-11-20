@@ -78,7 +78,7 @@ export class HarmonyNetworkApis {
     const headers:Record<string,string>=options.header||{};
     let data:Object|string|ArrayBuffer|undefined=options.data;
     if(method==='GET'||method==='HEAD') {
-      if(data!==undefined&&typeof data!=='string'){const values=data as Record<string,Object>;for(const key of Object.keys(values))target.searchParams.append(key,typeof values[key]==='string'?values[key] as string:JSON.stringify(values[key]));}
+      if(data!==undefined&&typeof data!=='string'){const values=data as Record<string,Object>;for(const key of Object.keys(values))target.params.append(key,typeof values[key]==='string'?values[key] as string:JSON.stringify(values[key]));}
       else if(typeof data==='string'&&data.length>0)throw new HarmonyApiError('invalid_request','GET data must be a query object');data=undefined;
     }else if(api==='wx.uploadFile') {
       if(typeof options.filePath!=='string'||typeof options.name!=='string'||! /^[a-zA-Z0-9_-]{1,128}$/.test(options.name))throw new HarmonyApiError('invalid_request','managed upload path and safe field name required');

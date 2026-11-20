@@ -8,11 +8,11 @@ const requireCondition = (condition, message) => { if (!condition) throw new Err
 // Pin executable parser bytes before evaluating them; version metadata alone
 // does not authenticate an installed package. Keep its license with evidence.
 export const GENERATED_MODULE_PARSER_PIN = Object.freeze({
-  name: 'acorn', version: '8.15.0', license: 'MIT', archiveVerifiedAtBuild: false,
-  npmIntegrity: 'sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==',
+  name: 'acorn', version: '8.19.0', license: 'MIT', archiveVerifiedAtBuild: false,
+  npmIntegrity: 'sha512-oJlA3XiRm7Cyk6qFD2Jn8ak9B7jSy0qy00ADO3+8dpT0LSjFihQYv4C02LFCSYJV3Q37xYwwRy5m+IpIiUzqWw==',
   files: Object.freeze([
-    Object.freeze({ path: 'package.json', size: 1061, sha256: '9e422c8225c9cc4c774e9a9392d0ecac7f766b46122ef2db99db0fc4bbedc247' }),
-    Object.freeze({ path: 'dist/acorn.mjs', size: 229792, sha256: 'b4c8c70200e72bae33cf1085e0ecb1e792c1b6924ed50cab817caf14f51bb249' }),
+    Object.freeze({ path: 'package.json', size: 1067, sha256: '04d6fecaafb5e3d20a38fc3b64fed84bb3830a7759a8c00400ebcb87331fec00' }),
+    Object.freeze({ path: 'dist/acorn.mjs', size: 234658, sha256: '76254fc76529713b4dfd2532972d17a991ffd9aafeebb1f977445b5506b9fb0b' }),
     Object.freeze({ path: 'LICENSE', size: 1099, sha256: '76a876cf886ff9be2a8b5e2e86514fed06223c8c9f0c1e9ee9606e93841e00b7' }),
   ]),
 })

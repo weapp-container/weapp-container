@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Compile an isolated, inspectable Harmony example with the official SDK.
-// No install, signing, emulator or GPU acceptance is implied by this command.
+// No device install, signing, emulator or GPU acceptance is implied by this command.
 import { createHash, randomUUID } from 'node:crypto'
 import { spawn } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync, symlinkSync, copyFileSync, writeFileSync } from 'node:fs'
@@ -8,9 +8,37 @@ import { basename, dirname, join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { SDK_RELEASE_VERSION, assertCleanNativeSource, captureNativeSource } from './lib/sdk-current-release.mjs'
 import { assertHarmonyNativeRelease, collectHarmonyGeneratedMetadata, inspectHarmonyHap, preserveHarmonyNativeLibraries } from './lib/harmony-artifact-contract.mjs'
+import { inspectInstalledHarmonyNapiTypes } from './lib/harmony-build-contract.mjs'
 
 const toolRoot = fileURLToPath(new URL('..', import.meta.url))
 const args = process.argv.slice(2)
+if (args.includes('--help') || args.includes('-h')) {
+  process.stdout.write('Usage: node scripts/build-harmony-hap.mjs [options]\n\n'
+    + 'Compile and package an isolated Harmony example with the official SDK.\n\n'
+    + 'Options:\n'
+    + '  --source-root <path>      Use a different source checkout\n'
+    + '  --profile <dev|release>   Select the build profile (default: dev)\n'
+    + '  --native-receipt <path>   Require a matching clean native release receipt\n'
+    + '  --out <path>              Write the isolated project and build report\n'
+    + '  --sdk <path>              Select the OpenHarmony SDK\n'
+    + '  --hvigor <path>           Select the official Hvigor executable\n'
+    + '  --ohpm <path>             Select the official ohpm executable\n'
+    + '  --rust-lib <path>         Select the Harmony Rust library\n'
+    + '  --bundle <name>           Override the application bundle name\n'
+    + '  --pack <path>             Include a portable container pack\n'
+    + '  --help, -h                Show this help and exit\n')
+  process.exit(0)
+}
+const valueOptions = new Set([
+  '--source-root', '--profile', '--native-receipt', '--out', '--sdk', '--hvigor',
+  '--ohpm', '--rust-lib', '--bundle', '--pack',
+])
+for (let index = 0; index < args.length; index++) {
+  const name = args[index]
+  if (!valueOptions.has(name)) throw new Error(`Unknown option: ${name}`)
+  const value = args[++index]
+  if (!value || value.startsWith('--')) throw new Error(`${name} requires a value`)
+}
 function option(name, fallback) {
   const index = args.indexOf(name)
   if (index < 0) return fallback
@@ -28,6 +56,7 @@ const project = join(out, 'project')
 const sdkCandidate = resolve(option('--sdk', process.env.OHOS_SDK || '/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony'))
 const sdk = existsSync(join(sdkCandidate, 'openharmony/native')) ? join(sdkCandidate, 'openharmony') : sdkCandidate
 const hvigor = resolve(option('--hvigor', '/Applications/DevEco-Studio.app/Contents/tools/hvigor/bin/hvigorw'))
+const ohpm = resolve(option('--ohpm', '/Applications/DevEco-Studio.app/Contents/tools/ohpm/bin/ohpm'))
 const rustLib = resolve(option('--rust-lib', join(root, `target/aarch64-unknown-linux-ohos/${profile === 'release' ? 'release' : 'debug'}/libcontainer_host_harmony.so`)))
 const bundle = option('--bundle', null)
 const pack = option('--pack', null)
@@ -61,7 +90,6 @@ function copySources(source, destination, relative = '') {
     }
   }
 }
-
 if (existsSync(out)) throw new Error(`output already exists; use a new run directory: ${out}`)
 // Resolve existing ancestors too: a symlink alias must not allow the copy to
 // recursively consume its own output under the source project.
@@ -76,13 +104,14 @@ const resolvedSource = realpathSync(projectSource)
 if (resolvedOut === resolvedSource || resolvedOut.startsWith(`${resolvedSource}${sep}`)) throw new Error('output must be outside the Harmony source project')
 if (!existsSync(rustLib) || !statSync(rustLib).isFile()) throw new Error(`build the Harmony Rust library first: ${rustLib}`)
 if (!existsSync(hvigor)) throw new Error(`official Hvigor is missing: ${hvigor}`)
+if (!existsSync(ohpm)) throw new Error(`official ohpm is missing: ${ohpm}`)
 if (bundle !== null && !/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/.test(bundle)) throw new Error('invalid --bundle name')
 mkdirSync(dirname(out), { recursive: true })
 mkdirSync(out)
 try {
   report.sourceBefore = captureNativeSource(root)
   if (profile === 'release') assertCleanNativeSource(report.sourceBefore)
-  report.producerTool = { ...captureNativeSource(toolRoot), files: ['scripts/build-harmony-hap.mjs', 'scripts/lib/harmony-artifact-contract.mjs', 'scripts/lib/sdk-current-release.mjs', 'scripts/lib/sdk-native-features.mjs'].map(path => ({ path, sha256: sha(readFileSync(join(toolRoot, path))) })) }
+  report.producerTool = { ...captureNativeSource(toolRoot), files: ['scripts/build-harmony-hap.mjs', 'scripts/lib/harmony-artifact-contract.mjs', 'scripts/lib/harmony-build-contract.mjs', 'scripts/lib/sdk-current-release.mjs', 'scripts/lib/sdk-native-features.mjs'].map(path => ({ path, sha256: sha(readFileSync(join(toolRoot, path))) })) }
   if (nativeReceiptPath) {
     const bytes = readFileSync(nativeReceiptPath), native = assertHarmonyNativeRelease(JSON.parse(bytes), rustLib)
     if (native.sourceCommit !== report.sourceBefore.sourceCommit) throw new Error('HAP source and native release producer commits must match')
@@ -121,6 +150,13 @@ try {
     symlinkSync(join(sdk, component), join(sdkRoot, String(compileSdk), component), 'dir')
   }
   report.sdk = { source: sdk, versionedLayout: sdkRoot, compileSdk, components }
+  save()
+  // Resolve local Harmony packages in the isolated copy before Hvigor. The
+  // source tree stays untouched and the copied module gets its own dependency
+  // state, so a clean build cannot silently fall back to a stale checkout.
+  report.ohpm = { path: ohpm, prefix: project, flags: ['--all', '--no-save', '--no-link'] }
+  await run('ohpm-install', ohpm, ['install', '--all', '--no-save', '--no-link', '--prefix', project], project)
+  report.ohpm.localNapiPackage = inspectInstalledHarmonyNapiTypes(project)
   save()
   await run('hvigor', hvigor, ['assembleApp', '-p', 'product=default', ...(profile === 'release' ? ['-p', 'buildMode=release'] : []), '--no-daemon'], project, { OHOS_BASE_SDK_HOME: sdkRoot })
   if (sha(readFileSync(rustLib)) !== report.rustLibrary.sha256) throw new Error('Rust library changed during packaging')

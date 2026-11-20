@@ -1193,7 +1193,19 @@ fn stop_admission_reports_only_accepted_socket_drain_and_drop_releases_the_liste
     assert!(target.drain_status().is_drained());
     drop(peer);
     drop(target);
-    let rebound = TcpListener::bind(address).unwrap();
+    // Other parallel tests can acquire the just-released ephemeral port
+    // between our drop and bind. Retry briefly so that scheduling does not
+    // turn this listener-lifecycle assertion into a flaky port-race test.
+    let deadline = Instant::now() + Duration::from_secs(1);
+    let rebound = loop {
+        match TcpListener::bind(address) {
+            Ok(listener) => break listener,
+            Err(error) if error.kind() == ErrorKind::AddrInUse && Instant::now() < deadline => {
+                thread::sleep(Duration::from_millis(10));
+            }
+            Err(error) => panic!("listener did not release {address}: {error}"),
+        }
+    };
     assert_eq!(rebound.local_addr().unwrap(), address);
 }
 

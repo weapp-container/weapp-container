@@ -13,6 +13,7 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import { harmonySkiaBuild } from './lib/harmony-skia-build.mjs'
+import { nativeSkiaBuild as resolveNativeSkiaBuild, resolveLockedSkiaSource } from './lib/cargo-skia-source.mjs'
 import { createHash } from 'node:crypto'
 import { SDK_RELEASE_VERSION, assertCleanNativeSource, captureNativeSource } from './lib/sdk-current-release.mjs'
 import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtifact } from './lib/showcase-policy.mjs'
@@ -20,6 +21,32 @@ import { loadShowcaseNativeFont, retainShowcaseNativeFont, verifyShowcaseNativeF
 
 const toolRoot = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = process.argv.slice(2)
+
+function printHelp() {
+  process.stdout.write(`Usage: node scripts/build-native-hosts.mjs [options]\n\n`
+    + 'Validate or build the Android, iOS and Harmony native host boundaries.\n\n'
+    + 'Options:\n'
+    + '  --platform <android|ios|harmony>  Select one platform; repeat to select several\n'
+    + '  --build                          Build the Rust host and available SDK integration\n'
+    + '  --profile <dev|release>           Select the Cargo profile (default: dev)\n'
+    + '  --engine <quickjs|v8>             Select the native JavaScript engine (default: quickjs)\n'
+    + '  --android-abi <arm64-v8a|armeabi-v7a>  Select the Android ABI\n'
+    + '  --android-api-level <level>       Select the Android API level\n'
+    + '  --target-dir <path>               Use a persistent Cargo target directory\n'
+    + '  --source-root <path>              Validate a different source checkout\n'
+    + '  --out <path>                      Write the JSON evidence report\n'
+    + '  --distribution-profile <name>     Select the distribution policy profile\n'
+    + '  --showcase-policy <path>          Supply a restricted-showcase policy\n'
+    + '  --showcase-font <path>             Supply the reviewed native font\n'
+    + '  --showcase-font-license <path>     Supply the native font license\n'
+    + '  --help, -h                        Show this help and exit\n')
+}
+
+if (args.includes('--help') || args.includes('-h')) {
+  printHelp()
+  process.exit(0)
+}
+
 function option(name, fallback) {
   const index = args.indexOf(name)
   if (index < 0) return fallback
@@ -39,6 +66,25 @@ function rustupWhich(binary) {
     stdio: ['ignore', 'pipe', 'ignore'],
   })
   return result.status === 0 ? result.stdout.trim() : null
+}
+
+function lockedSkiaSource() {
+  const result = spawnSync(cargoBin, ['metadata', '--locked', '--format-version', '1'], {
+    cwd: root,
+    env: { ...process.env, ...cargoEnv },
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
+    timeout: 30_000,
+  })
+  if (result.status !== 0 || result.error) return null
+  try { return resolveLockedSkiaSource(JSON.parse(result.stdout)) }
+  catch { return null }
+}
+
+function nativeSkiaBuild() {
+  const externallyConfigured = ['SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH'].some(key => process.env[key] !== undefined)
+    || (process.env.DOCS_RS !== undefined && process.env.DOCS_RS !== '0')
+  return resolveNativeSkiaBuild(process.env, { lockedSourceDir: externallyConfigured ? null : lockedSkiaSource() })
 }
 
 const rustupCargo = rustupWhich('cargo')
@@ -262,7 +308,7 @@ function producerToolIdentity() {
   let source
   try { source = captureNativeSource(toolRoot) }
   catch (error) { source = { sourceCommit: null, sourceDirty: null, sourceError: error.message } }
-  return { ...source, files: ['scripts/build-native-hosts.mjs', 'scripts/lib/harmony-skia-build.mjs', 'scripts/lib/sdk-current-release.mjs', 'scripts/lib/sdk-native-features.mjs', 'scripts/lib/showcase-policy.mjs', 'scripts/lib/showcase-native-font.mjs'].map(path => ({ path, sha256: createHash('sha256').update(readFileSync(resolve(toolRoot, path))).digest('hex') })) }
+  return { ...source, files: ['scripts/build-native-hosts.mjs', 'scripts/lib/cargo-skia-source.mjs', 'scripts/lib/harmony-skia-build.mjs', 'scripts/lib/sdk-current-release.mjs', 'scripts/lib/sdk-native-features.mjs', 'scripts/lib/showcase-policy.mjs', 'scripts/lib/showcase-native-font.mjs'].map(path => ({ path, sha256: createHash('sha256').update(readFileSync(resolve(toolRoot, path))).digest('hex') })) }
 }
 
 function validateProject(spec) {
@@ -294,13 +340,16 @@ function findAndroidNdk() {
 function nativeToolchain(name) {
   if (name === 'android') {
     const ndk = findAndroidNdk()
-    const configuredApi = process.env.ANDROID_API_LEVEL
-    const apiSource = configuredApi === undefined ? 'sample-min-sdk' : 'ANDROID_API_LEVEL'
+    const skia = nativeSkiaBuild()
+    const cliApi = option('--android-api-level')
+    const configuredApi = cliApi ?? process.env.ANDROID_API_LEVEL
+    const apiSource = cliApi !== undefined ? '--android-api-level'
+      : configuredApi === undefined ? 'sample-min-sdk' : 'ANDROID_API_LEVEL'
     const rawApi = configuredApi === undefined ? String(specs.android.minimumApi) : configuredApi
     const validApi = /^[1-9][0-9]*$/.test(rawApi) && Number.isSafeInteger(Number(rawApi))
       && Number(rawApi) >= specs.android.minimumApi
     const apiLevel = validApi ? Number(rawApi) : null
-    const base = { env: {}, linker: null, sdk: ndk, abi: androidAbi, apiLevel, apiSource, minimumApi: specs.android.minimumApi }
+    const base = { env: skia.env, linker: null, sdk: ndk, abi: androidAbi, apiLevel, apiSource, minimumApi: specs.android.minimumApi, skia: skia.report }
     if (!validApi) return {
       ...base,
       error: `ANDROID_API_LEVEL must be an integer >= ${specs.android.minimumApi}; received ${JSON.stringify(rawApi)}`,
@@ -331,6 +380,7 @@ function nativeToolchain(name) {
       ...base,
       linker,
       env: {
+        ...skia.env,
         // skia-bindings consumes these generic sysroot variables before its
         // Android platform setup. An inherited Xcode/Yocto sysroot would be
         // injected into GN's target flags. Let NDK select its own sysroot;
@@ -360,7 +410,11 @@ function nativeToolchain(name) {
     }
   }
   if (name === 'harmony') {
-    const skiaBuild = harmonySkiaBuild(process.env)
+    const lockedSourceDir = ['SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH', 'DOCS_RS']
+      .some(key => process.env[key] !== undefined)
+      ? null
+      : lockedSkiaSource()
+    const skiaBuild = harmonySkiaBuild(process.env, { lockedSourceDir })
     if (skiaBuild.error) return {
       linker: null, env: {}, sdk: null, skiaBuild: skiaBuild.report, error: skiaBuild.error,
     }
@@ -442,7 +496,7 @@ function nativeToolchain(name) {
     // GN/Ninja invokes bare `ar` and `ranlib` while the OpenHarmony SDK only
     // ships llvm-ar/llvm-ranlib. Keep aliases in a generated task directory;
     // explicit AR/RANLIB remain set for cc-rs and Cargo.
-    const toolAliasDir = resolve(root, 'target/native-host-toolchain/harmony/bin')
+    const toolAliasDir = resolve(targetDir, 'native-host-toolchain/harmony/bin')
     mkdirSync(toolAliasDir, { recursive: true })
     if (llvmRoot && existsSync(resolve(llvmRoot, 'bin'))) {
       for (const [alias, target] of [['ar', 'llvm-ar'], ['ranlib', 'llvm-ranlib']]) {
@@ -492,13 +546,17 @@ function nativeToolchain(name) {
     for (const key of Object.keys(env)) if (env[key] === undefined) delete env[key]
     return { linker, env, sdk, skiaBuild: skiaBuild.report }
   }
+  if (name === 'ios') {
+    const skia = nativeSkiaBuild()
+    return { env: skia.env, linker: null, sdk: null, skia: skia.report }
+  }
   return { env: {}, linker: null }
 }
 
 function buildProjectIntegration(name, spec, toolchain, artifactPath) {
   if (mode !== 'build') return { status: 'not-run', reason: 'check mode' }
   if (name === 'android' && toolchain.sdk) {
-    const cmakeBuild = resolve(root, 'target/native-host-integration/android', toolchain.abi)
+    const cmakeBuild = resolve(targetDir, 'native-host-integration/android', toolchain.abi)
     const cmakeToolchain = resolve(toolchain.sdk, 'build/cmake/android.toolchain.cmake')
     const configureArgs = [
       '-S', resolve(root, spec.project, 'app/src/main/cpp'),
@@ -560,14 +618,16 @@ function buildProjectIntegration(name, spec, toolchain, artifactPath) {
         reason: 'OpenHarmony native CMake toolchain is missing from the detected SDK',
       }
     }
-    const cmakeBuild = resolve(root, 'target/native-host-integration/harmony')
+    const cmakeBuild = resolve(targetDir, 'native-host-integration/harmony')
+    const restrictedCxxFlags = restrictedSourcePathMappings.map(({ source, destination }) =>
+      `-ffile-prefix-map=${source.replaceAll('\\', '\\\\').replaceAll(' ', '\\ ')}=${destination}`)
     const configure = run(existsSync(cmakeBin) ? cmakeBin : 'cmake', [
       '-S', resolve(root, spec.project, 'entry/src/main/cpp'),
       '-B', cmakeBuild,
       '-G', 'Ninja',
       `-DCMAKE_TOOLCHAIN_FILE=${cmakeToolchain}`,
       '-DOHOS_ARCH=arm64-v8a',
-      ...(distribution.policy ? ['-DCMAKE_BUILD_TYPE=Release', '-DWEAPP_CONTAINER_RESTRICTED_SHOWCASE=ON', `-DCMAKE_CXX_FLAGS=-ffile-prefix-map=${root}=weapp-container`] : []),
+      ...(distribution.policy ? ['-DCMAKE_BUILD_TYPE=Release', '-DWEAPP_CONTAINER_RESTRICTED_SHOWCASE=ON', `-DCMAKE_CXX_FLAGS=${restrictedCxxFlags.join(' ')}`] : []),
       `-DWEAPP_CONTAINER_HARMONY_RUST_LIB=${artifactPath}`,
     ])
     if (configure.status !== 'passed') return { status: 'failed', configure }
@@ -616,9 +676,9 @@ function runPlatform(name) {
     : { status: 'not-run', reason: 'requested Rust engine/target did not build; previous native artifacts were not used' }
   if (distribution.policy && appIntegration.status === 'passed') {
     appIntegration.artifacts = ['libentry.so', 'libcontainer_host_harmony.so'].map(name => {
-      const path = `target/native-host-integration/harmony/${name}`, bytes = readFileSync(resolve(root, path))
+      const path = resolve(targetDir, 'native-host-integration/harmony', name), bytes = readFileSync(path)
       if (name === 'libcontainer_host_harmony.so' && !bytes.equals(artifactBytes)) throw new Error('N-API integration changed the restricted Rust library')
-      return { path, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'), hardening: verifyRestrictedHarmonyLibrary(resolve(root, path), toolchain) }
+      return { path, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'), hardening: verifyRestrictedHarmonyLibrary(path, toolchain) }
     })
   }
   const status = project.status === 'passed' && cargo.status === 'passed' && (!artifact || artifact.exists)
@@ -645,6 +705,7 @@ function runPlatform(name) {
         apiLevel: toolchain.apiLevel,
         apiSource: toolchain.apiSource,
         sampleMinSdk: toolchain.minimumApi,
+        skia: toolchain.skia,
         // Locked skia-bindings 0.157.0 keeps its internal ndk_api at 26;
         // ANDROID_API_LEVEL selects Rust/QuickJS/JNI, not Skia internals.
         skiaMinimumApi: 26,
@@ -653,6 +714,7 @@ function runPlatform(name) {
         compatibility: 'not-verified',
         error: toolchain.error || null,
       } : {}),
+      ...(name === 'ios' ? { skia: toolchain.skia } : {}),
     },
     cargo,
     artifact,

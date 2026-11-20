@@ -5,6 +5,7 @@ import fs from '@ohos.file.fs';
 import util from '@ohos.util';
 import systemDateTime from '@ohos.systemDateTime';
 import promptAction from '@ohos.promptAction';
+import window from '@ohos.window';
 import { BusinessError } from '@ohos.base';
 import { HarmonyHostServices, HarmonyApiCall, HarmonyApiError } from '../session/HostServices';
 import { HarmonyManagedFiles } from './HarmonyManagedFiles';
@@ -159,7 +160,8 @@ export class HarmonyRecorderApis {
     call.cancellation.onCancel(():void|Promise<void>=>{if(this.pending===pending)this.pending=null;if(pending.recording!==null)return this.retire(pending.recording,false);});
     try{
       const app=call.context.application;
-      const consent=await promptAction.showDialog({title:'麦克风授权',message:`${app.appId}（${app.publisherId}）申请使用麦克风录音。录音仅属于当前账号和小程序，离开前台即停止。`,buttons:[{text:'允许',color:'#1677ff'},{text:'拒绝',color:'#666666'}]});
+      const prompts=(await window.getLastWindow(this.context)).getUIContext().getPromptAction();
+      const consent=await prompts.showDialog({title:'麦克风授权',message:`${app.appId}（${app.publisherId}）申请使用麦克风录音。录音仅属于当前账号和小程序，离开前台即停止。`,buttons:[{text:'允许',color:'#1677ff'},{text:'拒绝',color:'#666666'}]});
       this.pendingCurrent(pending,owner);if(consent.index!==0)throw this.fail('application microphone consent denied','permission_denied',201);
       const permission=await abilityAccessCtrl.createAtManager().requestPermissionsFromUser(this.context,['ohos.permission.MICROPHONE']);
       this.pendingCurrent(pending,owner);if(permission.authResults.length!==1||permission.authResults[0]!==0)throw this.fail('OS microphone permission denied','permission_denied',201);this.permitted();

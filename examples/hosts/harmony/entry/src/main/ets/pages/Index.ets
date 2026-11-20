@@ -83,9 +83,11 @@ struct Index {
       if (foreground) { this.synchronizeSurface(); this.startPump(); }
     });
     try {
-      const context = getContext(this) as common.UIAbilityContext;
+      const hostContext = this.getUIContext().getHostContext();
+      if (hostContext === undefined) throw new Error('ERR_HOST_CONTEXT: ArkUI host context is unavailable');
+      const context = hostContext as common.UIAbilityContext;
       this.pack = PortablePack.load((path: string): Uint8Array => context.resourceManager.getRawFileContentSync(path),
-        (bytes: Uint8Array): string => util.TextDecoder.create('utf-8', { fatal: true, ignoreBOM: true }).decodeWithStream(bytes), sha256Bytes);
+        (bytes: Uint8Array): string => util.TextDecoder.create('utf-8', { fatal: true, ignoreBOM: true }).decodeToString(bytes), sha256Bytes);
       this.synchronizeSurface();
     } catch (error) { this.reportFailure(error); }
   }
@@ -140,7 +142,9 @@ struct Index {
     });
     this.session=session;this.attachedSurfaceId='';this.lastReceipt=null;this.initialSmokeLogged=false;
     try{
-      const hostContext=getContext(this) as common.UIAbilityContext;
+      const hostContextValue = this.getUIContext().getHostContext();
+      if (hostContextValue === undefined) throw new HarmonyAccountError('ERR_HOST_CONTEXT', 'ArkUI host context is unavailable');
+      const hostContext = hostContextValue as common.UIAbilityContext;
       new HarmonyDeviceApis(hostContext,services);const files=new HarmonyManagedFiles(services,`${hostContext.filesDir}/weapp-container-managed`);
       new HarmonySystemApis(hostContext,services,files);new HarmonyBluetoothApis(hostContext,services);new HarmonyRecorderApis(hostContext,services,files);
       new HarmonyNetworkApis(services,files,[]);new HarmonySocketApis(services,[]); // Explicit HTTPS allowlist; empty denies all origins.

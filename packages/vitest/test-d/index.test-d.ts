@@ -3,7 +3,7 @@ import { test, createContainerTest } from '@weapp-container/vitest'
 import { weappContainerTest } from '@weapp-container/vitest/config'
 import { defineConfig } from 'vitest/config'
 
-defineConfig({ plugins: [weappContainerTest({ build: { cwd: '.' } })] })
+defineConfig({ plugins: [weappContainerTest({ artifact: { build: async () => ({ packPath: '/pack', sourceRoot: '/source' }) } })] })
 test('typed fixture', async ({ container }) => {
   const page = await container.renderPage('/pages/index')
   expectType<Promise<number>>(page.data<number>('count'))

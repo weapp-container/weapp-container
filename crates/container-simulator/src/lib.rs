@@ -3153,6 +3153,12 @@ mod tests {
             &root,
             SimulatorConfig {
                 initial_data: json!({"title": "retained"}),
+                // This test asserts candidate-pack rejection and retention of
+                // the live generation, so allow headroom for native View
+                // startup under the workspace's parallel test load.
+                view_execution: container_runtime::ViewExecutionPolicy {
+                    batch_timeout_ms: 2_000,
+                },
                 ..SimulatorConfig::default()
             },
         )
