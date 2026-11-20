@@ -164,6 +164,24 @@
       "scope": "Current Android QuickJS release APK on emulator-5554",
       "conclusion": "Release native and Gradle packaging passed. The APK signed with the machine Android Debug certificate passed v2/v3 verification, installed and emitted successful app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot and wx.canIUse log records with an attached skia-gpu-gles surface",
       "limitations": "The Android Debug certificate is not production signing material. The release package is not debuggable, so run-as receipt access was blocked and the release observation is log-only. This does not certify production distribution, Android V8, physical devices, full API conformance or official WeChat behavior"
+    },
+    {
+      "id": "android-v8-boundary-7444578b",
+      "tool": "scripts/build-native-hosts.mjs --build --platform android --engine v8",
+      "version": "workspace commit 7444578b83ebe99b96ad13cbe5c92948fcd808fe; report SHA-256 656d4951c020be9960611ccfc0f2c709e64de514d8c8961bf9782b29fffb79f4",
+      "analysisTime": "2026-11-21",
+      "scope": "Android arm64-v8a V8 native host boundary on macOS",
+      "conclusion": "Blocked before Cargo because the non-Linux Android V8 producer requires pinned RUSTY_V8_ARCHIVE plus RUSTY_V8_SRC_BINDING_PATH, or a matching RUSTY_V8_MIRROR",
+      "limitations": "No Android V8 artifact or runtime result is claimed. The existing QuickJS evidence does not substitute for V8"
+    },
+    {
+      "id": "harmony-runtime-boundary-7444578b",
+      "tool": "scripts/mobile-runtime-smoke.mjs --platform harmony --engine quickjs and hdc list targets",
+      "version": "workspace commit 7444578b83ebe99b96ad13cbe5c92948fcd808fe; report SHA-256 269cfa4ac7924ad655b9fd834cbea955635ec625215e4b8fae4b3171b0ce7759",
+      "analysisTime": "2026-11-21",
+      "scope": "Harmony QuickJS runtime smoke on the configured local DevEco host",
+      "conclusion": "Blocked because hdc reported no online target and no current HAP/bundle/ability was available for launch",
+      "limitations": "Older HAPs from other source commits are stale. No Harmony QuickJS or V8 execution, GPU or device result is claimed"
     }
   ]
 }
