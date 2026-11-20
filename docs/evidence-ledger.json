@@ -92,6 +92,33 @@
       "scope": "Expected host/engine performance report pairs for web, macos, windows, linux, android, ios and harmony",
       "conclusion": "Incomplete because the current source revision does not have a complete validated report pair for every expected host and engine",
       "limitations": "No production performance claim is made from stale, partial or unavailable reports"
+    },
+    {
+      "id": "android-quickjs-source-bound-90c83897",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 90c838972eb79ec77b58a0ddb8b339abf8bca09a; debug APK SHA-256 6c6b44d9692e79b17673b42bfaa47ecd60da87ace35a1ebf21b44ce10bc962d5",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the current source-bound QuickJS debug APK and portable-pack-reference-v1",
+      "conclusion": "Passed clean source/build provenance, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse, correlated execution evidence and an attached skia-gpu-gles surface",
+      "limitations": "This is official-emulator evidence for QuickJS. It does not certify production signing, Android V8, physical devices, other mobile hosts, full API conformance or official WeChat behavior"
+    },
+    {
+      "id": "android-quickjs-interaction-90c83897",
+      "tool": "adb and portable-pack-interaction.json",
+      "version": "workspace commit 90c838972eb79ec77b58a0ddb8b339abf8bca09a; session android-interaction-90c83897",
+      "analysisTime": "2026-11-21",
+      "scope": "Real tap on the reference page in Android emulator emulator-5554",
+      "conclusion": "Passed a page tap that changed the page count and slot count from 0 to 1, retained the same QuickJS session and manifest integrity, advanced the committed frame to 4 and presented frame to 4",
+      "limitations": "The interaction receipt is a debuggable-emulator diagnostic and does not establish release signing, physical-device behavior or complete gesture coverage"
+    },
+    {
+      "id": "android-release-90c83897",
+      "tool": "scripts/build-android-apk.mjs, apksigner and adb",
+      "version": "workspace commit 90c838972eb79ec77b58a0ddb8b339abf8bca09a; unsigned APK SHA-256 9e6e579d38f792dd5b0b0e36a7b422b1b1c23a727c577b6c5c1c1c0be17858c2; Android Debug-signed APK SHA-256 df0227db8087d73db226043f70d57f9aeed707cbef1ec00483daaf6e72c86289",
+      "analysisTime": "2026-11-21",
+      "scope": "Current Android QuickJS release APK on emulator-5554",
+      "conclusion": "Release native and Gradle packaging passed. The unsigned artifact was rejected without a certificate. The same artifact signed with the machine Android Debug certificate installed and emitted successful app/page/render/canvas/API records plus an attached skia-gpu-gles surface",
+      "limitations": "Android Debug is not production signing material. Release run-as receipt access is unavailable, so the release observation is log-only and does not satisfy the source-bound runtime receipt gate or certify distribution"
     }
   ]
 }
