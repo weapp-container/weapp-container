@@ -15,6 +15,7 @@ object PortablePackContractTest {
         val files = mutableMapOf("manifest.json" to manifestBytes)
         File(root, "blobs/sha256").listFiles()!!.forEach { files["blobs/sha256/${it.name}"] = it.readBytes() }
         var count = 0
+        val startupRoute = manifest.getJSONArray("routes").getJSONObject(0).getString("path")
         fun test(name: String, body: () -> Unit) {
             try { body(); count += 1 } catch (failure: Throwable) {
                 throw AssertionError(name, failure)
@@ -524,13 +525,26 @@ object PortablePackContractTest {
             rejected("integrity root mismatch") { load(source) }
         }
         val refs = mutableListOf<Pair<String, String>>()
-        val scripts = manifest.getJSONArray("viewScripts")
-        refs += "WXS source" to scripts.getJSONObject(0).getString("sha256")
-        val compilation = manifest.getJSONObject("viewCompilation")
-        refs += "WXS executable" to compilation.getJSONArray("modules").getJSONObject(0).getString("executableSha256")
-        val document = compilation.getJSONArray("documents").getJSONObject(0)
-        refs += "WXML AST" to document.getString("wxmlAst")
-        refs += "WXML executable" to document.getJSONArray("expressions").getJSONObject(0).getString("executableSha256")
+        // v1 packs may omit WXS entirely. Collect only the optional resource
+        // tables present in the manifest so this harness exercises the pack
+        // that was actually built instead of assuming a richer fixture shape.
+        manifest.optJSONArray("viewScripts")?.let { scripts ->
+            if (scripts.length() > 0) refs += "WXS source" to scripts.getJSONObject(0).getString("sha256")
+        }
+        manifest.optJSONObject("viewCompilation")?.let { compilation ->
+            compilation.optJSONArray("modules")?.let { modules ->
+                if (modules.length() > 0) refs += "WXS executable" to modules.getJSONObject(0).getString("executableSha256")
+            }
+            compilation.optJSONArray("documents")?.let { documents ->
+                if (documents.length() > 0) {
+                    val document = documents.getJSONObject(0)
+                    refs += "WXML AST" to document.getString("wxmlAst")
+                    document.optJSONArray("expressions")?.let { expressions ->
+                        if (expressions.length() > 0) refs += "WXML executable" to expressions.getJSONObject(0).getString("executableSha256")
+                    }
+                }
+            }
+        }
         for ((name, pointer) in refs) {
             val path = "blobs/sha256/${pointer.removePrefix("sha256:")}"
             test("missing $name fails atomically") { rejected("missing:") { load(files - path) } }
@@ -541,7 +555,12 @@ object PortablePackContractTest {
         }
         test("manifest pointer traversal fails before file IO") {
             rejected("invalid blob pointer") {
-                load(changedManifest { it.getJSONArray("viewScripts").getJSONObject(0).put("sha256", "sha256:../outside") })
+                load(changedManifest { changed ->
+                    changed.optJSONArray("viewScripts")?.let { scripts ->
+                        scripts.getJSONObject(0).put("sha256", "sha256:../outside")
+                    } ?: changed.getJSONArray("templates").getJSONObject(0)
+                        .put("wxmlAst", "sha256:../outside")
+                })
             }
         }
         test("startup loads exact modules and resources once then renders live page data") {
@@ -560,9 +579,9 @@ object PortablePackContractTest {
             }
             for ((_, pointer) in refs) check(init.getJSONObject("blobs").has("sha256:${pointer.removePrefix("sha256:")}"))
             val render = runtime.requests.last().getJSONObject("payload")
-            check(render.getString("templateId") == "template:pages/index/index.wxml")
+            check(render.getString("templateId") == "template:$startupRoute.wxml")
             check(!render.has("root") && !render.has("frame") && !render.has("data"))
-            check(started.route == "pages/index/index")
+            check(started.route == startupRoute)
             rejected("snapshot has not been verified") { started.surfaceIdentity() }
             val snapshot = JSONObject().put("format", "rgba8-premultiplied").put("frame_id", 1).put("width", 2).put("height", 3)
                 .put("pixels", JSONArray(List(24) { it }))
@@ -670,7 +689,7 @@ object PortablePackContractTest {
                 messages.put(JSONObject(messages.getJSONObject(0).toString()).put("kind", "event").put("op", "diagnostic")
                     .put("payload", JSONObject().put("level", "warning").put("message", "sandbox capability partial")))
             })
-            check(load().start(runtime).route == "pages/index/index")
+            check(load().start(runtime).route == startupRoute)
             check(runtime.requests.size == 4)
         }
         test("snapshot frame, size and byte validation precede surface evidence") {
@@ -1186,6 +1205,8 @@ object PortablePackContractTest {
         override fun loadManifest(manifest: ByteArray, config: ByteArray): ByteArray {
             loaded = manifest.copyOf()
             loadCount += 1
+            currentRoute = JSONObject(loaded.toString(UTF_8)).getJSONArray("routes")
+                .getJSONObject(0).getString("path")
             this.config = JSONObject(config.toString(UTF_8))
             width = this.config.getJSONObject("host").getInt("windowWidth")
             height = this.config.getJSONObject("host").getInt("windowHeight")
