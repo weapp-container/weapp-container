@@ -119,6 +119,24 @@
       "scope": "Current Android QuickJS release APK on emulator-5554",
       "conclusion": "Release native and Gradle packaging passed. The unsigned artifact was rejected without a certificate. The same artifact signed with the machine Android Debug certificate installed and emitted successful app/page/render/canvas/API records plus an attached skia-gpu-gles surface",
       "limitations": "Android Debug is not production signing material. Release run-as receipt access is unavailable, so the release observation is log-only and does not satisfy the source-bound runtime receipt gate or certify distribution"
+    },
+    {
+      "id": "mobile-portable-pack-parity-2026-11-21",
+      "tool": "scripts/mobile-portable-pack-parity.test.mjs and scripts/sync-ios-portable-pack.mjs --check",
+      "version": "workspace commit abfe804975f628016acc0c17818ebb4a4c49efc7; manifest root 1570365e39d31737a041ce61dd5bb4d250e280557c20f184658f306b36d95c2e",
+      "analysisTime": "2026-11-21",
+      "scope": "Checked-in Android and iOS portable-pack directories for portable-pack-reference-v1",
+      "conclusion": "Passed byte-for-byte inventory and content parity for the manifest, 15 referenced blobs, capability-matrix.json and diagnostics.json",
+      "limitations": "This proves input-fixture parity only. It does not establish host API, engine, official DevTools, device, GPU or performance parity"
+    },
+    {
+      "id": "ios-quickjs-gpu-smoke-abfe804",
+      "tool": "scripts/ios-app-smoke",
+      "version": "workspace commit abfe804975f628016acc0c17818ebb4a4c49efc7; signed app SHA-256 360613dbbac7accc727033e4813687ced22a6bc7d00430b64982b6bae9f5c5b7",
+      "analysisTime": "2026-11-21",
+      "scope": "Official iOS simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 using QuickJS, Rust Skia Metal drawable and portable-pack-reference-v1",
+      "conclusion": "Passed clean source/build provenance, portable pack validation, app.init, app.lifecycle, page.push, render.commit, wx.canIUse, RGBA readback, attached CAMetalLayer GPU rendering and teardown cleanup. Manifest integrity root was 1570365e39d31737a041ce61dd5bb4d250e280557c20f184658f306b36d95c2e",
+      "limitations": "This is official-simulator QuickJS evidence. It does not certify iOS V8, physical devices, full API conformance, official WeChat behavior, production signing or performance acceptance"
     }
   ]
 }
