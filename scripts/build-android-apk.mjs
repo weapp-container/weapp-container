@@ -222,6 +222,18 @@ async function main() {
       report.errors.push('Gradle completed without producing app-debug.apk')
       return finish(report, sourceFilesBefore)
     }
+    const mergedNativePath = resolve(stagedProject,
+      'app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib/arm64-v8a/libcontainer_host_android.so')
+    const strippedNativePath = resolve(stagedProject,
+      'app/build/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out/lib/arm64-v8a/libcontainer_host_android.so')
+    const mergedNative = existsSync(mergedNativePath) ? await hashFile(mergedNativePath) : null
+    const strippedNative = existsSync(strippedNativePath) ? await hashFile(strippedNativePath) : null
+    report.gradle.nativeInputArtifactSha256 = mergedNative
+    report.gradle.strippedNativeArtifactSha256 = strippedNative
+    if (mergedNative !== nativeArtifact.sha256 || !hashPattern.test(strippedNative || '')) {
+      report.errors.push('Gradle did not preserve the exact Rust artifact before Android symbol stripping')
+      return finish(report, sourceFilesBefore)
+    }
     const entriesRun = run('unzip', ['-Z1', builtApk], { cwd: stagedProject })
     const entries = entriesRun.stdout.split(/\r?\n/).filter(Boolean)
     const libraryEntry = 'lib/arm64-v8a/libcontainer_host_android.so'
@@ -231,10 +243,11 @@ async function main() {
       : { status: 'failed', bytes: 0, sha256: null, error: `APK is missing ${libraryEntry}` }
     report.package = {
       status: entriesRun.status === 'passed' && embeddedNative.status === 'passed'
-        && embeddedNative.sha256 === nativeArtifact.sha256 && entries.includes(bridgeEntry) ? 'passed' : 'failed',
+        && embeddedNative.sha256 === strippedNative && entries.includes(bridgeEntry) ? 'passed' : 'failed',
       abi: 'arm64-v8a',
       nativeArtifactPath: libraryEntry,
       nativeArtifactSha256: nativeArtifact.sha256,
+      strippedNativeArtifactSha256: strippedNative,
       embeddedNativeArtifactSha256: embeddedNative.sha256,
       embeddedNativeArtifactBytes: embeddedNative.bytes,
       jniBridgePresent: entries.includes(bridgeEntry),

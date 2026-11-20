@@ -501,6 +501,7 @@ test('Android APK build receipts bind clean source inputs, native ABI, engine an
   const sourceFiles = paths.map(path => ({ path, sha256: createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex') }))
   const artifactSha256 = 'f'.repeat(64)
   const nativeArtifactSha256 = 'e'.repeat(64)
+  const strippedNativeArtifactSha256 = 'a'.repeat(64)
   const receipt = {
     schemaVersion: 1,
     scope: 'android-apk-build',
@@ -521,12 +522,17 @@ test('Android APK build receipts bind clean source inputs, native ABI, engine an
       abi: 'arm64-v8a',
       artifactSha256: nativeArtifactSha256,
     },
-    gradle: { status: 'passed', variant: 'debug' },
+    gradle: {
+      status: 'passed', variant: 'debug',
+      nativeInputArtifactSha256: nativeArtifactSha256,
+      strippedNativeArtifactSha256,
+    },
     package: {
       status: 'passed',
       abi: 'arm64-v8a',
       nativeArtifactSha256,
-      embeddedNativeArtifactSha256: nativeArtifactSha256,
+      strippedNativeArtifactSha256,
+      embeddedNativeArtifactSha256: strippedNativeArtifactSha256,
     },
     apk: { sha256: artifactSha256 },
   }

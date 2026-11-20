@@ -79,10 +79,14 @@ export function inspectAndroidApkBuildReceipt(receipt, expected) {
       && native?.engine === expected.engine && native?.abi === 'arm64-v8a'
       && HASH.test(native?.artifactSha256 || ''),
     gradle: receipt?.gradle?.status === 'passed' && receipt?.gradle?.variant === 'debug',
+    gradleNativeInput: receipt?.gradle?.nativeInputArtifactSha256 === native?.artifactSha256,
+    gradleStrippedNative: HASH.test(receipt?.gradle?.strippedNativeArtifactSha256 || '')
+      && receipt?.package?.strippedNativeArtifactSha256 === receipt.gradle.strippedNativeArtifactSha256,
     packagedNative: receipt?.package?.status === 'passed'
       && receipt.package.abi === 'arm64-v8a'
       && receipt.package.nativeArtifactSha256 === native?.artifactSha256
-      && receipt.package.embeddedNativeArtifactSha256 === native?.artifactSha256,
+      && HASH.test(receipt.package.strippedNativeArtifactSha256 || '')
+      && receipt.package.embeddedNativeArtifactSha256 === receipt.package.strippedNativeArtifactSha256,
     artifact: HASH.test(expected.artifactSha256 || '') && receipt?.apk?.sha256 === expected.artifactSha256,
   }
   const missing = Object.keys(checks).filter(name => !checks[name])
