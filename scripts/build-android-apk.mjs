@@ -214,7 +214,7 @@ async function main() {
     report.gradle = {
       status: gradleRun.status,
       variant: 'debug',
-      version: gradleVersion.stdout.match(/Gradle\s+([^\s]+)/)?.[1] || null,
+      version: gradleVersion.stdout.match(/Gradle\s+(\S+)/)?.[1] || null,
       command: gradleRun.command,
       exitCode: gradleRun.exitCode,
       stdoutTail: gradleRun.stdout.slice(-3000),
