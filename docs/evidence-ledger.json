@@ -353,6 +353,24 @@
       "scope": "Strict dependency audit across 33 projects in the public source checkout",
       "conclusion": "Strict dependency audit passed",
       "limitations": "The audit reported 23 outdated dependencies and 16 compatible patch/minor updates. Some generated or private projects were individually blocked because their source was not present in this checkout"
+    },
+    {
+      "id": "ios-quickjs-gpu-smoke-4839a2e",
+      "tool": "scripts/ios-app-smoke and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 4839a2e2255a53fcafd5108a765fb205f1d8ca74; iOS smoke report SHA-256 5a20e3c2db334180c5fbaca0bbaacb81cd637a4178c591abdc3842bc0cd7f74f; execution evidence SHA-256 063dee07ababf62d2a419ebd6fd122c069bb7eec7b612a9d476ad7195524adde",
+      "analysisTime": "2026-11-21",
+      "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running QuickJS with a Rust Skia Metal drawable and portable-pack-reference-v1",
+      "conclusion": "Passed source-bound app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse, manifest integrity, an attached CAMetalLayer GPU surface with rendererBackend skia-gpu-metal, and teardown cleanup",
+      "limitations": "This is official-simulator QuickJS evidence. It does not certify iOS V8, physical devices, full API conformance, official WeChat behavior, production signing or performance acceptance"
+    },
+    {
+      "id": "near-parity-gates-4839-android-ios",
+      "tool": "scripts/check-near-parity-gates.mjs",
+      "version": "workspace commit 4839a2e2255a53fcafd5108a765fb205f1d8ca74; aggregate report SHA-256 d30bcfeeca08adf8b81fbb4d3d4256953150f6bed8d186fc3c588cfc0eda031b",
+      "analysisTime": "2026-11-21",
+      "scope": "Current production-readiness aggregate with explicit Android and iOS QuickJS runtime receipts",
+      "conclusion": "Android QuickJS and iOS QuickJS were accepted as passed with source-compatible GPU evidence, while releaseReady remained false because Android V8, iOS V8, Harmony engines, the full host and engine matrix, official DevTools cases and complete performance reports were still incomplete",
+      "limitations": "This aggregate is a gate report, not a runtime result. It does not establish physical-device behavior, production signing or complete official DevTools conformance"
     }
   ]
 }
