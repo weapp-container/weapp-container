@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "ant-button": "../../components/ant-button/index",
+    "ant-container": "../../components/ant-container/index"
+  }
+}

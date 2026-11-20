@@ -1,0 +1,9 @@
+{
+  "pages": ["pages/text/index"],
+  "window": {
+    "navigationBarTitleText": "官方小程序文本示例",
+    "navigationBarBackgroundColor": "#f1f4f6",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f1f4f6"
+  }
+}

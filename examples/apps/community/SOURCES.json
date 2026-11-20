@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "license": "MIT",
+  "examples": [
+    {
+      "id": "official-text",
+      "directory": "official-text",
+      "repository": "https://github.com/wechat-miniprogram/miniprogram-demo",
+      "commit": "0fe5c7df8e90582dd0b89e283df7fe32e04413f9",
+      "sourcePaths": [
+        "miniprogram/packageComponent/pages/content/text/text.js",
+        "miniprogram/packageComponent/pages/content/text/text.json",
+        "miniprogram/packageComponent/pages/content/text/text.wxml",
+        "miniprogram/packageComponent/pages/content/text/text.wxss"
+      ],
+      "licenseFile": "LICENSE.upstream",
+      "adaptations": [
+        "Kept the text-list and scroll interaction in a standalone one-page app.",
+        "Removed upstream navigation, templates, and external asset dependencies."
+      ]
+    },
+    {
+      "id": "ant-design-button",
+      "directory": "ant-design-button",
+      "repository": "https://github.com/ant-design/ant-design-mini",
+      "commit": "08a3cb9ad53573c235ff9ea5f615ce56b5c4de39",
+      "package": {
+        "name": "antd-mini",
+        "version": "3.4.3",
+        "registryTarball": "https://registry.npmjs.org/antd-mini/-/antd-mini-3.4.3.tgz"
+      },
+      "sourcePaths": [
+        "package/compiled/wechat/src/Button",
+        "package/compiled/wechat/src/Container",
+        "package/compiled/wechat/src/Loading",
+        "package/compiled/wechat/src/Icon",
+        "package/compiled/wechat/src/_util",
+        "package/compiled/wechat/src/style"
+      ],
+      "licenseFile": "LICENSE.upstream",
+      "adaptations": [
+        "Copied the compiled WeChat package dependency closure needed by the button demo.",
+        "Renamed component directories to lowercase and updated local component paths.",
+        "Expanded CSS custom-property fallbacks to literal values for the container WXSS subset.",
+        "Added a standalone page demonstrating button variants, states, and tap handling."
+      ]
+    },
+    {
+      "id": "taro-blended",
+      "directory": "taro-blended",
+      "repository": "https://github.com/NervJS/taro",
+      "commit": "a48d43e3954cc4ffe2aa867784c912ebfba752f1",
+      "sourcePaths": [
+        "examples/blended-basic/miniapp/app.js",
+        "examples/blended-basic/miniapp/app.json",
+        "examples/blended-basic/miniapp/components/title",
+        "examples/blended-basic/miniapp/pages/index",
+        "examples/blended-basic/miniapp/utils/util.js"
+      ],
+      "licenseFile": "LICENSE.upstream",
+      "adaptations": [
+        "Kept a standalone mini-program page and its title component from the blended-basic example.",
+        "Removed Taro-generated page and subpackage routes that are not included in this snapshot.",
+        "Replaced the upstream profile/navigation flow with a local counter interaction and centered the standalone layout."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "styleIsolation": "shared",
+  "usingComponents": {
+    "loading": "../ant-loading/index",
+    "ant-icon": "../ant-icon/index"
+  }
+}

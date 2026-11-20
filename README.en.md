@@ -17,6 +17,30 @@ pnpm api:inventory:verify
 
 The Node bindings consume source directories or prebuilt portable packs. Callers choose and manage any compiler, host service, or external network integration themselves.
 
+## Open-source mini-program examples
+
+`examples/apps/community/` contains three curated runnable snapshots: a WeChat official text page, an Ant Design Mini button component, and a Taro blended-basic page. Each sample retains its upstream MIT license. Its directory guide and `SOURCES.json` record the repository, pinned commit, and local adaptations.
+
+```sh
+pnpm --dir vendor/weapp-vite exec wv build \
+  "$PWD/examples/apps/community/official-text" -p weapp \
+  --outDir "$PWD/artifacts/community/official-text/raw"
+pnpm container:pack -- artifacts/community/official-text/raw \
+  --out artifacts/community/official-text/pack \
+  --compiler-commit "$(git -C vendor/weapp-vite rev-parse HEAD)"
+pnpm simulator:dev:smoke -- \
+  --project examples/apps/community/official-text
+```
+
+Replace `official-text` with `ant-design-button` or `taro-blended` for the other samples. See [`examples/apps/community/README.en.md`](examples/apps/community/README.en.md) for the complete sample list, commands, and source records.
+
+To keep the simulator running in a browser:
+
+```sh
+cargo run -p container-simulator --features quickjs-native -- \
+  dev --project examples/apps/community/official-text --surface web
+```
+
 ## License
 
 Apache-2.0. See [NOTICE](NOTICE) and [SECURITY.md](SECURITY.md).

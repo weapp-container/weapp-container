@@ -1,0 +1,9 @@
+{
+  "pages": ["pages/index/index"],
+  "window": {
+    "navigationBarTitleText": "Ant Design Mini Button",
+    "navigationBarBackgroundColor": "#f5f5f5",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f5f5"
+  }
+}

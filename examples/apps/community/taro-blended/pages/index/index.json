@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "example-title": "../../components/title/index"
+  }
+}

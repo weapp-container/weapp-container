@@ -1,0 +1,9 @@
+<view class="container">
+  <view class="intro">
+    <text class="title">原生 + Taro</text>
+    <example-title />
+    <text class="user-motto">{{motto}}</text>
+  </view>
+  <text class="description">这个快照保留 Taro 示例的页面和组件组织方式，方便在容器中运行与对照。</text>
+  <button type="primary" bindtap="increment">点击次数：{{count}}</button>
+</view>

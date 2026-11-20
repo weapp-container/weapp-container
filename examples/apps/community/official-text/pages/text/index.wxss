@@ -1,0 +1,49 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.page-heading {
+  margin: 8px 0 20px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #20272f;
+}
+
+.text-box {
+  flex: 1;
+  min-height: 190px;
+  max-height: 420px;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #d9e0e7;
+  border-radius: 6px;
+  color: #353535;
+  font-size: 15px;
+  line-height: 2;
+}
+
+.text-line {
+  display: block;
+}
+
+.empty-state {
+  color: #73808c;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  padding-top: 16px;
+}
+
+.actions button {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+}

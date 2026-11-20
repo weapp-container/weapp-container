@@ -1,0 +1,17 @@
+<view class="demo-page">
+  <view class="demo-title">Button</view>
+  <view class="demo-description">Ant Design Mini 按钮组件示例</view>
+
+  <ant-container title="按钮类型" className="demo-section">
+    <ant-button class="demo-button" type="primary" data-label="主要按钮" bindtap="handleTap">主要按钮</ant-button>
+    <ant-button class="demo-button" type="default" data-label="次要按钮" bindtap="handleTap">次要按钮</ant-button>
+    <ant-button class="demo-button" type="text" data-label="文本按钮" bindtap="handleTap">文本按钮</ant-button>
+  </ant-container>
+
+  <ant-container title="按钮状态" className="demo-section">
+    <ant-button class="demo-button" type="primary" disabled>不可用</ant-button>
+    <ant-button class="demo-button" type="default" loading>加载中</ant-button>
+  </ant-container>
+
+  <view class="demo-status">{{lastAction}}</view>
+</view>
