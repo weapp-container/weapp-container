@@ -281,6 +281,51 @@
       "scope": "Selected official DevTools workflow rerun against the existing local DevTools session",
       "conclusion": "Blocked before execution by WECHAT_DEVTOOLS_HOST_IDENTITY_MISMATCH because the running DevTools instance belongs to an existing host session",
       "limitations": "The existing IDE was preserved and no official workflow result is promoted from this rerun. An earlier workflow passed with base library 3.18.0, which does not satisfy the indexed 3.17.3 requirement"
+    },
+    {
+      "id": "android-quickjs-source-60770a9",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 60770a921414554c43fd5c2cc080a7f2661a271d; debug APK SHA-256 84232189c84ed31a8affae1329091f6d7f95056f3af516a8b368428b9ffbc43e; smoke report SHA-256 c9381af43636016dc0f6f211885daaa37c95eb22a3344e7787df6bbab7a9e73e",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the source-bound QuickJS debug APK and portable-pack-reference-v1",
+      "conclusion": "Passed clean source/build provenance, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse and an attached skia-gpu-gles surface with nativeSurface=true",
+      "limitations": "This is official-emulator evidence for QuickJS. It does not certify production signing, Android V8, physical devices, other mobile hosts, full API conformance or official WeChat behavior. The smoke harness force-stopped the sample Activity during cleanup"
+    },
+    {
+      "id": "rust-sdk-tests-60770a9",
+      "tool": "cargo test -p container-sdk --lib",
+      "version": "workspace commit 60770a921414554c43fd5c2cc080a7f2661a271d",
+      "analysisTime": "2026-11-21",
+      "scope": "Rust container SDK unit and integration tests after the pushed fixture fixes",
+      "conclusion": "Passed 89 tests",
+      "limitations": "This is source-level SDK test evidence. It does not establish official DevTools behavior, native device coverage, production signing or performance acceptance"
+    },
+    {
+      "id": "rust-workspace-tests-60770a9",
+      "tool": "cargo test --workspace",
+      "version": "workspace commit 60770a921414554c43fd5c2cc080a7f2661a271d",
+      "analysisTime": "2026-11-21",
+      "scope": "Complete Rust workspace test matrix after the pushed fixture fixes",
+      "conclusion": "Passed 3152 tests with 13 ignored across 147 test suites",
+      "limitations": "This is source-level workspace evidence. It does not promote missing official, native, physical-device or production-signing results"
+    },
+    {
+      "id": "node-vitest-integration-60770a9",
+      "tool": "pnpm testing:test",
+      "version": "workspace commit 60770a921414554c43fd5c2cc080a7f2661a271d",
+      "analysisTime": "2026-11-21",
+      "scope": "Node and Vitest runtime integration tests after the pushed fixture fixes",
+      "conclusion": "Passed 25 of 25 integration tests",
+      "limitations": "This is headless Node and Vitest evidence. It does not establish official DevTools conformance, native GPU behavior, physical-device coverage or production signing"
+    },
+    {
+      "id": "android-quickjs-interaction-60770a9",
+      "tool": "adb shell input tap, screencap and portable-pack-interaction.json",
+      "version": "workspace commit 60770a921414554c43fd5c2cc080a7f2661a271d; session android-interaction-60770a9; interaction receipt SHA-256 cd19de0712f20fdef07eb8e3b83c4badf7eae9ced8b0f42bc7458dc2d61712a",
+      "analysisTime": "2026-11-21",
+      "scope": "One real tap on the reference page in Android emulator emulator-5554",
+      "conclusion": "Passed a native emulator tap that changed the page count and slot count from 0 to 1, retained the QuickJS session and manifest integrity, and presented committed frame 4 as skia-gpu-gles frame 4",
+      "limitations": "The interaction receipt is a debuggable-emulator diagnostic and does not establish release signing, physical-device behavior or complete gesture coverage"
     }
   ]
 }
