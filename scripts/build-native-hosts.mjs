@@ -156,6 +156,22 @@ const engineIndex = args.indexOf('--engine')
 const engine = engineIndex < 0 ? 'quickjs' : args[engineIndex + 1]
 if (!['quickjs', 'v8'].includes(engine)) throw new Error('ERR_ENGINE: --engine must be quickjs or v8')
 
+function androidV8BuildBoundary(platform) {
+  if (platform !== 'android' || engine !== 'v8' || process.platform === 'linux') return null
+  const sourceBuild = ['1', 'true', 'yes'].includes(String(process.env.V8_FROM_SOURCE || '').toLowerCase())
+  if (sourceBuild) return {
+    code: 'ANDROID_V8_SOURCE_REQUIRES_LINUX',
+    reason: 'Android V8 source builds require a Linux host; provide a prebuilt RUSTY_V8_ARCHIVE and matching RUSTY_V8_SRC_BINDING_PATH or run the producer on Linux',
+  }
+  const archive = Boolean(process.env.RUSTY_V8_ARCHIVE || process.env.RUSTY_V8_MIRROR)
+  const binding = Boolean(process.env.RUSTY_V8_SRC_BINDING_PATH || process.env.RUSTY_V8_SRC_BINDING_URL || process.env.RUSTY_V8_MIRROR)
+  if (!archive || !binding) return {
+    code: 'ANDROID_V8_PREBUILT_INPUTS_REQUIRED',
+    reason: 'Android V8 on a non-Linux host requires RUSTY_V8_ARCHIVE and RUSTY_V8_SRC_BINDING_PATH, or a RUSTY_V8_MIRROR containing both pinned artifacts',
+  }
+  return null
+}
+
 const androidAbi = option('--android-abi', 'arm64-v8a')
 const androidAbiSpecs = {
   'arm64-v8a': {
@@ -659,12 +675,15 @@ function runPlatform(name) {
   if (!spec) return { platform: name, status: 'failed', error: `unknown platform ${name}` }
   const project = validateProject(spec)
   const toolchain = nativeToolchain(name)
+  const engineBoundary = androidV8BuildBoundary(name)
   const engineFeatures = engine === 'quickjs' ? spec.feature
     : spec.feature.split(',').filter(feature => !feature.startsWith('quickjs-native')).concat('v8-native').join(',')
   const features = engineFeatures + (distribution.policy ? ',restricted-showcase' : '')
   const cargo = toolchain.error
     ? { status: 'not-run', reason: toolchain.error }
-    : run(cargoBin, [mode === 'build' ? 'build' : 'check', '-p', spec.crate, '--no-default-features', '--features', features, '--target', spec.target, '--target-dir', targetDir, '--locked', ...(profile === 'release' ? ['--release'] : [])], { ...cargoEnv, ...toolchain.env })
+    : engineBoundary
+      ? { status: 'not-run', reason: engineBoundary.reason, errorCode: engineBoundary.code }
+      : run(cargoBin, [mode === 'build' ? 'build' : 'check', '-p', spec.crate, '--no-default-features', '--features', features, '--target', spec.target, '--target-dir', targetDir, '--locked', ...(profile === 'release' ? ['--release'] : [])], { ...cargoEnv, ...toolchain.env })
   const artifactFile = (profile === 'release' ? spec.artifact.replace('/debug/', '/release/') : spec.artifact).replace(/^target\//, '')
   const artifactPath = resolve(targetDir, artifactFile)
   const artifactBytes = mode === 'build' && cargo.status === 'passed' && existsSync(artifactPath) ? readFileSync(artifactPath) : null
@@ -694,6 +713,7 @@ function runPlatform(name) {
     policySha256: distribution.policySha256,
     ...(compiledIdentity ? { compiledIdentity } : {}),
     ...(compiledNativeFont ? { nativeFont: compiledNativeFont } : {}),
+    ...(engineBoundary ? { engineBoundary } : {}),
     status,
     project,
     toolchain: {

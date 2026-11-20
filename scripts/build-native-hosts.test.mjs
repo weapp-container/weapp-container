@@ -117,7 +117,7 @@ if (name === 'rustup') {
   return { dir, bin, ndk, prebuilt, harmonySdk, font, fontLicense }
 }
 
-function run(value, api, extraEnv = {}, additionalPlatforms = [], extraArgs = [], toolFile = resolve(value.dir, 'scripts/build-native-hosts.mjs')) {
+function run(value, api, extraEnv = {}, additionalPlatforms = [], extraArgs = [], toolFile = resolve(value.dir, 'scripts/build-native-hosts.mjs'), engine = 'quickjs') {
   const env = {
     ...process.env,
     PATH: `${value.bin}:${process.env.PATH || ''}`,
@@ -128,6 +128,11 @@ function run(value, api, extraEnv = {}, additionalPlatforms = [], extraArgs = []
   delete env.ANDROID_API_LEVEL
   delete env.BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android
   delete env.BINDGEN_EXTRA_CLANG_ARGS_armv7_linux_androideabi
+  delete env.V8_FROM_SOURCE
+  delete env.RUSTY_V8_ARCHIVE
+  delete env.RUSTY_V8_SRC_BINDING_PATH
+  delete env.RUSTY_V8_SRC_BINDING_URL
+  delete env.RUSTY_V8_MIRROR
   // Recording fixtures own their synthetic target tree. A workspace test
   // runner's cache path must not leak into the fixtures; explicit per-scenario
   // overrides below exercise inherited and CLI-selected shared caches.
@@ -136,7 +141,7 @@ function run(value, api, extraEnv = {}, additionalPlatforms = [], extraArgs = []
   Object.assign(env, extraEnv)
   const result = spawnSync(process.execPath, [
     toolFile,
-    '--build', '--platform', 'android', '--engine', 'quickjs', '--out', resolve(value.dir, 'report.json'),
+    '--build', '--platform', 'android', '--engine', engine, '--out', resolve(value.dir, 'report.json'),
     ...additionalPlatforms.flatMap(platform => ['--platform', platform]),
     ...extraArgs,
   ], { cwd: value.dir, env, encoding: 'utf8', timeout: 30_000 })
@@ -145,6 +150,19 @@ function run(value, api, extraEnv = {}, additionalPlatforms = [], extraArgs = []
   const report = JSON.parse(readFileSync(resolve(value.dir, 'report.json'), 'utf8'))
   return { result, report, platform: report.platforms[0] }
 }
+
+test('Android V8 fails before Cargo on non-Linux without pinned prebuilt inputs', { skip: process.platform === 'linux' || unsupportedShell }, t => {
+  const value = fixture(t)
+  const { result, platform } = run(value, undefined, { V8_FROM_SOURCE: '1' }, [], [], undefined, 'v8')
+  assert.equal(result.status, 1, result.stderr)
+  assert.equal(platform.status, 'failed')
+  assert.deepEqual(platform.engineBoundary, {
+    code: 'ANDROID_V8_SOURCE_REQUIRES_LINUX',
+    reason: 'Android V8 source builds require a Linux host; provide a prebuilt RUSTY_V8_ARCHIVE and matching RUSTY_V8_SRC_BINDING_PATH or run the producer on Linux',
+  })
+  assert.equal(platform.cargo.status, 'not-run')
+  assert.equal(platform.cargo.errorCode, 'ANDROID_V8_SOURCE_REQUIRES_LINUX')
+})
 
 function commitFixture(value) {
   writeFileSync(resolve(value.dir, '.gitignore'), '/target/\n/cargo*.json*\n/cmake.jsonl\n/report.json\n')
