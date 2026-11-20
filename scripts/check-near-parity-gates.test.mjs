@@ -20,12 +20,17 @@ function run(args) {
 
 function matrixReport(compilerCommit, repository = root, checkedOutCommit = compilerCommit) {
   const command = 'node ../../scripts/build-weapp-vite-platforms.mjs'
+  const runner = readFileSync(join(repository, 'scripts/build-weapp-vite-platforms.mjs'))
   return {
     schemaVersion: 1,
     mode: 'run',
     command,
     commandScope: 'aggregate',
     root: repository,
+    runner: {
+      path: 'scripts/build-weapp-vite-platforms.mjs',
+      sha256: createHash('sha256').update(runner).digest('hex'),
+    },
     submodule: {
       path: 'vendor/weapp-vite',
       initialized: true,
@@ -58,6 +63,7 @@ function createTestRepository(repository, { withCompiler = true, configured = tr
   mkdirSync(join(repository, 'scripts'), { recursive: true })
   mkdirSync(join(repository, 'schemas'), { recursive: true })
   for (const file of [
+    'build-weapp-vite-platforms.mjs',
     'check-near-parity-gates.mjs',
     'evidence-source.mjs',
     'mobile-module-evidence.mjs',
@@ -155,6 +161,7 @@ function runInPinnedRepository({
   withoutRun = false,
   includeConformanceIndex = false,
   mutateConformanceIndex,
+  mutateMatrixReport,
 } = {}) {
   const directory = mkdtempSync(join(tmpdir(), 'weapp-near-parity-fixture-'))
   try {
@@ -162,6 +169,7 @@ function runInPinnedRepository({
     const checkout = createTestRepository(repository, { withCompiler, configured, advanceCompiler, dirtyCompiler })
     const reportCommit = reportedCommit || checkout.pinnedCommit || 'a'.repeat(40)
     const report = matrixReport(reportCommit, repository, checkout.pinnedCommit)
+    if (mutateMatrixReport) mutateMatrixReport(report)
     if (withoutRun) report.runs = []
     const matrixPath = join(directory, 'matrix.json')
     writeFileSync(matrixPath, JSON.stringify(report))
@@ -247,6 +255,18 @@ test('matrix gate rejects a dirty compiler checkout and a checked-out commit dri
   const drift = runInPinnedRepository({ advanceCompiler: true })
   assert.equal(drift.matrix.status, 'incomplete')
   assert.match(drift.matrix.reason, /does not match the HEAD gitlink/)
+})
+
+test('matrix gate binds the report to the current tracked build runner', () => {
+  const { matrix } = runInPinnedRepository({
+    mutateMatrixReport: report => {
+      report.runner.sha256 = 'f'.repeat(64)
+    },
+  })
+
+  assert.equal(matrix.status, 'incomplete')
+  assert.equal(matrix.runner.matches, false)
+  assert.match(matrix.reason, /runner provenance/)
 })
 
 test('matrix gate requires committed submodule registration and treats an explicit SHA as an assertion', () => {

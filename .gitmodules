@@ -19,3 +19,6 @@
 [submodule "sdk/react-native"]
 	path = sdk/react-native
 	url = https://github.com/weapp-container/sdk-react-native.git
+[submodule "vendor/weapp-vite"]
+	path = vendor/weapp-vite
+	url = https://github.com/weapp-vite/weapp-vite.git

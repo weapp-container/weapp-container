@@ -545,6 +545,14 @@ function checkConformance(indexFile, compilerCheckout) {
 function checkMatrix(matrixFile, compilerIdentity) {
   if (matrixFile.error) return status(false, matrixFile.error, { input: inputLabel(matrixFile.path) })
   const report = matrixFile.value
+  const matrixRunnerPath = 'scripts/build-weapp-vite-platforms.mjs'
+  const matrixRunnerFile = absolute(matrixRunnerPath)
+  const currentRunnerSha256 = existsSync(matrixRunnerFile)
+    ? createHash('sha256').update(readFileSync(matrixRunnerFile)).digest('hex')
+    : null
+  const runnerMatches = report?.runner?.path === matrixRunnerPath
+    && /^[0-9a-f]{64}$/.test(report?.runner?.sha256 || '')
+    && report.runner.sha256 === currentRunnerSha256
   const targets = Array.isArray(report?.targets) ? report.targets : []
   const actual = new Map(targets.map(target => [target.id, target.status]))
   const missing = EXPECTED_MATRIX.filter(target => actual.get(target) !== 'passed')
@@ -612,6 +620,7 @@ function checkMatrix(matrixFile, compilerIdentity) {
     }),
   }
   const complete = compilerMatches
+    && runnerMatches
     && typeof report?.root === 'string'
     && samePath(report.root, ROOT)
     && missing.length === 0
@@ -633,11 +642,19 @@ function checkMatrix(matrixFile, compilerIdentity) {
                 ? 'explicit expected compiler commit does not match the HEAD gitlink'
                 : !compilerMatches
                   ? 'platform matrix compiler pin does not match the current checkout'
-                  : !runEvidenceComplete
-                    ? 'platform matrix has no complete successful build run evidence'
-                    : 'platform build matrix is incomplete'
+                    : !runnerMatches
+                      ? 'platform matrix runner provenance does not match the tracked runner'
+                      : !runEvidenceComplete
+                        ? 'platform matrix has no complete successful build run evidence'
+                        : 'platform build matrix is incomplete'
   return status(complete, reason, {
     input: inputLabel(matrixFile.path),
+    runner: {
+      path: report?.runner?.path || null,
+      sha256: report?.runner?.sha256 || null,
+      currentSha256: currentRunnerSha256,
+      matches: runnerMatches,
+    },
     submodule: report.submodule || null,
     expectedCompilerCommit: expectedCompilerCommit || null,
     compilerCheckout: compilerIdentity,
