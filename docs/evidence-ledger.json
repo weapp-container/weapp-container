@@ -335,6 +335,24 @@
       "scope": "Current production-readiness aggregate with the source-bound Android QuickJS report supplied explicitly",
       "conclusion": "Incomplete with releaseReady=false. The platform build matrix and evidence ledger passed, android/quickjs was accepted as passed, while official DevTools conformance remained 172 unknown cases and the remaining mobile/host engine pairs and performance reports were incomplete",
       "limitations": "This aggregate is a gate report, not a runtime result. It cannot promote missing Android V8, iOS, Harmony, desktop host, physical-device, production-signing or official DevTools evidence"
+    },
+    {
+      "id": "android-release-build-bbf1f8a",
+      "tool": "scripts/build-android-apk.mjs and apksigner",
+      "version": "workspace commit bbf1f8a2c4e843abc7e87dfbe75e56d413d0ea18; unsigned release APK SHA-256 901c9e81a73331be222d95c68698bde4d22b82d321959fb090661e49f577a538; build receipt SHA-256 1811323a0f9fb17844b68f5e1cd9efff24fa67486a235957344b1c82083a50f6",
+      "analysisTime": "2026-11-21",
+      "scope": "Android QuickJS arm64-v8a release-profile native and Gradle packaging",
+      "conclusion": "Passed clean-source native build, JNI packaging and Gradle release assembly",
+      "limitations": "The APK is intentionally unsigned and signing status is external. apksigner verification failed with missing META-INF/MANIFEST.MF, so no production certificate, signed release installation or release runtime acceptance is established"
+    },
+    {
+      "id": "dependency-audit-bbf1f8a",
+      "tool": "pnpm deps:check:strict",
+      "version": "workspace commit bbf1f8a2c4e843abc7e87dfbe75e56d413d0ea18",
+      "analysisTime": "2026-11-21",
+      "scope": "Strict dependency audit across 33 projects in the public source checkout",
+      "conclusion": "Strict dependency audit passed",
+      "limitations": "The audit reported 23 outdated dependencies and 16 compatible patch/minor updates. Some generated or private projects were individually blocked because their source was not present in this checkout"
     }
   ]
 }
