@@ -27,8 +27,8 @@
       "version": "workspace commit 91819bd26bebda8696349e5531056d86b1ebeb6a",
       "analysisTime": "2026-11-21",
       "scope": "Android release APK installation on emulator-5554",
-      "conclusion": "Blocked at the artifact boundary because the locally built unsigned APK was rejected with INSTALL_PARSE_FAILED_NO_CERTIFICATES",
-      "limitations": "A production signing certificate and signed APK verification are still required. This result does not evaluate release runtime behavior"
+      "conclusion": "The locally built unsigned APK was rejected with INSTALL_PARSE_FAILED_NO_CERTIFICATES; after zipalign and v2/v3 signing with the machine Android Debug certificate, the resulting APK installed successfully on emulator-5554",
+      "limitations": "The debug certificate is not production signing material. A production certificate, release policy verification and signed release runtime acceptance are still required"
     },
     {
       "id": "android-v8-build-2026-11-21",
