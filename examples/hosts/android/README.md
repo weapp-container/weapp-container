@@ -150,10 +150,11 @@ node scripts/build-android-apk.mjs \
   --engine quickjs
 ```
 
-The producer builds the Rust host, runs Gradle from an isolated Android project
-copy, verifies the exact native library embedded in the APK, and records the
-source-file inventory and APK digest in `android-apk-build.json`. It requires a
-clean Git worktree. The output directory must be outside the repository.
+The producer builds the Rust host, runs the project's Gradle 8.13 wrapper from
+an isolated Android project copy, verifies the exact native library embedded
+in the APK, and records the source-file inventory and APK digest in
+`android-apk-build.json`. It requires a clean Git worktree. The output directory
+must be outside the repository.
 
 Run the source-bound APK on an explicitly selected target:
 

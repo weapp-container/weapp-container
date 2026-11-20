@@ -92,6 +92,7 @@ function run(command, commandArgs, options = {}) {
     cwd: options.cwd || root,
     encoding: 'utf8',
     env: options.env || process.env,
+    shell: options.shell || false,
     maxBuffer: 64 * 1024 * 1024,
     timeout: options.timeoutMs || 10 * 60 * 1000,
   })
@@ -199,11 +200,17 @@ async function main() {
     }
 
     const stagedProject = stageAndroidProject()
-    const gradleVersion = run('gradle', ['--version'], { cwd: stagedProject, env: { ...process.env, ANDROID_HOME: sdk } })
-    const gradleRun = run('gradle', [
+    const gradleCommand = process.platform === 'win32' ? 'gradlew.bat' : './gradlew'
+    const gradleOptions = {
+      cwd: stagedProject,
+      env: { ...process.env, ANDROID_HOME: sdk },
+      shell: process.platform === 'win32',
+    }
+    const gradleVersion = run(gradleCommand, ['--version'], gradleOptions)
+    const gradleRun = run(gradleCommand, [
       '--no-daemon', ':app:assembleDebug',
       `-PweappContainerAndroidRustLibArm64=${nativeArtifact.path}`,
-    ], { cwd: stagedProject, env: { ...process.env, ANDROID_HOME: sdk } })
+    ], gradleOptions)
     report.gradle = {
       status: gradleRun.status,
       variant: 'debug',
