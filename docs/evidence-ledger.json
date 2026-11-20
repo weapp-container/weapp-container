@@ -137,6 +137,33 @@
       "scope": "Official iOS simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 using QuickJS, Rust Skia Metal drawable and portable-pack-reference-v1",
       "conclusion": "Passed clean source/build provenance, portable pack validation, app.init, app.lifecycle, page.push, render.commit, wx.canIUse, RGBA readback, attached CAMetalLayer GPU rendering and teardown cleanup. Manifest integrity root was 1570365e39d31737a041ce61dd5bb4d250e280557c20f184658f306b36d95c2e",
       "limitations": "This is official-simulator QuickJS evidence. It does not certify iOS V8, physical devices, full API conformance, official WeChat behavior, production signing or performance acceptance"
+    },
+    {
+      "id": "android-quickjs-source-46653712",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 4665371293d04552ec32e059e754a584530f0432; debug APK SHA-256 3bd7057af0af113779b8468141ec1005122d478c741c0e2c929a2bf46a00e4d7",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the source-bound QuickJS debug APK and portable-pack-reference-v1",
+      "conclusion": "Passed clean source/build provenance, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse, correlated execution evidence and an attached skia-gpu-gles surface",
+      "limitations": "This is emulator evidence for QuickJS. It does not certify production signing, Android V8, physical devices, other mobile hosts, full API conformance or official WeChat behavior"
+    },
+    {
+      "id": "android-quickjs-interaction-46653712",
+      "tool": "adb shell input tap and portable-pack-interaction.json",
+      "version": "workspace commit 4665371293d04552ec32e059e754a584530f0432; session android-interaction-46653712-20261121; interaction receipt SHA-256 2bfc2ca7845b496b94bf0dee03c585540b6c956ec0aaa1587839689707cc3379",
+      "analysisTime": "2026-11-21",
+      "scope": "One real tap on the reference page in Android emulator emulator-5554",
+      "conclusion": "Passed a native emulator tap that changed the page count from 0 to 1, retained the QuickJS session and manifest integrity, and presented committed frame 4 as skia-gpu-gles frame 4",
+      "limitations": "The interaction receipt is a debuggable-emulator diagnostic and does not establish release signing, physical-device behavior or complete gesture coverage"
+    },
+    {
+      "id": "android-release-46653712",
+      "tool": "scripts/build-android-apk.mjs, apksigner and adb",
+      "version": "workspace commit 4665371293d04552ec32e059e754a584530f0432; unsigned APK SHA-256 056b7bdc04a5171a6d070cab83b7607d5453911d9bf5f41c74fb1d4bdac15ed3; Android Debug-signed APK SHA-256 0f2418c1a5a4d143c31249fc4b144230eae75d29682b54ddc71f02ec87d67afb",
+      "analysisTime": "2026-11-21",
+      "scope": "Current Android QuickJS release APK on emulator-5554",
+      "conclusion": "Release native and Gradle packaging passed. The APK signed with the machine Android Debug certificate passed v2/v3 verification, installed and emitted successful app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot and wx.canIUse log records with an attached skia-gpu-gles surface",
+      "limitations": "The Android Debug certificate is not production signing material. The release package is not debuggable, so run-as receipt access was blocked and the release observation is log-only. This does not certify production distribution, Android V8, physical devices, full API conformance or official WeChat behavior"
     }
   ]
 }
