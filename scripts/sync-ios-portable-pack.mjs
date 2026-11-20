@@ -1,15 +1,28 @@
 #!/usr/bin/env node
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { access } from 'node:fs/promises'
 import { syncPortablePack } from './portable-pack.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 export const defaultIOSPack = resolve(root, 'examples/hosts/ios/Sources/WeappContainerSmoke/Resources/portable-pack')
-export function syncIOSPortablePack(options = {}) {
+export const defaultPortablePackSource = resolve(root, 'examples/hosts/android/app/src/main/assets/portable-pack')
+const defaultAuxiliaryFiles = ['capability-matrix.json', 'diagnostics.json']
+async function availableAuxiliaryFiles(source) {
+  const available = []
+  for (const file of defaultAuxiliaryFiles) {
+    try { await access(resolve(source, file)); available.push(file) } catch {}
+  }
+  return available
+}
+
+export async function syncIOSPortablePack(options = {}) {
+  const { source = defaultPortablePackSource, destination = defaultIOSPack, extraFiles, ...rest } = options
   return syncPortablePack({
-    source: resolve(root, 'artifacts/reference-app/pack'),
-    destination: defaultIOSPack,
-    ...options,
+    source,
+    destination,
+    extraFiles: extraFiles ?? await availableAuxiliaryFiles(source),
+    ...rest,
   })
 }
 

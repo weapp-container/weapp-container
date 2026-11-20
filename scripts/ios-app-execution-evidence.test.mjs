@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { finishIOSBuild, inspectIOSSkiaBuildInputs } from './ios-app-execution-evidence.mjs'
+import { finishIOSBuild, hashIOSSourceFiles, inspectIOSSkiaBuildInputs } from './ios-app-execution-evidence.mjs'
 
 const source = {
   sourceCommit: 'a'.repeat(40),
@@ -16,6 +16,16 @@ const archive = {
   sha256: 'c'.repeat(64),
 }
 const skiaInputs = { status: 'passed', mode: 'locked-cargo-source' }
+
+test('iOS source inventory records deleted tracked inputs without reading them', () => {
+  const files = hashIOSSourceFiles('/checkout', ['deleted.bin', 'present.bin'], {
+    exists: path => path.endsWith('present.bin'),
+    read: path => Buffer.from(path),
+  })
+  assert.match(files['deleted.bin'], /^[0-9a-f]{64}$/)
+  assert.match(files['present.bin'], /^[0-9a-f]{64}$/)
+  assert.notEqual(files['deleted.bin'], files['present.bin'])
+})
 
 test('V8 iOS build receipt requires and retains verified runtime inputs', () => {
   assert.throws(() => finishIOSBuild(source, source, Buffer.from('app'), 'v8', archive, 'smoke', undefined, skiaInputs), /V8 archive/)

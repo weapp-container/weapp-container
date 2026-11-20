@@ -20,7 +20,7 @@ async function filesUnder(directory) {
   return files.sort()
 }
 
-export async function syncPortablePack({ source, destination, check = false }) {
+export async function syncPortablePack({ source, destination, check = false, extraFiles = [] }) {
   source = resolve(source)
   destination = resolve(destination)
   if (source === destination || source.startsWith(destination + '/') || destination.startsWith(source + '/')) {
@@ -64,13 +64,19 @@ export async function syncPortablePack({ source, destination, check = false }) {
     }
   }
   if (!manifest.modules?.length || !manifest.routes?.length || !manifest.templates?.length) throw new Error('pack needs modules, routes and templates')
-  const files = ['manifest.json', ...[...hashes].sort().map(hash => `blobs/sha256/${hash}`)].sort()
+  const auxiliary = [...new Set(extraFiles)].map(file => String(file)).sort()
+  for (const file of auxiliary) {
+    if (!file || file.startsWith('/') || file.split('/').includes('..') || file === 'manifest.json' || file.startsWith('blobs/')) {
+      throw new Error(`invalid auxiliary pack file: ${file}`)
+    }
+  }
+  const files = ['manifest.json', ...[...hashes].sort().map(hash => `blobs/sha256/${hash}`), ...auxiliary].sort()
   const inputBytes = new Map([['manifest.json', manifestBytes]])
   for (const file of files) {
     const path = resolve(source, file)
     if (!(await lstat(path)).isFile()) throw new Error(`pack file is not regular: ${file}`)
     const bytes = await readFile(path)
-    if (file !== 'manifest.json' && sha256(bytes) !== file.split('/').at(-1)) throw new Error(`blob SHA-256 mismatch: ${file}`)
+    if (file.startsWith('blobs/sha256/') && sha256(bytes) !== file.split('/').at(-1)) throw new Error(`blob SHA-256 mismatch: ${file}`)
     inputBytes.set(file, bytes)
   }
   for (const asset of manifest.assets ?? []) {

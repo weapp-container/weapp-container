@@ -1,4 +1,4 @@
-//#region examples/apps/reference-app/components/managed-counter/index.js
+//#region source/examples/apps/reference-app/components/managed-counter/index.js
 Component({
 	properties: { config: {
 		type: Object,

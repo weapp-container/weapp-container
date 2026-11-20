@@ -9,8 +9,9 @@ WEAPP_CONTAINER_IOS_RUST_LIB="$PWD/../../../target/aarch64-apple-ios-sim/debug/l
 swift build --package-path . --triple arm64-apple-ios-simulator --product WeappContainerSmoke
 ```
 
-The executable loads the checked-in `Resources/portable-pack`, copied from
-`artifacts/reference-app/pack`. It verifies the manifest integrity root and every
+The executable loads the checked-in `Resources/portable-pack`, kept byte-for-byte
+in sync with the Android host pack at `examples/hosts/android/app/src/main/assets/portable-pack`.
+It verifies the manifest integrity root and every
 referenced module, View script, WXML/WXSS and asset blob before loading the
 Rust session. Startup is `app.init` (modules and blobs), `app.lifecycle`
 (launch), `page.push`, and a template-backed `render.commit`; rendering reads
@@ -21,8 +22,8 @@ bundle step.
 Refresh or check that fixture from the repository root:
 
 ```sh
-node scripts/sync-ios-portable-pack.mjs --source artifacts/reference-app/pack
-node scripts/sync-ios-portable-pack.mjs --source artifacts/reference-app/pack --check
+node scripts/sync-ios-portable-pack.mjs
+node scripts/sync-ios-portable-pack.mjs --check
 scripts/test-ios-portable-pack
 scripts/test-ios-container-session
 ```

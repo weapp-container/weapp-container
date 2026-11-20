@@ -101,10 +101,22 @@ export async function verifyIOSLinkArchive(receipt, engine) {
   return receipt
 }
 
+export function hashIOSSourceFiles(root, files, { exists = existsSync, read = readFileSync } = {}) {
+  return Object.fromEntries(files.map(path => {
+    const absolute = resolve(root, path)
+    // Deleted tracked files remain in `git ls-files --cached`. Keep the
+    // inventory deterministic so a pack refresh can remove old blobs without
+    // making the build provenance collector fail before compilation starts.
+    return [path, exists(absolute)
+      ? sha256(read(absolute))
+      : sha256(`missing:${path}`)]
+  }))
+}
+
 export function captureIOSBuildSource(root = ROOT) {
   const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' })
   const files = [...new Set(git(['ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', ...INPUTS]).split('\0').filter(Boolean))].sort()
-  const sourceFiles = Object.fromEntries(files.map(path => [path, sha256(readFileSync(resolve(root, path)))]))
+  const sourceFiles = hashIOSSourceFiles(root, files)
   return {
     sourceCommit: git(['rev-parse', 'HEAD']).trim(),
     sourceSha256: sha256(JSON.stringify(sourceFiles)),
