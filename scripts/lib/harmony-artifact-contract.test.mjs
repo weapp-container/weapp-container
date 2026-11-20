@@ -92,6 +92,15 @@ test('Harmony accepts exact, independently checked official metadata and still r
   assert.throws(() => inspectHarmonyHap(f.make(missing), f.expected, { metadata: f.metadata }), /missing compiler metadata/)
 })
 
+test('Harmony accepts the current Hvigor package context entry path', t => {
+  const f = fixture(t)
+  const current = context()
+  current['libentry.so'].entryPath = 'index'
+  const bytes = json(current)
+  const metadata = rebound(f.metadata, 'pkgContextInfo.json', bytes)
+  assert.equal(inspectHarmonyHap(f.make(new Map(f.entries).set('pkgContextInfo.json', bytes)), f.expected, { metadata }).length, 7)
+})
+
 test('Rehashed package metadata cannot smuggle unknown fields, duplicate fields, paths or boolean coercions', t => {
   const f = fixture(t)
   for (const mutate of [

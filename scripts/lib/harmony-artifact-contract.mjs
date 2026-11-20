@@ -8,8 +8,17 @@ import { assertDistributionIdentity, verifyDistributionArtifact } from './showca
 
 export const HARMONY_RELEASE_FEATURES = ['harmony', 'arkui', 'skia-gpu-gles', 'quickjs-native-harmony']
 const sha = bytes => createHash('sha256').update(bytes).digest('hex')
-const packageContext = () => Object.fromEntries([
+// The compiler emits an empty entry path for the native shared object. The
+// current Hvigor packager normalizes that field to `index` in the HAP. Keep
+// both reviewed forms explicit so artifacts from the previous SDK remain
+// verifiable without accepting arbitrary package metadata.
+const compilerPackageContext = () => Object.fromEntries([
   ['entry', false, 'src/main/'], ['libentry.so', true, ''],
+].map(([name, isSO, entryPath]) => [name, {
+  isSO, moduleName: '', bundleName: '', dependencyAlias: '', packageName: name, entryPath, version: '',
+}]))
+const packagedPackageContext = () => Object.fromEntries([
+  ['entry', false, 'src/main/'], ['libentry.so', true, 'index'],
 ].map(([name, isSO, entryPath]) => [name, {
   isSO, moduleName: '', bundleName: '', dependencyAlias: '', packageName: name, entryPath, version: '',
 }]))
@@ -55,10 +64,10 @@ export function collectHarmonyGeneratedMetadata(project) {
   const rpc = read('syscap/default/rpcid.sc'), input = parseHarmonyMetadataJson(read('syscap/default/rpcid.json'))
   assert.deepEqual(Object.keys(input).sort(), ['api_version', 'syscap'])
   const context = read('loader/default/pkgContextInfo.json')
-  assert.deepEqual(parseHarmonyMetadataJson(context), packageContext(), 'Unreviewed compiler package context fields')
+  assert.deepEqual(parseHarmonyMetadataJson(context), compilerPackageContext(), 'Unreviewed compiler package context fields')
   // Official packing-tool serializes the typed context in this field order.
   // Retain the compiler input digest while binding the expected packaged bytes.
-  const packagedContext = Buffer.from(JSON.stringify(packageContext()))
+  const packagedContext = Buffer.from(JSON.stringify(packagedPackageContext()))
   return [
     { path: 'rpcid.sc', size: rpc.length, sha256: sha(rpc), kind: 'ohos-rpcid-v2', apiVersion: input.api_version, systemCapabilities: input.syscap },
     { path: 'pkgContextInfo.json', size: packagedContext.length, sha256: sha(packagedContext), kind: 'ohos-package-context-v1', inputSha256: sha(context) },
@@ -106,11 +115,15 @@ def unique_object(pairs):
  return result
 def check_metadata(p,b):
  item=metadata[p]
- if len(b)!=item['size'] or hashlib.sha256(b).hexdigest()!=item['sha256']:raise ValueError('generated metadata differs from compiler output')
+ digest=hashlib.sha256(b).hexdigest()
+ legacy=json.dumps({'entry':{'isSO':False,'moduleName':'','bundleName':'','dependencyAlias':'','packageName':'entry','entryPath':'src/main/','version':''},'libentry.so':{'isSO':True,'moduleName':'','bundleName':'','dependencyAlias':'','packageName':'libentry.so','entryPath':'','version':''}},separators=(',',':')).encode()
+ allowed_size=len(legacy) if p=='pkgContextInfo.json' and digest==hashlib.sha256(legacy).hexdigest() else item['size']
+ if len(b)!=allowed_size or (digest!=item['sha256'] and (p!='pkgContextInfo.json' or digest!=hashlib.sha256(legacy).hexdigest())):raise ValueError('generated metadata differs from compiler output')
  if p=='pkgContextInfo.json':
-  packages={name:{'isSO':native,'moduleName':'','bundleName':'','dependencyAlias':'','packageName':name,'entryPath':entry,'version':''} for name,native,entry in [('entry',False,'src/main/'),('libentry.so',True,'')]}
+  packages={name:{'isSO':native,'moduleName':'','bundleName':'','dependencyAlias':'','packageName':name,'entryPath':entry,'version':''} for name,native,entry in [('entry',False,'src/main/'),('libentry.so',True,'index')]}
+  legacy_packages={name:{'isSO':native,'moduleName':'','bundleName':'','dependencyAlias':'','packageName':name,'entryPath':entry,'version':''} for name,native,entry in [('entry',False,'src/main/'),('libentry.so',True,'')]}
   value=json.loads(b,object_pairs_hook=unique_object)
-  if value!=packages or any(type(value[name]['isSO']) is not bool for name in packages):raise ValueError('unreviewed package context fields')
+  if value not in (packages,legacy_packages) or any(type(value[name]['isSO']) is not bool for name in value):raise ValueError('unreviewed package context fields')
  else:
   api=item['apiVersion'];caps=item['systemCapabilities']
   if type(api) is not int or not 1<=api<=127 or not isinstance(caps,list) or not 0<len(caps)<=4096 or len(set(caps))!=len(caps):raise ValueError('invalid RPC system capability inventory')
