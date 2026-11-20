@@ -23,7 +23,7 @@ function option(name, fallback = null) {
 }
 
 function help() {
-  process.stdout.write('Usage: node scripts/build-android-apk.mjs --out-dir <external-path> [--engine quickjs|v8]\n')
+  process.stdout.write('Usage: node scripts/build-android-apk.mjs --out-dir <external-path> [--engine quickjs|v8] [--profile dev|release]\n')
 }
 
 if (args.includes('--help') || args.includes('-h')) {
@@ -33,12 +33,17 @@ if (args.includes('--help') || args.includes('-h')) {
 
 const engine = option('--engine', 'quickjs')
 if (!['quickjs', 'v8'].includes(engine)) throw new Error('--engine must be quickjs or v8')
+const profile = option('--profile', 'dev')
+if (!['dev', 'release'].includes(profile)) throw new Error('--profile must be dev or release')
 const outDirArg = option('--out-dir')
 if (!outDirArg) throw new Error('--out-dir is required')
 const outDir = resolve(outDirArg)
 if (outDir === root || outDir.startsWith(`${root}${sep}`)) throw new Error('--out-dir must be outside the checkout')
 const nativeReceiptPath = resolve(outDir, 'android-native-build.json')
-const apkPath = resolve(outDir, 'app-debug.apk')
+const variant = profile === 'release' ? 'release' : 'debug'
+const gradleVariant = variant[0].toUpperCase() + variant.slice(1)
+const apkName = variant === 'release' ? 'app-release-unsigned.apk' : 'app-debug.apk'
+const apkPath = resolve(outDir, apkName)
 const reportPath = resolve(outDir, 'android-apk-build.json')
 let stageRoot = null
 
@@ -148,14 +153,16 @@ async function main() {
     generatedAt: new Date().toISOString(),
     host: 'android',
     engine,
-    variant: 'debug',
+    profile,
+    variant,
+    signing: { status: variant === 'release' ? 'external' : 'debug' },
     abi: 'arm64-v8a',
     sourceCommit: before.sourceCommit,
     workingTreeDirty: before.workingTreeDirty,
     sourceFiles: sourceFilesBefore,
     sourceInventorySha256: sourceInventorySha256(sourceFilesBefore),
     native: { status: 'not-run' },
-    gradle: { status: 'not-run', variant: 'debug' },
+    gradle: { status: 'not-run', variant },
     package: { status: 'not-run', abi: 'arm64-v8a' },
     apk: { path: apkPath, sha256: null, bytes: null },
     errors: [],
@@ -168,7 +175,7 @@ async function main() {
 
     const nativeRun = run(process.execPath, [
       'scripts/build-native-hosts.mjs', '--build', '--platform', 'android', '--engine', engine,
-      '--profile', 'dev', '--out', nativeReceiptPath,
+      '--profile', profile, '--out', nativeReceiptPath,
     ])
     if (nativeRun.status !== 'passed' || !existsSync(nativeReceiptPath)) {
       report.errors.push(`Android native host build ${nativeRun.status}: ${nativeRun.error || nativeRun.stderr.trim()}`)
@@ -208,12 +215,12 @@ async function main() {
     }
     const gradleVersion = run(gradleCommand, ['--version'], gradleOptions)
     const gradleRun = run(gradleCommand, [
-      '--no-daemon', ':app:assembleDebug',
+      '--no-daemon', `:app:assemble${gradleVariant}`,
       `-PweappContainerAndroidRustLibArm64=${nativeArtifact.path}`,
     ], gradleOptions)
     report.gradle = {
       status: gradleRun.status,
-      variant: 'debug',
+      variant,
       version: gradleVersion.stdout.match(/Gradle\s+(\S+)/)?.[1] || null,
       command: gradleRun.command,
       exitCode: gradleRun.exitCode,
@@ -225,15 +232,15 @@ async function main() {
       return finish(report, sourceFilesBefore)
     }
 
-    const builtApk = resolve(stagedProject, 'app/build/outputs/apk/debug/app-debug.apk')
+    const builtApk = resolve(stagedProject, `app/build/outputs/apk/${variant}/${apkName}`)
     if (!existsSync(builtApk)) {
-      report.errors.push('Gradle completed without producing app-debug.apk')
+      report.errors.push(`Gradle completed without producing ${apkName}`)
       return finish(report, sourceFilesBefore)
     }
     const mergedNativePath = resolve(stagedProject,
-      'app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib/arm64-v8a/libcontainer_host_android.so')
+      `app/build/intermediates/merged_native_libs/${variant}/merge${gradleVariant}NativeLibs/out/lib/arm64-v8a/libcontainer_host_android.so`)
     const strippedNativePath = resolve(stagedProject,
-      'app/build/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out/lib/arm64-v8a/libcontainer_host_android.so')
+      `app/build/intermediates/stripped_native_libs/${variant}/strip${gradleVariant}DebugSymbols/out/lib/arm64-v8a/libcontainer_host_android.so`)
     const mergedNative = existsSync(mergedNativePath) ? await hashFile(mergedNativePath) : null
     const strippedNative = existsSync(strippedNativePath) ? await hashFile(strippedNativePath) : null
     report.gradle.nativeInputArtifactSha256 = mergedNative
@@ -292,7 +299,7 @@ function finish(report, sourceFilesBefore) {
     && report.package.status === 'passed' && hashPattern.test(report.apk.sha256 || '') ? 'passed' : 'failed'
   const output = `${JSON.stringify(report, null, 2)}\n`
   writeFileSync(reportPath, output, 'utf8')
-  process.stdout.write(`${report.status}: Android debug APK ${report.apk.sha256 || 'not produced'}\n${reportPath}\n`)
+  process.stdout.write(`${report.status}: Android ${report.variant} APK ${report.apk.sha256 || 'not produced'}\n${reportPath}\n`)
   if (report.status !== 'passed') process.exitCode = 1
 }
 

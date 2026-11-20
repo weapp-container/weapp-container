@@ -70,6 +70,11 @@ export function inspectAndroidApkBuildReceipt(receipt, expected) {
     status: receipt?.status === 'passed',
     host: receipt?.host === 'android',
     engine: receipt?.engine === expected.engine,
+    variant: receipt?.variant === 'release'
+      ? receipt?.profile === 'release' && receipt?.signing?.status === 'external'
+      : receipt?.variant === 'debug'
+        && (receipt?.profile === undefined || receipt.profile === 'dev')
+        && (receipt?.signing === undefined || receipt.signing.status === 'debug'),
     source: COMMIT.test(receipt?.sourceCommit || '') && sourceRevision.compatible
       && native?.sourceCommit === receipt?.sourceCommit && nativeSourceRevision.compatible,
     cleanSource: receipt?.workingTreeDirty === false && native?.workingTreeDirty === false,
@@ -79,7 +84,8 @@ export function inspectAndroidApkBuildReceipt(receipt, expected) {
     nativeBuild: native?.status === 'passed' && native?.host === 'android'
       && native?.engine === expected.engine && native?.abi === 'arm64-v8a'
       && HASH.test(native?.artifactSha256 || ''),
-    gradle: receipt?.gradle?.status === 'passed' && receipt?.gradle?.variant === 'debug',
+    gradle: receipt?.gradle?.status === 'passed' && ['debug', 'release'].includes(receipt?.gradle?.variant)
+      && receipt?.gradle?.variant === receipt?.variant,
     gradleNativeInput: receipt?.gradle?.nativeInputArtifactSha256 === native?.artifactSha256,
     gradleStrippedNative: HASH.test(receipt?.gradle?.strippedNativeArtifactSha256 || '')
       && receipt?.package?.strippedNativeArtifactSha256 === receipt.gradle.strippedNativeArtifactSha256,

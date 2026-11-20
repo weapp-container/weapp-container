@@ -141,8 +141,8 @@ is not persisted by release builds. GPU rerenders pass committed frame metadata
 without RGBA readback; the startup screenshot remains an explicit diagnostic.
 Input/frame latency has not passed a performance gate.
 
-Build a clean, source-bound debug APK and retain its build receipt outside the
-checkout:
+Build a clean, source-bound APK and retain its build receipt outside the
+checkout. The default `dev` profile produces a debuggable APK:
 
 ```sh
 node scripts/build-android-apk.mjs \
@@ -150,10 +150,22 @@ node scripts/build-android-apk.mjs \
   --engine quickjs
 ```
 
+Use the release profile to compile the optimized native library and Android
+release variant. The sample project leaves signing to the embedding application,
+so this output is explicitly unsigned and must be signed before distribution:
+
+```sh
+node scripts/build-android-apk.mjs \
+  --out-dir /absolute/path/to/android-release \
+  --engine quickjs \
+  --profile release
+```
+
 The producer builds the Rust host, runs the project's Gradle 8.13 wrapper from
 an isolated Android project copy, verifies the exact native library embedded
 in the APK, and records the source-file inventory and APK digest in
-`android-apk-build.json`. It requires a clean Git worktree. The output directory
+`android-apk-build.json`. The receipt records the selected profile and signing
+boundary. It requires a clean Git worktree. The output directory
 must be outside the repository.
 
 Run the source-bound APK on an explicitly selected target:

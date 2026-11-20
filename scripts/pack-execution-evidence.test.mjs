@@ -540,6 +540,15 @@ test('Android APK build receipts bind clean source inputs, native ABI, engine an
   }
   const expected = { root, expectedSourceCommit: expectedCommit, engine: 'quickjs', artifactSha256 }
   assert.equal(inspectAndroidApkBuildReceipt(receipt, expected).status, 'passed')
+  const releaseReceipt = {
+    ...receipt,
+    variant: 'release',
+    profile: 'release',
+    signing: { status: 'external' },
+    gradle: { ...receipt.gradle, variant: 'release' },
+  }
+  assert.equal(inspectAndroidApkBuildReceipt(releaseReceipt, expected).status, 'passed')
+  assert.equal(inspectAndroidApkBuildReceipt({ ...releaseReceipt, signing: { status: 'debug' } }, expected).checks.variant, false)
   assert.equal(inspectAndroidApkBuildReceipt(receipt, { ...expected, artifactSha256: 'd'.repeat(64) }).checks.artifact, false)
 
   const tampered = structuredClone(receipt)
