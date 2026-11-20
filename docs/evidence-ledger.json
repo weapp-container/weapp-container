@@ -49,6 +49,15 @@
       "limitations": "This is log-only release observation without private receipt access, so it does not satisfy the source-bound execution receipt gate. The emulator and debug certificate do not establish physical-device behavior or production signing"
     },
     {
+      "id": "android-release-current-2026-11-21",
+      "tool": "scripts/build-android-apk.mjs, apksigner and adb",
+      "version": "workspace commit f9561c9b6c83cac0b3946b4d443bef472acd99e0; unsigned APK SHA-256 f3095d83e207afe16417010ca7a5a5979c08fd70e5093bdd0f85cdb0e17e1180; debug-signed APK SHA-256 f029adebe3f618fe1ca79d5b7c496a5576b03c02bafbbdea5b7f7f4f25356f8b",
+      "analysisTime": "2026-11-21",
+      "scope": "Current Android QuickJS release APK on emulator-5554",
+      "conclusion": "Release Gradle/native build passed. The unsigned APK was rejected with INSTALL_PARSE_FAILED_NO_CERTIFICATES. The same APK, aligned and signed with the machine Android Debug certificate using APK Signature Scheme v2/v3, installed and emitted successful app/page/render/canvas/API log records with an attached skia-gpu-gles surface",
+      "limitations": "The debug certificate is not production signing material. The signed release observation is log-only because release run-as receipt access is unavailable, so it does not satisfy the source-bound runtime receipt gate or certify production distribution"
+    },
+    {
       "id": "android-v8-build-2026-11-21",
       "tool": "Rust native build and pinned V8 dependency inspection",
       "version": "V8 152.2.0",
