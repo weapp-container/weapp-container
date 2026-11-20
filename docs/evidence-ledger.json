@@ -326,6 +326,15 @@
       "scope": "One real tap on the reference page in Android emulator emulator-5554",
       "conclusion": "Passed a native emulator tap that changed the page count and slot count from 0 to 1, retained the QuickJS session and manifest integrity, and presented committed frame 4 as skia-gpu-gles frame 4",
       "limitations": "The interaction receipt is a debuggable-emulator diagnostic and does not establish release signing, physical-device behavior or complete gesture coverage"
+    },
+    {
+      "id": "near-parity-gates-d5c91d8",
+      "tool": "scripts/check-near-parity-gates.mjs",
+      "version": "workspace commit d5c91d8f2c6c2281211490666d2c9665d6e512f2; aggregate report SHA-256 e1f0f7707a05ca1c284dd3e03ec9bb07d20aba4e0c304efcda4dde187d8179df",
+      "analysisTime": "2026-11-21",
+      "scope": "Current production-readiness aggregate with the source-bound Android QuickJS report supplied explicitly",
+      "conclusion": "Incomplete with releaseReady=false. The platform build matrix and evidence ledger passed, android/quickjs was accepted as passed, while official DevTools conformance remained 172 unknown cases and the remaining mobile/host engine pairs and performance reports were incomplete",
+      "limitations": "This aggregate is a gate report, not a runtime result. It cannot promote missing Android V8, iOS, Harmony, desktop host, physical-device, production-signing or official DevTools evidence"
     }
   ]
 }
