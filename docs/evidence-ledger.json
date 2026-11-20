@@ -182,6 +182,51 @@
       "scope": "Harmony QuickJS runtime smoke on the configured local DevEco host",
       "conclusion": "Blocked because hdc reported no online target and no current HAP/bundle/ability was available for launch",
       "limitations": "Older HAPs from other source commits are stale. No Harmony QuickJS or V8 execution, GPU or device result is claimed"
+    },
+    {
+      "id": "android-quickjs-source-04b94733",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 04b947331fd713a326fb26d2c80de493f5c7bade; debug APK SHA-256 8e10d56af3c6f3054b0d14a5b22a4afaab1f0c2e61eec0c0c1be6311ad2b05b4",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the source-bound QuickJS debug APK and portable-pack-reference-v1",
+      "conclusion": "Passed clean source/build provenance, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse, six loaded modules from the integrity-checked manifest and an attached skia-gpu-gles container surface",
+      "limitations": "This is emulator evidence for QuickJS. It does not certify production signing, Android V8, physical devices, other mobile hosts, full API conformance or official WeChat behavior"
+    },
+    {
+      "id": "android-quickjs-interaction-04b94733",
+      "tool": "adb shell input tap and portable-pack interaction receipt",
+      "version": "workspace commit 04b947331fd713a326fb26d2c80de493f5c7bade; session android-0e29a7be-df7e-4cdf-bdd3-8e4959dd0b3a; receipt SHA-256 2e26dff8907e9bb8b305e2f52894c462842358cbaa542d829ab4bb8f0631fc32",
+      "analysisTime": "2026-11-21",
+      "scope": "One native tap on the reference page in Android emulator emulator-5554",
+      "conclusion": "Passed a tap that advanced page count and component state from 0 to 1 while retaining the QuickJS session and manifest integrity root 1570365e39d31737a041ce61dd5bb4d250e280557c20f184658f306b36d95c2e",
+      "limitations": "This is a debuggable-emulator interaction receipt. It does not establish release signing, physical-device behavior or complete gesture coverage"
+    },
+    {
+      "id": "android-release-build-04b94733",
+      "tool": "scripts/build-android-apk.mjs",
+      "version": "workspace commit 04b947331fd713a326fb26d2c80de493f5c7bade; unsigned release APK SHA-256 383ceca677e2ee96aee045f21709d52acbaed83883473a784d923a371518b348",
+      "analysisTime": "2026-11-21",
+      "scope": "Android QuickJS arm64-v8a release-profile native and Gradle packaging",
+      "conclusion": "Passed clean-source native build, JNI packaging and Gradle release assembly",
+      "limitations": "The APK is unsigned and signing is external. No production certificate, signed release installation or release runtime acceptance is established"
+    },
+    {
+      "id": "android-release-runtime-04b94733",
+      "tool": "apksigner, adb and Android logcat",
+      "version": "workspace commit 04b947331fd713a326fb26d2c80de493f5c7bade; debug-key signed release APK SHA-256 8a2aa76a40157d43a4a8f1d2701d5289f17734d922ebeb9e2d444f4f657cc71a; certificate SHA-256 2819a1e538023fafe0a28759fbb54b4fe026b5b438ed0e1dd72715cc1a511a59",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 running the release-profile QuickJS APK signed with the machine Android Debug certificate",
+      "conclusion": "Passed v2/v3 signature verification, installation, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse and an attached skia-gpu-gles container surface in logcat",
+      "limitations": "The certificate is a debug key and is not production signing material. The release package is not debuggable, so private execution receipt access was unavailable and this is log-only evidence. The original debug APK was restored after the run"
+    },
+    {
+      "id": "wechat-devtools-cli-workflow-04b94733",
+      "tool": "vendor/weapp-vite/e2e/ide/devtools-cli-workflow.runtime.test.ts with official WeChat DevTools",
+      "version": "workspace commit 04b947331fd713a326fb26d2c80de493f5c7bade; WeChat DevTools 2.02.2609250; observed base library 3.18.0",
+      "analysisTime": "2026-11-21",
+      "scope": "One official DevTools CLI workflow test covering project open, automator connection, screenshot, DOM interaction and diagnostics",
+      "conclusion": "Passed the selected CLI workflow test against the running official DevTools instance",
+      "limitations": "The conformance index pins base library 3.17.3, so this result does not promote that case in the index. The existing DevTools host was reused with automatic host shutdown suppressed, so host lease and teardown coverage are not established. The remaining 171 test files and 460 tests were skipped"
     }
   ]
 }
