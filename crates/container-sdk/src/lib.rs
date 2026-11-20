@@ -3322,6 +3322,21 @@ mod storage_stamp_tests {
         let config = ContainerConfig {
             storage_root: Some(directory.path().into()),
             storage_key: Some(key.into()),
+            host: HostMetadata {
+                window_width: 375,
+                window_height: 667,
+                display_metrics: Some(container_runtime::HostDisplayMetrics {
+                    pixel_ratio: 1.0,
+                    screen_width: 375,
+                    screen_height: 747,
+                    status_bar_height: 24.0,
+                    screen_top: 0.0,
+                    safe_area: None,
+                    device_orientation: container_runtime::HostDeviceOrientation::Portrait,
+                    host_layout: None,
+                }),
+                ..HostMetadata::default()
+            },
             ..ContainerConfig::default()
         };
         let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR"))

@@ -215,17 +215,25 @@ fn managed_constructor_rejects_an_actual_different_compiler_checkout_before_outp
 #[test]
 fn managed_constructor_rejects_unavailable_compiler_before_output() {
     let fixture = Fixture::new();
-    let error = DevSupervisor::spawn(fixture.config()).unwrap_err();
-    assert!(error
-        .to_string()
-        .contains("managed source compiler is unavailable"));
+    let mut config = fixture.config();
+    config.workspace_root = Some(fixture.root.clone());
+    let error = DevSupervisor::spawn(config).unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("managed source compiler is unavailable")
+    );
     assert!(!fixture.output.exists());
 
     fs::write(fixture.project.join("container.config.json"), b"{}").unwrap();
-    let error = DevSupervisor::spawn(fixture.config()).unwrap_err();
-    assert!(error
-        .to_string()
-        .contains("managed source compiler is unavailable"));
+    let mut config = fixture.config();
+    config.workspace_root = Some(fixture.root.clone());
+    let error = DevSupervisor::spawn(config).unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("managed source compiler is unavailable")
+    );
     assert!(!fixture.output.exists());
     assert_eq!(
         fs::read(fixture.project.join("container.config.json")).unwrap(),

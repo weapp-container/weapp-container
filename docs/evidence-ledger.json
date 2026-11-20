@@ -227,6 +227,60 @@
       "scope": "One official DevTools CLI workflow test covering project open, automator connection, screenshot, DOM interaction and diagnostics",
       "conclusion": "Passed the selected CLI workflow test against the running official DevTools instance",
       "limitations": "The conformance index pins base library 3.17.3, so this result does not promote that case in the index. The existing DevTools host was reused with automatic host shutdown suppressed, so host lease and teardown coverage are not established. The remaining 171 test files and 460 tests were skipped"
+    },
+    {
+      "id": "android-quickjs-source-09d92496",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 09d92496ad0c9ec95dca3266b17bb9d34c988ff9; debug APK SHA-256 92620b09b9a97b410e9b4d77357b302c728ba1e2924c7f789df24b957664de54",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the source-bound QuickJS debug APK and portable-pack-reference-v1",
+      "conclusion": "Passed clean source/build provenance, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse, correlated execution evidence and an attached skia-gpu-gles surface with nativeSurface=true",
+      "limitations": "This is official-emulator evidence for QuickJS. It does not certify production signing, Android V8, physical devices, other mobile hosts, full API conformance or official WeChat behavior"
+    },
+    {
+      "id": "android-quickjs-interaction-09d92496",
+      "tool": "adb shell input tap and portable-pack-interaction.json",
+      "version": "workspace commit 09d92496ad0c9ec95dca3266b17bb9d34c988ff9; session android-prodcheck-09d92496; interaction receipt SHA-256 3ad75567e9577d8c28e8c07eab53823841a10a2f1b87336a081ac618871cb1d0",
+      "analysisTime": "2026-11-21",
+      "scope": "One real tap on the reference page in Android emulator emulator-5554",
+      "conclusion": "Passed a native emulator tap that changed the page count and slot count from 0 to 1, retained the QuickJS session and manifest integrity, and presented committed frame 4 as skia-gpu-gles frame 4",
+      "limitations": "The interaction receipt is a debuggable-emulator diagnostic and does not establish release signing, physical-device behavior or complete gesture coverage"
+    },
+    {
+      "id": "rust-sdk-tests-2026-11-21",
+      "tool": "cargo test -p container-sdk --lib",
+      "version": "workspace commit 09d92496ad0c9ec95dca3266b17bb9d34c988ff9",
+      "analysisTime": "2026-11-21",
+      "scope": "Rust container SDK unit and integration tests",
+      "conclusion": "Passed 89 tests",
+      "limitations": "This is source-level SDK test evidence. It does not establish official DevTools behavior, native device coverage, production signing or performance acceptance"
+    },
+    {
+      "id": "rust-workspace-tests-2026-11-21",
+      "tool": "cargo test --workspace",
+      "version": "workspace commit 09d92496ad0c9ec95dca3266b17bb9d34c988ff9",
+      "analysisTime": "2026-11-21",
+      "scope": "Complete Rust workspace test matrix",
+      "conclusion": "Passed 3152 tests with 13 ignored",
+      "limitations": "This is source-level workspace evidence. It does not promote missing official, native, physical-device or production-signing results"
+    },
+    {
+      "id": "node-vitest-integration-2026-11-21",
+      "tool": "pnpm testing:test",
+      "version": "workspace commit 09d92496ad0c9ec95dca3266b17bb9d34c988ff9",
+      "analysisTime": "2026-11-21",
+      "scope": "Node and Vitest runtime integration tests",
+      "conclusion": "Passed 25 of 25 integration tests",
+      "limitations": "This is headless Node and Vitest evidence. It does not establish official DevTools conformance, native GPU behavior, physical-device coverage or production signing"
+    },
+    {
+      "id": "wechat-devtools-host-lease-blocked-2026-11-21",
+      "tool": "vendor/weapp-vite e2e/ide DevTools CLI workflow",
+      "version": "workspace commit 09d92496ad0c9ec95dca3266b17bb9d34c988ff9; WeChat DevTools 2.02.2609250; required base library 3.17.3",
+      "analysisTime": "2026-11-21",
+      "scope": "Selected official DevTools workflow rerun against the existing local DevTools session",
+      "conclusion": "Blocked before execution by WECHAT_DEVTOOLS_HOST_IDENTITY_MISMATCH because the running DevTools instance belongs to an existing host session",
+      "limitations": "The existing IDE was preserved and no official workflow result is promoted from this rerun. An earlier workflow passed with base library 3.18.0, which does not satisfy the indexed 3.17.3 requirement"
     }
   ]
 }

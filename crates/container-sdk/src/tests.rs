@@ -28,6 +28,19 @@ fn page_pack(source: &str) -> tempfile::TempDir {
     }
     let mut manifest: ContainerManifestV1 =
         serde_json::from_slice(&fs::read(fixture().join("manifest.json")).unwrap()).unwrap();
+    let app_source = b"App({});";
+    let app_digest = hex_digest(app_source);
+    fs::write(
+        directory.path().join("blobs/sha256").join(&app_digest),
+        app_source,
+    )
+    .unwrap();
+    manifest
+        .modules
+        .iter_mut()
+        .find(|module| module.id == "module:app.js")
+        .unwrap()
+        .sha256 = app_digest;
     let digest = hex_digest(source.as_bytes());
     fs::write(directory.path().join("blobs/sha256").join(&digest), source).unwrap();
     manifest
@@ -1622,8 +1635,9 @@ fn explicit_close_reports_unload_failure_with_the_closing_identity() {
 #[test]
 fn retirement_batches_keep_all_failures_and_foreign_errors_fail_safe() {
     use retirement::RetirementOperation;
+    let pack = page_pack("Page({data:{count:0,message:'sdk',componentConfig:{label:'test'}}});");
     let mut sdk = ContainerSession::new(ContainerConfig::default()).unwrap();
-    load(&mut sdk, &fixture());
+    load(&mut sdk, pack.path());
     let identity = sdk.accepted_pack_identity().unwrap().unwrap();
     sdk.take_events();
     let error = |owner: &str, code: &str| {
@@ -1677,8 +1691,9 @@ fn retirement_batches_keep_all_failures_and_foreign_errors_fail_safe() {
 
 #[test]
 fn current_runtime_errors_never_inherit_a_retirement_origin() {
+    let pack = page_pack("Page({data:{count:0,message:'sdk',componentConfig:{label:'test'}}});");
     let mut sdk = ContainerSession::new(ContainerConfig::default()).unwrap();
-    load(&mut sdk, &fixture());
+    load(&mut sdk, pack.path());
     let session_id = sdk.state().unwrap()["sessionId"]
         .as_str()
         .unwrap()
@@ -2162,6 +2177,7 @@ fn view_timeout_stops_render_retries_but_keeps_appservice_timers_and_restart_jou
     let pack = page_pack("Page({data:{spin:false,ticks:0,hides:0},onLoad(){setInterval(()=>{this.setData({ticks:this.data.ticks+1,spin:true});},10)},onHide(){this.setData({hides:this.data.hides+1});}});");
     let mut manifest: ContainerManifestV1 =
         serde_json::from_slice(&fs::read(pack.path().join("manifest.json")).unwrap()).unwrap();
+    manifest.view_compilation = None;
     let source = "exports.run=function(spin){if(spin)while(true){}return 'ready';};";
     let hash = hex_digest(source.as_bytes());
     fs::write(pack.path().join("blobs/sha256").join(&hash), source).unwrap();
@@ -3926,6 +3942,15 @@ fn presentation_edit(source: &Path) -> tempfile::TempDir {
     let hash = hex_digest(&bytes);
     fs::write(directory.path().join("blobs/sha256").join(&hash), bytes).unwrap();
     template.wxml_ast = format!("sha256:{hash}");
+    let document = manifest
+        .view_compilation
+        .as_mut()
+        .unwrap()
+        .documents
+        .iter_mut()
+        .find(|document| document.document_id == "pages/home/index.wxml")
+        .unwrap();
+    document.wxml_ast = template.wxml_ast.clone();
     manifest.refresh_integrity().unwrap();
     fs::write(
         directory.path().join("manifest.json"),
@@ -3984,6 +4009,7 @@ fn stateful_view_pack_with_page(source: &str) -> tempfile::TempDir {
     let directory = page_pack(source);
     let mut manifest: ContainerManifestV1 =
         serde_json::from_slice(&fs::read(directory.path().join("manifest.json")).unwrap()).unwrap();
+    manifest.view_compilation = None;
     let source =
         "var count=0;exports.next=function(ticks){count+=1;return 'run:'+count+':tick:'+ticks;};";
     let hash = hex_digest(source.as_bytes());
@@ -4365,7 +4391,8 @@ fn explicit_gpu_requirement_rejects_missing_provider_and_false_keeps_raster() {
         ..ContainerConfig::default()
     })
     .unwrap();
-    load(&mut raster, &fixture());
+    let pack = page_pack("Page({data:{count:0,message:'sdk',componentConfig:{label:'test'}}});");
+    load(&mut raster, pack.path());
     assert!(!raster.state().unwrap()["presentationRequired"]
         .as_bool()
         .unwrap());
