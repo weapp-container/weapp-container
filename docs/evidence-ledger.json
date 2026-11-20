@@ -31,6 +31,15 @@
       "limitations": "The debug certificate is not production signing material. A production certificate, release policy verification and signed release runtime acceptance are still required"
     },
     {
+      "id": "android-release-log-runtime-2026-11-21",
+      "tool": "adb and Android logcat",
+      "version": "workspace commit 91819bd26bebda8696349e5531056d86b1ebeb6a",
+      "analysisTime": "2026-11-21",
+      "scope": "The zipaligned release APK signed with the machine Android Debug certificate on emulator-5554",
+      "conclusion": "The signed APK started and emitted successful app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot and wx.canIUse probes; the native surface probe reported skia-gpu-gles with containerSurfaceAttached=true",
+      "limitations": "This is log-only release observation without private receipt access, so it does not satisfy the source-bound execution receipt gate. The emulator and debug certificate do not establish physical-device behavior or production signing"
+    },
+    {
       "id": "android-v8-build-2026-11-21",
       "tool": "Rust native build and pinned V8 dependency inspection",
       "version": "V8 152.2.0",
