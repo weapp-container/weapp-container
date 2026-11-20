@@ -22,6 +22,15 @@
       "limitations": "This is emulator evidence for the QuickJS debug APK. It does not certify a signed release APK, Android V8, physical devices, other mobile hosts or official WeChat behavior"
     },
     {
+      "id": "android-quickjs-gpu-smoke-current-2026-11-21",
+      "tool": "scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 5016f998d5465cb6f7371c6d47eee2120b0d39b3; APK SHA-256 41ae76dde6ee76c6bc4af23e053f605b691e516a8cc1f7f34b8d46ff54fb2370",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the source-bound debug QuickJS APK and portable-pack-reference-v1",
+      "conclusion": "Passed source/build provenance, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse and an attached Skia GLES surface with nativeSurface=true",
+      "limitations": "This is emulator evidence for the QuickJS debug APK. It does not certify a signed release APK, Android V8, physical devices, other mobile hosts or official WeChat behavior"
+    },
+    {
       "id": "android-release-signing-2026-11-21",
       "tool": "scripts/build-android-apk.mjs and adb",
       "version": "workspace commit 91819bd26bebda8696349e5531056d86b1ebeb6a",
