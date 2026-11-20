@@ -11,6 +11,7 @@ const RECEIPT_INPUTS = [
   'scripts/build-android-apk.mjs',
   'scripts/lib/android-apk-build-receipt.mjs',
   'scripts/mobile-runtime-smoke.mjs',
+  'scripts/lib/mobile-smoke-checks.mjs',
   'scripts/pack-execution-evidence.mjs',
 ]
 

@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { EXECUTION_HOSTS, MOBILE_EXECUTION_HOSTS, collectPackExecutionEvidence, inspectExecutionFixture, inspectPackExecutionMatrix, inspectPackExecutionReceipt } from './pack-execution-evidence.mjs'
 import { inspectAndroidApkBuildReceipt, sourceInventorySha256 } from './lib/android-apk-build-receipt.mjs'
+import { isValidatedRgbaSnapshot } from './lib/mobile-smoke-checks.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim()
@@ -495,6 +496,7 @@ test('Android APK build receipts bind clean source inputs, native ABI, engine an
     ...git(['ls-files', '--', 'examples/hosts/android']).split(/\r?\n/).filter(Boolean),
     'scripts/build-android-apk.mjs',
     'scripts/lib/android-apk-build-receipt.mjs',
+    'scripts/lib/mobile-smoke-checks.mjs',
     'scripts/mobile-runtime-smoke.mjs',
     'scripts/pack-execution-evidence.mjs',
   ])].sort()
@@ -548,4 +550,21 @@ test('Android APK build receipts bind clean source inputs, native ABI, engine an
   wrongEngine.native.engine = 'v8'
   assert.equal(inspectAndroidApkBuildReceipt(wrongEngine, expected).checks.engine, true)
   assert.equal(inspectAndroidApkBuildReceipt(wrongEngine, expected).checks.nativeBuild, false)
+})
+
+test('iOS RGBA snapshot smoke accepts a hashed frame without serializing all pixels', () => {
+  const operation = {
+    status: 0,
+    json: JSON.stringify({
+      format: 'rgba8-premultiplied',
+      frame_id: 1,
+      width: 402,
+      height: 874,
+      pixelCount: 402 * 874 * 4,
+      sha256: 'a'.repeat(64),
+    }),
+  }
+  assert.equal(isValidatedRgbaSnapshot(operation), true)
+  assert.equal(isValidatedRgbaSnapshot({ ...operation, status: 1 }), false)
+  assert.equal(isValidatedRgbaSnapshot({ ...operation, json: '{"format":"rgba8-premultiplied"}' }), false)
 })

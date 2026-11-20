@@ -18,6 +18,7 @@ import { parseGpuProbe, parseSurfaceProbe } from './mobile-gpu-probe.mjs'
 import { hasHarmonyRuntimeCrash } from './mobile-runtime-parser.mjs'
 import { collectPackExecutionEvidence, inspectPackExecutionReceipt } from './pack-execution-evidence.mjs'
 import { inspectAndroidApkBuildReceipt } from './lib/android-apk-build-receipt.mjs'
+import { isValidatedRgbaSnapshot } from './lib/mobile-smoke-checks.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = process.argv.slice(2)
@@ -441,7 +442,7 @@ function iosSmoke() {
   const checks = {
     appInitOk: output.includes('"op":"app.init"') && output.includes('"ok":true'),
     renderCommitOk: output.includes('"op":"render.commit"') && output.includes('"frameId":1'),
-    renderSnapshotRgba8: output.includes('"format":"rgba8-premultiplied"') && output.includes('"pixels":[16,32,48,255'),
+    renderSnapshotRgba8: isValidatedRgbaSnapshot(appEvidence?.operations?.['render.snapshot']),
     canvasDrawOk: output.includes('wx.canvas.draw') && output.includes('"canvasId":"main"'),
     canvasSnapshotRgba8: output.includes('canvas.snapshot') && output.includes('"pixels":[10,20,30,255'),
     canIUseStorage: output.includes('wx.canIUse') && output.includes('"result":true'),
