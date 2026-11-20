@@ -22,6 +22,26 @@ import { isValidatedRgbaSnapshot } from './lib/mobile-smoke-checks.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = process.argv.slice(2)
+
+function printHelp() {
+  process.stdout.write('Usage: node scripts/mobile-runtime-smoke.mjs [options]\n\n'
+    + '  --platform android|ios|harmony       Run one platform (repeatable)\n'
+    + '  --android-apk path                   APK to install for Android\n'
+    + '  --build-receipt path                 Source-bound Android build receipt\n'
+    + '  --ios-app path                       iOS simulator app bundle\n'
+    + '  --engine quickjs|v8                  Native runtime engine\n'
+    + '  --expected-source-commit sha         Expected checkout commit\n'
+    + '  --expected-compiler-commit sha       Expected compiler gitlink commit\n'
+    + '  --out path                            Write the JSON report to a file\n'
+    + '  --require-all                         Exit non-zero unless every platform passes\n'
+    + '  --help, -h                            Show this help and exit\n')
+}
+
+if (args.includes('--help') || args.includes('-h')) {
+  printHelp()
+  process.exit(0)
+}
+
 const outIndex = args.indexOf('--out')
 const outPath = outIndex >= 0 && args[outIndex + 1] ? resolve(args[outIndex + 1]) : null
 const apkIndex = args.indexOf('--android-apk')
