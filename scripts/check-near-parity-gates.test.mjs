@@ -303,19 +303,19 @@ test('matrix gate rejects stale compiler provenance even when every target repor
   const { matrix } = runWithMatrix(matrixReport(staleCompilerCommit), expectedCompilerCommit)
 
   assert.equal(matrix.status, 'incomplete')
-  assert.equal(matrix.expectedCompilerCommit, null)
-  assert.match(matrix.reason, /compiler pin is unavailable/)
+  assert.equal(matrix.expectedCompilerCommit, '0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e')
+  assert.match(matrix.reason, /explicit expected compiler commit does not match/)
 })
 
 test('matrix gate rejects passing summaries without a current compiler pin or successful run receipt', () => {
   const unpinned = runWithMatrix(matrixReport('c'.repeat(40)))
   assert.equal(unpinned.matrix.status, 'incomplete')
-  assert.match(unpinned.matrix.reason, /compiler pin is unavailable/)
+  assert.match(unpinned.matrix.reason, /compiler pin does not match the current checkout/)
 
-  const expectedCompilerCommit = 'd'.repeat(40)
+  const expectedCompilerCommit = git(root, 'rev-parse', 'HEAD:vendor/weapp-vite')
   const summaryOnly = matrixReport(expectedCompilerCommit)
   summaryOnly.runs = []
   const missingRun = runWithMatrix(summaryOnly, expectedCompilerCommit)
   assert.equal(missingRun.matrix.status, 'incomplete')
-  assert.match(missingRun.matrix.reason, /compiler pin is unavailable|no complete successful build run evidence/)
+  assert.match(missingRun.matrix.reason, /no complete successful build run evidence/)
 })

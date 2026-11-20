@@ -144,7 +144,8 @@ Input/frame latency has not passed a performance gate.
 Build the native artifact first:
 
 ```sh
-pnpm native:build -- --platform android
+node scripts/build-native-hosts.mjs --build --platform android --engine quickjs \
+  --out /absolute/path/to/android-native-build.json
 ```
 
 The native builder selects `quickjs-native-android` by default. This feature
@@ -180,50 +181,29 @@ and emulator/device validation remain separate gates.
 Run an APK on an explicitly selected target from the repository root:
 
 ```sh
-pnpm host:android:app:smoke -- \
-  --serial emulator-5572 --expected-avd YourTaskAvd \
-  --apk /absolute/path/to/app-debug.apk \
-  --engine quickjs --out-dir artifacts/android-app-run
+node scripts/mobile-runtime-smoke.mjs --platform android \
+  --android-apk /absolute/path/to/app-debug.apk \
+  --engine quickjs --out /absolute/path/to/android-runtime-smoke.json
 ```
 
-The output directory must be empty and the package must be absent on that
-target. The runner uses a plain install, a unique session, and polls the app's
-atomic receipt for the matching engine, fixture and attached Skia GLES frame.
-It captures an OS screenshot between checks of the same PID/start time and
-foreground package. Command bytes, diagnostics and screenshots are retained;
-the runner removes only its installed app and leaves the target running.
-It never selects the first device, replaces an existing app or clears Logcat.
+The smoke runner installs the APK on the first online adb target unless an
+explicit `WEAPP_CONTAINER_ANDROID_SERIAL` is set. It uses a unique session,
+polls the app's atomic receipt for the matching engine, fixture and attached
+Skia GLES frame, then force-stops only this sample package. The report keeps
+the APK digest, runtime receipt, renderer probes and command diagnostics.
 
 For the bundled reference fixture, add the explicit interaction plan on a
 selected official emulator and a debuggable APK:
 
 ```sh
-pnpm host:android:app:smoke -- \
-  --serial emulator-5572 --expected-avd YourTaskAvd \
-  --apk /absolute/path/to/app-debug.apk \
-  --engine quickjs --out-dir artifacts/android-reference-interaction \
-  --interaction-plan reference
+node scripts/mobile-runtime-smoke.mjs --platform android \
+  --android-apk /absolute/path/to/app-debug.apk \
+  --engine quickjs --out /absolute/path/to/android-reference-smoke.json
 ```
 
-The plan reads committed bounds and the actual surface's screen origin before
-issuing real adb page/component taps, checks page/component/slot updates,
-resizes with `wm size`, verifies viewport/provider agreement in the same
-session, then sends HOME and resumes that App. It restores the original
-display size/density overrides and saves independent interaction receipts and
-OS screenshots. Initial, resized, restored, density and resumed frames all
-receive screenshot checks; a further OS tap after resize verifies the new hit
-coordinates. Captures require the same frame, presentation sequence and EGL
-target before/after capture. Up to five seconds of retries permit transient
-compositor animations; every candidate PNG, correlated receipts and failure is
-retained. The local geometry check compares opaque reference page/card/component
-backgrounds with committed bounds and colors. It excludes text and is not an
-official screenshot baseline; `visualStatus` stays `unknown`.
-Each screenshot also names its exact `*-screen.json` accepted receipt. The
-earlier polled receipt remains separate; subsequent input uses the accepted
-capture's frame when it advances during compositor stabilization.
-Startup evidence remains the frozen first-frame receipt. This validates only
-the exercised emulator interactions; it is not DevTools parity, physical
-device/hardware evidence or a performance result.
+This entry validates startup, rendering, canvas/API probes and the attached
+GLES surface for the selected engine. It does not perform the interaction,
+resize or screenshot plan described by older documentation.
 
 Without `--build-receipt`, source provenance remains `unknown` and the report
 cannot pass the source gate. A saved `apk-validation.json` may be supplied with
@@ -234,20 +214,19 @@ commit remain separate. The default baseline is the current HEAD.
 
 Screenshot capture requires separate visual review. An attached Skia surface
 does not establish hardware acceleration, touch, resize, app lifecycle, real
-device or near-parity conformance. Run the runner's lifecycle/ownership tests
-with `pnpm host:android:app:test`.
+device or near-parity conformance.
 
-For the loader/protocol regression, run from the repository root:
+The checked-in Kotlin contract source is a standalone harness. The Android
+Gradle build compiles it with the production sources, while the runtime smoke
+above is the executable device check:
 
 ```sh
-node scripts/android-pack-contract-test.mjs
+ANDROID_HOME=/absolute/path/to/Android/sdk \
+  gradle :app:compileDebugUnitTestKotlin --no-daemon \
+  -PweappContainerAndroidRustLibArm64=/absolute/path/to/libcontainer_host_android.so
 ```
 
-This uses pinned Kotlin 2.0.21/JVM dependencies from a read-only Gradle cache,
-SDK 36, and NDK 27.1.12297006. Override their paths with `--gradle-cache`,
-`--android-jar` and `--ndk`. It runs the production loader against a recording
-runtime, compiles all production Kotlin with the Android SDK, and type-checks
-the JNI adapter with the NDK. Clock tests cover epoch preservation, exact
-millisecond conversion, invalid inputs and a recording-runtime callback at
-its epoch deadline; they do not establish native timer execution. Its report explicitly excludes native JS,
-Android process, EGL, GPU and device execution.
+The standalone source covers pack integrity, timer conversion, lifecycle
+cleanup and JNI attachment ownership. It does not establish native JS,
+Android process, EGL, GPU or device execution, which requires the smoke
+command above.
