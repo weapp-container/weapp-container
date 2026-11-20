@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Current production-readiness evidence boundaries for Weapp Container",
+  "generatedAt": "2026-11-21",
+  "entries": [
+    {
+      "id": "platform-matrix-2026-11-21",
+      "tool": "scripts/build-weapp-vite-platforms.mjs",
+      "version": "weapp-vite 0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e",
+      "analysisTime": "2026-11-21",
+      "scope": "Pinned weapp-vite aggregate build matrix for weapp, alipay, swan, tt, jd and xhs",
+      "conclusion": "All six pinned platform build targets passed with current runner provenance",
+      "limitations": "Build success does not establish official WeChat DevTools conformance, native GPU behavior, V8 availability, host bridge coverage or production signing"
+    },
+    {
+      "id": "android-quickjs-gpu-smoke-2026-11-21",
+      "tool": "scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 91819bd26bebda8696349e5531056d86b1ebeb6a",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the submitted debug QuickJS APK and the source-bound portable pack",
+      "conclusion": "Passed app installation, app.init, render.commit, QuickJS module probes, RGBA snapshot, Canvas/API probes and an attached Skia GLES surface with nativeSurface=true",
+      "limitations": "This is emulator evidence for the QuickJS debug APK. It does not certify a signed release APK, Android V8, physical devices, other mobile hosts or official WeChat behavior"
+    },
+    {
+      "id": "android-release-signing-2026-11-21",
+      "tool": "scripts/build-android-apk.mjs and adb",
+      "version": "workspace commit 91819bd26bebda8696349e5531056d86b1ebeb6a",
+      "analysisTime": "2026-11-21",
+      "scope": "Android release APK installation on emulator-5554",
+      "conclusion": "Blocked at the artifact boundary because the locally built unsigned APK was rejected with INSTALL_PARSE_FAILED_NO_CERTIFICATES",
+      "limitations": "A production signing certificate and signed APK verification are still required. This result does not evaluate release runtime behavior"
+    },
+    {
+      "id": "android-v8-build-2026-11-21",
+      "tool": "Rust native build and pinned V8 dependency inspection",
+      "version": "V8 152.2.0",
+      "analysisTime": "2026-11-21",
+      "scope": "Android V8 provider and static-library inputs",
+      "conclusion": "Blocked because the pinned V8 release assets do not provide Android bindings or a matching static library, while the source-build dependency chain was unavailable in the current network environment",
+      "limitations": "No Android V8 runtime result is claimed and the pinned V8 version was not changed without upstream-compatible evidence"
+    },
+    {
+      "id": "wechat-devtools-conformance-2026-11-21",
+      "tool": "WeChat DevTools",
+      "version": "2.02.2609250 with base library 3.17.3",
+      "analysisTime": "2026-11-21",
+      "scope": "172 current vendor/weapp-vite e2e/ide cases indexed against the official oracle",
+      "conclusion": "Unknown because the official DevTools project-manager authorization prompt has not produced a usable execution receipt in this session",
+      "limitations": "No case is marked passed from headless, mpcore or static evidence. The case index remains unknown until official DevTools runs are reviewed"
+    },
+    {
+      "id": "dual-engine-host-execution-2026-11-21",
+      "tool": "scripts/check-near-parity-gates.mjs",
+      "version": "workspace commit 91819bd26bebda8696349e5531056d86b1ebeb6a",
+      "analysisTime": "2026-11-21",
+      "scope": "Seven expected hosts across QuickJS and V8 using the same-fixture execution contract",
+      "conclusion": "Incomplete because complete host and engine execution receipts are not available for the full matrix",
+      "limitations": "Portable and headless observations remain supporting evidence and cannot promote missing native host or engine runs to passed"
+    },
+    {
+      "id": "host-engine-performance-2026-11-21",
+      "tool": "scripts/check-performance-report.mjs and scripts/check-near-parity-gates.mjs",
+      "version": "workspace commit 91819bd26bebda8696349e5531056d86b1ebeb6a",
+      "analysisTime": "2026-11-21",
+      "scope": "Expected host/engine performance report pairs for web, macos, windows, linux, android, ios and harmony",
+      "conclusion": "Incomplete because the current source revision does not have a complete validated report pair for every expected host and engine",
+      "limitations": "No production performance claim is made from stale, partial or unavailable reports"
+    }
+  ]
+}

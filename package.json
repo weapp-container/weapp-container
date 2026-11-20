@@ -54,6 +54,7 @@
     "runtime:component-relations:smoke": "node scripts/component-relations-smoke.mjs",
     "embed:reference": "cargo run --manifest-path examples/apps/embed-runner/Cargo.toml --",
     "api:inventory:verify": "node scripts/verify-api-inventory.mjs && node scripts/verify-host-api-catalog.mjs",
+    "conformance:index:generate": "node scripts/generate-conformance-case-index.mjs",
     "submodule:verify": "node scripts/verify-submodule.mjs",
     "naming:check": "node scripts/check-product-naming.mjs",
     "naming:test": "node --test scripts/check-product-naming.test.mjs",
