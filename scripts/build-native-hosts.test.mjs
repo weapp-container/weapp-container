@@ -20,6 +20,7 @@ function fixture(t) {
   mkdirSync(resolve(dir, 'scripts/lib'))
   cpSync(resolve(root, 'scripts/lib/harmony-skia-build.mjs'), resolve(dir, 'scripts/lib/harmony-skia-build.mjs'))
   cpSync(resolve(root, 'scripts/lib/cargo-skia-source.mjs'), resolve(dir, 'scripts/lib/cargo-skia-source.mjs'))
+  cpSync(resolve(root, 'scripts/lib/android-v8-source-build.mjs'), resolve(dir, 'scripts/lib/android-v8-source-build.mjs'))
   for (const file of ['sdk-current-release.mjs', 'sdk-native-features.mjs', 'showcase-policy.mjs', 'showcase-native-font.mjs']) cpSync(resolve(root, 'scripts/lib', file), resolve(dir, 'scripts/lib', file))
   // CLI/environment wiring uses a finite synthetic font and inert compiler.
   // Production font pins are separately checked against reviewed asset pins.
@@ -164,6 +165,50 @@ test('Android V8 fails before Cargo on non-Linux without pinned prebuilt inputs'
   assert.equal(platform.cargo.errorCode, 'ANDROID_V8_SOURCE_REQUIRES_LINUX')
 })
 
+test('Linux Android V8 source builds prepare the pinned NDK path and GN API before Cargo', { skip: process.platform !== 'linux' || unsupportedShell }, t => {
+  const value = fixture(t)
+  const v8Root = resolve(value.dir, 'cargo-registry/v8-152.2.0')
+  const compiler = resolve(v8Root, 'third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++')
+  const header = resolve(v8Root, 'third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdlib.h')
+  mkdirSync(dirname(compiler), { recursive: true })
+  mkdirSync(dirname(header), { recursive: true })
+  writeFileSync(compiler, '')
+  writeFileSync(header, '')
+  writeFileSync(resolve(v8Root, 'Cargo.toml'), '[package]\nname = "v8"\nversion = "152.2.0"\n')
+  const metadata = JSON.stringify({ packages: [{
+    name: 'v8',
+    version: '152.2.0',
+    source: 'registry+https://github.com/rust-lang/crates.io-index',
+    manifest_path: resolve(v8Root, 'Cargo.toml'),
+  }] })
+  const { result, platform } = run(value, '30', {
+    V8_FROM_SOURCE: '1',
+    GN_ARGS: 'is_component_build=false',
+    WEAPP_NATIVE_TEST_CARGO_METADATA: metadata,
+  }, [], [], undefined, 'v8')
+  assert.equal(result.status, 0, result.stderr)
+  assert.equal(platform.engine, 'v8')
+  assert.equal(platform.toolchain.androidV8SourceBuild.androidApiLevel, 30)
+  assert.equal(platform.toolchain.androidV8SourceBuild.effectiveGnArgs, 'is_component_build=false\ndefault_min_sdk_version=30 android_ndk_api_level=30')
+  const alias = resolve(v8Root, 'third_party/android_toolchain/ndk')
+  assert.equal(readFileSync(resolve(alias, 'toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdlib.h'), 'utf8'), '')
+  const cargo = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8'))
+  assert.equal(cargo.env.GN_ARGS, platform.toolchain.androidV8SourceBuild.effectiveGnArgs)
+})
+
+test('Linux Android V8 source builds stop before Cargo when the pinned Rusty V8 source is unavailable', { skip: process.platform !== 'linux' || unsupportedShell }, t => {
+  const value = fixture(t)
+  const { result, platform } = run(value, undefined, {
+    V8_FROM_SOURCE: '1',
+    WEAPP_NATIVE_TEST_CARGO_METADATA: JSON.stringify({ packages: [] }),
+  }, [], [], undefined, 'v8')
+  assert.equal(result.status, 1)
+  assert.equal(platform.status, 'failed')
+  assert.equal(platform.engineBoundary.code, 'ANDROID_V8_SOURCE_INPUTS_UNAVAILABLE')
+  assert.equal(platform.cargo.status, 'not-run')
+  assert.equal(existsSync(resolve(value.dir, 'cargo.json')), false)
+})
+
 function commitFixture(value) {
   writeFileSync(resolve(value.dir, '.gitignore'), '/target/\n/cargo*.json*\n/cmake.jsonl\n/report.json\n')
   for (const args of [['init', '--quiet'], ['add', '.'], ['-c', 'user.name=Finite fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '--quiet', '-m', 'finite producer fixture']]) {
@@ -290,7 +335,7 @@ test('release native profile records exact bytes and rejects source mutation wit
     assert.match(platform.artifact.path, /\/release\//); assert.match(platform.artifact.sha256, /^[a-f0-9]{64}$/)
     assert.equal(platform.artifact.bytes, Buffer.byteLength('recording fixture, not a native library'))
     assert.ok(JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'))).args.includes('--release'))
-    assert.equal(report.producerTool.files.length, 7)
+    assert.equal(report.producerTool.files.length, 8)
     if (!mutate) assert.notEqual(report.producerTool.sourceCommit, report.sourceBefore.sourceCommit, 'source and externally supplied build tool identities remain distinct')
   }
 })

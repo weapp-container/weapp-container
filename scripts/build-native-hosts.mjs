@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import { harmonySkiaBuild } from './lib/harmony-skia-build.mjs'
 import { nativeSkiaBuild as resolveNativeSkiaBuild, resolveLockedSkiaSource } from './lib/cargo-skia-source.mjs'
+import { prepareAndroidV8SourceBuild } from './lib/android-v8-source-build.mjs'
 import { createHash } from 'node:crypto'
 import { SDK_RELEASE_VERSION, assertCleanNativeSource, captureNativeSource } from './lib/sdk-current-release.mjs'
 import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtifact } from './lib/showcase-policy.mjs'
@@ -68,7 +69,9 @@ function rustupWhich(binary) {
   return result.status === 0 ? result.stdout.trim() : null
 }
 
-function lockedSkiaSource() {
+let cargoMetadataCache
+function cargoMetadata() {
+  if (cargoMetadataCache !== undefined) return cargoMetadataCache
   const result = spawnSync(cargoBin, ['metadata', '--locked', '--format-version', '1'], {
     cwd: root,
     env: { ...process.env, ...cargoEnv },
@@ -76,9 +79,20 @@ function lockedSkiaSource() {
     maxBuffer: 32 * 1024 * 1024,
     timeout: 30_000,
   })
-  if (result.status !== 0 || result.error) return null
-  try { return resolveLockedSkiaSource(JSON.parse(result.stdout)) }
+  if (result.status !== 0 || result.error) return cargoMetadataCache = null
+  try { return cargoMetadataCache = JSON.parse(result.stdout) }
+  catch { return cargoMetadataCache = null }
+}
+
+function lockedSkiaSource() {
+  try { return resolveLockedSkiaSource(cargoMetadata()) }
   catch { return null }
+}
+
+function androidV8SourceBuild(platform, apiLevel, toolchainError = null) {
+  const sourceBuild = ['1', 'true', 'yes'].includes(String(process.env.V8_FROM_SOURCE || '').toLowerCase())
+  if (platform !== 'android' || engine !== 'v8' || process.platform !== 'linux' || !sourceBuild || toolchainError || !Number.isInteger(apiLevel)) return null
+  return prepareAndroidV8SourceBuild(cargoMetadata(), apiLevel)
 }
 
 function nativeSkiaBuild() {
@@ -324,7 +338,7 @@ function producerToolIdentity() {
   let source
   try { source = captureNativeSource(toolRoot) }
   catch (error) { source = { sourceCommit: null, sourceDirty: null, sourceError: error.message } }
-  return { ...source, files: ['scripts/build-native-hosts.mjs', 'scripts/lib/cargo-skia-source.mjs', 'scripts/lib/harmony-skia-build.mjs', 'scripts/lib/sdk-current-release.mjs', 'scripts/lib/sdk-native-features.mjs', 'scripts/lib/showcase-policy.mjs', 'scripts/lib/showcase-native-font.mjs'].map(path => ({ path, sha256: createHash('sha256').update(readFileSync(resolve(toolRoot, path))).digest('hex') })) }
+  return { ...source, files: ['scripts/build-native-hosts.mjs', 'scripts/lib/android-v8-source-build.mjs', 'scripts/lib/cargo-skia-source.mjs', 'scripts/lib/harmony-skia-build.mjs', 'scripts/lib/sdk-current-release.mjs', 'scripts/lib/sdk-native-features.mjs', 'scripts/lib/showcase-policy.mjs', 'scripts/lib/showcase-native-font.mjs'].map(path => ({ path, sha256: createHash('sha256').update(readFileSync(resolve(toolRoot, path))).digest('hex') })) }
 }
 
 function validateProject(spec) {
@@ -676,14 +690,18 @@ function runPlatform(name) {
   const project = validateProject(spec)
   const toolchain = nativeToolchain(name)
   const engineBoundary = androidV8BuildBoundary(name)
+  const v8SourceBuild = androidV8SourceBuild(name, toolchain.apiLevel, toolchain.error)
+  const v8SourceBoundary = v8SourceBuild?.status === 'failed'
+    ? { code: 'ANDROID_V8_SOURCE_INPUTS_UNAVAILABLE', reason: v8SourceBuild.error }
+    : null
   const engineFeatures = engine === 'quickjs' ? spec.feature
     : spec.feature.split(',').filter(feature => !feature.startsWith('quickjs-native')).concat('v8-native').join(',')
   const features = engineFeatures + (distribution.policy ? ',restricted-showcase' : '')
   const cargo = toolchain.error
     ? { status: 'not-run', reason: toolchain.error }
-    : engineBoundary
-      ? { status: 'not-run', reason: engineBoundary.reason, errorCode: engineBoundary.code }
-      : run(cargoBin, [mode === 'build' ? 'build' : 'check', '-p', spec.crate, '--no-default-features', '--features', features, '--target', spec.target, '--target-dir', targetDir, '--locked', ...(profile === 'release' ? ['--release'] : [])], { ...cargoEnv, ...toolchain.env })
+    : engineBoundary || v8SourceBoundary
+      ? { status: 'not-run', reason: (engineBoundary || v8SourceBoundary).reason, errorCode: (engineBoundary || v8SourceBoundary).code }
+      : run(cargoBin, [mode === 'build' ? 'build' : 'check', '-p', spec.crate, '--no-default-features', '--features', features, '--target', spec.target, '--target-dir', targetDir, '--locked', ...(profile === 'release' ? ['--release'] : [])], { ...cargoEnv, ...toolchain.env, ...(v8SourceBuild?.env || {}) })
   const artifactFile = (profile === 'release' ? spec.artifact.replace('/debug/', '/release/') : spec.artifact).replace(/^target\//, '')
   const artifactPath = resolve(targetDir, artifactFile)
   const artifactBytes = mode === 'build' && cargo.status === 'passed' && existsSync(artifactPath) ? readFileSync(artifactPath) : null
@@ -713,7 +731,7 @@ function runPlatform(name) {
     policySha256: distribution.policySha256,
     ...(compiledIdentity ? { compiledIdentity } : {}),
     ...(compiledNativeFont ? { nativeFont: compiledNativeFont } : {}),
-    ...(engineBoundary ? { engineBoundary } : {}),
+    ...((engineBoundary || v8SourceBoundary) ? { engineBoundary: engineBoundary || v8SourceBoundary } : {}),
     status,
     project,
     toolchain: {
@@ -730,6 +748,7 @@ function runPlatform(name) {
         // ANDROID_API_LEVEL selects Rust/QuickJS/JNI, not Skia internals.
         skiaMinimumApi: 26,
         skiaApiSource: 'skia-bindings-0.157.0-pinned-default',
+        ...(v8SourceBuild?.report ? { androidV8SourceBuild: v8SourceBuild.report } : {}),
         ignoredSdkEnvironment: ['SDKROOT', 'SDKTARGETSYSROOT'].filter(key => process.env[key] !== undefined),
         compatibility: 'not-verified',
         error: toolchain.error || null,
