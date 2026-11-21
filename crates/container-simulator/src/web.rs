@@ -4919,6 +4919,21 @@ mod tests {
         handle.set_snapshot(json!({"pixels": "x".repeat(4 * 1024 * 1024)}));
 
         let mut stalled = TcpStream::connect(address).unwrap();
+        #[cfg(unix)]
+        {
+            use std::os::fd::AsRawFd;
+            let receive_buffer: nix::libc::c_int = 4096;
+            let result = unsafe {
+                nix::libc::setsockopt(
+                    stalled.as_raw_fd(),
+                    nix::libc::SOL_SOCKET,
+                    nix::libc::SO_RCVBUF,
+                    (&receive_buffer as *const nix::libc::c_int).cast(),
+                    std::mem::size_of_val(&receive_buffer) as nix::libc::socklen_t,
+                )
+            };
+            assert_eq!(result, 0);
+        }
         stalled
             .write_all(b"GET /api/snapshot HTTP/1.1\r\nHost: localhost\r\n\r\n")
             .unwrap();
