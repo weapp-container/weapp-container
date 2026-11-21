@@ -247,7 +247,6 @@ function androidSmoke() {
       probes: [list, install, receiptAccess],
     })
   }
-  const clear = run('adb', ['-s', serial, 'logcat', '-c'])
   const stop = run('adb', ['-s', serial, 'shell', 'am', 'force-stop', 'com.sonofmagic.weapp.container'])
   const clearReceipt = run('adb', ['-s', serial, 'shell', 'run-as', 'com.sonofmagic.weapp.container', 'rm', '-f', 'files/portable-pack-execution.json'])
   const expectedSessionId = `android-${randomUUID()}`
@@ -262,7 +261,9 @@ function androidSmoke() {
   const logDeadline = Date.now() + 15_000
   while (Date.now() < logDeadline) {
     logcat = run('adb', ['-s', serial, 'logcat', '-d', '-v', 'brief', '-s', 'WEAPP_CONTAINER_SMOKE:I', 'WEAPP_CONTAINER_GPU_PROBE:I', 'WEAPP_CONTAINER_SURFACE_PROBE:I', '*:S'])
-    const smoke = (logcat.stdout || '').split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SMOKE')).join('\n')
+    const smoke = (logcat.stdout || '').split(/\r?\n/)
+      .filter(line => line.includes('WEAPP_CONTAINER_SMOKE') && line.includes(`"sessionId":"${expectedSessionId}"`))
+      .join('\n')
     if (operations.every(operation => smoke.includes(` ${operation} `))) break
     run(process.execPath, ['-e', 'setTimeout(() => {}, 250)'], { timeoutMs: 1_000 })
   }
@@ -312,9 +313,11 @@ function androidSmoke() {
   })
   const runtimeBodyPassed = runtimeReceipt && Object.entries(runtimeReceipt.checks)
     .filter(([name]) => !['source', 'build'].includes(name)).every(([, passed]) => passed)
-  const smokeLines = logcat.stdout.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SMOKE'))
+  const smokeLines = logcat.stdout.split(/\r?\n/)
+    .filter(line => line.includes('WEAPP_CONTAINER_SMOKE') && line.includes(`"sessionId":"${expectedSessionId}"`))
   const gpuProbeLines = logcat.stdout.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_GPU_PROBE'))
-  const surfaceProbeLines = logcat.stdout.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE'))
+  const surfaceProbeLines = logcat.stdout.split(/\r?\n/)
+    .filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE') && line.includes(`"sessionId":"${expectedSessionId}"`))
   const gpuProbe = parseGpuProbe(gpuProbeLines, 'android-egl')
   const surfaceProbe = executionReceipt?.surfaceProbe || parseSurfaceProbe(surfaceProbeLines, 'android-gles-window')
   const output = smokeLines.join('\n')
@@ -373,7 +376,7 @@ function androidSmoke() {
     failedChecks,
     gpuProbe,
     surfaceProbe,
-    probes: [list, install, clear, stop, clearReceipt, start, logcat, readReceipt, cleanup],
+    probes: [list, install, stop, clearReceipt, start, logcat, readReceipt, cleanup],
     notes: [
       'The runtime commit may report skia-raster before the host surface is attached; the surface probe records the final draw boundary.',
       'surfaceProbe satisfies the native renderer gate only when it reports skia-gpu-gles with containerSurfaceAttached=true and gpuSurface=true.',
