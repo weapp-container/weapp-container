@@ -107,6 +107,7 @@ if (name === 'rustup') {
       writeFileSync(resolve(prebuilt, 'bin', `aarch64-linux-android${api}-${suffix}`), '')
     }
     mkdirSync(resolve(prebuilt, 'sysroot/usr/lib/aarch64-linux-android', String(api)), { recursive: true })
+    writeFileSync(resolve(prebuilt, 'sysroot/usr/lib/aarch64-linux-android', String(api), 'libc.so'), 'API-level shared libc')
     for (const suffix of ['clang', 'clang++']) {
       writeFileSync(resolve(prebuilt, 'bin', `armv7a-linux-androideabi${api}-${suffix}`), '')
     }
@@ -226,7 +227,7 @@ else fs.writeFileSync(process.env.WEAPP_TEST_LINKER_ARGS, JSON.stringify(args))
   assert.match(cargo.env.CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER, /native-host-toolchain\/android-v8-linker\/aarch64-linux-android30-clang$/)
   const skiaNdk = resolve(value.dir, 'target/native-host-toolchain/android-v8-skia-ndk')
   const stagedLib = resolve(skiaNdk, 'toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android')
-  assert.ok(readFileSync(cargo.env.CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER, 'utf8').includes(`-L'${stagedLib}'`))
+  assert.ok(readFileSync(cargo.env.CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER, 'utf8').includes(`-L'${resolve(stagedLib, '30')}' -L'${stagedLib}'`))
   for (const archive of ['libc++_static.a', 'libc++abi.a']) {
     assert.equal(readFileSync(resolve(stagedLib, archive), 'utf8'), '!<arch>\n')
     assert.equal(readFileSync(resolve(value.prebuilt, 'sysroot/usr/lib/aarch64-linux-android', archive), 'utf8'), 'original NDK archive')
@@ -235,7 +236,7 @@ else fs.writeFileSync(process.env.WEAPP_TEST_LINKER_ARGS, JSON.stringify(args))
     env: { ...process.env, WEAPP_TEST_LINKER_ARGS: linkerArgsPath }, encoding: 'utf8',
   })
   assert.equal(linkerProbe.status, 0, linkerProbe.stderr)
-  assert.deepEqual(JSON.parse(readFileSync(linkerArgsPath, 'utf8')), [`-L${stagedLib}`, '--version', builtinsArchive])
+  assert.deepEqual(JSON.parse(readFileSync(linkerArgsPath, 'utf8')), [`-L${resolve(stagedLib, '30')}`, `-L${stagedLib}`, '--version', builtinsArchive])
   assert.deepEqual(JSON.parse(readFileSync(resolve(value.dir, 'metadata-args.json'), 'utf8')), ['metadata', '--locked', '--all-features', '--format-version', '1'])
 })
 

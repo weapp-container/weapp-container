@@ -477,11 +477,16 @@ function prepareAndroidV8Linker(ndk, apiLevel, skiaNdk) {
     linker: null,
     error: `Android V8 source build requires the NDK compiler runtime archive ${builtinsArchive}`,
   }
+  const apiSysrootLib = resolve(sysrootLib, String(apiLevel))
+  if (!existsSync(resolve(apiSysrootLib, 'libc.so'))) return {
+    linker: null,
+    error: `Android V8 source build requires the API-level shared libc ${resolve(apiSysrootLib, 'libc.so')}`,
+  }
   const wrapperDir = resolve(targetDir, 'native-host-toolchain/android-v8-linker')
   const wrapper = resolve(wrapperDir, `${selectedAndroid.linkerPrefix}${apiLevel}-clang`)
   const quote = value => `'${value.replaceAll("'", "'\\''")}'`
   mkdirSync(wrapperDir, { recursive: true })
-  writeFileSync(wrapper, `#!/bin/sh\nexec ${quote(linker)} -L${quote(sysrootLib)} "$@" ${quote(builtinsArchive)}\n`)
+  writeFileSync(wrapper, `#!/bin/sh\nexec ${quote(linker)} -L${quote(apiSysrootLib)} -L${quote(sysrootLib)} "$@" ${quote(builtinsArchive)}\n`)
   chmodSync(wrapper, 0o755)
   return { linker: wrapper, error: null }
 }
