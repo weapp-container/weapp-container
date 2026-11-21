@@ -499,6 +499,16 @@ function nativeToolchain(name) {
       hosts ? resolve(prebuilt, hosts, 'lib') : null,
       hosts ? resolve(prebuilt, hosts, 'musl/lib') : null].filter(Boolean)
       .find(path => hasLibclang(path) || existsSync(resolve(path, 'libclang.dll')))
+    const bindgenArgs = androidV8SourceBuildRequested(name)
+      ? null
+      : [
+          process.env[`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`],
+          // Keep the selected target/sysroot last, so extra include or
+          // define flags cannot silently switch QuickJS to another ABI.
+          `--target=${selectedAndroid.target}${apiLevel}`,
+          `--sysroot=${JSON.stringify(sysroot)}`,
+          `-isystem ${JSON.stringify(resolve(sysroot, 'usr/include', selectedAndroid.sysrootLibDir))}`,
+        ].filter(Boolean).join(' ')
     return {
       ...base,
       linker,
@@ -521,14 +531,7 @@ function nativeToolchain(name) {
         ANDROID_NDK: skia.androidNdk || ndk,
         // QuickJS Android bindgen must use the same target and libc ABI.
         ...(libclang ? { LIBCLANG_PATH: libclang } : {}),
-        [`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`]: [
-          process.env[`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`],
-          // Keep the selected target/sysroot last, so extra include or
-          // define flags cannot silently switch QuickJS to another ABI.
-          `--target=${selectedAndroid.target}${apiLevel}`,
-          `--sysroot=${JSON.stringify(sysroot)}`,
-          `-isystem ${JSON.stringify(resolve(sysroot, 'usr/include', selectedAndroid.sysrootLibDir))}`,
-        ].filter(Boolean).join(' '),
+        [`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`]: bindgenArgs,
       },
     }
   }

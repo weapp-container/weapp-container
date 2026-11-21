@@ -202,6 +202,7 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   const cargo = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8'))
   assert.equal(cargo.env.LIBCLANG_PATH, resolve(v8Root, 'third_party/rust-toolchain/lib'))
   assert.equal(cargo.env.GN_ARGS, platform.toolchain.androidV8SourceBuild.effectiveGnArgs)
+  assert.equal(cargo.env.BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android, undefined)
   assert.deepEqual(JSON.parse(readFileSync(resolve(value.dir, 'metadata-args.json'), 'utf8')), ['metadata', '--locked', '--all-features', '--format-version', '1'])
 })
 
