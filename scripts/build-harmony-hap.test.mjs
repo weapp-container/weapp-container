@@ -29,10 +29,13 @@ test('Harmony module dynamically loads the native N-API package through the plat
   const moduleRoot = fileURLToPath(new URL('../examples/hosts/harmony/entry/src/main/', import.meta.url))
   const profilePath = fileURLToPath(new URL('../examples/hosts/harmony/entry/build-profile.json5', import.meta.url))
   const profile = JSON.parse(readFileSync(profilePath, 'utf8'))
+  const nativeBridge = readFileSync(join(moduleRoot, 'cpp/native_bridge.cpp'), 'utf8')
   assert.deepEqual(profile.buildOption.arkOptions.runtimeOnly.packages, ['libentry.so'])
   assert.match(readFileSync(join(moduleRoot, 'ets/native/WeappContainer.ets'), 'utf8'), /loadNativeModule\('libentry\.so'\) as NativeModule/)
   assert.match(readFileSync(join(moduleRoot, 'ets/native/WeappContainer.ets'), 'utf8'), /import type \{ NativeModule, NativeOwner \} from 'libentry\.so';/)
   assert.match(readFileSync(join(moduleRoot, 'cpp/types/libentry/index.d.ts'), 'utf8'), /export interface NativeModule/)
+  assert.match(nativeBridge, /\.nm_modname = "entry"/)
+  assert.match(readFileSync(join(moduleRoot, 'cpp/CMakeLists.txt'), 'utf8'), /libz\.so/)
 })
 
 test('Harmony build rejects unknown and incomplete options before creating output', () => {

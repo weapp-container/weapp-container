@@ -74,7 +74,10 @@ host smoke and does not turn a software snapshot or ArkUI device-context probe
 into GPU/device parity evidence.
 
 The sample loads the N-API surface with `loadNativeModule('libentry.so')` and
-includes `libentry.so` in the module's ArkTS runtime-only package set.
+includes `libentry.so` in the module's ArkTS runtime-only package set. `entry`
+is the N-API module registration name, while `libentry.so` is the packaged
+ArkTS native package name. The native package also declares the system zlib
+dependency required by the Skia build.
 The ArkTS compiler currently emits an informational unverified-module warning;
 the namespace import compiles and runs against the packaged N-API module.
 

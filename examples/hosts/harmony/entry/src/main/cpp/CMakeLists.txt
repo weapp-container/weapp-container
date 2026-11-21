@@ -21,6 +21,10 @@ target_link_libraries(entry PUBLIC
     libnative_window.so
     libEGL.so
     libGLESv3.so
+    # Harmony Skia is built with the system zlib backend. The Rust cdylib
+    # keeps those symbols undefined, so the N-API loader must carry the
+    # platform zlib dependency explicitly in the packaged module.
+    libz.so
 )
 
 set(WEAPP_CONTAINER_HARMONY_RUST_LIB "" CACHE FILEPATH "Path to libcontainer_host_harmony.so")

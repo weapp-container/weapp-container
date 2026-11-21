@@ -841,9 +841,8 @@ static napi_module g_module = {
     .nm_flags = 0,
     .nm_filename = nullptr,
     .nm_register_func = Init,
-  // DevEco registers the native module under the HAP module name (`entry`)
-  // for libentry.so.  Keeping this in sync avoids a loader warning while the
-  // ArkTS namespace import still resolves the same N-API exports.
+  // The N-API registration name matches the HAP module package loaded by
+  // ArkTS loadNativeModule('libentry.so').
   .nm_modname = "entry",
     .nm_priv = nullptr,
     .reserved = {0},
