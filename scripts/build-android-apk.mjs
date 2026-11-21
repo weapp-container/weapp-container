@@ -287,12 +287,17 @@ async function main() {
     const entries = entriesRun.stdout.split(/\r?\n/).filter(Boolean)
     const libraryEntry = 'lib/arm64-v8a/libcontainer_host_android.so'
     const bridgeEntry = 'lib/arm64-v8a/libweapp_container.so'
+    const cxxRuntimeEntry = 'lib/arm64-v8a/libc++_shared.so'
     const embeddedNative = entriesRun.status === 'passed' && entries.includes(libraryEntry)
       ? await hashArchiveEntry(builtApk, libraryEntry)
       : { status: 'failed', bytes: 0, sha256: null, error: `APK is missing ${libraryEntry}` }
+    const embeddedCxxRuntime = entriesRun.status === 'passed' && entries.includes(cxxRuntimeEntry)
+      ? await hashArchiveEntry(builtApk, cxxRuntimeEntry)
+      : { status: 'failed', bytes: 0, sha256: null, error: `APK is missing ${cxxRuntimeEntry}` }
     report.package = {
       status: entriesRun.status === 'passed' && embeddedNative.status === 'passed'
-        && embeddedNative.sha256 === strippedNative && entries.includes(bridgeEntry) ? 'passed' : 'failed',
+        && embeddedNative.sha256 === strippedNative && embeddedCxxRuntime.status === 'passed'
+        && embeddedCxxRuntime.bytes > 0 && entries.includes(bridgeEntry) ? 'passed' : 'failed',
       abi: 'arm64-v8a',
       nativeArtifactPath: libraryEntry,
       nativeArtifactSha256: nativeArtifact.sha256,
@@ -300,9 +305,13 @@ async function main() {
       embeddedNativeArtifactSha256: embeddedNative.sha256,
       embeddedNativeArtifactBytes: embeddedNative.bytes,
       jniBridgePresent: entries.includes(bridgeEntry),
+      cxxRuntimePath: cxxRuntimeEntry,
+      cxxRuntimeArtifactSha256: embeddedCxxRuntime.sha256,
+      cxxRuntimeArtifactBytes: embeddedCxxRuntime.bytes,
     }
     if (report.package.status !== 'passed') {
-      report.errors.push(embeddedNative.error || 'APK did not package the exact Android Rust artifact and JNI bridge')
+      report.errors.push(embeddedNative.error || embeddedCxxRuntime.error
+        || 'APK did not package the exact Android Rust artifact, JNI bridge and C++ runtime')
       return finish(report, sourceFilesBefore)
     }
 

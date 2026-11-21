@@ -42,4 +42,17 @@ test('Android JNI target links the NDK C++ runtime required by V8', () => {
 
   assert.ok(linkLibraries, 'JNI target must declare its link dependencies')
   assert.match(linkLibraries, /\bc\+\+_shared\b/)
+  assert.match(cmake, /WEAPP_CONTAINER_ANDROID_CXX_SHARED/)
+  assert.match(cmake, /libc\+\+_shared\.so/)
+})
+
+test('Android Gradle build passes a generated jniLibs directory to CMake', () => {
+  const gradle = readFileSync(resolve(root, 'examples/hosts/android/app/build.gradle.kts'), 'utf8')
+  assert.match(gradle, /WEAPP_CONTAINER_ANDROID_JNI_LIBS_DIR=\$\{rustJniLibsDir\.get\(\)\.asFile\.absolutePath\}/)
+})
+
+test('Android APK producer requires the dynamic C++ runtime in the APK', () => {
+  const source = readFileSync(producer, 'utf8')
+  assert.match(source, /lib\/arm64-v8a\/libc\+\+_shared\.so/)
+  assert.match(source, /embeddedCxxRuntime\.bytes > 0/)
 })

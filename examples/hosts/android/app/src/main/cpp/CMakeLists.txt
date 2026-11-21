@@ -12,6 +12,7 @@ target_compile_definitions(weapp_container PRIVATE WEAPP_CONTAINER_ANDROID_SKIA_
 set(WEAPP_CONTAINER_ANDROID_RUST_LIB "" CACHE FILEPATH "Legacy arm64 path to libcontainer_host_android.so")
 set(WEAPP_CONTAINER_ANDROID_RUST_LIB_ARM64 "" CACHE FILEPATH "arm64-v8a path to libcontainer_host_android.so")
 set(WEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7 "" CACHE FILEPATH "armeabi-v7a path to libcontainer_host_android.so")
+set(WEAPP_CONTAINER_ANDROID_JNI_LIBS_DIR "" CACHE PATH "Gradle generated jniLibs directory")
 if(ANDROID_ABI STREQUAL "armeabi-v7a")
     set(WEAPP_CONTAINER_ANDROID_RUST_LIB_SELECTED "${WEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7}")
 else()
@@ -36,3 +37,25 @@ set_target_properties(weapp_container_rust PROPERTIES
 # Link the NDK runtime explicitly so the standalone native integration check
 # and the Gradle APK build resolve the same runtime for QuickJS and V8.
 target_link_libraries(weapp_container PRIVATE weapp_container_rust log android c++_shared)
+
+if(ANDROID_ABI STREQUAL "arm64-v8a")
+    set(WEAPP_CONTAINER_ANDROID_CXX_TRIPLE "aarch64-linux-android")
+elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+    set(WEAPP_CONTAINER_ANDROID_CXX_TRIPLE "arm-linux-androideabi")
+else()
+    message(FATAL_ERROR "Unsupported Android ABI for libc++_shared.so: ${ANDROID_ABI}")
+endif()
+set(WEAPP_CONTAINER_ANDROID_CXX_SHARED
+    "${CMAKE_SYSROOT}/usr/lib/${WEAPP_CONTAINER_ANDROID_CXX_TRIPLE}/libc++_shared.so")
+if(NOT EXISTS "${WEAPP_CONTAINER_ANDROID_CXX_SHARED}")
+    message(FATAL_ERROR "Android NDK libc++_shared.so is missing: ${WEAPP_CONTAINER_ANDROID_CXX_SHARED}")
+endif()
+if(WEAPP_CONTAINER_ANDROID_JNI_LIBS_DIR)
+    add_custom_command(TARGET weapp_container POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${WEAPP_CONTAINER_ANDROID_JNI_LIBS_DIR}/${ANDROID_ABI}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${WEAPP_CONTAINER_ANDROID_CXX_SHARED}"
+            "${WEAPP_CONTAINER_ANDROID_JNI_LIBS_DIR}/${ANDROID_ABI}/libc++_shared.so"
+        VERBATIM)
+endif()

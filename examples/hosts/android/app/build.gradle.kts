@@ -62,6 +62,7 @@ android {
                 arguments += "-DWEAPP_CONTAINER_ANDROID_RUST_LIB=${rustLib ?: ""}"
                 arguments += "-DWEAPP_CONTAINER_ANDROID_RUST_LIB_ARM64=${configuredRustLibArm64.orNull ?: rustLib ?: ""}"
                 arguments += "-DWEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7=${configuredRustLibArmv7.orNull ?: ""}"
+                arguments += "-DWEAPP_CONTAINER_ANDROID_JNI_LIBS_DIR=${rustJniLibsDir.get().asFile.absolutePath}"
             }
         }
     }
