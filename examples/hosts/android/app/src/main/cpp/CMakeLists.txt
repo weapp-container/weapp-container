@@ -32,4 +32,7 @@ set_target_properties(weapp_container_rust PROPERTIES
     IMPORTED_SONAME "libcontainer_host_android.so"
     IMPORTED_NO_SONAME TRUE
 )
-target_link_libraries(weapp_container PRIVATE weapp_container_rust log android)
+# The JNI boundary uses C++ standard-library types and exception unwinding.
+# Link the NDK runtime explicitly so the standalone native integration check
+# and the Gradle APK build resolve the same runtime for QuickJS and V8.
+target_link_libraries(weapp_container PRIVATE weapp_container_rust log android c++_shared)

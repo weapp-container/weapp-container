@@ -35,3 +35,11 @@ test('Android Gradle config validates and embeds the configured engine', () => {
   assert.match(gradle, /require\(configuredEngine == "quickjs" \|\| configuredEngine == "v8"\)/)
   assert.match(gradle, /buildConfigField\("String", "WEAPP_CONTAINER_ENGINE", "\\"\$configuredEngine\\""\)/)
 })
+
+test('Android JNI target links the NDK C++ runtime required by V8', () => {
+  const cmake = readFileSync(resolve(root, 'examples/hosts/android/app/src/main/cpp/CMakeLists.txt'), 'utf8')
+  const linkLibraries = cmake.match(/target_link_libraries\(weapp_container PRIVATE([\s\S]*?)\)/)?.[1]
+
+  assert.ok(linkLibraries, 'JNI target must declare its link dependencies')
+  assert.match(linkLibraries, /\bc\+\+_shared\b/)
+})
