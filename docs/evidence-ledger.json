@@ -67,6 +67,24 @@
       "limitations": "No Android V8 runtime result is claimed and the pinned V8 version was not changed without upstream-compatible evidence"
     },
     {
+      "id": "android-v8-build-6c48565b",
+      "tool": "scripts/build-native-hosts.mjs --build --platform android --engine v8",
+      "version": "workspace commit 6c48565b73994978ad06fc95dfac38675c0d3869; native build receipt SHA-256 8deeac3cc1310bd5f46355a2f9c76feca6a12557afb2133bef83022fb89f408c; native artifact SHA-256 b63456ee34b91b6740fee7660247f8023e60a8388f7bdc4de8d764b0f729f880",
+      "analysisTime": "2026-11-21",
+      "scope": "Android arm64-v8a V8 152.2.0 native host boundary built in the pinned Linux toolchain with Android API 26 and Skia GLES",
+      "conclusion": "Passed clean source provenance, pinned V8 source inputs, Cargo release build, Android JNI host integration and native artifact hash verification",
+      "limitations": "This is a native build boundary result. It does not establish APK signing, emulator or physical-device execution, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-v8-gpu-smoke-6c48565b",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 6c48565b73994978ad06fc95dfac38675c0d3869; APK SHA-256 f33cb7880d05770dc1df0c8a4a63d10c70c39743335e5b64af71cf01156de785; APK build receipt SHA-256 d89a436f1c5bfa5936d6644314d04599271d1315d82672b5031d5a1574a3d807; runtime receipt SHA-256 a98b3e4607bd3be1db97709e73773ac49cc1ca8f62083e38b20aef01d3d16ded",
+      "analysisTime": "2026-11-21",
+      "scope": "Android emulator emulator-5554 using the source-bound debug V8 APK and portable-pack-reference-v1",
+      "conclusion": "Passed source-bound APK packaging, V8 app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas.draw, canvas.snapshot, wx.canIUse and an attached Skia GLES container surface",
+      "limitations": "This is debug APK emulator evidence. It does not certify production signing, physical-device behavior, other mobile hosts, complete gesture coverage, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
       "id": "wechat-devtools-conformance-2026-11-21",
       "tool": "WeChat DevTools",
       "version": "2.02.2609250 with base library 3.17.3",
@@ -388,6 +406,15 @@
       "analysisTime": "2026-11-21",
       "scope": "Production-readiness aggregate with explicit Android QuickJS, iOS QuickJS and iOS V8 execution receipts",
       "conclusion": "Android QuickJS, iOS QuickJS and iOS V8 execution and GPU checks passed. releaseReady remained false with Android V8, Harmony QuickJS/V8, official DevTools conformance and complete performance reports outstanding",
+      "limitations": "This aggregate is a gate report, not a runtime result. It does not establish physical-device behavior, production signing or complete official DevTools conformance"
+    },
+    {
+      "id": "near-parity-gates-6c48565b-android-v8",
+      "tool": "scripts/check-near-parity-gates.mjs",
+      "version": "workspace commit 6c48565b73994978ad06fc95dfac38675c0d3869; aggregate report SHA-256 cb46ab4dfea8353de07b6eb839433173291d5c3447c728133843529f4dd27f79",
+      "analysisTime": "2026-11-21",
+      "scope": "Production-readiness aggregate with the source-bound Android V8 execution receipt",
+      "conclusion": "Android V8 was accepted as a passed same-fixture execution and GPU pair. releaseReady remains false because Android QuickJS, iOS QuickJS/V8, Harmony QuickJS/V8, the remaining host execution matrix, official DevTools conformance and complete performance reports are incomplete",
       "limitations": "This aggregate is a gate report, not a runtime result. It does not establish physical-device behavior, production signing or complete official DevTools conformance"
     }
   ]
