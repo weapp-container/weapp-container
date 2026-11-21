@@ -21,6 +21,13 @@ export function sourceInventorySha256(files) {
   return createHash('sha256').update(JSON.stringify(ordered)).digest('hex')
 }
 
+export function nativeBuildProfileForApkVariant(variant) {
+  if (variant !== 'debug' && variant !== 'release') {
+    throw new Error(`Unsupported Android APK variant: ${variant}`)
+  }
+  return 'release'
+}
+
 function expectedSourceFiles(root) {
   const projectFiles = execFileSync('git', ['ls-files', '--', ANDROID_SOURCE], {
     cwd: root,
@@ -83,6 +90,7 @@ export function inspectAndroidApkBuildReceipt(receipt, expected) {
       && sourceFiles.sha256 === receipt.sourceInventorySha256,
     nativeBuild: native?.status === 'passed' && native?.host === 'android'
       && native?.engine === expected.engine && native?.abi === 'arm64-v8a'
+      && native?.profile === 'release'
       && HASH.test(native?.artifactSha256 || ''),
     gradle: receipt?.gradle?.status === 'passed' && ['debug', 'release'].includes(receipt?.gradle?.variant)
       && receipt?.gradle?.variant === receipt?.variant,

@@ -7,7 +7,7 @@ import { dirname, join, relative, resolve, sep } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import process from 'node:process'
-import { sourceInventorySha256 } from './lib/android-apk-build-receipt.mjs'
+import { nativeBuildProfileForApkVariant, sourceInventorySha256 } from './lib/android-apk-build-receipt.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = process.argv.slice(2)
@@ -191,7 +191,7 @@ async function main() {
     } else {
       nativeRun = run(process.execPath, [
         'scripts/build-native-hosts.mjs', '--build', '--platform', 'android', '--engine', engine,
-        '--profile', profile, '--out', nativeReceiptPath,
+        '--profile', nativeBuildProfileForApkVariant(variant), '--out', nativeReceiptPath,
       ])
       if (nativeRun.status !== 'passed' || !existsSync(nativeReceiptPath)) {
         report.errors.push(`Android native host build ${nativeRun.status}: ${nativeRun.error || nativeRun.stderr.trim()}`)
@@ -211,6 +211,7 @@ async function main() {
       workingTreeDirty: nativeReceipt.producerTool?.sourceDirty ?? null,
       host: platform?.platform || 'android',
       engine: platform?.engine || nativeReceipt.engine || null,
+      profile: platform?.profile || null,
       abi: platform?.toolchain?.abi || null,
       target: platform?.target || null,
       artifactPath: nativeArtifactPath,

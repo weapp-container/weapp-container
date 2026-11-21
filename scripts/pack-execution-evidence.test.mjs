@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { EXECUTION_HOSTS, MOBILE_EXECUTION_HOSTS, collectPackExecutionEvidence, inspectExecutionFixture, inspectPackExecutionMatrix, inspectPackExecutionReceipt } from './pack-execution-evidence.mjs'
-import { inspectAndroidApkBuildReceipt, sourceInventorySha256 } from './lib/android-apk-build-receipt.mjs'
+import { inspectAndroidApkBuildReceipt, nativeBuildProfileForApkVariant, sourceInventorySha256 } from './lib/android-apk-build-receipt.mjs'
 import { isValidatedRgbaSnapshot } from './lib/mobile-smoke-checks.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -491,6 +491,12 @@ else if (args.includes('logcat') && args.includes('-d')) {
   } finally { rmSync(directory, { recursive: true, force: true }) }
 })
 
+test('Android APK variants both use a release native runtime', () => {
+  assert.equal(nativeBuildProfileForApkVariant('debug'), 'release')
+  assert.equal(nativeBuildProfileForApkVariant('release'), 'release')
+  assert.throws(() => nativeBuildProfileForApkVariant('unknown'), /Unsupported Android APK variant/)
+})
+
 test('Android APK build receipts bind clean source inputs, native ABI, engine and exact APK bytes', () => {
   const paths = [...new Set([
     ...git(['ls-files', '--', 'examples/hosts/android']).split(/\r?\n/).filter(Boolean),
@@ -521,6 +527,7 @@ test('Android APK build receipts bind clean source inputs, native ABI, engine an
       workingTreeDirty: false,
       host: 'android',
       engine: 'quickjs',
+      profile: 'release',
       abi: 'arm64-v8a',
       artifactSha256: nativeArtifactSha256,
     },
