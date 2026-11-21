@@ -38,7 +38,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        val engine = intent.getStringExtra("weappContainerEngine") ?: "quickjs"
+        val engine = intent.getStringExtra("weappContainerEngine") ?: BuildConfig.WEAPP_CONTAINER_ENGINE
         val fixtureId = intent.getStringExtra("weappContainerFixtureId") ?: "portable-pack-reference-v1"
         sessionId = intent.getStringExtra("weappContainerSessionId") ?: sessionId
         for (base in listOf("portable-pack-execution.json", "portable-pack-interaction.json")) {

@@ -249,6 +249,7 @@ async function main() {
     const gradleVersion = run(gradleCommand, ['--version'], gradleOptions)
     const gradleRun = run(gradleCommand, [
       '--no-daemon', `:app:assemble${gradleVariant}`,
+      `-PweappContainerEngine=${engine}`,
       `-PweappContainerAndroidRustLibArm64=${nativeArtifactPath}`,
     ], gradleOptions)
     report.gradle = {

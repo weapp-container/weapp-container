@@ -10,6 +10,11 @@ val configuredRustLibArm64 = providers.gradleProperty("weappContainerAndroidRust
     .orElse(providers.environmentVariable("WEAPP_CONTAINER_ANDROID_RUST_LIB_ARM64"))
 val configuredRustLibArmv7 = providers.gradleProperty("weappContainerAndroidRustLibArmv7")
     .orElse(providers.environmentVariable("WEAPP_CONTAINER_ANDROID_RUST_LIB_ARMV7"))
+val configuredEngine = providers.gradleProperty("weappContainerEngine").orElse("quickjs")
+    .get().lowercase()
+require(configuredEngine == "quickjs" || configuredEngine == "v8") {
+    "weappContainerEngine must be quickjs or v8"
+}
 val rustLibArm64 = (configuredRustLibArm64.orNull ?: configuredRustLib.orNull)?.takeIf { it.isNotBlank() }
 val rustLibArmv7 = configuredRustLibArmv7.orNull?.takeIf { it.isNotBlank() }
 val configuredAbis = buildList {
@@ -23,6 +28,10 @@ android {
     // Keep local APK smoke builds reproducible with the SDK image used by CI.
     // The native host still accepts an explicit NDK path from Gradle/CMake.
     buildToolsVersion = "36.0.0"
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -39,6 +48,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+        buildConfigField("String", "WEAPP_CONTAINER_ENGINE", "\"$configuredEngine\"")
 
         ndk {
             abiFilters += configuredAbis.ifEmpty { listOf("arm64-v8a") }

@@ -35,8 +35,11 @@ back to another engine or an empty app. The older default-load C ABI remains
 available to existing callers. `MainActivity` accepts intent string extras
 `weappContainerEngine=quickjs|v8`, `weappContainerSessionId`, and
 `weappContainerFixtureId`; omitted fixture ID is `portable-pack-reference-v1`
-(the same fixture identity as iOS). Omitted engine
-selects QuickJS, and omitted session ID creates a fresh UUID for the Activity.
+(the same fixture identity as iOS). Omitted engine selects the engine compiled
+into the APK, which defaults to QuickJS and is set to V8 by
+`--engine v8` in the APK producer or `-PweappContainerEngine=v8` in a manual
+Gradle build. An explicit intent engine overrides that APK default. Omitted
+session ID creates a fresh UUID for the Activity.
 
 After acknowledged startup, the sample atomically writes
 `files/portable-pack-execution.json` in its own app data directory. It retains
@@ -217,9 +220,14 @@ both 64-bit and 32-bit ARM libraries for a universal APK:
 
 ```sh
 gradle :app:assembleDebug \
+  -PweappContainerEngine=quickjs \
   -PweappContainerAndroidRustLibArm64="$PWD/../../../target/aarch64-linux-android/debug/libcontainer_host_android.so" \
   -PweappContainerAndroidRustLibArmv7="$PWD/../../../target/armv7-linux-androideabi/debug/libcontainer_host_android.so"
 ```
+
+Set `-PweappContainerEngine=v8` when the supplied Rust library was built for
+the V8 provider. The APK stores that choice in `BuildConfig`, so a normal
+launcher start uses the same engine even when no intent extras are present.
 
 Build the 32-bit Rust host explicitly when it is needed outside the demo
 packager:
