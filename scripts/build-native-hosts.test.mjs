@@ -98,6 +98,9 @@ if (name === 'rustup') {
   const prebuilt = resolve(ndk, 'toolchains/llvm/prebuilt', host)
   mkdirSync(resolve(prebuilt, 'bin'), { recursive: true })
   mkdirSync(resolve(prebuilt, 'lib'), { recursive: true })
+  writeFileSync(resolve(ndk, 'source.properties'), 'Pkg.Revision = 26.3.11579264\n')
+  mkdirSync(resolve(ndk, 'sources/android/cpufeatures'), { recursive: true })
+  mkdirSync(resolve(prebuilt, 'sysroot/usr/include'), { recursive: true })
   writeFileSync(resolve(prebuilt, 'lib', process.platform === 'linux' ? 'libclang.so' : 'libclang.dylib'), '')
   for (const api of [26, 30]) {
     for (const suffix of ['clang', 'clang++']) {
@@ -181,6 +184,15 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   mkdirSync(dirname(rustyLibclang), { recursive: true })
   writeFileSync(rustyLibclang, '')
   writeFileSync(resolve(v8Root, 'Cargo.toml'), '[package]\nname = "v8"\nversion = "152.2.0"\n')
+  const fakeLinker = resolve(value.prebuilt, 'bin/aarch64-linux-android30-clang')
+  const linkerArgsPath = resolve(value.dir, 'linker-args.json')
+  writeFileSync(fakeLinker, '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.WEAPP_TEST_LINKER_ARGS, JSON.stringify(process.argv.slice(2)))\n')
+  chmodSync(fakeLinker, 0o755)
+  for (const abi of ['aarch64-linux-android', 'arm-linux-androideabi']) {
+    for (const archive of ['libc++_static.a', 'libc++abi.a']) {
+      writeFileSync(resolve(value.prebuilt, 'sysroot/usr/lib', abi, archive), 'original NDK archive')
+    }
+  }
   const metadata = JSON.stringify({ packages: [{
     name: 'v8',
     version: '152.2.0',
@@ -203,6 +215,19 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   assert.equal(cargo.env.LIBCLANG_PATH, resolve(v8Root, 'third_party/rust-toolchain/lib'))
   assert.equal(cargo.env.GN_ARGS, platform.toolchain.androidV8SourceBuild.effectiveGnArgs)
   assert.equal(cargo.env.BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android, undefined)
+  assert.match(cargo.env.CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER, /native-host-toolchain\/android-v8-linker\/aarch64-linux-android30-clang$/)
+  const skiaNdk = resolve(value.dir, 'target/native-host-toolchain/android-v8-skia-ndk')
+  const stagedLib = resolve(skiaNdk, 'toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android')
+  assert.ok(readFileSync(cargo.env.CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER, 'utf8').includes(`-L'${stagedLib}'`))
+  for (const archive of ['libc++_static.a', 'libc++abi.a']) {
+    assert.equal(readFileSync(resolve(stagedLib, archive), 'utf8'), '!<arch>\n')
+    assert.equal(readFileSync(resolve(value.prebuilt, 'sysroot/usr/lib/aarch64-linux-android', archive), 'utf8'), 'original NDK archive')
+  }
+  const linkerProbe = spawnSync(cargo.env.CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER, ['--version'], {
+    env: { ...process.env, WEAPP_TEST_LINKER_ARGS: linkerArgsPath }, encoding: 'utf8',
+  })
+  assert.equal(linkerProbe.status, 0, linkerProbe.stderr)
+  assert.deepEqual(JSON.parse(readFileSync(linkerArgsPath, 'utf8')), [`-L${stagedLib}`, '--version'])
   assert.deepEqual(JSON.parse(readFileSync(resolve(value.dir, 'metadata-args.json'), 'utf8')), ['metadata', '--locked', '--all-features', '--format-version', '1'])
 })
 

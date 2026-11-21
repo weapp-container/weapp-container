@@ -7,7 +7,7 @@
  * vendor SDKs and signing setup; their availability is reported explicitly and
  * never turned into a false device-conformance claim.
  */
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { chmodSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -457,6 +457,20 @@ function prepareAndroidV8SkiaNdk(ndk) {
   return staging
 }
 
+function prepareAndroidV8Linker(ndk, apiLevel, skiaNdk) {
+  if (!skiaNdk) return null
+  const host = 'linux-x86_64'
+  const linker = resolve(ndk, 'toolchains/llvm/prebuilt', host, 'bin', `${selectedAndroid.linkerPrefix}${apiLevel}-clang`)
+  const sysrootLib = resolve(skiaNdk, 'toolchains/llvm/prebuilt', host, 'sysroot/usr/lib', selectedAndroid.sysrootLibDir)
+  const wrapperDir = resolve(targetDir, 'native-host-toolchain/android-v8-linker')
+  const wrapper = resolve(wrapperDir, `${selectedAndroid.linkerPrefix}${apiLevel}-clang`)
+  const quote = value => `'${value.replaceAll("'", "'\\''")}'`
+  mkdirSync(wrapperDir, { recursive: true })
+  writeFileSync(wrapper, `#!/bin/sh\nexec ${quote(linker)} -L${quote(sysrootLib)} "$@"\n`)
+  chmodSync(wrapper, 0o755)
+  return wrapper
+}
+
 function nativeToolchain(name) {
   if (name === 'android') {
     const ndk = findAndroidNdk()
@@ -484,6 +498,7 @@ function nativeToolchain(name) {
         : ['darwin-aarch64', 'darwin-x86_64']
     const hosts = hostCandidates.find(host => existsSync(resolve(prebuilt, host))) || null
     const linker = hosts ? resolve(prebuilt, hosts, 'bin', `${selectedAndroid.linkerPrefix}${apiLevel}-clang`) : null
+    const cargoLinker = androidV8SourceBuildRequested(name) ? prepareAndroidV8Linker(ndk, apiLevel, skiaNdk) || linker : linker
     const cxx = linker ? `${linker}++` : null
     const sysroot = hosts ? resolve(prebuilt, hosts, 'sysroot') : null
     if (!linker || !existsSync(linker) || !cxx || !existsSync(cxx)) return {
@@ -511,7 +526,7 @@ function nativeToolchain(name) {
         ].filter(Boolean).join(' ')
     return {
       ...base,
-      linker,
+      linker: cargoLinker,
       env: {
         ...skia.env,
         // skia-bindings consumes these generic sysroot variables before its
@@ -520,7 +535,7 @@ function nativeToolchain(name) {
         // Apple host dependencies can still discover their SDK via xcrun.
         SDKROOT: null,
         SDKTARGETSYSROOT: null,
-        [`CARGO_TARGET_${selectedAndroid.envTarget.toUpperCase()}_LINKER`]: linker,
+        [`CARGO_TARGET_${selectedAndroid.envTarget.toUpperCase()}_LINKER`]: cargoLinker,
         // skia-bindings compiles C++ locally through cc-rs. Cargo's linker
         // setting does not configure it, so select both NDK drivers.
         [`CC_${selectedAndroid.envTarget}`]: linker,
