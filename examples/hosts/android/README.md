@@ -168,6 +168,23 @@ in the APK, and records the source-file inventory and APK digest in
 boundary. It requires a clean Git worktree. The output directory
 must be outside the repository.
 
+When the Android native library was produced on another host, reuse its
+source-bound native receipt and exact `.so` instead of rebuilding it locally:
+
+```sh
+node scripts/build-android-apk.mjs \
+  --out-dir /absolute/path/to/android-build \
+  --engine v8 \
+  --profile dev \
+  --native-build-receipt /absolute/path/to/android-native-build.json \
+  --native-library /absolute/path/to/libcontainer_host_android.so
+```
+
+The producer accepts only a clean receipt for the current commit, the selected
+engine, arm64 Android release artifact and successful CMake integration. It
+re-hashes the supplied library before Gradle packages it, then records that
+receipt hash in the APK build report.
+
 Run the source-bound APK on an explicitly selected target:
 
 ```sh

@@ -23,7 +23,7 @@ function option(name, fallback = null) {
 }
 
 function help() {
-  process.stdout.write('Usage: node scripts/build-android-apk.mjs --out-dir <external-path> [--engine quickjs|v8] [--profile dev|release]\n')
+  process.stdout.write('Usage: node scripts/build-android-apk.mjs --out-dir <external-path> [--engine quickjs|v8] [--profile dev|release] [--native-build-receipt path --native-library path]\n')
 }
 
 if (args.includes('--help') || args.includes('-h')) {
@@ -39,6 +39,11 @@ const outDirArg = option('--out-dir')
 if (!outDirArg) throw new Error('--out-dir is required')
 const outDir = resolve(outDirArg)
 if (outDir === root || outDir.startsWith(`${root}${sep}`)) throw new Error('--out-dir must be outside the checkout')
+const suppliedNativeReceipt = option('--native-build-receipt')
+const suppliedNativeLibrary = option('--native-library')
+if (Boolean(suppliedNativeReceipt) !== Boolean(suppliedNativeLibrary)) {
+  throw new Error('--native-build-receipt and --native-library must be provided together')
+}
 const nativeReceiptPath = resolve(outDir, 'android-native-build.json')
 const variant = profile === 'release' ? 'release' : 'debug'
 const gradleVariant = variant[0].toUpperCase() + variant.slice(1)
@@ -173,35 +178,62 @@ async function main() {
     const sdk = findAndroidSdk()
     if (!sdk) throw new Error('Android SDK is unavailable; set ANDROID_HOME or ANDROID_SDK_ROOT')
 
-    const nativeRun = run(process.execPath, [
-      'scripts/build-native-hosts.mjs', '--build', '--platform', 'android', '--engine', engine,
-      '--profile', profile, '--out', nativeReceiptPath,
-    ])
-    if (nativeRun.status !== 'passed' || !existsSync(nativeReceiptPath)) {
-      report.errors.push(`Android native host build ${nativeRun.status}: ${nativeRun.error || nativeRun.stderr.trim()}`)
-      report.native = { status: 'failed', command: nativeRun.command, exitCode: nativeRun.exitCode }
-      return finish(report, sourceFilesBefore)
+    let nativeRun = null
+    let nativeReceiptBytes
+    let nativeArtifactPath = null
+    if (suppliedNativeReceipt) {
+      const nativeReceiptPathFromInput = resolve(suppliedNativeReceipt)
+      nativeArtifactPath = resolve(suppliedNativeLibrary)
+      if (!existsSync(nativeReceiptPathFromInput) || !existsSync(nativeArtifactPath)) {
+        throw new Error('Supplied Android native build receipt and library must exist')
+      }
+      nativeReceiptBytes = readFileSync(nativeReceiptPathFromInput)
+    } else {
+      nativeRun = run(process.execPath, [
+        'scripts/build-native-hosts.mjs', '--build', '--platform', 'android', '--engine', engine,
+        '--profile', profile, '--out', nativeReceiptPath,
+      ])
+      if (nativeRun.status !== 'passed' || !existsSync(nativeReceiptPath)) {
+        report.errors.push(`Android native host build ${nativeRun.status}: ${nativeRun.error || nativeRun.stderr.trim()}`)
+        report.native = { status: 'failed', command: nativeRun.command, exitCode: nativeRun.exitCode }
+        return finish(report, sourceFilesBefore)
+      }
+      nativeReceiptBytes = readFileSync(nativeReceiptPath)
     }
-    const nativeReceiptBytes = readFileSync(nativeReceiptPath)
     const nativeReceipt = JSON.parse(nativeReceiptBytes.toString('utf8'))
     const platform = nativeReceipt.platforms?.find(value => value.platform === 'android')
     const nativeArtifact = platform?.artifact
+    nativeArtifactPath ||= nativeArtifact?.path || null
+    const nativeArtifactHash = nativeArtifactPath && existsSync(nativeArtifactPath) ? await hashFile(nativeArtifactPath) : null
     report.native = {
-      status: platform?.status === 'passed' ? 'passed' : 'failed',
+      status: 'failed',
       sourceCommit: nativeReceipt.producerTool?.sourceCommit || nativeReceipt.commit || null,
       workingTreeDirty: nativeReceipt.producerTool?.sourceDirty ?? null,
       host: platform?.platform || 'android',
       engine: platform?.engine || nativeReceipt.engine || null,
       abi: platform?.toolchain?.abi || null,
       target: platform?.target || null,
-      artifactPath: nativeArtifact?.path || null,
-      artifactSha256: nativeArtifact?.sha256 || null,
+      artifactPath: nativeArtifactPath,
+      artifactSha256: nativeArtifactHash,
       artifactBytes: nativeArtifact?.bytes || null,
       buildReceiptSha256: createHash('sha256').update(nativeReceiptBytes).digest('hex'),
     }
-    if (report.native.status !== 'passed' || report.native.sourceCommit !== before.sourceCommit
-      || report.native.workingTreeDirty !== false || report.native.engine !== engine
-      || report.native.abi !== 'arm64-v8a' || !nativeArtifact?.exists || !hashPattern.test(nativeArtifact.sha256 || '')) {
+    const nativeSourceIsClean = nativeReceipt.mode === 'build'
+      && nativeReceipt.sourceBefore?.sourceCommit === before.sourceCommit
+      && nativeReceipt.sourceBefore?.sourceDirty === false
+      && nativeReceipt.sourceAfter?.sourceCommit === before.sourceCommit
+      && nativeReceipt.sourceAfter?.sourceDirty === false
+      && nativeReceipt.commit === before.sourceCommit
+      && nativeReceipt.producerTool?.sourceCommit === before.sourceCommit
+      && nativeReceipt.producerTool?.sourceDirty === false
+    if (platform?.status === 'passed' && nativeSourceIsClean && report.native.sourceCommit === before.sourceCommit
+      && report.native.workingTreeDirty === false && report.native.engine === engine
+      && report.native.abi === 'arm64-v8a' && platform.target === 'aarch64-linux-android'
+      && platform.profile === 'release' && platform.appIntegration?.status === 'passed'
+      && nativeArtifact?.exists && hashPattern.test(nativeArtifact.sha256 || '')
+      && nativeArtifactHash === nativeArtifact.sha256 && lstatSync(nativeArtifactPath).size === nativeArtifact.bytes) {
+      report.native.status = 'passed'
+    } else {
       report.errors.push('Android native receipt does not match the selected clean source, engine and ABI')
       return finish(report, sourceFilesBefore)
     }
@@ -216,7 +248,7 @@ async function main() {
     const gradleVersion = run(gradleCommand, ['--version'], gradleOptions)
     const gradleRun = run(gradleCommand, [
       '--no-daemon', `:app:assemble${gradleVariant}`,
-      `-PweappContainerAndroidRustLibArm64=${nativeArtifact.path}`,
+      `-PweappContainerAndroidRustLibArm64=${nativeArtifactPath}`,
     ], gradleOptions)
     report.gradle = {
       status: gradleRun.status,
