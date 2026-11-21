@@ -101,6 +101,128 @@ pub enum ProviderStart {
     Pending,
 }
 
+/// Validate the runtime-owned Canvas transaction before Session commits it.
+/// Canvas commands are checked here even when the host provider is strict,
+/// because the provider owns native services while the runtime owns Canvas
+/// command admission and surface submission.
+pub(crate) fn validate_canvas_draw_payload(
+    payload: &Map<String, Value>,
+    context: &ProviderContext,
+) -> Result<Value, ProviderError> {
+    if context.cancelled {
+        return Err(ProviderError::cancelled(
+            "wx.canvas.draw:fail request cancelled",
+        ));
+    }
+    if context
+        .deadline_ns
+        .is_some_and(|deadline| deadline <= context.now_ns)
+    {
+        return Err(ProviderError::timeout(
+            "wx.canvas.draw:fail deadline exceeded",
+        ));
+    }
+    let canvas_id = payload
+        .get("canvasId")
+        .and_then(Value::as_str)
+        .filter(|value| !value.is_empty())
+        .ok_or_else(|| ProviderError::invalid("wx.canvas.draw requires canvasId"))?;
+    let commands = payload
+        .get("commands")
+        .and_then(Value::as_array)
+        .ok_or_else(|| ProviderError::invalid("wx.canvas.draw requires commands"))?;
+    for command in commands {
+        let object = command
+            .as_object()
+            .ok_or_else(|| ProviderError::invalid("canvas command must be an object"))?;
+        let op = object
+            .get("op")
+            .and_then(Value::as_str)
+            .filter(|value| !value.is_empty())
+            .ok_or_else(|| ProviderError::invalid("canvas command requires op"))?;
+        if !matches!(
+            op,
+            "setFillStyle"
+                | "setStrokeStyle"
+                | "setLineWidth"
+                | "setGlobalAlpha"
+                | "setFontSize"
+                | "setLineDash"
+                | "setLineCap"
+                | "setLineJoin"
+                | "setMiterLimit"
+                | "setShadow"
+                | "setTextAlign"
+                | "setTextBaseline"
+                | "fillRect"
+                | "strokeRect"
+                | "clearRect"
+                | "beginPath"
+                | "closePath"
+                | "moveTo"
+                | "lineTo"
+                | "arc"
+                | "rect"
+                | "fill"
+                | "stroke"
+                | "fillText"
+                | "strokeText"
+                | "drawImage"
+                | "save"
+                | "restore"
+                | "translate"
+                | "rotate"
+                | "scale"
+                | "quadraticCurveTo"
+                | "bezierCurveTo"
+        ) {
+            return Err(ProviderError::invalid(format!(
+                "unsupported canvas command {op}"
+            )));
+        }
+        if !object.get("args").is_some_and(Value::is_array) {
+            return Err(ProviderError::invalid("canvas command requires args"));
+        }
+        if op == "setLineDash" {
+            let args = object
+                .get("args")
+                .and_then(Value::as_array)
+                .expect("setLineDash args were validated as an array");
+            let pattern = args.first().and_then(Value::as_array).ok_or_else(|| {
+                ProviderError::invalid("setLineDash requires a numeric pattern array")
+            })?;
+            for value in pattern {
+                let number = value.as_f64().ok_or_else(|| {
+                    ProviderError::invalid(
+                        "setLineDash pattern values must be finite non-negative numbers",
+                    )
+                })?;
+                if !number.is_finite() || number < 0.0 {
+                    return Err(ProviderError::invalid(
+                        "setLineDash pattern values must be finite non-negative numbers",
+                    ));
+                }
+            }
+            if let Some(offset) = args.get(1) {
+                let number = offset.as_f64().ok_or_else(|| {
+                    ProviderError::invalid("setLineDash offset must be a finite number")
+                })?;
+                if !number.is_finite() {
+                    return Err(ProviderError::invalid(
+                        "setLineDash offset must be a finite number",
+                    ));
+                }
+            }
+        }
+    }
+    Ok(json!({
+        "errMsg": "draw:ok",
+        "canvasId": canvas_id,
+        "commands": commands.len(),
+        "reserve": payload.get("reserve").and_then(Value::as_bool).unwrap_or(false),
+    }))
+}
+
 /// Host API boundary.  Implementations must keep calls deterministic for a
 /// given context and must return a structured error instead of an empty
 /// success value.
@@ -3072,107 +3194,7 @@ impl HostApiProvider for SandboxProvider {
             name if name.starts_with("wx.fs.") || name == "wx.removeSavedFile" => {
                 self.file_call(name, payload, context)
             }
-            "wx.canvas.draw" => {
-                let canvas_id = payload
-                    .get("canvasId")
-                    .and_then(Value::as_str)
-                    .filter(|value| !value.is_empty())
-                    .ok_or_else(|| ProviderError::invalid("wx.canvas.draw requires canvasId"))?;
-                let commands = payload
-                    .get("commands")
-                    .and_then(Value::as_array)
-                    .ok_or_else(|| ProviderError::invalid("wx.canvas.draw requires commands"))?;
-                for command in commands {
-                    let object = command.as_object().ok_or_else(|| {
-                        ProviderError::invalid("canvas command must be an object")
-                    })?;
-                    let op = object
-                        .get("op")
-                        .and_then(Value::as_str)
-                        .filter(|value| !value.is_empty())
-                        .ok_or_else(|| ProviderError::invalid("canvas command requires op"))?;
-                    if !matches!(
-                        op,
-                        "setFillStyle"
-                            | "setStrokeStyle"
-                            | "setLineWidth"
-                            | "setGlobalAlpha"
-                            | "setFontSize"
-                            | "setLineDash"
-                            | "setLineCap"
-                            | "setLineJoin"
-                            | "setMiterLimit"
-                            | "setShadow"
-                            | "setTextAlign"
-                            | "setTextBaseline"
-                            | "fillRect"
-                            | "strokeRect"
-                            | "clearRect"
-                            | "beginPath"
-                            | "closePath"
-                            | "moveTo"
-                            | "lineTo"
-                            | "arc"
-                            | "rect"
-                            | "fill"
-                            | "stroke"
-                            | "fillText"
-                            | "strokeText"
-                            | "drawImage"
-                            | "save"
-                            | "restore"
-                            | "translate"
-                            | "rotate"
-                            | "scale"
-                            | "quadraticCurveTo"
-                            | "bezierCurveTo"
-                    ) {
-                        return Err(ProviderError::invalid(format!(
-                            "unsupported canvas command {op}"
-                        )));
-                    }
-                    if !object.get("args").is_some_and(Value::is_array) {
-                        return Err(ProviderError::invalid("canvas command requires args"));
-                    }
-                    if op == "setLineDash" {
-                        let args = object
-                            .get("args")
-                            .and_then(Value::as_array)
-                            .expect("setLineDash args were validated as an array");
-                        let pattern = args.first().and_then(Value::as_array).ok_or_else(|| {
-                            ProviderError::invalid("setLineDash requires a numeric pattern array")
-                        })?;
-                        for value in pattern {
-                            let number = value.as_f64().ok_or_else(|| {
-                                ProviderError::invalid(
-                                    "setLineDash pattern values must be finite non-negative numbers",
-                                )
-                            })?;
-                            if !number.is_finite() || number < 0.0 {
-                                return Err(ProviderError::invalid(
-                                    "setLineDash pattern values must be finite non-negative numbers",
-                                ));
-                            }
-                        }
-                        if let Some(offset) = args.get(1) {
-                            let number = offset.as_f64().ok_or_else(|| {
-                                ProviderError::invalid("setLineDash offset must be a finite number")
-                            })?;
-                            if !number.is_finite() {
-                                return Err(ProviderError::invalid(
-                                    "setLineDash offset must be a finite number",
-                                ));
-                            }
-                        }
-                    }
-                }
-                Ok(json!({
-                    "errMsg": "draw:ok",
-                    "canvasId": canvas_id,
-                    "commands": commands.len(),
-                    "reserve": payload.get("reserve").and_then(Value::as_bool).unwrap_or(false),
-                }))
-            }
+            "wx.canvas.draw" => validate_canvas_draw_payload(payload, context),
             "wx.createIntersectionObserver" | "wx.createMediaQueryObserver" => {
                 // The Session owns subscriptions, committed render geometry,
                 // window transitions and page/component disposal. A standalone
@@ -6001,5 +6023,4 @@ mod tests {
             .unwrap_err();
         assert_eq!(error.code, ProviderErrorCode::InvalidRequest);
     }
-
 }

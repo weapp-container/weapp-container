@@ -154,13 +154,22 @@ native ownership and session behavior through the enabled runtime providers.
 They do not replace an official ArkTS/NDK build, an installed HAP run, Skia GPU
 evidence or device interaction.
 
-For installed-app acceptance, build a dedicated HAP with a previously absent
-bundle and install it on a Harmony emulator or device through DevEco. The
-repository currently has no automated installed-app smoke command. Record the
-HAP and source hashes, OS/device identity, session state before and after input,
-timer and lifecycle observations, and screenshots for independent visual
-review. Device, GPU, permission and account-backend results remain separate
-acceptance evidence.
+For an installed-app runtime smoke, build a HAP and provide its bundle and
+ability identity to the repository harness. It installs the HAP on an online
+`hdc` target, launches the bounded diagnostic probes, captures runtime and
+surface logs, then stops the app:
+
+```sh
+WEAPP_CONTAINER_HARMONY_HAP=/path/to/entry-default-unsigned.hap \
+WEAPP_CONTAINER_HARMONY_BUNDLE=com.example.container \
+WEAPP_CONTAINER_HARMONY_ABILITY=EntryAbility \
+node scripts/mobile-runtime-smoke.mjs --platform harmony --out /tmp/harmony-smoke.json
+```
+
+The report records the HAP digest, target identity, runtime operations, direct
+surface submission and a separate GPU-context probe. This emulator/device
+smoke does not establish physical-device acceleration, signing, permission
+behavior, account-backend integration or API parity.
 
 To produce runtime evidence, build and install the HAP from DevEco and capture
 the session receipts while interacting with the sample on an emulator or

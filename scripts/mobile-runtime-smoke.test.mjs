@@ -106,3 +106,63 @@ else if (args.includes('run-as') && args.at(-1) === 'id') { console.error('packa
   assert.equal(invoked.some(args => args.includes('start') || args.includes('force-stop') || args.includes('-c')
     || args.includes('portable-pack-execution.json')), false)
 })
+
+test('Harmony smoke requires correlated runtime, direct surface and GPU context evidence', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'weapp-mobile-smoke-harmony-'))
+  t.after(() => rmSync(directory, { recursive: true, force: true }))
+
+  const commands = join(directory, 'commands.jsonl')
+  const hdc = join(directory, 'hdc')
+  const hap = join(directory, 'smoke.hap')
+  const digest = 'a'.repeat(64)
+  const logs = [
+    `WEAPP_CONTAINER_SMOKE app.init ${JSON.stringify({ messages: [{ op: 'app.init', kind: 'response', payload: { ok: true, engine: 'quickjs', engineProviderAvailable: true, loadedModules: 1, manifest: { integrity: digest } } }] })}`,
+    `WEAPP_CONTAINER_SMOKE render.commit ${JSON.stringify({ messages: [{ op: 'render.commit', kind: 'response', payload: { ok: true, frameId: 1, backend: 'skia-gpu-pending' } }] })}`,
+    `WEAPP_CONTAINER_SMOKE render.snapshot ${JSON.stringify({ frame_id: 1, width: 1, height: 1, stride: 4, format: 'rgba8-premultiplied', pixelCount: 4, sha256: digest, pixels: [1, 2, 3, 255] })}`,
+    `WEAPP_CONTAINER_SMOKE canvas.draw ${JSON.stringify({ messages: [{ op: 'api.call', kind: 'response', payload: { ok: true, name: 'wx.canvas.draw', result: { canvasId: 'main' } } }] })}`,
+    `WEAPP_CONTAINER_SMOKE canvas.snapshot ${JSON.stringify({ frame_id: 1, width: 1, height: 1, stride: 4, format: 'rgba8-premultiplied', pixels: [10, 20, 30, 255] })}`,
+    `WEAPP_CONTAINER_SMOKE api.call ${JSON.stringify({ messages: [{ op: 'api.call', kind: 'response', payload: { ok: true, result: true } }] })}`,
+    `WEAPP_CONTAINER_SURFACE_PROBE ${JSON.stringify({ schemaVersion: 1, status: 'passed', hostSurfaceAttached: true, containerSurfaceAttached: true, gpuSurface: true, rendererBackend: 'skia-gpu-gles', width: 1, height: 1, evidenceBoundary: 'runtime-skia-gles-framebuffer' })}`,
+    `WEAPP_CONTAINER_GPU_PROBE ${JSON.stringify({ schemaVersion: 1, status: 'passed', contextCreated: true, hardwareAccelerated: false, containerSurfaceAttached: false, evidenceBoundary: 'device-context-only' })}`,
+  ].join('\n')
+  writeFileSync(hap, 'HAP fixture')
+  writeFileSync(hdc, `#!/usr/bin/env node
+import { appendFileSync } from 'node:fs';
+const args = process.argv.slice(2);
+appendFileSync(process.env.TEST_HDC_COMMANDS, JSON.stringify(args) + '\\n');
+if (args[0] === 'list' && args[1] === 'targets') console.log('emulator-owned');
+else if (args.includes('hilog') && args.at(-1) === '-x') console.log(process.env.TEST_HDC_LOGS);
+`, { mode: 0o755 })
+  writeFileSync(join(directory, 'package.json'), '{"type":"module"}')
+
+  const output = join(directory, 'smoke.json')
+  const result = spawnSync(process.execPath, ['scripts/mobile-runtime-smoke.mjs', '--platform', 'harmony', '--out', output], {
+    cwd: root,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `${directory}:${process.env.PATH}`,
+      WEAPP_CONTAINER_HARMONY_HAP: hap,
+      WEAPP_CONTAINER_HARMONY_BUNDLE: 'com.example.smoke',
+      WEAPP_CONTAINER_HARMONY_ABILITY: 'EntryAbility',
+      WEAPP_CONTAINER_HARMONY_TARGET: 'emulator-owned',
+      WEAPP_CONTAINER_HARMONY_WAIT_MS: '20',
+      TEST_HDC_COMMANDS: commands,
+      TEST_HDC_LOGS: logs,
+    },
+  })
+  assert.equal(result.status, 0, result.stderr)
+  const aggregate = JSON.parse(result.stdout)
+  const harmony = aggregate.platforms[0]
+  assert.equal(harmony.status, 'passed')
+  assert.deepEqual(harmony.missingOperations, [])
+  assert.deepEqual(harmony.failedChecks, [])
+  assert.equal(harmony.surfaceProbe.containerSurfaceAttached, true)
+  assert.equal(harmony.gpuProbe.contextCreated, true)
+  assert.equal(harmony.gpuProbe.hardwareAccelerated, false)
+  const invoked = readFileSync(commands, 'utf8').trim().split('\n').map(JSON.parse)
+  const start = invoked.find(args => args.includes('start'))
+  assert.ok(start)
+  assert.ok(start.includes('--pb') && start.includes('weappContainerSmoke') && start.includes('true'))
+  assert.ok(invoked.some(args => args.includes('force-stop')))
+})

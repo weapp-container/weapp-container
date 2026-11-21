@@ -184,10 +184,9 @@ pub use frame_input::{ExternalFrameRecovery, ExternalFrameRecoveryExpected};
 use node_metadata::{project_dataset, project_mark};
 pub use provider::{
     DeviceInfoSnapshot, DeviceState, HostApiProvider, MiniProgramAccountInfo,
-    MiniProgramRedirectRequest, NetworkType, ProviderContext, ProviderError,
-    ProviderErrorCode, ProviderStart, SandboxProvider, ShareRequest, SocketState,
-    SubscriptionSettingSnapshot, SystemInfoSnapshot, SystemSettingSnapshot, UserProfileSnapshot,
-    VibrationRecord,
+    MiniProgramRedirectRequest, NetworkType, ProviderContext, ProviderError, ProviderErrorCode,
+    ProviderStart, SandboxProvider, ShareRequest, SocketState, SubscriptionSettingSnapshot,
+    SystemInfoSnapshot, SystemSettingSnapshot, UserProfileSnapshot, VibrationRecord,
 };
 use render_backend::{
     AcceptedManifestFrame, AcceptedSkiaFrame, PreparedSkiaFrame, SkiaPageBackend,
@@ -5905,7 +5904,12 @@ impl Session {
             Ok(self.launch_options.clone())
         } else {
             let started = if name.ends_with("Sync") || name == "wx.canvas.draw" {
-                ProviderStart::Ready(self.provider.call(name, payload, &context))
+                let result = if name == "wx.canvas.draw" {
+                    provider::validate_canvas_draw_payload(payload, &context)
+                } else {
+                    self.provider.call(name, payload, &context)
+                };
+                ProviderStart::Ready(result)
             } else {
                 self.provider.start_call(name, payload, &context)
             };
@@ -5939,6 +5943,11 @@ impl Session {
         } else {
             result
         };
+        let provider_name = if name == "wx.canvas.draw" {
+            "container-runtime"
+        } else {
+            self.provider.name()
+        };
         Ok(vec![
             self.response(
                 request,
@@ -5946,7 +5955,7 @@ impl Session {
                     "ok": true,
                     "name": name,
                     "support": self.effective_capability(name),
-                    "provider": self.provider.name(),
+                    "provider": provider_name,
                     "result": result,
                 }),
             ),
@@ -5954,7 +5963,7 @@ impl Session {
                 request,
                 "debug",
                 "provider API call completed",
-                json!({"name": name, "provider": self.provider.name()}),
+                json!({"name": name, "provider": provider_name}),
             ),
         ])
     }
@@ -7665,7 +7674,7 @@ impl Session {
                 let started = if name == "wx.canvas.draw" {
                     // Canvas commits are runtime-owned synchronous transactions;
                     // a transport completion must not skip the renderer commit.
-                    ProviderStart::Ready(self.provider.call(name, &options, &context))
+                    ProviderStart::Ready(provider::validate_canvas_draw_payload(&options, &context))
                 } else {
                     self.provider.start_call(name, &options, &context)
                 };

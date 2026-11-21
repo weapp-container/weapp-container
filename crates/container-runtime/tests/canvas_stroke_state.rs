@@ -6,7 +6,7 @@ use container_core::EngineKind;
 use container_ir::{
     hex_digest, CapabilitySupport, ContainerManifestV1, Module, ModuleFormat, ModuleScope,
 };
-use container_runtime::{Session, SessionConfig};
+use container_runtime::{Session, SessionConfig, StrictHostProvider};
 use serde_json::{json, Value};
 
 const SOURCE: &str = r#"
@@ -149,5 +149,45 @@ fn js_rejection_and_native_batch_rejection_preserve_the_last_published_surface()
             "commands":[{"op":"fillRect","args":[0,0,100,100]},{"op":"setLineJoin","args":["invalid"]}]}));
         assert_eq!(rejected.messages[0].payload["ok"], false, "{rejected:?}");
         assert_eq!(f.session.canvas_snapshot("stroke-state"), Some(accepted));
+    }
+}
+
+#[test]
+fn session_owned_canvas_draw_does_not_require_a_host_provider() {
+    for engine in engines() {
+        let mut f = Fixture::new(engine);
+        f.session
+            .set_provider(Box::new(StrictHostProvider::default()));
+
+        let direct = f.raw(
+            op::API_CALL,
+            json!({
+                "name":"wx.canvas.draw",
+                "canvasId":"direct-strict",
+                "width":1,
+                "height":1,
+                "commands":[
+                    {"op":"setFillStyle","args":["#0a141e"]},
+                    {"op":"fillRect","args":[0,0,1,1]}
+                ]
+            }),
+        );
+        assert_eq!(direct.messages[0].payload["ok"], true, "{direct:?}");
+        assert_eq!(direct.messages[0].payload["provider"], "container-runtime");
+        assert_eq!(
+            pixel(&f.session.canvas_snapshot("direct-strict").unwrap(), 0, 0),
+            [10, 20, 30, 255]
+        );
+
+        assert_eq!(
+            f.call("first"),
+            json!({"cap":"butt","join":"miter","miter":10,"offset":0})
+        );
+        assert_eq!(
+            pixel(&f.session.canvas_snapshot("stroke-state").unwrap(), 11, 11),
+            [255, 0, 0, 255]
+        );
+        assert_eq!(f.call("inspect"), 1);
+        assert!(f.session.execution_fault().is_none());
     }
 }

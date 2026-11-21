@@ -887,8 +887,18 @@ mod tests {
                     &mut canvas_snapshot,
                 )
             },
-            -1,
-            "strict Harmony hosts cannot fabricate a sandbox canvas provider result"
+            0,
+            "runtime-owned Canvas draws do not require a host provider"
+        );
+        let canvas_snapshot_bytes =
+            unsafe { slice::from_raw_parts(canvas_snapshot.data, canvas_snapshot.len) };
+        let canvas_snapshot_json: serde_json::Value =
+            serde_json::from_slice(canvas_snapshot_bytes).unwrap();
+        assert_eq!(canvas_snapshot_json["width"], 1);
+        assert_eq!(canvas_snapshot_json["height"], 1);
+        assert_eq!(
+            canvas_snapshot_json["pixels"],
+            serde_json::json!([10, 20, 30, 255])
         );
         unsafe {
             ffi::weapp_container_harmony_buffer_free(&mut canvas_snapshot);

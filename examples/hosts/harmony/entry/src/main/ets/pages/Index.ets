@@ -3,7 +3,7 @@ import util from '@ohos.util';
 import common from '@ohos.app.ability.common';
 import cryptoFramework from '@ohos.security.cryptoFramework';
 import { PortablePack } from '../session/PortablePack';
-import { HarmonyLiveSession, HarmonySessionReceipt, InspectionPage, BridgeMessage, NativeFontInspection } from '../session/LiveSession';
+import { HarmonyLiveSession, HarmonySessionReceipt, InspectionPage, BridgeMessage, BridgeBatch, BridgePayload, NativeFontInspection } from '../session/LiveSession';
 import { abilityLifecycle } from '../session/AbilityLifecycle';
 import { HarmonyHostServices } from '../session/HostServices';
 import { HarmonyDeviceApis } from '../native/HarmonyDeviceApis';
@@ -53,6 +53,26 @@ interface LiveObservation {
   evidenceBoundary: string;
 }
 
+interface SmokeSnapshot {
+  frame_id: number;
+  width: number;
+  height: number;
+  stride: number;
+  format: string;
+  pixels: Array<number>;
+}
+
+interface SmokeSnapshotSummary {
+  frame_id: number;
+  width: number;
+  height: number;
+  stride: number;
+  format: string;
+  pixelCount: number;
+  sha256: string;
+  pixels: Array<number>;
+}
+
 @Entry
 @Component
 struct Index {
@@ -73,6 +93,7 @@ struct Index {
   private lifecycleListener: number = -1;
   private ignoringMultiple: boolean = false;
   private initialSmokeLogged: boolean = false;
+  private smokeProbeLogged: boolean = false;
 
   aboutToAppear(): void {
     this.closed = false;
@@ -140,7 +161,7 @@ struct Index {
       if(context.cancellation.cancelled||this.session?.executionIdentity().sessionId!==receipt.sessionId)return;
       this.observeReceipt(receipt);
     });
-    this.session=session;this.attachedSurfaceId='';this.lastReceipt=null;this.initialSmokeLogged=false;
+    this.session=session;this.attachedSurfaceId='';this.lastReceipt=null;this.initialSmokeLogged=false;this.smokeProbeLogged=false;
     try{
       const hostContextValue = this.getUIContext().getHostContext();
       if (hostContextValue === undefined) throw new HarmonyAccountError('ERR_HOST_CONTEXT', 'ArkUI host context is unavailable');
@@ -177,7 +198,21 @@ struct Index {
     this.lastReceipt=receipt;this.status=`${receipt.status} · ${receipt.route} · frame ${receipt.frameId} · ${receipt.engine}`;
     const observation:LiveObservation={schemaVersion:1,sessionId:receipt.sessionId,engine:receipt.engine,status:receipt.status,foreground:receipt.foreground,revision:receipt.revision,route:receipt.route,frameId:receipt.frameId,presentedFrameId:receipt.presentedFrameId,presentationSequence:receipt.presentationSequence,width:receipt.viewport.width,height:receipt.viewport.height,surfaceWidth:receipt.surfaceWidth,surfaceHeight:receipt.surfaceHeight,page:receipt.inspection?.page,viewRevision:receipt.inspection?.viewRevision,diagnostics:receipt.diagnostics,nativeFonts:receipt.inspection?.nativeFonts,evidenceBoundary:'sample-runtime-observation'};
     console.info(`WEAPP_CONTAINER_LIVE_STATE ${JSON.stringify(observation)}`);
-    if(!this.initialSmokeLogged&&receipt.frameId>0){this.initialSmokeLogged=true;for(const op of ['app.init','app.lifecycle','page.push','render.commit']){const message=receipt.trace.find((item:BridgeMessage):boolean=>item.op===op&&item.kind==='response');if(message!==undefined)console.info(`WEAPP_CONTAINER_SMOKE ${op} ${JSON.stringify({messages:[message]})}`);}}
+    if(this.smokeEnabled()&&!this.initialSmokeLogged&&receipt.frameId>0){this.initialSmokeLogged=true;for(const op of ['app.init','app.lifecycle','page.push','render.commit']){const message=receipt.trace.find((item:BridgeMessage):boolean=>item.op===op&&item.kind==='response');if(message!==undefined)console.info(`WEAPP_CONTAINER_SMOKE ${op} ${JSON.stringify(this.smokeMessage(message))}`);}}
+    if(this.smokeEnabled()&&!this.smokeProbeLogged&&receipt.frameId>0&&receipt.presentedFrameId===receipt.frameId&&this.session!==null){
+      this.smokeProbeLogged=true;
+      try{
+        const probes=this.session.smokeProbe();
+        if(probes!==null){
+          console.info(`WEAPP_CONTAINER_SMOKE render.snapshot ${JSON.stringify(this.snapshotSummary(probes.renderSnapshot))}`);
+          console.info(`WEAPP_CONTAINER_SMOKE canvas.draw ${JSON.stringify({messages:[probes.canvasDraw]})}`);
+          console.info(`WEAPP_CONTAINER_SMOKE canvas.snapshot ${JSON.stringify(this.snapshotSummary(probes.canvasSnapshot))}`);
+          console.info(`WEAPP_CONTAINER_SMOKE api.call ${JSON.stringify({messages:[probes.apiCall]})}`);
+          console.info(`WEAPP_CONTAINER_SURFACE_PROBE ${JSON.stringify(probes.surfaceProbe)}`);
+          console.info(`WEAPP_CONTAINER_GPU_PROBE ${JSON.stringify(probes.gpuProbe)}`);
+        }else throw new Error('ERR_RENDER: the first presented frame did not retain direct EGL surface evidence');
+      }catch(error){console.error(`WEAPP_CONTAINER_SMOKE error ${JSON.stringify({message:String(error)})}`);}
+    }
     if(receipt.diagnostics.length>0)console.error(`WEAPP_CONTAINER_SMOKE error ${JSON.stringify(receipt.diagnostics)}`);
     this.presentationCheck?.();
   }
@@ -267,6 +302,47 @@ struct Index {
     this.status = message;
     if (this.session !== null) this.session.reportFailure(error);
     console.error(`WEAPP_CONTAINER_SMOKE error ${JSON.stringify({ message })}`);
+  }
+
+  private smokeEnabled(): boolean { return AppStorage.get<boolean>('weappContainerSmoke')===true; }
+
+  private smokeMessage(message: BridgeMessage): BridgeBatch {
+    if(message.op!=='app.init')return {messages:[message]};
+    const payload: BridgePayload = {
+      ok: message.payload.ok,
+      engine: message.payload.engine,
+      engineProviderAvailable: message.payload.engineProviderAvailable,
+      loadedModules: message.payload.loadedModules,
+      manifest: message.payload.manifest,
+    };
+    const smokeMessage: BridgeMessage = {
+      protocolVersion: message.protocolVersion,
+      sessionId: message.sessionId,
+      requestId: message.requestId,
+      kind: message.kind,
+      op: message.op,
+      payload,
+    };
+    return { messages: [smokeMessage] };
+  }
+
+  private snapshotSummary(json: string): SmokeSnapshotSummary {
+    const snapshot=JSON.parse(json) as SmokeSnapshot;
+    const pixels=snapshot.pixels;
+    if(!Array.isArray(pixels)||!Number.isSafeInteger(snapshot.width)||snapshot.width<1||!Number.isSafeInteger(snapshot.height)||snapshot.height<1||!Number.isSafeInteger(snapshot.frame_id)||snapshot.frame_id<1||snapshot.format!=='rgba8-premultiplied'||snapshot.stride<snapshot.width*4||pixels.length!==snapshot.width*snapshot.height*4)throw new Error('ERR_RENDER: smoke snapshot metadata or byte length is invalid');
+    const bytes=new Uint8Array(pixels.length);
+    for(let index=0;index<pixels.length;index+=1){const pixel=pixels[index];if(!Number.isInteger(pixel)||pixel<0||pixel>255)throw new Error('ERR_RENDER: smoke snapshot contains an invalid RGBA byte');bytes[index]=pixel;}
+    const summary: SmokeSnapshotSummary = {
+      frame_id: snapshot.frame_id,
+      width: snapshot.width,
+      height: snapshot.height,
+      stride: snapshot.stride,
+      format: snapshot.format,
+      pixelCount: pixels.length,
+      sha256: sha256Bytes(bytes),
+      pixels: pixels.slice(0, 4),
+    };
+    return summary;
   }
 
   build(): void {

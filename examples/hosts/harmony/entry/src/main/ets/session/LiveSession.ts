@@ -6,12 +6,14 @@ export interface HarmonySessionRuntime {
   loadManifestWithConfig(manifestJson: string, configJson: string): string;
   dispatch(envelopeJson: string): string;
   inspectState(): string;
+  snapshot(): string;
   pollTimers(nowNsDecimalString: string): string;
   acknowledgePresentation(renderRevisionDecimalString: string): string;
   resizeViewport(width: number, height: number): string;
   attachSurface(surfaceId: string, width: number, height: number): string;
   renderSurface(width: number, height: number): string;
   detachSurface(): string;
+  canvasSnapshot(canvasId: string): string;
   destroy(): void;
 }
 export interface HarmonySessionOptions {
@@ -40,6 +42,7 @@ export interface HarmonyInspection {
 }
 export interface BridgePayload {
   ok?: boolean;
+  name?: string;
   committed?: boolean;
   source?: string;
   templateId?: string;
@@ -61,7 +64,21 @@ export interface BridgeMessage {
   payload: BridgePayload;
 }
 export interface BridgeBatch { ok?: boolean; error?: Object; messages: Array<BridgeMessage>; }
-interface NativeStatus { ok: boolean; error?: Object; operation?: string; renderer?: string; gpuSurface?: boolean; }
+interface NativeStatus {
+  ok: boolean;
+  error?: Object;
+  operation?: string;
+  renderer?: string;
+  gpuSurface?: boolean;
+  contextCreated?: boolean;
+  hardwareAccelerated?: boolean;
+  glRenderer?: string;
+  glVersion?: string;
+  eglVersion?: string;
+  framebuffer?: number;
+  width?: number;
+  height?: number;
+}
 interface Envelope { protocolVersion: string; sessionId: string; requestId: string; kind: string; op: string; payload: Object; }
 interface Viewport { x: number; y: number; width: number; height: number; }
 interface RenderPayload {
@@ -108,6 +125,15 @@ export interface HarmonySessionReceipt {
 }
 export interface HarmonyExecutionIdentity { sessionId: string; hostIdentity: HarmonyHostServicesConfig | null; }
 
+export interface HarmonySmokeProbeResult {
+  renderSnapshot: string;
+  canvasDraw: BridgeMessage;
+  canvasSnapshot: string;
+  apiCall: BridgeMessage;
+  surfaceProbe: Object;
+  gpuProbe: Object;
+}
+
 /** Convert before multiplying: Number nanoseconds would lose precision. */
 export function unixEpochNanoseconds(nowMs: number): string {
   if (!Number.isSafeInteger(nowMs) || nowMs < 0) throw new Error('ERR_ENGINE: expected non-negative Unix epoch integer milliseconds');
@@ -150,6 +176,8 @@ export class HarmonyLiveSession {
   private inspection?: HarmonyInspection;
   private diagnostics: Array<string> = [];
   private trace: Array<BridgeMessage> = [];
+  private lastSurfaceStatus: NativeStatus | null = null;
+  private smokeProbeCompleted: boolean = false;
 
   constructor(pack: PortablePack, runtime: HarmonySessionRuntime, options: HarmonySessionOptions,
     onReceipt: (receipt: HarmonySessionReceipt) => void) {
@@ -197,6 +225,35 @@ export class HarmonyLiveSession {
 
   isRunnable(): boolean { return this.canPump() && !this.presentationSuspended && this.attached && this.presentedFrameId === this.frameId; }
   executionIdentity(): HarmonyExecutionIdentity {return {sessionId:this.options.sessionId,hostIdentity:this.options.hostIdentity===undefined?null:JSON.parse(JSON.stringify(this.options.hostIdentity)) as HarmonyHostServicesConfig};}
+
+  /** Run bounded diagnostic probes after the first frame is presented. */
+  smokeProbe(): HarmonySmokeProbeResult | null {
+    if (this.smokeProbeCompleted || !this.isRunnable() || this.lastSurfaceStatus === null) return null;
+    if (this.lastSurfaceStatus.gpuSurface !== true || this.lastSurfaceStatus.renderer !== 'skia-gpu-gles') return null;
+    this.smokeProbeCompleted = true;
+    const renderSnapshot = this.runtime.snapshot();
+    this.dispatch('api.call', { name: 'wx.canvas.draw', canvasId: 'main', width: 1, height: 1,
+      commands: [{ op: 'setFillStyle', args: ['#0a141e'] }, { op: 'fillRect', args: [0, 0, 1, 1] }] });
+    const canvasDraw = this.lastResponse('api.call', 'wx.canvas.draw');
+    const canvasSnapshot = this.runtime.canvasSnapshot('main');
+    this.dispatch('api.call', { name: 'wx.canIUse', capability: 'wx.getStorage' });
+    const apiCall = this.lastResponse('api.call', 'wx.canIUse');
+    const surfaceProbe = { schemaVersion: 1, source: 'harmony-arkui-xcomponent', status: 'passed',
+      hostSurfaceAttached: true, containerSurfaceAttached: true, gpuSurface: true,
+      rendererBackend: 'skia-gpu-gles', width: this.surfaceWidth, height: this.surfaceHeight,
+      framebuffer: this.lastSurfaceStatus.framebuffer ?? null,
+      frameId: this.frameId, evidenceBoundary: 'runtime-skia-gles-framebuffer' };
+    const contextCreated = this.lastSurfaceStatus.contextCreated === true;
+    const gpuProbe = { schemaVersion: 1, source: 'harmony-arkui', status: contextCreated ? 'passed' : 'failed',
+      contextCreated,
+      hardwareAccelerated: this.lastSurfaceStatus.hardwareAccelerated === true,
+      renderer: this.lastSurfaceStatus.glRenderer || 'unknown',
+      version: this.lastSurfaceStatus.glVersion || 'unknown',
+      eglVersion: this.lastSurfaceStatus.eglVersion || 'unknown',
+      containerSurfaceAttached: false,
+      evidenceBoundary: 'device-context-only' };
+    return { renderSnapshot, canvasDraw, canvasSnapshot, apiCall, surfaceProbe, gpuProbe };
+  }
 
   attachSurface(surfaceId: string, physicalWidth: number, physicalHeight: number): void {
     if (!this.started || this.closed || this.suspended) return;
@@ -470,6 +527,7 @@ export class HarmonyLiveSession {
       return false;
     }
     const status = this.nativeStatus(json, 'surface.present');
+    this.lastSurfaceStatus = status;
     if (status.gpuSurface !== true || status.renderer !== 'skia-gpu-gles') throw new Error('ERR_RENDER: frame was not submitted to the attached GLES surface');
     this.presentedFrameId = this.frameId;
     this.presentationSequence += 1;
@@ -507,6 +565,14 @@ export class HarmonyLiveSession {
       message.requestId === requestId && message.kind === 'response' && message.op === op);
     if (matches.length !== 1 || matches[0].payload.ok !== true) throw new Error(`ERR_ENGINE: missing unique successful ${op} acknowledgement`);
     return matches[0].payload;
+  }
+
+  private lastResponse(op: string, name: string): BridgeMessage {
+    for (let index = this.trace.length - 1; index >= 0; index -= 1) {
+      const message = this.trace[index];
+      if (message.kind === 'response' && message.op === op && message.payload.name === name) return message;
+    }
+    throw new Error(`ERR_ENGINE: missing ${op} response for ${name}`);
   }
 
   private validateBatch(json: string): Array<BridgeMessage> {

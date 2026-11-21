@@ -647,7 +647,9 @@ function parseHarmonySmoke(lines) {
     const payload = values.map(value => findOperationPayload(value, operation)).find(Boolean)
     if (payload) result.payload = payload
     if (operation === 'app.init') {
-      result.ok = Boolean(payload?.ok === true)
+      result.ok = Boolean(payload?.ok === true && payload?.engineProviderAvailable === true
+        && typeof payload.engine === 'string' && Number(payload.loadedModules) > 0
+        && typeof payload.manifest?.integrity === 'string')
     } else if (operation === 'render.commit') {
       result.ok = Boolean(payload?.ok === true && Number(payload.frameId) === 1 && typeof payload.backend === 'string')
     } else if (operation === 'render.snapshot') {
@@ -658,6 +660,8 @@ function parseHarmonySmoke(lines) {
         && Number(snapshot.width) > 0
         && Number(snapshot.height) > 0
         && Number(snapshot.stride) >= Number(snapshot.width) * 4
+        && Number(snapshot.pixelCount) >= Number(snapshot.width) * Number(snapshot.height) * 4
+        && /^[0-9a-f]{64}$/.test(snapshot.sha256 || '')
         && Array.isArray(snapshot.pixels)
         && snapshot.pixels.length >= 4)
     } else if (operation === 'canvas.snapshot') {
@@ -711,7 +715,8 @@ function harmonySmoke() {
   const install = run('hdc', ['-t', target, 'install', '-r', resolve(hap)], { timeoutMs: 90_000 })
   const clear = run('hdc', ['-t', target, 'shell', 'hilog', '-r'])
   const stop = run('hdc', ['-t', target, 'shell', 'aa', 'force-stop', bundle])
-  const start = run('hdc', ['-t', target, 'shell', 'aa', 'start', '-a', ability, '-b', bundle])
+  const start = run('hdc', ['-t', target, 'shell', 'aa', 'start', '-a', ability, '-b', bundle,
+    '--pb', 'weappContainerSmoke', 'true'])
   const timeoutMs = Number(process.env.WEAPP_CONTAINER_HARMONY_WAIT_MS || 5_000)
   const pollMs = Math.max(100, Number(process.env.WEAPP_CONTAINER_HARMONY_POLL_MS || 250))
   const startedAt = Date.now()
@@ -758,9 +763,11 @@ function harmonySmoke() {
     ? surfaceProbe.rendererBackend
     : parsed.operations['render.commit']?.payload?.backend || null
   const gpuProbe = parseGpuProbe(gpuProbeLines, 'harmony-arkui')
+  const gpuEvidence = gpuProbe.status === 'passed' && gpuProbe.contextCreated === true
+    && gpuProbe.containerSurfaceAttached !== true
   return applyRendererGate({
     platform: 'harmony',
-    status,
+    status: status === 'passed' && directSurface && gpuEvidence ? 'passed' : 'failed',
     environment: runtimeEnvironment(target),
     target,
     bundle,
@@ -777,8 +784,9 @@ function harmonySmoke() {
     surfaceProbe,
     probes: [targetProbe, install, clear, stop, start, logProbe, cleanup].filter(Boolean),
     notes: [
-      'Harmony evidence is accepted only when WEAPP_CONTAINER_SMOKE logs contain successful app.init, render.commit, render.snapshot and api.call payloads.',
-      'The XComponent adapter is promoted only by a separate WEAPP_CONTAINER_SURFACE_PROBE with a skia-gpu-gles framebuffer submission.',
+      'Harmony evidence requires bounded session-correlated app.init, render.commit, render.snapshot, Canvas and API smoke records.',
+      'The XComponent adapter is promoted only by a direct WEAPP_CONTAINER_SURFACE_PROBE after a skia-gpu-gles framebuffer submission and EGL swap.',
+      'The separate GPU context probe cannot claim container surface ownership or physical-device acceleration.',
       'HAP output and ability names must come from the DevEco project.',
     ],
   }, rendererBackend)

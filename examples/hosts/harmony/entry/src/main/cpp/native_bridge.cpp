@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <cstdint>
@@ -74,6 +75,42 @@ std::string EglError(const char* operation, EGLint error = eglGetError()) {
     return std::string("{\"ok\":false,\"error\":\"ERR_RENDER\",\"operation\":\"") +
            operation + "\",\"eglError\":" +
            std::to_string(static_cast<unsigned int>(error)) + "}";
+}
+
+std::string JsonString(const char* value) {
+    std::string result = "\"";
+    if (value != nullptr) {
+        for (const unsigned char character : std::string(value)) {
+            if (character == '"' || character == '\\') {
+                result.push_back('\\');
+                result.push_back(static_cast<char>(character));
+            } else if (character < 0x20) {
+                char escaped[7];
+                std::snprintf(escaped, sizeof(escaped), "\\u%04x", character);
+                result.append(escaped);
+            } else {
+                result.push_back(static_cast<char>(character));
+            }
+        }
+    }
+    result.push_back('"');
+    return result;
+}
+
+bool IsHardwareRenderer(const char* renderer) {
+    if (renderer == nullptr) return false;
+    std::string normalized(renderer);
+    for (char& character : normalized) {
+        character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+    }
+    return normalized.find("adreno") != std::string::npos ||
+        normalized.find("mali") != std::string::npos ||
+        normalized.find("immortalis") != std::string::npos ||
+        normalized.find("powervr") != std::string::npos ||
+        normalized.find("apple") != std::string::npos ||
+        normalized.find("nvidia") != std::string::npos ||
+        normalized.find("radeon") != std::string::npos ||
+        normalized.find("intel") != std::string::npos;
 }
 
 bool ReadUint32(napi_env env, napi_value value, uint32_t* out) {
@@ -699,7 +736,17 @@ napi_value RenderSurface(napi_env env, napi_callback_info info) {
     }
     state->surfaceWidth = width;
     state->surfaceHeight = height;
-    return MakeStatus(env, "{\"ok\":true,\"gpuSurface\":true,\"renderer\":\"skia-gpu-gles\",\"gpuCompletion\":\"not-waited\"}");
+    const auto* glRenderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+    const auto* glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    const char* eglVersion = eglQueryString(state->display, EGL_VERSION);
+    std::string result = "{\"ok\":true,\"gpuSurface\":true,\"renderer\":\"skia-gpu-gles\",\"gpuCompletion\":\"not-waited\",\"contextCreated\":true,\"hardwareAccelerated\":";
+    result += IsHardwareRenderer(glRenderer) ? "true" : "false";
+    result += ",\"glRenderer\":" + JsonString(glRenderer);
+    result += ",\"glVersion\":" + JsonString(glVersion);
+    result += ",\"eglVersion\":" + JsonString(eglVersion);
+    result += ",\"framebuffer\":" + std::to_string(framebuffer);
+    result += ",\"width\":" + std::to_string(width) + ",\"height\":" + std::to_string(height) + "}";
+    return MakeStatus(env, result.c_str());
 }
 
 napi_value DetachSurfaceApi(napi_env env, napi_callback_info info) {
