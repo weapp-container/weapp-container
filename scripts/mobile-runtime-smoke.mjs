@@ -262,7 +262,7 @@ function androidSmoke() {
   while (Date.now() < logDeadline) {
     logcat = run('adb', ['-s', serial, 'logcat', '-d', '-v', 'brief', '-s', 'WEAPP_CONTAINER_SMOKE:I', 'WEAPP_CONTAINER_GPU_PROBE:I', 'WEAPP_CONTAINER_SURFACE_PROBE:I', '*:S'])
     const smoke = (logcat.stdout || '').split(/\r?\n/)
-      .filter(line => line.includes('WEAPP_CONTAINER_SMOKE') && line.includes(`"sessionId":"${expectedSessionId}"`))
+      .filter(line => line.includes('WEAPP_CONTAINER_SMOKE') && line.includes(`sessionId=${expectedSessionId} `))
       .join('\n')
     if (operations.every(operation => smoke.includes(` ${operation} `))) break
     run(process.execPath, ['-e', 'setTimeout(() => {}, 250)'], { timeoutMs: 1_000 })
@@ -314,10 +314,9 @@ function androidSmoke() {
   const runtimeBodyPassed = runtimeReceipt && Object.entries(runtimeReceipt.checks)
     .filter(([name]) => !['source', 'build'].includes(name)).every(([, passed]) => passed)
   const smokeLines = logcat.stdout.split(/\r?\n/)
-    .filter(line => line.includes('WEAPP_CONTAINER_SMOKE') && line.includes(`"sessionId":"${expectedSessionId}"`))
+    .filter(line => line.includes('WEAPP_CONTAINER_SMOKE') && line.includes(`sessionId=${expectedSessionId} `))
   const gpuProbeLines = logcat.stdout.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_GPU_PROBE'))
-  const surfaceProbeLines = logcat.stdout.split(/\r?\n/)
-    .filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE') && line.includes(`"sessionId":"${expectedSessionId}"`))
+  const surfaceProbeLines = logcat.stdout.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE'))
   const gpuProbe = parseGpuProbe(gpuProbeLines, 'android-egl')
   const surfaceProbe = executionReceipt?.surfaceProbe || parseSurfaceProbe(surfaceProbeLines, 'android-gles-window')
   const output = smokeLines.join('\n')

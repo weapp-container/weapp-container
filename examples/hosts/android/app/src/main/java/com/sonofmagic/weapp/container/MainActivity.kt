@@ -209,7 +209,7 @@ class MainActivity : Activity() {
 
     private fun logOperation(operation: String, payload: ByteArray) {
         check(payload.isNotEmpty()) { "$operation returned an empty response" }
-        Log.i("WEAPP_CONTAINER_SMOKE", "$operation bytes=${payload.size} json=${payload.toString(UTF_8)}")
+        Log.i("WEAPP_CONTAINER_SMOKE", "$operation sessionId=$sessionId bytes=${payload.size} json=${payload.toString(UTF_8)}")
     }
 
     private fun atomicReceipt(name: String, value: JSONObject) {
