@@ -177,6 +177,9 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   mkdirSync(dirname(header), { recursive: true })
   writeFileSync(compiler, '')
   writeFileSync(header, '')
+  const rustyLibclang = resolve(v8Root, 'third_party/rust-toolchain/lib/libclang.so.23.0.0git')
+  mkdirSync(dirname(rustyLibclang), { recursive: true })
+  writeFileSync(rustyLibclang, '')
   writeFileSync(resolve(v8Root, 'Cargo.toml'), '[package]\nname = "v8"\nversion = "152.2.0"\n')
   const metadata = JSON.stringify({ packages: [{
     name: 'v8',
@@ -197,7 +200,7 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   const alias = resolve(v8Root, 'third_party/android_toolchain/ndk')
   assert.equal(readFileSync(resolve(alias, 'toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdlib.h'), 'utf8'), '')
   const cargo = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8'))
-  assert.equal(cargo.env.LIBCLANG_PATH, resolve(value.prebuilt, 'lib'))
+  assert.equal(cargo.env.LIBCLANG_PATH, resolve(v8Root, 'third_party/rust-toolchain/lib'))
   assert.equal(cargo.env.GN_ARGS, platform.toolchain.androidV8SourceBuild.effectiveGnArgs)
   assert.deepEqual(JSON.parse(readFileSync(resolve(value.dir, 'metadata-args.json'), 'utf8')), ['metadata', '--locked', '--all-features', '--format-version', '1'])
 })

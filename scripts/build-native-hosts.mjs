@@ -110,6 +110,23 @@ function androidV8SourceBuild(platform, apiLevel, toolchainError = null) {
   return prepareAndroidV8SourceBuild(cargoMetadata({ allFeatures: true }), apiLevel)
 }
 
+function hasLibclang(directory) {
+  try {
+    return readdirSync(directory).some(name => /^libclang\.(?:so|dylib)/.test(name))
+  } catch {
+    return false
+  }
+}
+
+function rustyV8LibclangPath(platform) {
+  if (!androidV8SourceBuildRequested(platform)) return null
+  const metadata = cargoMetadata({ allFeatures: true })
+  const packageEntry = metadata?.packages?.find(pkg => pkg.name === 'v8' && pkg.version === '152.2.0')
+  if (!packageEntry?.manifest_path) return null
+  const directory = resolve(dirname(packageEntry.manifest_path), 'third_party/rust-toolchain/lib')
+  return hasLibclang(directory) ? directory : null
+}
+
 function nativeSkiaBuild(platform) {
   const externallyConfigured = ['SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH'].some(key => process.env[key] !== undefined)
     || (process.env.DOCS_RS !== undefined && process.env.DOCS_RS !== '0')
@@ -426,11 +443,11 @@ function nativeToolchain(name) {
       ...base,
       error: `Android NDK sysroot libraries for API ${apiLevel} are unavailable`,
     }
-    const libclang = [process.env.LIBCLANG_PATH, '/opt/homebrew/opt/llvm/lib', '/usr/local/opt/llvm/lib',
+    const libclang = [rustyV8LibclangPath(name), process.env.LIBCLANG_PATH, '/opt/homebrew/opt/llvm/lib', '/usr/local/opt/llvm/lib',
       hosts ? resolve(prebuilt, hosts, 'lib64') : null,
       hosts ? resolve(prebuilt, hosts, 'lib') : null,
       hosts ? resolve(prebuilt, hosts, 'musl/lib') : null].filter(Boolean)
-      .find(path => ['libclang.dylib', 'libclang.so', 'libclang.so.1', 'libclang.dll'].some(name => existsSync(resolve(path, name))))
+      .find(path => hasLibclang(path) || existsSync(resolve(path, 'libclang.dll')))
     return {
       ...base,
       linker,
