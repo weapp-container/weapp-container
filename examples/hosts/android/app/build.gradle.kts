@@ -74,6 +74,10 @@ android {
         }
     }
 
+    packaging {
+        jniLibs.keepDebugSymbols += setOf("**/libc++_shared.so")
+    }
+
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")

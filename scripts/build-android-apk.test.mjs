@@ -57,4 +57,6 @@ test('Android APK producer requires the dynamic C++ runtime in the APK', () => {
   assert.match(source, /lib\/arm64-v8a\/libc\+\+_shared\.so/)
   assert.match(source, /embeddedCxxRuntime\.sha256 === cxxRuntimeSourceSha256/)
   assert.match(source, /const androidNdkVersion = '27\.1\.12297006'/)
+  const gradle = readFileSync(resolve(root, 'examples/hosts/android/app/build.gradle.kts'), 'utf8')
+  assert.match(gradle, /jniLibs\.keepDebugSymbols \+= setOf\("\*\*\/libc\+\+_shared\.so"\)/)
 })
