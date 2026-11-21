@@ -58,10 +58,10 @@ export function prepareAndroidV8SourceBuild(metadata, apiLevel, {
     symlink(relative(parent, sourceNdk), alias, 'dir')
   }
 
-  // skia-bindings links the Android NDK libc++_static archive. Rusty V8's
-  // default custom libc++ would put a second copy of the same ABI into the
-  // final cdylib, so use the NDK libc++ shared runtime for this mixed host.
-  const requiredGnArgs = `default_min_sdk_version=${apiLevel} android_ndk_api_level=${apiLevel} use_custom_libcxx=false`
+  // Keep V8's C++23-capable custom libc++ headers, but build its runtime as a
+  // shared library. skia-bindings links the NDK libc++_static archive, and
+  // two static libc++ implementations produce duplicate symbols in the host.
+  const requiredGnArgs = `default_min_sdk_version=${apiLevel} android_ndk_api_level=${apiLevel} use_custom_libcxx=true libcxx_is_shared=true`
   const gnArgs = [inheritedGnArgs.trim(), requiredGnArgs].filter(Boolean).join('\n')
   return {
     status: 'passed',
