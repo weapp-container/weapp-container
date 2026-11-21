@@ -52,6 +52,7 @@ if (name === 'rustup') {
   if (process.argv[2] !== 'which') process.exit(1);
   console.log(path.join(path.dirname(process.argv[1]), process.argv[3]));
 } else if (name === 'cargo' && process.argv[2] === 'metadata') {
+  if (process.env.WEAPP_NATIVE_TEST_METADATA_ARGS) fs.writeFileSync(path.join(process.cwd(), 'metadata-args.json'), JSON.stringify(process.argv.slice(2)));
   process.stdout.write(process.env.WEAPP_NATIVE_TEST_CARGO_METADATA || '{"packages":[]}');
 } else if (name === 'cargo') {
   const receipt = JSON.stringify({ args: process.argv.slice(2), env: process.env });
@@ -184,6 +185,7 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   const { result, platform } = run(value, '30', {
     V8_FROM_SOURCE: '1',
     GN_ARGS: 'is_component_build=false',
+    WEAPP_NATIVE_TEST_METADATA_ARGS: '1',
     WEAPP_NATIVE_TEST_CARGO_METADATA: metadata,
   }, [], [], undefined, 'v8')
   assert.equal(result.status, 0, result.stderr)
@@ -194,6 +196,7 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   assert.equal(readFileSync(resolve(alias, 'toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdlib.h'), 'utf8'), '')
   const cargo = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8'))
   assert.equal(cargo.env.GN_ARGS, platform.toolchain.androidV8SourceBuild.effectiveGnArgs)
+  assert.deepEqual(JSON.parse(readFileSync(resolve(value.dir, 'metadata-args.json'), 'utf8')), ['metadata', '--locked', '--all-features', '--format-version', '1'])
 })
 
 test('Linux Android V8 source builds stop before Cargo when the pinned Rusty V8 source is unavailable', { skip: process.platform !== 'linux' || unsupportedShell }, t => {
@@ -427,9 +430,10 @@ function assertConfiguration(value, platform, api) {
 
 test('Android native default matches sample minSdk through Rust, bindgen and JNI', { skip: unsupportedShell }, (t) => {
   const value = fixture(t)
-  const { result, report, platform } = run(value)
+  const { result, report, platform } = run(value, undefined, { WEAPP_NATIVE_TEST_METADATA_ARGS: '1' })
   assert.equal(result.status, 0, result.stderr)
   assert.equal(platform.toolchain.apiSource, 'sample-min-sdk')
+  assert.deepEqual(JSON.parse(readFileSync(resolve(value.dir, 'metadata-args.json'), 'utf8')), ['metadata', '--locked', '--format-version', '1'])
   const gradle = readFileSync(resolve(root, 'examples/hosts/android/app/build.gradle.kts'), 'utf8')
   assert.match(gradle, new RegExp(`^\\s*minSdk\\s*=\\s*${platform.toolchain.apiLevel}\\s*$`, 'm'))
   const lockfile = readFileSync(resolve(root, 'Cargo.lock'), 'utf8')

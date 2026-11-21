@@ -69,36 +69,59 @@ function rustupWhich(binary) {
   return result.status === 0 ? result.stdout.trim() : null
 }
 
-let cargoMetadataCache
-function cargoMetadata() {
-  if (cargoMetadataCache !== undefined) return cargoMetadataCache
-  const result = spawnSync(cargoBin, ['metadata', '--locked', '--format-version', '1'], {
+const cargoMetadataCache = new Map()
+function cargoMetadata({ allFeatures = false } = {}) {
+  const cacheKey = allFeatures ? 'all-features' : 'default'
+  if (cargoMetadataCache.has(cacheKey)) return cargoMetadataCache.get(cacheKey)
+  const metadataArgs = ['metadata', '--locked', ...(allFeatures ? ['--all-features'] : []), '--format-version', '1']
+  const result = spawnSync(cargoBin, metadataArgs, {
     cwd: root,
     env: { ...process.env, ...cargoEnv },
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024,
     timeout: 30_000,
   })
-  if (result.status !== 0 || result.error) return cargoMetadataCache = null
-  try { return cargoMetadataCache = JSON.parse(result.stdout) }
-  catch { return cargoMetadataCache = null }
+  if (result.status !== 0 || result.error) {
+    cargoMetadataCache.set(cacheKey, null)
+    return null
+  }
+  try {
+    const metadata = JSON.parse(result.stdout)
+    cargoMetadataCache.set(cacheKey, metadata)
+    return metadata
+  } catch {
+    cargoMetadataCache.set(cacheKey, null)
+    return null
+  }
 }
 
-function lockedSkiaSource() {
-  try { return resolveLockedSkiaSource(cargoMetadata()) }
+function lockedSkiaSource({ allFeatures = false } = {}) {
+  try { return resolveLockedSkiaSource(cargoMetadata({ allFeatures })) }
   catch { return null }
 }
 
-function androidV8SourceBuild(platform, apiLevel, toolchainError = null) {
+function androidV8SourceBuildRequested(platform) {
   const sourceBuild = ['1', 'true', 'yes'].includes(String(process.env.V8_FROM_SOURCE || '').toLowerCase())
-  if (platform !== 'android' || engine !== 'v8' || process.platform !== 'linux' || !sourceBuild || toolchainError || !Number.isInteger(apiLevel)) return null
-  return prepareAndroidV8SourceBuild(cargoMetadata(), apiLevel)
+  return platform === 'android' && engine === 'v8' && process.platform === 'linux' && sourceBuild
 }
 
-function nativeSkiaBuild() {
+function androidV8SourceBuild(platform, apiLevel, toolchainError = null) {
+  if (!androidV8SourceBuildRequested(platform) || toolchainError || !Number.isInteger(apiLevel)) return null
+  return prepareAndroidV8SourceBuild(cargoMetadata({ allFeatures: true }), apiLevel)
+}
+
+function nativeSkiaBuild(platform) {
   const externallyConfigured = ['SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH'].some(key => process.env[key] !== undefined)
     || (process.env.DOCS_RS !== undefined && process.env.DOCS_RS !== '0')
-  return resolveNativeSkiaBuild(process.env, { lockedSourceDir: externallyConfigured ? null : lockedSkiaSource() })
+  const metadata = { allFeatures: androidV8SourceBuildRequested(platform) }
+  return resolveNativeSkiaBuild(process.env, { lockedSourceDir: externallyConfigured ? null : lockedSkiaSource(metadata) })
+}
+
+function nativeBuildTimeout() {
+  const sourceBuild = ['1', 'true', 'yes'].includes(String(process.env.V8_FROM_SOURCE || '').toLowerCase())
+  return process.platform === 'linux' && engine === 'v8' && sourceBuild
+    ? 60 * 60 * 1000
+    : 10 * 60 * 1000
 }
 
 const rustupCargo = rustupWhich('cargo')
@@ -302,7 +325,7 @@ function run(command, commandArgs, extraEnv = {}) {
     cwd: root,
     encoding: 'utf8',
     env: childEnv,
-    timeout: 10 * 60 * 1000,
+    timeout: nativeBuildTimeout(),
     // Compiler diagnostics are provenance evidence, including their beginning
     // and middle. Bound capture explicitly; ENOBUFS remains an error below.
     maxBuffer: 64 * 1024 * 1024,
@@ -370,7 +393,7 @@ function findAndroidNdk() {
 function nativeToolchain(name) {
   if (name === 'android') {
     const ndk = findAndroidNdk()
-    const skia = nativeSkiaBuild()
+    const skia = nativeSkiaBuild(name)
     const cliApi = option('--android-api-level')
     const configuredApi = cliApi ?? process.env.ANDROID_API_LEVEL
     const apiSource = cliApi !== undefined ? '--android-api-level'
@@ -577,7 +600,7 @@ function nativeToolchain(name) {
     return { linker, env, sdk, skiaBuild: skiaBuild.report }
   }
   if (name === 'ios') {
-    const skia = nativeSkiaBuild()
+    const skia = nativeSkiaBuild(name)
     return { env: skia.env, linker: null, sdk: null, skia: skia.report }
   }
   return { env: {}, linker: null }
