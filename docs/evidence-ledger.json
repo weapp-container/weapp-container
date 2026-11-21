@@ -416,6 +416,24 @@
       "scope": "Production-readiness aggregate with the source-bound Android V8 execution receipt",
       "conclusion": "Android V8 was accepted as a passed same-fixture execution and GPU pair. releaseReady remains false because Android QuickJS, iOS QuickJS/V8, Harmony QuickJS/V8, the remaining host execution matrix, official DevTools conformance and complete performance reports are incomplete",
       "limitations": "This aggregate is a gate report, not a runtime result. It does not establish physical-device behavior, production signing or complete official DevTools conformance"
+    },
+    {
+      "id": "ios-v8-gpu-smoke-bb92f4e2",
+      "tool": "scripts/ios-app-smoke and scripts/ios-app-execution-evidence.mjs",
+      "version": "workspace commit bb92f4e2c2732696854441466744c10b1ca79270; build receipt SHA-256 f9ef1898fc4ae5995819947e732f78598afdb22f7d7167d59b75d2f797e5f920; execution evidence SHA-256 d96ca7f84ebf2813e4bb0eccea7ae1199f2b01c8933ff1e21a5f2563a477f468; signed app SHA-256 d37cc12e9cfad0f0fa2ac915093465b7ca118e873bfc33c16d130f8ca636c375",
+      "analysisTime": "2026-11-21",
+      "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running V8 152.2.0 with the pinned iOS simulator archive, target binding, Rust Skia Metal drawable and portable-pack-reference-v1",
+      "conclusion": "Passed current-source Rust and UIKit build, verified V8 archive and target binding contract, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, wx.canIUse, attached skia-gpu-metal container surface and teardown cleanup",
+      "limitations": "This is official-simulator evidence for iOS V8. The app is ad-hoc debug signed and does not certify production signing, physical devices, Android V8, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "near-parity-gates-bb92f4e2-android-ios-dual",
+      "tool": "scripts/check-near-parity-gates.mjs",
+      "version": "workspace commit bb92f4e2c2732696854441466744c10b1ca79270; aggregate report SHA-256 3b89c57d4c9234c34dc41b56ce05199b64bce84937c5d033c28b8fa087485106",
+      "analysisTime": "2026-11-21",
+      "scope": "Production-readiness aggregate with source-compatible Android QuickJS/V8 and iOS QuickJS/V8 execution receipts for portable-pack-reference-v1",
+      "conclusion": "Android QuickJS/V8 and iOS QuickJS/V8 were accepted as passed same-fixture execution and GPU pairs. releaseReady remains false because Harmony QuickJS/V8, the remaining host execution matrix, official WeChat DevTools cases, host bridge and complete performance reports are incomplete",
+      "limitations": "This aggregate is a gate report, not a runtime result. It does not establish physical-device behavior, production signing, complete official DevTools conformance or release approval"
     }
   ]
 }
