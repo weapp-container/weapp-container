@@ -1,11 +1,12 @@
-import * as native from 'libentry.so';
+import type { NativeModule, NativeOwner } from 'libentry.so';
 
 // The generated N-API module owns the opaque Rust handle and exchanges one
 // complete JSON bridge batch per call. A host can replace the inline fixture
 // with the packed portable manifest loaded from its rawfile/blob store.
 export class WeappContainer {
-  private readonly nativeOwner: native.NativeOwner;
+  private readonly nativeOwner: NativeOwner;
   constructor() {
+    const native = loadNativeModule('libentry.so') as NativeModule;
     if (typeof native.createOwner !== 'function') throw new Error('ERR_PROTOCOL_VERSION: isolated native owners are required');
     this.nativeOwner = native.createOwner();
   }

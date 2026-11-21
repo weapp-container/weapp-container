@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -23,6 +23,16 @@ test('Harmony build help exits without starting a build or creating output', () 
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
+})
+
+test('Harmony module dynamically loads the native N-API package through the platform loader', () => {
+  const moduleRoot = fileURLToPath(new URL('../examples/hosts/harmony/entry/src/main/', import.meta.url))
+  const profilePath = fileURLToPath(new URL('../examples/hosts/harmony/entry/build-profile.json5', import.meta.url))
+  const profile = JSON.parse(readFileSync(profilePath, 'utf8'))
+  assert.deepEqual(profile.buildOption.arkOptions.runtimeOnly.packages, ['libentry.so'])
+  assert.match(readFileSync(join(moduleRoot, 'ets/native/WeappContainer.ets'), 'utf8'), /loadNativeModule\('libentry\.so'\) as NativeModule/)
+  assert.match(readFileSync(join(moduleRoot, 'ets/native/WeappContainer.ets'), 'utf8'), /import type \{ NativeModule, NativeOwner \} from 'libentry\.so';/)
+  assert.match(readFileSync(join(moduleRoot, 'cpp/types/libentry/index.d.ts'), 'utf8'), /export interface NativeModule/)
 })
 
 test('Harmony build rejects unknown and incomplete options before creating output', () => {

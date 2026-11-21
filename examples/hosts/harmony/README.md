@@ -73,7 +73,8 @@ Harmony resources stay untouched. The copied pack is an input fixture for the
 host smoke and does not turn a software snapshot or ArkUI device-context probe
 into GPU/device parity evidence.
 
-The sample imports the N-API surface with `import * as native from 'libentry.so'`.
+The sample loads the N-API surface with `loadNativeModule('libentry.so')` and
+includes `libentry.so` in the module's ArkTS runtime-only package set.
 The ArkTS compiler currently emits an informational unverified-module warning;
 the namespace import compiles and runs against the packaged N-API module.
 

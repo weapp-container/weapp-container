@@ -20,6 +20,29 @@ export interface NativeOwner {
   unload(): string;
 }
 
+export interface NativeModule {
+  createOwner(): NativeOwner;
+  capabilities(): string;
+  loadManifest(manifestJson: string): string;
+  loadManifestWithConfig(manifestJson: string, configJson: string): string;
+  start(manifestJson: string, requestId: string): string;
+  dispatch(envelopeJson: string): string;
+  dispatchBatch(batchJson: string): string;
+  hostServices(commandJson: string): string;
+  inspectState(): string;
+  resizeViewport(width: number, height: number): string;
+  pollTimers(nowNsDecimalString: string): string;
+  acknowledgePresentation(renderRevisionDecimalString: string): string;
+  lifecycle(requestId: string, event: string): string;
+  snapshot(): string;
+  attachSurface(surfaceId: string, width: number, height: number): string;
+  renderSurface(width: number, height: number): string;
+  detachSurface(): string;
+  canvasSnapshot(canvasId: string): string;
+  destroy(): void;
+  unload(): string;
+}
+
 export function createOwner(): NativeOwner;
 
 export function capabilities(): string;
