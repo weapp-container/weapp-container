@@ -427,7 +427,9 @@ function nativeToolchain(name) {
       error: `Android NDK sysroot libraries for API ${apiLevel} are unavailable`,
     }
     const libclang = [process.env.LIBCLANG_PATH, '/opt/homebrew/opt/llvm/lib', '/usr/local/opt/llvm/lib',
-      hosts ? resolve(prebuilt, hosts, 'lib64') : null].filter(Boolean)
+      hosts ? resolve(prebuilt, hosts, 'lib64') : null,
+      hosts ? resolve(prebuilt, hosts, 'lib') : null,
+      hosts ? resolve(prebuilt, hosts, 'musl/lib') : null].filter(Boolean)
       .find(path => ['libclang.dylib', 'libclang.so', 'libclang.so.1', 'libclang.dll'].some(name => existsSync(resolve(path, name))))
     return {
       ...base,
