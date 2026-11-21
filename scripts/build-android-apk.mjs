@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto'
 import { execFileSync, spawn, spawnSync } from 'node:child_process'
-import { copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { createReadStream } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -12,6 +12,7 @@ import { nativeBuildProfileForApkVariant, sourceInventorySha256 } from './lib/an
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = process.argv.slice(2)
 const hashPattern = /^[0-9a-f]{64}$/
+const androidNdkVersion = '27.1.12297006'
 
 function option(name, fallback = null) {
   const index = args.indexOf(name)
@@ -95,6 +96,20 @@ function findAndroidSdk() {
   const candidates = [process.env.ANDROID_HOME, process.env.ANDROID_SDK_ROOT,
     resolve(process.env.HOME || '', 'Library/Android/sdk')].filter(Boolean)
   return candidates.find(path => existsSync(resolve(path, 'platform-tools/adb'))) || null
+}
+
+function findAndroidCxxRuntime(sdk, abi) {
+  const target = abi === 'arm64-v8a' ? 'aarch64-linux-android' : null
+  if (!target) throw new Error(`Unsupported Android ABI for libc++_shared.so: ${abi}`)
+  const prebuiltRoot = resolve(sdk, 'ndk', androidNdkVersion, 'toolchains/llvm/prebuilt')
+  if (!existsSync(prebuiltRoot)) throw new Error(`Pinned Android NDK ${androidNdkVersion} is unavailable`)
+  const candidates = readdirSync(prebuiltRoot, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => resolve(prebuiltRoot, entry.name, 'sysroot/usr/lib', target, 'libc++_shared.so'))
+    .filter(existsSync)
+    .sort()
+  if (candidates.length === 0) throw new Error(`Pinned Android NDK has no libc++_shared.so for ${abi}`)
+  return candidates[0]
 }
 
 function run(command, commandArgs, options = {}) {
@@ -288,6 +303,8 @@ async function main() {
     const libraryEntry = 'lib/arm64-v8a/libcontainer_host_android.so'
     const bridgeEntry = 'lib/arm64-v8a/libweapp_container.so'
     const cxxRuntimeEntry = 'lib/arm64-v8a/libc++_shared.so'
+    const cxxRuntimeSource = findAndroidCxxRuntime(sdk, 'arm64-v8a')
+    const cxxRuntimeSourceSha256 = await hashFile(cxxRuntimeSource)
     const embeddedNative = entriesRun.status === 'passed' && entries.includes(libraryEntry)
       ? await hashArchiveEntry(builtApk, libraryEntry)
       : { status: 'failed', bytes: 0, sha256: null, error: `APK is missing ${libraryEntry}` }
@@ -297,7 +314,8 @@ async function main() {
     report.package = {
       status: entriesRun.status === 'passed' && embeddedNative.status === 'passed'
         && embeddedNative.sha256 === strippedNative && embeddedCxxRuntime.status === 'passed'
-        && embeddedCxxRuntime.bytes > 0 && entries.includes(bridgeEntry) ? 'passed' : 'failed',
+        && embeddedCxxRuntime.bytes > 0 && embeddedCxxRuntime.sha256 === cxxRuntimeSourceSha256
+        && entries.includes(bridgeEntry) ? 'passed' : 'failed',
       abi: 'arm64-v8a',
       nativeArtifactPath: libraryEntry,
       nativeArtifactSha256: nativeArtifact.sha256,
@@ -308,10 +326,12 @@ async function main() {
       cxxRuntimePath: cxxRuntimeEntry,
       cxxRuntimeArtifactSha256: embeddedCxxRuntime.sha256,
       cxxRuntimeArtifactBytes: embeddedCxxRuntime.bytes,
+      cxxRuntimeSourcePath: cxxRuntimeSource,
+      cxxRuntimeSourceSha256,
     }
     if (report.package.status !== 'passed') {
       report.errors.push(embeddedNative.error || embeddedCxxRuntime.error
-        || 'APK did not package the exact Android Rust artifact, JNI bridge and C++ runtime')
+        || 'APK did not package the exact Android Rust artifact, JNI bridge and pinned NDK C++ runtime')
       return finish(report, sourceFilesBefore)
     }
 

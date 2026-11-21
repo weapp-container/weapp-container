@@ -49,10 +49,12 @@ test('Android JNI target links the NDK C++ runtime required by V8', () => {
 test('Android Gradle build passes a generated jniLibs directory to CMake', () => {
   const gradle = readFileSync(resolve(root, 'examples/hosts/android/app/build.gradle.kts'), 'utf8')
   assert.match(gradle, /WEAPP_CONTAINER_ANDROID_JNI_LIBS_DIR=\$\{rustJniLibsDir\.get\(\)\.asFile\.absolutePath\}/)
+  assert.match(gradle, /ndkVersion = "27\.1\.12297006"/)
 })
 
 test('Android APK producer requires the dynamic C++ runtime in the APK', () => {
   const source = readFileSync(producer, 'utf8')
   assert.match(source, /lib\/arm64-v8a\/libc\+\+_shared\.so/)
-  assert.match(source, /embeddedCxxRuntime\.bytes > 0/)
+  assert.match(source, /embeddedCxxRuntime\.sha256 === cxxRuntimeSourceSha256/)
+  assert.match(source, /const androidNdkVersion = '27\.1\.12297006'/)
 })

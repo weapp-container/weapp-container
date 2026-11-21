@@ -28,6 +28,7 @@ android {
     // Keep local APK smoke builds reproducible with the SDK image used by CI.
     // The native host still accepts an explicit NDK path from Gradle/CMake.
     buildToolsVersion = "36.0.0"
+    ndkVersion = "27.1.12297006"
 
     buildFeatures {
         buildConfig = true
