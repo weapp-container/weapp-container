@@ -58,10 +58,10 @@ export function prepareAndroidV8SourceBuild(metadata, apiLevel, {
     symlink(relative(parent, sourceNdk), alias, 'dir')
   }
 
-  // Keep V8's C++23-capable custom libc++ headers, but build its runtime as a
-  // shared library. skia-bindings links the NDK libc++_static archive, and
-  // two static libc++ implementations produce duplicate symbols in the host.
-  const requiredGnArgs = `default_min_sdk_version=${apiLevel} android_ndk_api_level=${apiLevel} use_custom_libcxx=true libcxx_is_shared=true`
+  // Keep V8's C++23-capable custom libc++ implementation. The Android Skia
+  // binding is given a link-only NDK view with empty libc++ archives so the
+  // final cdylib contains exactly one C++ ABI implementation.
+  const requiredGnArgs = `default_min_sdk_version=${apiLevel} android_ndk_api_level=${apiLevel} use_custom_libcxx=true`
   const gnArgs = [inheritedGnArgs.trim(), requiredGnArgs].filter(Boolean).join('\n')
   return {
     status: 'passed',

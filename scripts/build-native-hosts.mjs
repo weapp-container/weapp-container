@@ -7,7 +7,7 @@
  * vendor SDKs and signing setup; their availability is reported explicitly and
  * never turned into a false device-conformance claim.
  */
-import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -127,11 +127,13 @@ function rustyV8LibclangPath(platform) {
   return hasLibclang(directory) ? directory : null
 }
 
-function nativeSkiaBuild(platform) {
+function nativeSkiaBuild(platform, androidNdk = null) {
   const externallyConfigured = ['SKIA_SOURCE_DIR', 'SKIA_LIBRARY_SEARCH_PATH'].some(key => process.env[key] !== undefined)
     || (process.env.DOCS_RS !== undefined && process.env.DOCS_RS !== '0')
   const metadata = { allFeatures: androidV8SourceBuildRequested(platform) }
-  return resolveNativeSkiaBuild(process.env, { lockedSourceDir: externallyConfigured ? null : lockedSkiaSource(metadata) })
+  const environment = androidNdk ? { ...process.env, ANDROID_NDK: androidNdk } : process.env
+  const result = resolveNativeSkiaBuild(environment, { lockedSourceDir: externallyConfigured ? null : lockedSkiaSource(metadata) })
+  return androidNdk ? { ...result, androidNdk } : result
 }
 
 function nativeBuildTimeout() {
@@ -407,10 +409,59 @@ function findAndroidNdk() {
   return versions.length ? resolve(root, versions[0]) : null
 }
 
+function linkNdkDirectory(source, destination, emptyArchives = new Set()) {
+  mkdirSync(destination, { recursive: true })
+  for (const name of readdirSync(source)) {
+    const sourcePath = resolve(source, name)
+    const destinationPath = resolve(destination, name)
+    rmSync(destinationPath, { recursive: true, force: true })
+    if (emptyArchives.has(name)) {
+      writeFileSync(destinationPath, '!<arch>\n')
+      continue
+    }
+    const type = lstatSync(sourcePath).isDirectory() ? 'dir' : 'file'
+    symlinkSync(relative(dirname(destinationPath), sourcePath), destinationPath, type)
+  }
+}
+
+function prepareAndroidV8SkiaNdk(ndk) {
+  if (!androidV8SourceBuildRequested('android') || !ndk || process.platform !== 'linux') return null
+  const host = 'linux-x86_64'
+  const prebuilt = resolve(ndk, 'toolchains/llvm/prebuilt', host)
+  const sysroot = resolve(prebuilt, 'sysroot')
+  const sourceAbiDirectories = ['aarch64-linux-android', 'arm-linux-androideabi']
+  if (!existsSync(resolve(ndk, 'source.properties')) || !existsSync(resolve(prebuilt, 'bin'))
+    || !existsSync(resolve(sysroot, 'usr/include')) || !sourceAbiDirectories.every(abi => existsSync(resolve(sysroot, 'usr/lib', abi)))) return null
+
+  const staging = resolve(targetDir, 'native-host-toolchain/android-v8-skia-ndk')
+  mkdirSync(staging, { recursive: true })
+  const marker = resolve(staging, '.weapp-v8-skia-ndk')
+  if (existsSync(marker) && readFileSync(marker, 'utf8') !== `${resolve(ndk)}\n`) throw new Error('Android V8 Skia NDK staging path belongs to a different NDK')
+  writeFileSync(marker, `${resolve(ndk)}\n`)
+  const link = (source, destination, type = 'file') => {
+    mkdirSync(dirname(destination), { recursive: true })
+    rmSync(destination, { recursive: true, force: true })
+    symlinkSync(relative(dirname(destination), source), destination, type)
+  }
+  link(resolve(ndk, 'source.properties'), resolve(staging, 'source.properties'))
+  link(resolve(ndk, 'sources/android/cpufeatures'), resolve(staging, 'sources/android/cpufeatures'), 'dir')
+  link(resolve(prebuilt, 'bin'), resolve(staging, 'toolchains/llvm/prebuilt', host, 'bin'), 'dir')
+  link(resolve(prebuilt, 'lib'), resolve(staging, 'toolchains/llvm/prebuilt', host, 'lib'), 'dir')
+  link(resolve(sysroot, 'usr/include'), resolve(staging, 'toolchains/llvm/prebuilt', host, 'sysroot/usr/include'), 'dir')
+  const stagedUsrLib = resolve(staging, 'toolchains/llvm/prebuilt', host, 'sysroot/usr/lib')
+  linkNdkDirectory(resolve(sysroot, 'usr/lib'), stagedUsrLib)
+  for (const abi of sourceAbiDirectories) {
+    rmSync(resolve(stagedUsrLib, abi), { recursive: true, force: true })
+    linkNdkDirectory(resolve(sysroot, 'usr/lib', abi), resolve(stagedUsrLib, abi), new Set(['libc++_static.a', 'libc++abi.a']))
+  }
+  return staging
+}
+
 function nativeToolchain(name) {
   if (name === 'android') {
     const ndk = findAndroidNdk()
-    const skia = nativeSkiaBuild(name)
+    const skiaNdk = prepareAndroidV8SkiaNdk(ndk)
+    const skia = nativeSkiaBuild(name, skiaNdk)
     const cliApi = option('--android-api-level')
     const configuredApi = cliApi ?? process.env.ANDROID_API_LEVEL
     const apiSource = cliApi !== undefined ? '--android-api-level'
@@ -467,7 +518,7 @@ function nativeToolchain(name) {
         PATH: `${dirname(linker)}:${process.env.PATH || ''}`,
         // skia-bindings needs ANDROID_NDK when the target binary cache is
         // unavailable and it must build its GLES backend locally.
-        ANDROID_NDK: ndk,
+        ANDROID_NDK: skia.androidNdk || ndk,
         // QuickJS Android bindgen must use the same target and libc ABI.
         ...(libclang ? { LIBCLANG_PATH: libclang } : {}),
         [`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`]: [

@@ -196,7 +196,7 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   assert.equal(result.status, 0, result.stderr)
   assert.equal(platform.engine, 'v8')
   assert.equal(platform.toolchain.androidV8SourceBuild.androidApiLevel, 30)
-  assert.equal(platform.toolchain.androidV8SourceBuild.effectiveGnArgs, 'is_component_build=false\ndefault_min_sdk_version=30 android_ndk_api_level=30 use_custom_libcxx=true libcxx_is_shared=true')
+  assert.equal(platform.toolchain.androidV8SourceBuild.effectiveGnArgs, 'is_component_build=false\ndefault_min_sdk_version=30 android_ndk_api_level=30 use_custom_libcxx=true')
   const alias = resolve(v8Root, 'third_party/android_toolchain/ndk')
   assert.equal(readFileSync(resolve(alias, 'toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdlib.h'), 'utf8'), '')
   const cargo = JSON.parse(readFileSync(resolve(value.dir, 'cargo.json'), 'utf8'))

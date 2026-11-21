@@ -23,5 +23,5 @@ android-view-atrace = ["view-batch-diagnostics", "container-core/android-view-at
 [dependencies]
 container-core = { path = "../container-core" }
 serde_json = { workspace = true, features = ["unbounded_depth"] }
-v8 = { version = "=152.2.0", optional = true, default-features = false }
+v8 = { version = "=152.2.0", optional = true }
 

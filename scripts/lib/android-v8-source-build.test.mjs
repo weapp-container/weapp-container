@@ -42,7 +42,7 @@ test('prepares the GN NDK path and appends the selected Android API', t => {
   assert.equal(result.status, 'passed')
   assert.equal(readlinkSync(alias), '../android_ndk')
   assert.equal(existsSync(resolve(alias, 'toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdlib.h')), true)
-  assert.equal(result.env.GN_ARGS, 'is_component_build=false\ndefault_min_sdk_version=30 android_ndk_api_level=30 use_custom_libcxx=true libcxx_is_shared=true')
+  assert.equal(result.env.GN_ARGS, 'is_component_build=false\ndefault_min_sdk_version=30 android_ndk_api_level=30 use_custom_libcxx=true')
   assert.equal(result.report.androidApiLevel, 30)
 })
 
