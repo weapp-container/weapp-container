@@ -185,9 +185,13 @@ surface id from `XComponentController`. `attachSurface` creates an
 the latest Rust Skia frame and calls `eglSwapBuffers`. Logical viewport changes
 go through the native resize boundary before another manifest render. The
 surface's physical pixel dimensions remain distinct from the logical viewport.
-The host currently publishes the observed logical viewport, while system
-information beyond width/height (including pixel ratio, screen dimensions,
-status-bar height and safe area) remains partial and may use provider defaults.
+Before native provider configuration, the host reads display dimensions and
+density from `@ohos.display`, device identity from `@ohos.deviceInfo`, and
+window/status-bar geometry from the active Harmony window. It installs those
+observations as the initial system API snapshots. Safe-area geometry remains
+omitted until its screen-coordinate mapping is verified for every supported
+orientation. Display observations are captured at session creation and are not
+refreshed on later rotation yet.
 Single-pointer down/move/up/cancel events cross the bridge as `event.batch`;
 the owner recognizes a bounded tap. Multi-touch, scrolling and long-press
 gesture recognition require further implementation and conformance evidence.

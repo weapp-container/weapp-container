@@ -16,6 +16,7 @@ import { HarmonyRecorderApis } from '../native/HarmonyRecorderApis';
 import { installHarmonyReferenceHost } from '../native/HarmonyReferenceHost';
 import { installHarmonyWifiApis } from '../native/HarmonyWifiApis';
 import { installHarmonyNfcApis } from '../native/HarmonyNfcApis';
+import { collectHarmonyHostObservation } from '../native/HarmonyHostObservation';
 import { HarmonyHostAccountManager, HarmonyAccountController, HarmonyAccountOwnerContext, HarmonyAccountExecutionOwner, HarmonyAccountError, HarmonyAccountControllerState, HarmonyAccountLaunch } from '../session/HostAccountManager';
 
 // Keep failed close barriers alive beyond ArkUI component destruction. A real
@@ -155,17 +156,18 @@ struct Index {
     const route=pack.requireRoute(context.launchOptions.route||pack.firstRoute());
     const engine=AppStorage.get<string>('weappContainerEngine')||'quickjs';
     if(!['quickjs','v8'].includes(engine))throw new HarmonyAccountError('ERR_ENGINE','explicit QuickJS or V8 provider required');
+    const hostContextValue = this.getUIContext().getHostContext();
+    if (hostContextValue === undefined) throw new HarmonyAccountError('ERR_HOST_CONTEXT', 'ArkUI host context is unavailable');
+    const hostContext = hostContextValue as common.UIAbilityContext;
+    const hostObservation=await collectHarmonyHostObservation(hostContext,Math.max(1,Math.round(this.areaWidth)),Math.max(1,Math.round(this.areaHeight)));
     const container=createWeappContainer();
     const services=new HarmonyHostServices(container,(error:Object)=>console.error(`WEAPP_CONTAINER_NATIVE_ERROR ${String(error)}`));
-    const session=new HarmonyLiveSession(pack,container,{sessionId:context.sessionId,engine,route,width:Math.max(1,Math.round(this.areaWidth)),height:Math.max(1,Math.round(this.areaHeight)),foreground:abilityLifecycle.foreground,launchOptions:context.launchOptions,hostServices:services,hostIdentity:{application:context.application,account:context.account}},(receipt:HarmonySessionReceipt):void=>{
+    const session=new HarmonyLiveSession(pack,container,{sessionId:context.sessionId,engine,route,width:hostObservation.windowWidth,height:hostObservation.windowHeight,foreground:abilityLifecycle.foreground,launchOptions:context.launchOptions,hostServices:services,hostIdentity:{application:context.application,account:context.account},hostObservation},(receipt:HarmonySessionReceipt):void=>{
       if(context.cancellation.cancelled||this.session?.executionIdentity().sessionId!==receipt.sessionId)return;
       this.observeReceipt(receipt);
     });
     this.session=session;this.attachedSurfaceId='';this.lastReceipt=null;this.initialSmokeLogged=false;this.smokeProbeLogged=false;
     try{
-      const hostContextValue = this.getUIContext().getHostContext();
-      if (hostContextValue === undefined) throw new HarmonyAccountError('ERR_HOST_CONTEXT', 'ArkUI host context is unavailable');
-      const hostContext = hostContextValue as common.UIAbilityContext;
       new HarmonyDeviceApis(hostContext,services);const files=new HarmonyManagedFiles(services,`${hostContext.filesDir}/weapp-container-managed`);
       new HarmonySystemApis(hostContext,services,files);new HarmonyBluetoothApis(hostContext,services);new HarmonyRecorderApis(hostContext,services,files);
       new HarmonyNetworkApis(services,files,[]);new HarmonySocketApis(services,[]); // Explicit HTTPS allowlist; empty denies all origins.

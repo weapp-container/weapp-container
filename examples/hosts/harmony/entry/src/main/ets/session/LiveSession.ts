@@ -1,5 +1,6 @@
 import { PortablePack } from './PortablePack';
 import type { HarmonyHostServices, HarmonyHostServicesConfig } from './HostServices';
+import type { HarmonyHostObservation } from '../native/HarmonyHostObservation';
 
 /** One ArkTS executor owns this complete native session and its EGL surface. */
 export interface HarmonySessionRuntime {
@@ -26,6 +27,7 @@ export interface HarmonySessionOptions {
   launchOptions?: HarmonySessionLaunchOptions;
   hostServices?: HarmonyHostServices;
   hostIdentity?: HarmonyHostServicesConfig;
+  hostObservation?: HarmonyHostObservation;
 }
 export interface HarmonySessionLaunchOptions { query?: Record<string,string>; scene?: number; extra?: Object; }
 interface HarmonyLaunchPayload { path: string; query: Record<string,string>; scene?: number; extra?: Object; }
@@ -183,7 +185,7 @@ export class HarmonyLiveSession {
     onReceipt: (receipt: HarmonySessionReceipt) => void) {
     this.pack = pack;
     this.runtime = runtime;
-    this.options = {sessionId:options.sessionId,engine:options.engine,route:options.route,width:options.width,height:options.height,foreground:options.foreground,launchOptions:options.launchOptions===undefined?undefined:JSON.parse(JSON.stringify(options.launchOptions)) as HarmonySessionLaunchOptions,hostServices:options.hostServices,hostIdentity:options.hostIdentity===undefined?undefined:JSON.parse(JSON.stringify(options.hostIdentity)) as HarmonyHostServicesConfig};
+    this.options = {sessionId:options.sessionId,engine:options.engine,route:options.route,width:options.width,height:options.height,foreground:options.foreground,launchOptions:options.launchOptions===undefined?undefined:JSON.parse(JSON.stringify(options.launchOptions)) as HarmonySessionLaunchOptions,hostServices:options.hostServices,hostIdentity:options.hostIdentity===undefined?undefined:JSON.parse(JSON.stringify(options.hostIdentity)) as HarmonyHostServicesConfig,hostObservation:options.hostObservation===undefined?undefined:JSON.parse(JSON.stringify(options.hostObservation)) as HarmonyHostObservation};
     this.foreground=options.foreground!==false;
     this.onReceipt = onReceipt;
     this.width = this.dimension(options.width);
@@ -199,12 +201,21 @@ export class HarmonyLiveSession {
     // Consume once before native initialization; failures cannot replay App hooks.
     this.started = true;
     try {
+      const observation = this.options.hostObservation;
       const config = { engine: this.options.engine, session_id: this.options.sessionId, require_integrity: true,
         page_render_mode: 'native-gpu',
-        host: { windowWidth: this.width, windowHeight: this.height } };
+        host: observation === undefined ? { windowWidth: this.width, windowHeight: this.height } : {
+          windowWidth: observation.windowWidth, windowHeight: observation.windowHeight,
+          displayMetrics: observation.displayMetrics,
+        } };
       this.nativeStatus(this.runtime.loadManifestWithConfig(this.pack.manifestJson, JSON.stringify(config)), 'manifest.load');
       if (this.options.hostServices !== undefined) {
         if (this.options.hostIdentity === undefined) throw new Error('ERR_INVALID_REQUEST: trusted host identity is required');
+        if (observation !== undefined) {
+          for (const name of Object.keys(observation.syncSnapshots)) {
+            this.options.hostServices.setSyncSnapshot(name, observation.syncSnapshots[name]);
+          }
+        }
         this.options.hostServices.configure(this.options.hostIdentity, this.pack.integrityRoot);
         if(!this.foreground)this.options.hostServices.setForeground(false);
       }
