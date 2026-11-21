@@ -58,7 +58,10 @@ export function prepareAndroidV8SourceBuild(metadata, apiLevel, {
     symlink(relative(parent, sourceNdk), alias, 'dir')
   }
 
-  const requiredGnArgs = `default_min_sdk_version=${apiLevel} android_ndk_api_level=${apiLevel}`
+  // skia-bindings links the Android NDK libc++_static archive. Rusty V8's
+  // default custom libc++ would put a second copy of the same ABI into the
+  // final cdylib, so use the NDK libc++ shared runtime for this mixed host.
+  const requiredGnArgs = `default_min_sdk_version=${apiLevel} android_ndk_api_level=${apiLevel} use_custom_libcxx=false`
   const gnArgs = [inheritedGnArgs.trim(), requiredGnArgs].filter(Boolean).join('\n')
   return {
     status: 'passed',
