@@ -186,7 +186,15 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
   writeFileSync(resolve(v8Root, 'Cargo.toml'), '[package]\nname = "v8"\nversion = "152.2.0"\n')
   const fakeLinker = resolve(value.prebuilt, 'bin/aarch64-linux-android30-clang')
   const linkerArgsPath = resolve(value.dir, 'linker-args.json')
-  writeFileSync(fakeLinker, '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.WEAPP_TEST_LINKER_ARGS, JSON.stringify(process.argv.slice(2)))\n')
+  const resourceDir = resolve(value.prebuilt, 'lib/clang/17')
+  const builtinsArchive = resolve(resourceDir, 'lib/linux/libclang_rt.builtins-aarch64-android.a')
+  mkdirSync(dirname(builtinsArchive), { recursive: true })
+  writeFileSync(builtinsArchive, 'pinned compiler runtime fixture')
+  writeFileSync(fakeLinker, `#!/usr/bin/env node
+const fs = require('node:fs'), args = process.argv.slice(2)
+if (args.includes('--print-resource-dir')) process.stdout.write(${JSON.stringify(resourceDir)} + String.fromCharCode(10))
+else fs.writeFileSync(process.env.WEAPP_TEST_LINKER_ARGS, JSON.stringify(args))
+`)
   chmodSync(fakeLinker, 0o755)
   for (const abi of ['aarch64-linux-android', 'arm-linux-androideabi']) {
     for (const archive of ['libc++_static.a', 'libc++abi.a']) {
@@ -227,7 +235,7 @@ test('Linux Android V8 source builds prepare the pinned NDK path and GN API befo
     env: { ...process.env, WEAPP_TEST_LINKER_ARGS: linkerArgsPath }, encoding: 'utf8',
   })
   assert.equal(linkerProbe.status, 0, linkerProbe.stderr)
-  assert.deepEqual(JSON.parse(readFileSync(linkerArgsPath, 'utf8')), [`-L${stagedLib}`, '--version'])
+  assert.deepEqual(JSON.parse(readFileSync(linkerArgsPath, 'utf8')), [`-L${stagedLib}`, '--version', builtinsArchive])
   assert.deepEqual(JSON.parse(readFileSync(resolve(value.dir, 'metadata-args.json'), 'utf8')), ['metadata', '--locked', '--all-features', '--format-version', '1'])
 })
 

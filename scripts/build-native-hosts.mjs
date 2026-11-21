@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import { harmonySkiaBuild } from './lib/harmony-skia-build.mjs'
 import { nativeSkiaBuild as resolveNativeSkiaBuild, resolveLockedSkiaSource } from './lib/cargo-skia-source.mjs'
-import { prepareAndroidV8SourceBuild } from './lib/android-v8-source-build.mjs'
+import { prepareAndroidV8SourceBuild, resolveRustyV8Source } from './lib/android-v8-source-build.mjs'
 import { createHash } from 'node:crypto'
 import { SDK_RELEASE_VERSION, assertCleanNativeSource, captureNativeSource } from './lib/sdk-current-release.mjs'
 import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtifact } from './lib/showcase-policy.mjs'
@@ -233,12 +233,14 @@ const androidAbiSpecs = {
   'arm64-v8a': {
     target: 'aarch64-linux-android',
     linkerPrefix: 'aarch64-linux-android',
+    compilerRuntimeAbi: 'aarch64',
     sysrootLibDir: 'aarch64-linux-android',
     envTarget: 'aarch64_linux_android',
   },
   'armeabi-v7a': {
     target: 'armv7-linux-androideabi',
     linkerPrefix: 'armv7a-linux-androideabi',
+    compilerRuntimeAbi: 'arm',
     sysrootLibDir: 'arm-linux-androideabi',
     envTarget: 'armv7_linux_androideabi',
   },
@@ -458,17 +460,30 @@ function prepareAndroidV8SkiaNdk(ndk) {
 }
 
 function prepareAndroidV8Linker(ndk, apiLevel, skiaNdk) {
-  if (!skiaNdk) return null
+  if (!resolveRustyV8Source(cargoMetadata({ allFeatures: true }))) return { linker: null, error: null }
+  if (!skiaNdk) return { linker: null, error: 'Android V8 source build could not prepare the link-only Android NDK' }
   const host = 'linux-x86_64'
   const linker = resolve(ndk, 'toolchains/llvm/prebuilt', host, 'bin', `${selectedAndroid.linkerPrefix}${apiLevel}-clang`)
+  if (!existsSync(linker)) return { linker: null, error: null }
   const sysrootLib = resolve(skiaNdk, 'toolchains/llvm/prebuilt', host, 'sysroot/usr/lib', selectedAndroid.sysrootLibDir)
+  const resourceDirResult = spawnSync(linker, ['--print-resource-dir'], { encoding: 'utf8', timeout: 10_000 })
+  const resourceDir = resourceDirResult.status === 0 && !resourceDirResult.error ? resourceDirResult.stdout.trim() : ''
+  if (!resourceDir) return {
+    linker: null,
+    error: `Android V8 source build could not resolve the NDK Clang resource directory using ${linker} --print-resource-dir`,
+  }
+  const builtinsArchive = resolve(resourceDir, 'lib/linux', `libclang_rt.builtins-${selectedAndroid.compilerRuntimeAbi}-android.a`)
+  if (!existsSync(builtinsArchive)) return {
+    linker: null,
+    error: `Android V8 source build requires the NDK compiler runtime archive ${builtinsArchive}`,
+  }
   const wrapperDir = resolve(targetDir, 'native-host-toolchain/android-v8-linker')
   const wrapper = resolve(wrapperDir, `${selectedAndroid.linkerPrefix}${apiLevel}-clang`)
   const quote = value => `'${value.replaceAll("'", "'\\''")}'`
   mkdirSync(wrapperDir, { recursive: true })
-  writeFileSync(wrapper, `#!/bin/sh\nexec ${quote(linker)} -L${quote(sysrootLib)} "$@"\n`)
+  writeFileSync(wrapper, `#!/bin/sh\nexec ${quote(linker)} -L${quote(sysrootLib)} "$@" ${quote(builtinsArchive)}\n`)
   chmodSync(wrapper, 0o755)
-  return wrapper
+  return { linker: wrapper, error: null }
 }
 
 function nativeToolchain(name) {
@@ -498,7 +513,8 @@ function nativeToolchain(name) {
         : ['darwin-aarch64', 'darwin-x86_64']
     const hosts = hostCandidates.find(host => existsSync(resolve(prebuilt, host))) || null
     const linker = hosts ? resolve(prebuilt, hosts, 'bin', `${selectedAndroid.linkerPrefix}${apiLevel}-clang`) : null
-    const cargoLinker = androidV8SourceBuildRequested(name) ? prepareAndroidV8Linker(ndk, apiLevel, skiaNdk) || linker : linker
+    const androidV8Linker = androidV8SourceBuildRequested(name) ? prepareAndroidV8Linker(ndk, apiLevel, skiaNdk) : null
+    const cargoLinker = androidV8Linker?.linker || linker
     const cxx = linker ? `${linker}++` : null
     const sysroot = hosts ? resolve(prebuilt, hosts, 'sysroot') : null
     if (!linker || !existsSync(linker) || !cxx || !existsSync(cxx)) return {
@@ -548,6 +564,7 @@ function nativeToolchain(name) {
         ...(libclang ? { LIBCLANG_PATH: libclang } : {}),
         [`BINDGEN_EXTRA_CLANG_ARGS_${selectedAndroid.envTarget}`]: bindgenArgs,
       },
+      androidV8LinkerError: androidV8Linker?.error || null,
     }
   }
   if (name === 'harmony') {
@@ -805,11 +822,13 @@ function runPlatform(name) {
   const v8SourceBoundary = v8SourceBuild?.status === 'failed'
     ? { code: 'ANDROID_V8_SOURCE_INPUTS_UNAVAILABLE', reason: v8SourceBuild.error }
     : null
+  const androidV8LinkerError = v8SourceBuild?.status === 'passed' ? toolchain.androidV8LinkerError : null
+  const cargoToolchainError = toolchain.error || androidV8LinkerError
   const engineFeatures = engine === 'quickjs' ? spec.feature
     : spec.feature.split(',').filter(feature => !feature.startsWith('quickjs-native')).concat('v8-native').join(',')
   const features = engineFeatures + (distribution.policy ? ',restricted-showcase' : '')
-  const cargo = toolchain.error
-    ? { status: 'not-run', reason: toolchain.error }
+  const cargo = cargoToolchainError
+    ? { status: 'not-run', reason: cargoToolchainError }
     : engineBoundary || v8SourceBoundary
       ? { status: 'not-run', reason: (engineBoundary || v8SourceBoundary).reason, errorCode: (engineBoundary || v8SourceBoundary).code }
       : run(cargoBin, [mode === 'build' ? 'build' : 'check', '-p', spec.crate, '--no-default-features', '--features', features, '--target', spec.target, '--target-dir', targetDir, '--locked', ...(profile === 'release' ? ['--release'] : [])], { ...cargoEnv, ...toolchain.env, ...(v8SourceBuild?.env || {}) })
@@ -862,7 +881,7 @@ function runPlatform(name) {
         ...(v8SourceBuild?.report ? { androidV8SourceBuild: v8SourceBuild.report } : {}),
         ignoredSdkEnvironment: ['SDKROOT', 'SDKTARGETSYSROOT'].filter(key => process.env[key] !== undefined),
         compatibility: 'not-verified',
-        error: toolchain.error || null,
+        error: toolchain.error || androidV8LinkerError || null,
       } : {}),
       ...(name === 'ios' ? { skia: toolchain.skia } : {}),
     },
