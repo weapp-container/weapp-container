@@ -40,6 +40,7 @@ export async function collectHarmonyHostObservation(
   const properties = nativeWindow.getWindowProperties();
   const avoid = nativeWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
   const topInset = rectValue(avoid.topRect.height) / density;
+  const screenTop = Number.isFinite(properties.windowRect.top) ? properties.windowRect.top / density : 0;
   const system = nonEmpty(deviceInfo.osFullName, 'OpenHarmony');
   const brand = nonEmpty(deviceInfo.brand, nonEmpty(deviceInfo.manufacture, 'OpenHarmony'));
   const model = nonEmpty(deviceInfo.productModel, nonEmpty(deviceInfo.marketName, 'unknown'));
@@ -53,6 +54,9 @@ export async function collectHarmonyHostObservation(
   const systemInfo = {
     brand, model, language, SDKVersion: '3.17.3', theme,
     fontSizeSetting: 16 * fontScale, platform: 'harmony', system, version: system,
+    pixelRatio: density, screenWidth, screenHeight,
+    windowWidth, windowHeight, statusBarHeight: topInset,
+    deviceOrientation: orientation,
   };
   const device = {
     brand, model, abi, cpuType, memorySize: 0, benchmarkLevel: -1,
@@ -66,8 +70,12 @@ export async function collectHarmonyHostObservation(
   };
   const displayMetrics = {
     pixelRatio: density, screenWidth, screenHeight, statusBarHeight: topInset,
-    screenTop: Number.isFinite(properties.windowRect.top) ? properties.windowRect.top : 0,
+    screenTop,
     deviceOrientation: orientation,
+  };
+  const windowInfo = {
+    pixelRatio: density, screenWidth, screenHeight, windowWidth, windowHeight,
+    statusBarHeight: topInset, screenTop,
   };
   return {
     windowWidth: Math.max(1, Math.round(windowWidth)),
@@ -76,7 +84,7 @@ export async function collectHarmonyHostObservation(
     syncSnapshots: {
       'wx.getDeviceInfo': device,
       'wx.getSystemInfoSync': systemInfo,
-      'wx.getWindowInfo': {},
+      'wx.getWindowInfo': windowInfo,
       'wx.getSystemSetting': systemSetting,
       'wx.getAppBaseInfo': {
         SDKVersion: systemInfo.SDKVersion, enableDebug: false, language,
