@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Current production-readiness evidence boundaries for Weapp Container",
-  "generatedAt": "2026-11-21",
+  "generatedAt": "2026-11-22",
   "entries": [
     {
       "id": "platform-matrix-2026-11-21",
@@ -515,6 +515,24 @@
       "scope": "Android emulator emulator-5554 running the portable-pack-reference-v1 fixture under current-source QuickJS and source-compatible V8 APKs",
       "conclusion": "Passed current harness app.init, lifecycle, page.push, render.commit, RGBA render.snapshot, canvas/API probes and attached Skia GLES container surfaces for both engines. QuickJS was built at HEAD. The V8 build receipt is from 897e8a2a, an ancestor whose only path change to HEAD is docs/evidence-ledger.json, and was revalidated by the current smoke harness",
       "limitations": "These are debuggable emulator APK results. They do not establish production signing, physical-device behavior, complete API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-quickjs-interaction-current-ad8a6867",
+      "tool": "adb shell input tap, screencap and portable-pack-interaction.json",
+      "version": "workspace HEAD ad8a6867d3f51de6259dfaad4cd967cf5faa6063; interaction receipt SHA-256 b1cd378213573cb93bd927dd854d1b4f0b31eaf832ffa7159fe7a5c622b7ca63",
+      "analysisTime": "2026-11-22",
+      "scope": "One native tap on the portable-pack-reference-v1 page in Android emulator emulator-5554 using QuickJS",
+      "conclusion": "Passed a real touchstart that changed the page count and component slot count from 0 to 1, retained the same QuickJS session and manifest integrity, committed frame 6 and presented frame 6 through skia-gpu-gles",
+      "limitations": "This is debuggable-emulator interaction evidence with single-pointer/tap coverage. It does not establish release signing, physical-device behavior, complete gesture coverage, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-v8-interaction-current-ad8a6867",
+      "tool": "adb shell input tap, screencap and portable-pack-interaction.json",
+      "version": "workspace HEAD ad8a6867d3f51de6259dfaad4cd967cf5faa6063; interaction receipt SHA-256 82c6b5f7029ed503777a215e00abc7e6efa2a1e7747e52753ba79d79de371157",
+      "analysisTime": "2026-11-22",
+      "scope": "One native tap on the portable-pack-reference-v1 page in Android emulator emulator-5554 using V8",
+      "conclusion": "Passed a real touchstart that changed the page count and component slot count from 0 to 1, retained the same V8 session and manifest integrity, committed frame 6 and presented frame 6 through skia-gpu-gles",
+      "limitations": "This is debuggable-emulator interaction evidence with single-pointer/tap coverage. It does not establish release signing, physical-device behavior, complete gesture coverage, full API conformance, official WeChat behavior or performance acceptance"
     }
   ]
 }
