@@ -434,6 +434,42 @@
       "scope": "Production-readiness aggregate with source-compatible Android QuickJS/V8 and iOS QuickJS/V8 execution receipts for portable-pack-reference-v1",
       "conclusion": "Android QuickJS/V8 and iOS QuickJS/V8 were accepted as passed same-fixture execution and GPU pairs. releaseReady remains false because Harmony QuickJS/V8, the remaining host execution matrix, official WeChat DevTools cases, host bridge and complete performance reports are incomplete",
       "limitations": "This aggregate is a gate report, not a runtime result. It does not establish physical-device behavior, production signing, complete official DevTools conformance or release approval"
+    },
+    {
+      "id": "android-dual-engine-current-897e8a2a",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 897e8a2a2e70a0a6807dcc8ea0406bc43a53bf97; QuickJS APK SHA-256 6df92df96054095c357d04c579db4fb710c67cfc31478aa50bffcfbcdaa20429; V8 APK SHA-256 5f25b0bb34a3048cd7b8414ced052f4cabdda2ce3db44495800e8f94c7252653",
+      "analysisTime": "2026-11-22",
+      "scope": "Android emulator emulator-5554 running current-source debug APKs for QuickJS and V8 with portable-pack-reference-v1",
+      "conclusion": "Passed clean current-source APK provenance, app.init, lifecycle, page.push, render.commit, RGBA render.snapshot, canvas/API probes and attached Skia GLES container surfaces for both engines",
+      "limitations": "These are official-emulator debug APK results. They do not certify production signing, physical devices, other Android hosts, complete API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-v8-native-current-897e8a2a",
+      "tool": "scripts/build-native-hosts.mjs and scripts/build-android-apk.mjs",
+      "version": "workspace commit 897e8a2a2e70a0a6807dcc8ea0406bc43a53bf97; Android arm64-v8a V8 native artifact SHA-256 81cf22a5bfedadf4db323895047a72165385c3188de894ae8a6470360ed6ca6e",
+      "analysisTime": "2026-11-22",
+      "scope": "Linux container Android arm64-v8a V8 152.2.0 native host boundary with pinned API 26 and Skia GLES inputs",
+      "conclusion": "Passed clean source capture before and after build, Cargo release build, pinned V8 source compilation, Android JNI host integration, artifact hash verification and APK packaging",
+      "limitations": "This is a native and packaging boundary result. It does not establish production signing, physical-device behavior, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "ios-quickjs-current-897e8a2a",
+      "tool": "scripts/ios-app-smoke",
+      "version": "workspace commit 897e8a2a2e70a0a6807dcc8ea0406bc43a53bf97; run 93254fbb488f; signed simulator app SHA-256 30b1fdb1167dc63d78b3f08dd2df507bfbda924a6e66a3ae524f616d248298f2",
+      "analysisTime": "2026-11-22",
+      "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running current-source QuickJS with Rust Skia Metal drawable and portable-pack-reference-v1",
+      "conclusion": "Passed source-bound Rust and UIKit build, app.init, lifecycle, page.push, render.commit, RGBA snapshot, wx.canIUse, attached CAMetalLayer GPU surface with rendererBackend skia-gpu-metal and teardown cleanup",
+      "limitations": "This is official-simulator evidence. It does not certify iOS V8, physical devices, production signing, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "ios-v8-current-897e8a2a-blocked",
+      "tool": "scripts/ios-app-smoke",
+      "version": "workspace commit 897e8a2a2e70a0a6807dcc8ea0406bc43a53bf97",
+      "analysisTime": "2026-11-22",
+      "scope": "Current-source iOS V8 simulator build attempt",
+      "conclusion": "Blocked before Cargo because the required pinned RUSTY_V8_ARCHIVE, RUSTY_V8_ARCHIVE_SHA256 and RUSTY_V8_SRC_BINDING_PATH inputs are not configured on this host",
+      "limitations": "The prior c40cfd8 iOS V8 simulator receipt is stale for the current source provenance and is not reused as current evidence. No current-source iOS V8 runtime or GPU result is claimed"
     }
   ]
 }
