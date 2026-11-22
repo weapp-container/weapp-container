@@ -533,6 +533,15 @@
       "scope": "One native tap on the portable-pack-reference-v1 page in Android emulator emulator-5554 using V8",
       "conclusion": "Passed a real touchstart that changed the page count and component slot count from 0 to 1, retained the same V8 session and manifest integrity, committed frame 6 and presented frame 6 through skia-gpu-gles",
       "limitations": "This is debuggable-emulator interaction evidence with single-pointer/tap coverage. It does not establish release signing, physical-device behavior, complete gesture coverage, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-quickjs-longpress-4aa0454a",
+      "tool": "scripts/build-android-apk.mjs, scripts/mobile-runtime-smoke.mjs, adb shell input swipe and portable-pack-interaction.json",
+      "version": "workspace commit 4aa0454abae76265840bb3298af89de3b06480bc; APK SHA-256 3df21eeaadf626a6350215c3458fa9b02cc265a81f29c39c5da53673bf8a2680; build receipt SHA-256 e80be0f665c805e254fe00865be0e6adf987b72ce073fd272cf6b26129a238aa; runtime smoke SHA-256 ab2dec623b79d12da685383594f335ad96f11f8ddfd4f4003a51b950f660a3f5; interaction receipt SHA-256 c4a5539e244855510b8957ad281008bd3c4c978e47205f9e94f29d9680d1fafc",
+      "analysisTime": "2026-11-22",
+      "scope": "Source-bound QuickJS debug APK on Android emulator emulator-5554; stationary native long press through GlesSnapshotView, PortablePackSession and the Rust runtime",
+      "conclusion": "Passed clean-source APK packaging and source-bound runtime/GPU smoke. The interaction receipt recorded exactly one longpress, no tap, a ready QuickJS session, no runtime or presentation failure, no diagnostics and a presented skia-gpu-gles frame",
+      "limitations": "The bundled reference page does not bind a longpress page handler, so this proves event delivery through the runtime boundary and tap suppression but not an application handler side effect. Debug-emulator evidence does not establish production signing, physical-device behavior, complete gesture coverage, official WeChat behavior or performance acceptance"
     }
   ]
 }
