@@ -470,6 +470,24 @@
       "scope": "Current-source iOS V8 simulator build attempt",
       "conclusion": "Blocked before Cargo because the required pinned RUSTY_V8_ARCHIVE, RUSTY_V8_ARCHIVE_SHA256 and RUSTY_V8_SRC_BINDING_PATH inputs are not configured on this host",
       "limitations": "The prior c40cfd8 iOS V8 simulator receipt is stale for the current source provenance and is not reused as current evidence. No current-source iOS V8 runtime or GPU result is claimed"
+    },
+    {
+      "id": "harmony-quickjs-sample-pack-d3b2592",
+      "tool": "scripts/build-native-hosts.mjs, scripts/build-harmony-hap.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit d3b259215146eefd4bc3e45927c17e069048470c; unsigned HAP SHA-256 8a3409faaf5e8c31b3ce147758a32cfcc608d26fabfac57087840aa80590f7d6; target 127.0.0.1:5557",
+      "analysisTime": "2026-11-22",
+      "scope": "Official DevEco/Harmony emulator running current-source QuickJS HAP with the checked-in four-module Harmony sample pack, manifest integrity root 7f1c297219aaa69332ecfc1d535ba7225c017e682f9ed2abe181bcc305d35ab0",
+      "conclusion": "Passed clean native release build, exact native library preservation in HAP, official Hvigor packaging, install and ability launch, app.init, render.commit, RGBA snapshot, canvas/API probes and attached Skia GLES framebuffer with containerSurfaceAttached=true",
+      "limitations": "This is an unsigned Harmony emulator result using a different fixture from the Android/iOS portable-pack-reference-v1 matrix. It does not certify production signing, physical-device behavior, Harmony V8, complete API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "ios-v8-current-d3b2592",
+      "tool": "scripts/ios-app-smoke",
+      "version": "workspace commit d3b259215146eefd4bc3e45927c17e069048470c; run 64aaf54497e2; signed simulator app SHA-256 recorded in build evidence",
+      "analysisTime": "2026-11-22",
+      "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running current-source V8 152.2.0 with pinned archive and target binding, Rust Skia Metal drawable and portable-pack-reference-v1",
+      "conclusion": "Passed verified V8 archive and binding inputs, source-bound Rust and UIKit build, app.init, lifecycle, page.push, render.commit, RGBA snapshot, wx.canIUse, attached CAMetalLayer GPU surface with rendererBackend skia-gpu-metal and teardown cleanup",
+      "limitations": "This is official-simulator evidence. It does not certify physical devices, production signing, full API conformance, official WeChat behavior or performance acceptance"
     }
   ]
 }
