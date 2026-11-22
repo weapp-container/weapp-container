@@ -1,23 +1,19 @@
 package com.sonofmagic.weapp.container
 
-import android.app.Activity
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.Choreographer
-import android.window.OnBackInvokedCallback
-import android.window.OnBackInvokedDispatcher
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.UUID
 import org.json.JSONObject
 
 /** The Activity main thread owns the isolate, EGL context and all bridge calls. */
-class MainActivity : Activity() {
-    private val predictiveBackCallback = OnBackInvokedCallback {
-        if (live?.navigateBack() != true) finish()
-    }
+class MainActivity : ComponentActivity() {
     private var handle: Long = 0
     private var surfaceView: GlesSnapshotView? = null
     private var windowObservations: AndroidWindowObservationCollector? = null
@@ -43,6 +39,11 @@ class MainActivity : Activity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (live?.navigateBack() != true) finish()
+            }
+        })
         val engine = intent.getStringExtra("weappContainerEngine") ?: BuildConfig.WEAPP_CONTAINER_ENGINE
         val fixtureId = intent.getStringExtra("weappContainerFixtureId") ?: "portable-pack-reference-v1"
         sessionId = intent.getStringExtra("weappContainerSessionId") ?: sessionId
@@ -54,12 +55,6 @@ class MainActivity : Activity() {
         }
         handle = nativeCreate()
         check(handle != 0L) { "native runtime creation failed" }
-        if (android.os.Build.VERSION.SDK_INT >= 33) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                predictiveBackCallback,
-            )
-        }
         val pack = PortablePack.load { path -> assets.open("portable-pack/$path").use { it.readBytes() } }
         val presenter = GlesSnapshotView(this)
         surfaceView = presenter
@@ -178,17 +173,7 @@ class MainActivity : Activity() {
         super.onPause()
     }
 
-    @Deprecated("Use predictive back callbacks on Android 13 and newer")
-    @Suppress("DEPRECATION", "GestureBackNavigation")
-    override fun onBackPressed() {
-        if (live?.navigateBack() == true) return
-        super.onBackPressed()
-    }
-
     override fun onDestroy() {
-        if (android.os.Build.VERSION.SDK_INT >= 33) {
-            onBackInvokedDispatcher.unregisterOnBackInvokedCallback(predictiveBackCallback)
-        }
         resumed = false
         Choreographer.getInstance().removeFrameCallback(frameCallback)
         frameScheduled = false

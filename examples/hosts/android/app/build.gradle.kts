@@ -88,6 +88,10 @@ android {
     sourceSets["main"].jniLibs.srcDir(rustJniLibsDir)
 }
 
+dependencies {
+    implementation("androidx.activity:activity-ktx:1.10.1")
+}
+
 // An imported CMake shared target is linked into libweapp_container.so, but AGP
 // does not package that imported target automatically. Copy the exact Rust
 // artifact into Gradle's generated jniLibs directory so Android's linker can
