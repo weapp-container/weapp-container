@@ -506,6 +506,15 @@
       "scope": "Current-source Harmony aarch64-unknown-linux-ohos V8 native build boundary",
       "conclusion": "Blocked while resolving the pinned V8 input because the v152.2.0 release has no Android or OpenHarmony static archive or source binding for aarch64-unknown-linux-ohos, and the attempted source-binding fetch was unavailable",
       "limitations": "No Harmony V8 native artifact, HAP, runtime or GPU result is claimed. A new pinned upstream artifact or a completed source build is required before this pair can enter the mobile matrix"
+    },
+    {
+      "id": "android-dual-engine-current-ad8a6867",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace HEAD ad8a6867d3f51de6259dfaad4cd967cf5faa6063; QuickJS debug APK SHA-256 aa814a6807a204d53c382129970902cb2268d30ce56b3835ab88d88fac764d2e, build receipt SHA-256 0a8ceb151bc9a8572ee4fed6240926e212604b9694137fc502d461a27c8754d5; V8 debug APK SHA-256 5f25b0bb34a3048cd7b8414ced052f4cabdda2ce3db44495800e8f94c7252653, build receipt SHA-256 1e80ac1c0055eaf65b2897cf9d5d2cc570d1ddec1d46fd1c46bd0917fd221486; smoke reports SHA-256 8e50c01e861b023f4e1cb2028fb770e2c45f7dc76ecd440ea9f51607c32431c3 and 0c237a655319b85a131f87fec014318c915912fdc45d4d37848bc8889cc65dce",
+      "analysisTime": "2026-11-22",
+      "scope": "Android emulator emulator-5554 running the portable-pack-reference-v1 fixture under current-source QuickJS and source-compatible V8 APKs",
+      "conclusion": "Passed current harness app.init, lifecycle, page.push, render.commit, RGBA render.snapshot, canvas/API probes and attached Skia GLES container surfaces for both engines. QuickJS was built at HEAD. The V8 build receipt is from 897e8a2a, an ancestor whose only path change to HEAD is docs/evidence-ledger.json, and was revalidated by the current smoke harness",
+      "limitations": "These are debuggable emulator APK results. They do not establish production signing, physical-device behavior, complete API conformance, official WeChat behavior or performance acceptance"
     }
   ]
 }
