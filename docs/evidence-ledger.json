@@ -569,6 +569,24 @@
       "scope": "A 800 ms native Android gesture moving 140 physical pixels on QuickJS in emulator emulator-5554, exceeding the configured touch slop",
       "conclusion": "Passed longpress-cancellation behavior. The receipt recorded touchstart, 16 touchmove events and touchend with no longpress or tap, retained the ready QuickJS session and manifest integrity, reported no runtime or presentation failure or diagnostics, and presented frame 20 through skia-gpu-gles",
       "limitations": "This is debuggable-emulator evidence for one QuickJS movement path. It does not establish V8 cancellation parity, physical-device behavior, multi-touch behavior, full gesture coverage, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-quickjs-page-tap-current-920b51e5",
+      "tool": "adb shell input tap and portable-pack-interaction.json",
+      "version": "APK built from workspace commit 4aa0454abae76265840bb3298af89de3b06480bc; APK SHA-256 3df21eeaadf626a6350215c3458fa9b02cc265a81f29c39c5da53673bf8a2680; interaction receipt SHA-256 53697e239971072b630d45c5502e03cfff3e798b2454ce3d3a0a006f254d9dc6",
+      "analysisTime": "2026-11-22",
+      "scope": "One native tap on the reference page increment control in Android emulator emulator-5554 using QuickJS",
+      "conclusion": "Passed. The receipt recorded exactly one tap, changed the page count from 0 to 1, retained the same ready QuickJS session and manifest integrity, reported no diagnostics, and presented frame 4 through skia-gpu-gles",
+      "limitations": "This is debuggable-emulator evidence for one page-level tap. It does not establish release signing, physical-device behavior, complete gesture coverage, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-v8-page-tap-current-a0f76af6",
+      "tool": "adb shell input tap and portable-pack-interaction.json",
+      "version": "APK built from workspace commit 3aec3f8e7cd338aa6a77e7a671bec0dbdfbce595; APK SHA-256 e18f2cfecf6851939c74371a509ad23e75f5620f6b6859d7377bfcf6061d1185; interaction receipt SHA-256 7f4c7727d0e321662a8768c609d4481c8b5b5d21e1c3105961a7a3da0990b1e0",
+      "analysisTime": "2026-11-22",
+      "scope": "One native tap on the reference page increment control in Android emulator emulator-5554 using V8",
+      "conclusion": "Passed. The receipt recorded exactly one tap, changed the page count from 0 to 1, retained the same ready V8 session and manifest integrity, reported no diagnostics, and presented frame 4 through skia-gpu-gles",
+      "limitations": "This is debuggable-emulator evidence for one page-level tap. It does not establish release signing, physical-device behavior, complete gesture coverage, official WeChat behavior or performance acceptance"
     }
   ]
 }
