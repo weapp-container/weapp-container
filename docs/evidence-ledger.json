@@ -614,6 +614,15 @@
       "scope": "Source-bound QuickJS release HAP on Harmony emulator target 127.0.0.1:5557 using bundle com.weappcontainer.validation.quickjs7a348db and portable-pack-reference-v1",
       "conclusion": "Passed clean source-bound native and HAP packaging, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas draw and snapshot, wx.canIUse, attached skia-gpu-gles container surface, and cleanup of the unique emulator launch",
       "limitations": "This is an unsigned release-profile HAP on a Harmony emulator. It does not certify production signing, physical-device behavior, Harmony V8 parity, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-quickjs-current-79f8c5e",
+      "tool": "scripts/build-android-apk.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 79f8c5e1fed6b380d23fd56a6b9fe4a7e21aeafd; APK SHA-256 536d6c803fdd6b8975864506b7b8df31ff3d61f3b76fca26dec94dc55e8d24cc; build receipt SHA-256 ee9ab66375b7b609ffb03981323b033dce502a10166a1aae5432273764ba38b2; runtime smoke SHA-256 eb1864df241001b63b7a0ae11caab4eabac527d8dc4a1d4a4ad46e1db7e7eefc",
+      "analysisTime": "2026-11-22",
+      "scope": "Android emulator emulator-5554 running the current-source QuickJS debug APK with portable-pack-reference-v1",
+      "conclusion": "Passed exact-source APK build and emulator smoke. app.init, render.commit, RGBA render.snapshot, correlated GLES frame, Canvas draw and snapshot, wx.canIUse, and attached skia-gpu-gles surface all passed; the original installed APK was restored after the run",
+      "limitations": "This is debuggable-emulator evidence. It does not certify production signing, physical-device behavior, Android V8 on current source, full API conformance, official WeChat behavior or performance acceptance"
     }
   ]
 }
