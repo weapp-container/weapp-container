@@ -79,7 +79,8 @@ internal class PortablePackSession(
     private val diagnostics = ArrayDeque<JSONObject>()
     private var pointer: Pointer? = null
 
-    private data class Pointer(val id: Int, val x: Double, val y: Double, val timeMs: Long, var moved: Boolean = false)
+    private data class Pointer(val id: Int, val x: Double, val y: Double, val timeMs: Long,
+        var moved: Boolean = false, var longPressed: Boolean = false)
 
     init {
         lifecycle.addLast(JSONObject().put("sequence", 0).put("event", "show").put("source", "launch"))
@@ -235,9 +236,16 @@ internal class PortablePackSession(
                 pointer = null
                 if (current == null || current.id != id) return
                 events.put(event("touchend", current, false))
-                if (!current.moved && hypot(x - current.x, y - current.y) <= slop && timeMs - current.timeMs in 0..500) {
+                if (!current.moved && !current.longPressed && hypot(x - current.x, y - current.y) <= slop && timeMs - current.timeMs in 0..500) {
                     events.put(event("tap", current, false))
                 }
+            }
+            "longpress" -> {
+                if (current == null || current.id != id || current.moved || current.longPressed ||
+                    timeMs < current.timeMs
+                ) return
+                current.longPressed = true
+                events.put(event("longpress", current, true))
             }
             "cancel", "multiple" -> {
                 pointer = null
@@ -423,7 +431,7 @@ internal class PortablePackSession(
                 .put("width", it.width).put("height", it.height).put("transport", "frame-metadata") } ?: JSONObject.NULL)
             .put("operations", JSONArray(operations.toList()))
             .put("lifecycle", JSONArray(lifecycle.toList())).put("diagnostics", JSONArray(diagnostics.toList()))
-            .put("limitations", JSONArray(listOf("single-pointer/tap only; no multi-touch/scroll/longpress gesture recognizer", "native touch target capture and continuous media-query observers remain partial"))))
+            .put("limitations", JSONArray(listOf("single-pointer input; multi-touch and native pointer target capture remain partial", "continuous media-query observers remain partial"))))
     }
 
     private fun checkOwner() { check(Thread.currentThread() === owner) { "native session must stay on its owner thread" } }

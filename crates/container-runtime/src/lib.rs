@@ -4446,7 +4446,7 @@ impl Session {
         let Some(id) = contact.filter(|_| {
             matches!(
                 kind.as_str(),
-                "touchstart" | "touchmove" | "touchend" | "touchcancel" | "tap"
+                "touchstart" | "touchmove" | "touchend" | "touchcancel" | "tap" | "longpress"
             )
         }) else {
             return Ok(self

@@ -7,6 +7,7 @@ import android.opengl.EGLContext
 import android.opengl.EGLDisplay
 import android.opengl.EGLSurface
 import android.opengl.GLES20
+import android.os.SystemClock
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.MotionEvent
@@ -49,6 +50,12 @@ class GlesSnapshotView(context: Context) : SurfaceView(context), SurfaceHolder.C
     private var presentationPending = true
     private var drawableObservation: JSONObject? = null
     private val drawableGate = EglDrawableGate()
+    private var activePointerId: Int? = null
+    private var downX = 0.0
+    private var downY = 0.0
+    private var downTimeMs = 0L
+    private var longPressPending = false
+    private var longPressRunnable: Runnable? = null
 
     private val vertexBuffer: FloatBuffer = floatBuffer(
         floatArrayOf(-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f),
@@ -119,18 +126,97 @@ class GlesSnapshotView(context: Context) : SurfaceView(context), SurfaceHolder.C
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val callback = onPointer ?: return false
-        val action = when (event.actionMasked) {
+        val actionMasked = event.actionMasked
+        val action = when (actionMasked) {
             MotionEvent.ACTION_DOWN -> "down"
             MotionEvent.ACTION_MOVE -> "move"
             MotionEvent.ACTION_UP -> "up"
             MotionEvent.ACTION_CANCEL -> "cancel"
-            MotionEvent.ACTION_POINTER_DOWN -> "multiple"
+            MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_POINTER_UP -> "multiple"
             else -> return true
         }
-        callback(action, event.getPointerId(0), event.getX(0).toDouble(), event.getY(0).toDouble(),
-            event.eventTime, ViewConfiguration.get(context).scaledTouchSlop.toDouble())
-        if (event.actionMasked == MotionEvent.ACTION_UP) performClick()
+
+        val actionIndex = if (actionMasked == MotionEvent.ACTION_POINTER_DOWN ||
+            actionMasked == MotionEvent.ACTION_POINTER_UP
+        ) {
+            event.actionIndex
+        } else activePointerId?.let(event::findPointerIndex)?.takeIf { it >= 0 } ?: 0
+        if (actionIndex !in 0 until event.pointerCount) return true
+        val pointerId = event.getPointerId(actionIndex)
+        val x = event.getX(actionIndex).toDouble()
+        val y = event.getY(actionIndex).toDouble()
+        val slop = ViewConfiguration.get(context).scaledTouchSlop.toDouble()
+
+        when (actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                cancelLongPressTask()
+                activePointerId = pointerId
+                downX = x
+                downY = y
+                downTimeMs = event.eventTime
+                longPressPending = true
+                val timeoutMs = ViewConfiguration.getLongPressTimeout().toLong()
+                val runnable = Runnable {
+                    dispatchLongPress(
+                        callback,
+                        pointerId,
+                        maxOf(downTimeMs + timeoutMs, SystemClock.uptimeMillis()),
+                        slop,
+                    )
+                }
+                longPressRunnable = runnable
+                postDelayed(runnable, timeoutMs)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (activePointerId == pointerId) {
+                    val elapsed = event.eventTime - downTimeMs
+                    if (kotlin.math.hypot(x - downX, y - downY) > slop) {
+                        cancelLongPressTask()
+                    } else if (longPressPending && elapsed >=
+                        ViewConfiguration.getLongPressTimeout().toLong()
+                    ) {
+                        dispatchLongPress(callback, pointerId, event.eventTime, slop)
+                    }
+                }
+            }
+            MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_POINTER_UP -> {
+                cancelLongPressTask()
+                activePointerId = null
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                cancelLongPressTask()
+                activePointerId = null
+            }
+        }
+
+        callback(action, pointerId, x, y, event.eventTime, slop)
+        if (actionMasked == MotionEvent.ACTION_UP) performClick()
         return true
+    }
+
+    private fun cancelLongPressTask() {
+        longPressPending = false
+        longPressRunnable?.let(::removeCallbacks)
+        longPressRunnable = null
+    }
+
+    private fun dispatchLongPress(
+        callback: (String, Int, Double, Double, Long, Double) -> Unit,
+        pointerId: Int,
+        eventTimeMs: Long,
+        slop: Double,
+    ) {
+        if (!longPressPending || activePointerId != pointerId) return
+        longPressPending = false
+        longPressRunnable?.let(::removeCallbacks)
+        longPressRunnable = null
+        callback("longpress", pointerId, downX, downY, eventTimeMs, slop)
+    }
+
+    override fun onDetachedFromWindow() {
+        cancelLongPressTask()
+        activePointerId = null
+        super.onDetachedFromWindow()
     }
 
     override fun performClick(): Boolean { super.performClick(); return true }

@@ -63,7 +63,7 @@ const FIRST_WXML: &str = r#"
   <view id="b" data-label="b" style="position:absolute;left:0px;top:0px;width:40px;height:40px"
     bindtouchstart="b" bindtouchmove="b" bindtouchend="b" bindtouchcancel="b" bindtap="b"/>
   <view wx:if="{{visible}}" id="a" data-label="{{label}}" style="position:absolute;left:{{left}}px;top:0px;width:40px;height:40px"
-    bindtouchstart="start" bindtouchmove="a" bindtouchend="a" bindtouchcancel="a" bindtap="a"/>
+    bindtouchstart="start" bindtouchmove="a" bindtouchend="a" bindtouchcancel="a" bindtap="a" bindlongpress="a"/>
   <card wx:if="{{showCard}}" style="position:absolute;left:0px;top:50px;width:40px;height:40px"/>
 </view>
 "#;
@@ -277,7 +277,7 @@ impl Fixture {
 
     fn touch(kind: &str, id: i64, x: f64, y: f64) -> Value {
         let touch = json!({"identifier":id,"clientX":x,"clientY":y,"pageX":x,"pageY":y});
-        let active = matches!(kind, "touchstart" | "touchmove");
+        let active = matches!(kind, "touchstart" | "touchmove" | "longpress");
         json!({"type":kind,"x":x,"y":y,"timeStamp":100,"touches":if active {json!([touch])} else {json!([])},"changedTouches":[touch],"detail":{"x":x,"y":y}})
     }
 
@@ -391,6 +391,28 @@ fn layout_motion_and_dataset_changes_preserve_the_original_touch_route() {
             assert_eq!(event["targetDataset"]["label"], "before");
             assert_eq!(event["mark"]["origin"], "before");
         }
+    }
+}
+
+#[test]
+fn longpress_keeps_the_captured_touch_target_after_layout_motion() {
+    for engine in engines() {
+        let mut f = Fixture::start(engine, "longpress-capture");
+        let (x, y) = f.center("#a");
+        f.input(vec![Fixture::touch("touchstart", 17, x, y)]);
+        f.patch(json!({"left":60,"label":"after"}));
+        f.render();
+        assert_ne!(f.center("#a"), (x, y));
+        f.clear();
+
+        f.input(vec![Fixture::touch("longpress", 17, x, y)]);
+        let events = f.events();
+        let target = for_owner(&events, "a");
+        assert_eq!(target.len(), 1, "{engine:?}: {events:?}");
+        assert_eq!(target[0]["type"], "longpress");
+        assert_eq!(target[0]["targetDataset"]["label"], "before");
+        assert_eq!(target[0]["mark"]["origin"], "before");
+        assert!(for_owner(&events, "b").is_empty());
     }
 }
 

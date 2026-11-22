@@ -958,15 +958,18 @@ object PortablePackContractTest {
             session.setForeground(true)
             session.pointer("down", 0, 0.0, 0.0, 0, 0.1)
             session.pointer("move", 0, 1.0, 1.0, 10, 0.1)
+            session.pointer("longpress", 0, 0.0, 0.0, 600, 0.1)
             session.pointer("up", 0, 0.0, 0.0, 20, 0.1)
             session.pointer("down", 0, 0.0, 0.0, 30, 0.1)
             session.pointer("multiple", 1, 0.0, 0.0, 40, 0.1)
             session.pointer("up", 0, 0.0, 0.0, 50, 0.1)
             session.pointer("down", 0, 0.0, 0.0, 100, 0.1)
-            session.pointer("up", 0, 0.0, 0.0, 1000, 0.1)
+            session.pointer("longpress", 0, 0.0, 0.0, 450, 0.1)
+            session.pointer("longpress", 0, 0.0, 0.0, 460, 0.1)
+            session.pointer("up", 0, 0.0, 0.0, 460, 0.1)
             val types = runtime.requests.filter { it.getString("op") == "event.batch" }
                 .flatMap { val events = it.getJSONObject("payload").getJSONArray("events"); (0 until events.length()).map { index -> events.getJSONObject(index).getString("type") } }
-            check("tap" !in types && "touchcancel" in types && "touchmove" in types)
+            check(types.count { it == "longpress" } == 1 && "tap" !in types && "touchcancel" in types && "touchmove" in types)
         }
         test("resize preserves native owner and session while updating host dimensions and render") {
             val (session, runtime, receipts) = interactive()

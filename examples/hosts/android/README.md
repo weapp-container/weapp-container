@@ -69,9 +69,11 @@ insets remain diagnostic: the portrait-coordinate origin for public
 on the Activity main thread. Each Android input batch crosses JNI once;
 Rust performs hit testing, capture/target/bubble, datasets and component
 handler dispatch against its committed frame. Surface-local touch coordinates
-are scaled to that logical viewport. Single-pointer start/move/end/cancel and
-tap are implemented; multi-touch cancels the active gesture. Longpress,
-scroll recognition and native pointer target capture remain partial.
+are scaled to that logical viewport. Single-pointer start/move/end/cancel,
+tap, longpress and runtime scroll defaults are implemented; movement beyond
+touch slop cancels longpress recognition, using Android's configured long-press
+timeout. A second pointer cancels the active gesture. Multi-touch and native
+pointer target capture remain partial.
 
 Surface resize updates the same Rust session's `HostMetadata`, synchronous
 `wx.getWindowInfo`/system-info providers, `Page.onResize` and live component
