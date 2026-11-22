@@ -6,8 +6,16 @@ const EVIDENCE_PATHS = [
   /^docs\/conformance\/(?:case-index-v1\.(?:json|sha256)|evidence\/.*)$/,
 ]
 
+// The website is a checked-in submodule with its own build and release
+// boundary. It is not an input to any native or runtime artifact receipt.
+const REUSABLE_SOURCE_PATHS = new Set(['website'])
+
 export function isEvidenceArchivePath(path) {
   return EVIDENCE_PATHS.some(pattern => pattern.test(path))
+}
+
+function isReusableSourcePath(path) {
+  return isEvidenceArchivePath(path) || REUSABLE_SOURCE_PATHS.has(path)
 }
 
 /**
@@ -27,6 +35,7 @@ export function inspectEvidenceSource(root, sourceCommit, currentCommit) {
     archiveOnly: false,
     changedPaths: [],
     nonEvidencePaths: [],
+    incompatiblePaths: [],
     reason: 'source/current commit is missing or invalid',
   }
   if (invalid) return result
@@ -42,15 +51,20 @@ export function inspectEvidenceSource(root, sourceCommit, currentCommit) {
     git(['merge-base', '--is-ancestor', source, current])
     const changedPaths = git(['diff', '--name-only', '-z', source, current]).split('\0').filter(Boolean)
     const nonEvidencePaths = changedPaths.filter(path => !isEvidenceArchivePath(path))
-    const compatible = nonEvidencePaths.length === 0
+    const incompatiblePaths = changedPaths.filter(path => !isReusableSourcePath(path))
+    const compatible = incompatiblePaths.length === 0
+    const archiveOnly = compatible && nonEvidencePaths.length === 0
     return {
       ...result,
       compatible,
-      archiveOnly: compatible,
+      archiveOnly,
       changedPaths,
       nonEvidencePaths,
+      incompatiblePaths,
       reason: compatible
-        ? 'source commit is an ancestor of HEAD with only evidence archive/index changes'
+        ? archiveOnly
+          ? 'source commit is an ancestor of HEAD with only evidence archive/index changes'
+          : 'source commit is an ancestor of HEAD with only unrelated website submodule changes'
         : 'source commit differs from HEAD in runtime, build, tool, fixture or gate inputs',
     }
   } catch {
