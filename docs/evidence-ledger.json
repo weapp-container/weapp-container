@@ -605,6 +605,15 @@
       "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running current-source V8 152.2.0 with verified iOS simulator archive and binding, Rust Skia Metal drawable and portable-pack-reference-v1",
       "conclusion": "Passed verified V8 archive and target binding inputs, clean source-bound Rust and UIKit build, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas draw and snapshot, wx.canIUse, attached skia-gpu-metal container surface, and cleanup of the unique simulator app bundle",
       "limitations": "This is an ad-hoc signed official-simulator result. It does not certify production signing, physical devices, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "harmony-quickjs-current-7a348db",
+      "tool": "scripts/build-native-hosts.mjs, scripts/build-harmony-hap.mjs and scripts/mobile-runtime-smoke.mjs",
+      "version": "workspace commit 7a348dbd8d5389f97873741407c62e2c7667ad4f; HAP build receipt SHA-256 89c13026b13dd237501a594b82909c6390a1e495ebf19c2cf640abd3c78a7c3f; runtime smoke SHA-256 01a5f5d86c8d98775cce69ebf95be0274d9534534a0e7c45f7f3ec00093279e6; unsigned HAP SHA-256 692ce6f02db7e0411726ced6ac1c51974438130aa0a8b62b0dc4cbf7ef910dff",
+      "analysisTime": "2026-11-22",
+      "scope": "Source-bound QuickJS release HAP on Harmony emulator target 127.0.0.1:5557 using bundle com.weappcontainer.validation.quickjs7a348db and portable-pack-reference-v1",
+      "conclusion": "Passed clean source-bound native and HAP packaging, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas draw and snapshot, wx.canIUse, attached skia-gpu-gles container surface, and cleanup of the unique emulator launch",
+      "limitations": "This is an unsigned release-profile HAP on a Harmony emulator. It does not certify production signing, physical-device behavior, Harmony V8 parity, full API conformance, official WeChat behavior or performance acceptance"
     }
   ]
 }
