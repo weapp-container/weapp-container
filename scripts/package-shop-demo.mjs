@@ -12,7 +12,7 @@ import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { syncPortablePack } from './portable-pack.mjs'
-import { canonicalize } from '../tools/container-manifest/src/json-integrity.mjs'
+import { adaptNativeSkiaPack } from './lib/native-skia-pack.mjs'
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const APP = resolve(ROOT, 'examples/apps/shop-demo')
@@ -90,27 +90,6 @@ async function packagePack(source, destination) {
   return syncPortablePack({ source, destination })
 }
 
-async function adaptAndroidPack(pack) {
-  const manifestPath = resolve(pack, 'manifest.json')
-  const manifest = JSON.parse(await readFile(manifestPath))
-  if (manifest.schemaVersion !== 3 || !manifest.rendering || !Array.isArray(manifest.routes)) {
-    throw new Error('Android packaging requires a schema v3 pack with rendering routes')
-  }
-  const sourceRendering = manifest.rendering
-  const pages = Object.fromEntries(manifest.routes.map(route => [route.path, 'skia']))
-  manifest.rendering = { version: '1.0', default: 'skia', pages }
-  const unsigned = structuredClone(manifest)
-  unsigned.integrity.root = ''
-  manifest.integrity.root = createHash('sha256').update(canonicalize(unsigned)).digest('hex')
-  await writeFile(manifestPath, json(manifest))
-  return {
-    source: sourceRendering,
-    effective: manifest.rendering,
-    manifestSha256: sha256(await readFile(manifestPath)),
-    integrityRoot: manifest.integrity.root,
-  }
-}
-
 async function packageWebWasm(pack, platformDir) {
   const llvmBin = process.env.WEAPP_CONTAINER_LLVM_BIN
     || commandPath('llvm-config')?.replace(/\/llvm-config$/, '')
@@ -173,7 +152,7 @@ async function packageAndroid(platformDir, platformPack) {
   if (!(await Promise.all(Object.values(rustLibs).map(exists))).every(Boolean)) {
     return platformResult('android', 'failed', { nativeCommands, error: `missing Rust libraries: ${Object.values(rustLibs).join(', ')}` })
   }
-  const rendering = await adaptAndroidPack(platformPack)
+  const rendering = await adaptNativeSkiaPack(platformPack)
   const project = resolve(platformDir, 'project')
   await cp(resolve(ROOT, 'examples/hosts/android'), project, { recursive: true, filter: source => !['.gradle', 'build', 'local.properties'].includes(source.split('/').at(-1)) })
   await packagePack(platformPack, resolve(project, 'app/src/main/assets/portable-pack'))
@@ -212,7 +191,7 @@ async function packageIOS(pack, platformDir) {
   })
 }
 
-async function packageHarmony(pack, platformDir) {
+async function packageHarmony(platformDir) {
   const sdk = process.env.OHOS_SDK || '/Applications/DevEco-Studio.app/Contents/sdk/default/openharmony'
   const hvigor = process.env.HVIGOR || '/Applications/DevEco-Studio.app/Contents/tools/hvigor/bin/hvigorw'
   if (!await exists(sdk) || !await exists(hvigor)) return platformResult('harmony', 'blocked', { missingTools: ['OpenHarmony SDK', 'Hvigor'] })
@@ -221,9 +200,11 @@ async function packageHarmony(pack, platformDir) {
   if (nativeCommand.status !== 'passed') return platformResult('harmony', 'failed', { nativeCommand })
   const rustLib = resolve(ROOT, 'target/aarch64-unknown-linux-ohos/debug/libcontainer_host_harmony.so')
   if (!await exists(rustLib)) return platformResult('harmony', 'failed', { nativeCommand, error: `missing Rust library: ${rustLib}` })
+  const platformPack = resolve(platformDir, 'portable-pack')
+  const rendering = await adaptNativeSkiaPack(platformPack)
   const hapDir = resolve(platformDir, 'hap')
-  const command = runCommand(process.execPath, [resolve(ROOT, 'scripts/build-harmony-hap.mjs'), '--out', hapDir, '--pack', pack, '--bundle', 'com.morrow.supply.demo', '--sdk', sdk, '--hvigor', hvigor, '--rust-lib', rustLib])
-  return platformResult('harmony', command.status === 'passed' ? 'passed' : 'failed', { nativeCommand, command, artifactKind: 'unsigned-hap' })
+  const command = runCommand(process.execPath, [resolve(ROOT, 'scripts/build-harmony-hap.mjs'), '--out', hapDir, '--pack', platformPack, '--bundle', 'com.morrow.supply.demo', '--sdk', sdk, '--hvigor', hvigor, '--rust-lib', rustLib])
+  return platformResult('harmony', command.status === 'passed' ? 'passed' : 'failed', { nativeCommand, command, rendering, artifactKind: 'unsigned-hap' })
 }
 
 async function main() {
@@ -259,7 +240,7 @@ async function main() {
     else if (platform === 'desktop') result = await packageDesktop(pack, platformDir)
     else if (platform === 'android') result = await packageAndroid(platformDir, platformPack)
     else if (platform === 'ios-simulator') result = await packageIOS(pack, platformDir)
-    else result = await packageHarmony(pack, platformDir)
+    else result = await packageHarmony(platformDir)
     result.pack = platformPack
     const effectiveManifest = JSON.parse(await readFile(resolve(platformPack, 'manifest.json')))
     result.manifestSha256 = sha256(await readFile(resolve(platformPack, 'manifest.json')))
