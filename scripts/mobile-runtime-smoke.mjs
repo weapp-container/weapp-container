@@ -681,6 +681,14 @@ function findProviderPayload(value, name) {
   return null
 }
 
+function currentHarmonyEvidenceLines(lines, sessionId) {
+  const start = lines.findIndex(line => line.includes('WEAPP_CONTAINER_SMOKE app.init') && line.includes(sessionId))
+  if (start < 0) return []
+  const end = lines.findIndex((line, index) => index >= start
+    && line.includes('WEAPP_CONTAINER_EXECUTION_RECEIPT') && line.includes(sessionId))
+  return lines.slice(start, end >= 0 ? end + 1 : undefined)
+}
+
 function parseHarmonySmoke(lines) {
   const operations = {}
   for (const operation of HARMONY_OPERATIONS) {
@@ -785,10 +793,11 @@ function harmonySmoke() {
     // remain visible without relying on hilog's tag-expression syntax.
     logProbe = run('hdc', ['-t', target, 'shell', 'hilog', '-x'], { timeoutMs: 20_000 })
     const output = `${logProbe.stdout}\n${logProbe.stderr}`
-    smokeLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SMOKE'))
-    gpuProbeLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_GPU_PROBE'))
-    surfaceProbeLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE'))
-    receiptLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_EXECUTION_RECEIPT'))
+    const currentLines = currentHarmonyEvidenceLines(output.split(/\r?\n/), expectedSessionId)
+    smokeLines = currentLines.filter(line => line.includes('WEAPP_CONTAINER_SMOKE'))
+    gpuProbeLines = currentLines.filter(line => line.includes('WEAPP_CONTAINER_GPU_PROBE'))
+    surfaceProbeLines = currentLines.filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE'))
+    receiptLines = currentLines.filter(line => line.includes('WEAPP_CONTAINER_EXECUTION_RECEIPT'))
     parsed = parseHarmonySmoke(smokeLines)
     if (parsed.missingOperations.length === 0 && receiptLines.length > 0) break
     sleepMs(Math.min(pollMs, Math.max(0, timeoutMs - (Date.now() - startedAt))))
@@ -854,7 +863,8 @@ function harmonySmoke() {
     .filter(([name]) => !['source', 'build'].includes(name)).every(([, passed]) => passed)
   return applyRendererGate({
     platform: 'harmony',
-    status: status === 'passed' && directSurface && gpuEvidence && (!executionReceipt || runtimeBodyPassed) ? 'passed' : 'failed',
+    status: status === 'passed' && directSurface && gpuEvidence
+      && executionReceipt?.sessionId === expectedSessionId && runtimeBodyPassed ? 'passed' : 'failed',
     environment: runtimeEnvironment(target),
     target,
     bundle,
@@ -877,7 +887,7 @@ function harmonySmoke() {
     gpuProbe,
     surfaceProbe,
     targetInfo,
-    probes: [targetProbe, ...targetInfo.probes, install, stop, start, logProbe, cleanup].filter(Boolean),
+    probes: [targetProbe, ...targetInfo.probes, install, stop, start, logProbe, readReceipt, cleanup].filter(Boolean),
     notes: [
       'Harmony evidence requires bounded session-correlated app.init, render.commit, render.snapshot, Canvas and API smoke records.',
       'The XComponent adapter is promoted only by a direct WEAPP_CONTAINER_SURFACE_PROBE after a skia-gpu-gles framebuffer submission and EGL swap.',

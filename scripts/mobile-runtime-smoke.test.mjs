@@ -116,14 +116,14 @@ test('Harmony smoke requires correlated runtime, direct surface and GPU context 
   const hap = join(directory, 'smoke.hap')
   const digest = 'a'.repeat(64)
   const logs = [
-    `WEAPP_CONTAINER_SMOKE app.init ${JSON.stringify({ messages: [{ op: 'app.init', kind: 'response', payload: { ok: true, engine: 'quickjs', engineProviderAvailable: true, loadedModules: 1, manifest: { integrity: digest } } }] })}`,
+    `WEAPP_CONTAINER_SMOKE app.init ${JSON.stringify({ messages: [{ sessionId: '__SESSION__', op: 'app.init', kind: 'response', payload: { ok: true, engine: 'quickjs', engineProviderAvailable: true, loadedModules: 1, manifest: { integrity: digest } } }] })}`,
     `WEAPP_CONTAINER_SMOKE render.commit ${JSON.stringify({ messages: [{ op: 'render.commit', kind: 'response', payload: { ok: true, frameId: 1, backend: 'skia-gpu-pending' } }] })}`,
     `WEAPP_CONTAINER_SMOKE render.snapshot ${JSON.stringify({ frame_id: 1, width: 1, height: 1, stride: 4, format: 'rgba8-premultiplied', pixelCount: 4, sha256: digest, pixels: [1, 2, 3, 255] })}`,
     `WEAPP_CONTAINER_SMOKE canvas.draw ${JSON.stringify({ messages: [{ op: 'api.call', kind: 'response', payload: { ok: true, name: 'wx.canvas.draw', result: { canvasId: 'main' } } }] })}`,
     `WEAPP_CONTAINER_SMOKE canvas.snapshot ${JSON.stringify({ frame_id: 1, width: 1, height: 1, stride: 4, format: 'rgba8-premultiplied', pixels: [10, 20, 30, 255] })}`,
     `WEAPP_CONTAINER_SMOKE api.call ${JSON.stringify({ messages: [{ op: 'api.call', kind: 'response', payload: { ok: true, result: true } }] })}`,
-    `WEAPP_CONTAINER_SURFACE_PROBE ${JSON.stringify({ schemaVersion: 1, status: 'passed', hostSurfaceAttached: true, containerSurfaceAttached: true, gpuSurface: true, rendererBackend: 'skia-gpu-gles', width: 1, height: 1, evidenceBoundary: 'runtime-skia-gles-framebuffer' })}`,
-    `WEAPP_CONTAINER_GPU_PROBE ${JSON.stringify({ schemaVersion: 1, status: 'passed', contextCreated: true, hardwareAccelerated: false, containerSurfaceAttached: false, evidenceBoundary: 'device-context-only' })}`,
+    `WEAPP_CONTAINER_SURFACE_PROBE ${JSON.stringify({ schemaVersion: 1, status: 'passed', sessionId: '__SESSION__', hostSurfaceAttached: true, containerSurfaceAttached: true, gpuSurface: true, rendererBackend: 'skia-gpu-gles', width: 1, height: 1, evidenceBoundary: 'runtime-skia-gles-framebuffer' })}`,
+    `WEAPP_CONTAINER_GPU_PROBE ${JSON.stringify({ schemaVersion: 1, status: 'passed', sessionId: '__SESSION__', contextCreated: true, hardwareAccelerated: false, containerSurfaceAttached: false, evidenceBoundary: 'device-context-only' })}`,
   ].join('\n')
   writeFileSync(hap, 'HAP fixture')
   writeFileSync(hdc, `#!/usr/bin/env node
@@ -138,7 +138,11 @@ else if (args.includes('hilog') && args.at(-1) === '-x') {
   const start = commands.find(command => command.includes('start'));
   const sessionKey = start.indexOf('weappContainerSessionId');
   const sessionId = start[sessionKey + 1];
-  console.log(process.env.TEST_HDC_LOGS + '\\nWEAPP_CONTAINER_EXECUTION_RECEIPT ' + JSON.stringify({ path: '/data/storage/el2/base/files/portable-pack-execution.json', sessionId }));
+  const oldSessionId = 'harmony-old-session';
+  const oldReceipt = 'WEAPP_CONTAINER_EXECUTION_RECEIPT ' + JSON.stringify({ path: '/old/portable-pack-execution.json', sessionId: oldSessionId });
+  const history = process.env.TEST_HDC_LOGS.replaceAll('__SESSION__', oldSessionId) + '\\n' + oldReceipt;
+  console.log(history + '\\n' + process.env.TEST_HDC_LOGS.replaceAll('__SESSION__', sessionId)
+    + '\\nWEAPP_CONTAINER_EXECUTION_RECEIPT ' + JSON.stringify({ path: '/data/storage/el2/base/files/portable-pack-execution.json', sessionId }));
 }
 `, { mode: 0o755 })
   writeFileSync(join(directory, 'package.json'), '{"type":"module"}')
@@ -162,7 +166,8 @@ else if (args.includes('hilog') && args.at(-1) === '-x') {
   assert.equal(result.status, 0, result.stderr)
   const aggregate = JSON.parse(result.stdout)
   const harmony = aggregate.platforms[0]
-  assert.equal(harmony.status, 'passed')
+  assert.equal(harmony.status, 'failed')
+  assert.equal(harmony.executionReceipt, null)
   assert.deepEqual(harmony.missingOperations, [])
   assert.deepEqual(harmony.failedChecks, [])
   assert.equal(harmony.surfaceProbe.containerSurfaceAttached, true)
@@ -170,6 +175,7 @@ else if (args.includes('hilog') && args.at(-1) === '-x') {
   assert.equal(harmony.gpuProbe.hardwareAccelerated, false)
   assert.equal(harmony.executionTarget.kind, 'official-simulator')
   assert.equal(harmony.targetInfo.kind, 'official-simulator')
+  assert.equal(harmony.smokeLogs.length, 6)
   const invoked = readFileSync(commands, 'utf8').trim().split('\n').map(JSON.parse)
   const start = invoked.find(args => args.includes('start'))
   assert.ok(start)
