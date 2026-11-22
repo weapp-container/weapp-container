@@ -131,6 +131,8 @@ import { appendFileSync, readFileSync } from 'node:fs';
 const args = process.argv.slice(2);
 appendFileSync(process.env.TEST_HDC_COMMANDS, JSON.stringify(args) + '\\n');
 if (args[0] === 'list' && args[1] === 'targets') console.log('emulator-owned');
+else if (args.includes('param') && args.at(-1) === 'const.product.model') console.log('emulator');
+else if (args.includes('param') && args.at(-1) === 'const.product.name') console.log('emulator');
 else if (args.includes('hilog') && args.at(-1) === '-x') {
   const commands = readFileSync(process.env.TEST_HDC_COMMANDS, 'utf8').trim().split('\\n').map(JSON.parse);
   const start = commands.find(command => command.includes('start'));
@@ -166,6 +168,8 @@ else if (args.includes('hilog') && args.at(-1) === '-x') {
   assert.equal(harmony.surfaceProbe.containerSurfaceAttached, true)
   assert.equal(harmony.gpuProbe.contextCreated, true)
   assert.equal(harmony.gpuProbe.hardwareAccelerated, false)
+  assert.equal(harmony.executionTarget.kind, 'official-simulator')
+  assert.equal(harmony.targetInfo.kind, 'official-simulator')
   const invoked = readFileSync(commands, 'utf8').trim().split('\n').map(JSON.parse)
   const start = invoked.find(args => args.includes('start'))
   assert.ok(start)
@@ -175,4 +179,5 @@ else if (args.includes('hilog') && args.at(-1) === '-x') {
   assert.ok(start.includes('--ps') && start.includes('weappContainerEngine') && start.includes('quickjs'))
   assert.ok(invoked.some(args => args.includes('file') && args.includes('recv') && args.includes('/data/storage/el2/base/files/portable-pack-execution.json')))
   assert.ok(invoked.some(args => args.includes('force-stop')))
+  assert.equal(invoked.some(args => args.includes('hilog') && args.includes('-r')), false)
 })

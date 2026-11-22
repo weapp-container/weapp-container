@@ -203,6 +203,19 @@ function parsePlistValue(path, key) {
   return result.status === 'passed' ? result.stdout.trim() : null
 }
 
+function harmonyTargetProbe(target) {
+  const model = run('hdc', ['-t', target, 'shell', 'param', 'get', 'const.product.model'])
+  const name = run('hdc', ['-t', target, 'shell', 'param', 'get', 'const.product.name'])
+  const identity = `${model.stdout}\n${model.stderr}\n${name.stdout}\n${name.stderr}`.trim()
+  const simulator = /(?:^|\s)(?:emulator|simulator)(?:\s|$)/i.test(identity)
+  return {
+    model: model.stdout.trim() || null,
+    name: name.stdout.trim() || null,
+    kind: simulator ? 'official-simulator' : 'device',
+    probes: [model, name],
+  }
+}
+
 function androidSmoke() {
   const list = run('adb', ['devices'])
   const serial = process.env.WEAPP_CONTAINER_ANDROID_SERIAL || firstAndroidSerial(list.stdout)
@@ -748,8 +761,8 @@ function harmonySmoke() {
       probes: [targetProbe],
     }
   }
+  const targetInfo = harmonyTargetProbe(target)
   const install = run('hdc', ['-t', target, 'install', '-r', resolve(hap)], { timeoutMs: 90_000 })
-  const clear = run('hdc', ['-t', target, 'shell', 'hilog', '-r'])
   const stop = run('hdc', ['-t', target, 'shell', 'aa', 'force-stop', bundle])
   const expectedSessionId = `harmony-${randomUUID()}`
   const fixtureId = 'portable-pack-reference-v1'
@@ -798,7 +811,6 @@ function harmonySmoke() {
   const cleanup = run('hdc', ['-t', target, 'shell', 'aa', 'force-stop', bundle])
   const crash = hasHarmonyRuntimeCrash(`${logProbe?.stdout || ''}\n${logProbe?.stderr || ''}`)
   const status = install.status === 'passed'
-    && clear.status === 'passed'
     && stop.status === 'passed'
     && start.status === 'passed'
     && logProbe?.status === 'passed'
@@ -821,7 +833,7 @@ function harmonySmoke() {
   const artifactSha256 = artifactDigest(resolve(hap))
   const buildReceiptPath = process.env.WEAPP_CONTAINER_HARMONY_BUILD_RECEIPT || discoverHarmonyBuildReceipt(hap)
   const buildReceiptInspection = inspectHarmonyBuildReceipt(buildReceiptPath, artifactSha256, expectedSourceCommit || gitRevision(), executionReceipt?.engine || expectedEngine)
-  const executionTarget = { host: 'harmony', id: target, kind: 'device' }
+  const executionTarget = { host: 'harmony', id: target, kind: targetInfo.kind }
   const sourceEvidenceReceipt = executionReceipt && buildReceiptInspection.status === 'passed'
     ? {
         ...executionReceipt,
@@ -864,7 +876,8 @@ function harmonySmoke() {
     smokeLogs: smokeLines,
     gpuProbe,
     surfaceProbe,
-    probes: [targetProbe, install, clear, stop, start, logProbe, cleanup].filter(Boolean),
+    targetInfo,
+    probes: [targetProbe, ...targetInfo.probes, install, stop, start, logProbe, cleanup].filter(Boolean),
     notes: [
       'Harmony evidence requires bounded session-correlated app.init, render.commit, render.snapshot, Canvas and API smoke records.',
       'The XComponent adapter is promoted only by a direct WEAPP_CONTAINER_SURFACE_PROBE after a skia-gpu-gles framebuffer submission and EGL swap.',
