@@ -551,6 +551,24 @@
       "scope": "Source-bound V8 debug APK on Android emulator emulator-5554; stationary native long press through GlesSnapshotView, PortablePackSession and the Rust runtime",
       "conclusion": "Passed source-bound APK packaging and runtime/GPU smoke. The interaction receipt recorded exactly one longpress and no tap, retained the ready V8 session and manifest integrity, reported no runtime or presentation failure or diagnostics, and presented frame 22 through skia-gpu-gles",
       "limitations": "The bundled reference page does not bind a longpress page handler, so this proves event delivery through the runtime boundary and tap suppression but not an application handler side effect. Debug-emulator evidence does not establish production signing, physical-device behavior, complete gesture coverage, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-v8-touch-slop-cancel-920b51e5",
+      "tool": "adb shell input swipe and portable-pack-interaction.json",
+      "version": "APK built from workspace commit 3aec3f8e7cd338aa6a77e7a671bec0dbdfbce595; APK SHA-256 e18f2cfecf6851939c74371a509ad23e75f5620f6b6859d7377bfcf6061d1185; interaction receipt SHA-256 32d0413adf3b47792b4f8df978efd0b31920295f0e1a798d0c422f420a84c4a1",
+      "analysisTime": "2026-11-22",
+      "scope": "A 800 ms native Android gesture moving 140 physical pixels on V8 in emulator emulator-5554, exceeding the configured touch slop",
+      "conclusion": "Passed longpress-cancellation behavior. The receipt recorded touchstart, 16 touchmove events and touchend with no longpress or tap, retained the ready V8 session and manifest integrity, reported no runtime or presentation failure or diagnostics, and presented frame 20 through skia-gpu-gles",
+      "limitations": "This is debuggable-emulator evidence for one V8 movement path. It does not establish QuickJS cancellation parity, physical-device behavior, multi-touch behavior, full gesture coverage, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "android-quickjs-touch-slop-cancel-920b51e5",
+      "tool": "adb shell input swipe and portable-pack-interaction.json",
+      "version": "APK built from workspace commit 4aa0454abae76265840bb3298af89de3b06480bc; APK SHA-256 3df21eeaadf626a6350215c3458fa9b02cc265a81f29c39c5da53673bf8a2680; interaction receipt SHA-256 5237a8111f84624ac42aa44847b699e7dbe4764066205e8b555191e8679fb71a",
+      "analysisTime": "2026-11-22",
+      "scope": "A 800 ms native Android gesture moving 140 physical pixels on QuickJS in emulator emulator-5554, exceeding the configured touch slop",
+      "conclusion": "Passed longpress-cancellation behavior. The receipt recorded touchstart, 16 touchmove events and touchend with no longpress or tap, retained the ready QuickJS session and manifest integrity, reported no runtime or presentation failure or diagnostics, and presented frame 20 through skia-gpu-gles",
+      "limitations": "This is debuggable-emulator evidence for one QuickJS movement path. It does not establish V8 cancellation parity, physical-device behavior, multi-touch behavior, full gesture coverage, official WeChat behavior or performance acceptance"
     }
   ]
 }
