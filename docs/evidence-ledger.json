@@ -596,6 +596,15 @@
       "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running current-source QuickJS with Rust Skia Metal drawable and portable-pack-reference-v1",
       "conclusion": "Passed clean source-bound Rust and UIKit build, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas draw and snapshot, wx.canIUse, attached skia-gpu-metal container surface, and cleanup of the unique simulator app bundle",
       "limitations": "This is an ad-hoc signed official-simulator result. It does not certify production signing, physical devices, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "ios-v8-current-f013fcd",
+      "tool": "scripts/ios-app-smoke and scripts/ios-app-execution-evidence.mjs",
+      "version": "workspace commit f013fcd95cfb9c81a57fff6a828a114906c6fb71; run 18b259f814a0; build receipt SHA-256 4ff2236af84177ebbe9cac5e03b07c862d1279e8cd42f09b2659846c1b4d0569; execution receipt SHA-256 3166120bc6c7fdb4c657c2c8877ceb496a00ebd98e1f7ec9567f5b45806a3dcd; simulator app SHA-256 faee8a4e06944d4a39eb75e9d273e0801aa2e0939195fbf25b73962f586cef95",
+      "analysisTime": "2026-11-22",
+      "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running current-source V8 152.2.0 with verified iOS simulator archive and binding, Rust Skia Metal drawable and portable-pack-reference-v1",
+      "conclusion": "Passed verified V8 archive and target binding inputs, clean source-bound Rust and UIKit build, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas draw and snapshot, wx.canIUse, attached skia-gpu-metal container surface, and cleanup of the unique simulator app bundle",
+      "limitations": "This is an ad-hoc signed official-simulator result. It does not certify production signing, physical devices, full API conformance, official WeChat behavior or performance acceptance"
     }
   ]
 }
