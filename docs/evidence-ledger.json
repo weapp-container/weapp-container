@@ -587,6 +587,15 @@
       "scope": "One native tap on the reference page increment control in Android emulator emulator-5554 using V8",
       "conclusion": "Passed. The receipt recorded exactly one tap, changed the page count from 0 to 1, retained the same ready V8 session and manifest integrity, reported no diagnostics, and presented frame 4 through skia-gpu-gles",
       "limitations": "This is debuggable-emulator evidence for one page-level tap. It does not establish release signing, physical-device behavior, complete gesture coverage, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "ios-quickjs-current-0954b46f",
+      "tool": "scripts/ios-app-smoke and scripts/ios-app-execution-evidence.mjs",
+      "version": "workspace commit 0954b46f4370ceda6332dfa32f718ec0f46a2ed8; run 3415abc88564; build receipt SHA-256 0ea5c6665b38325dccadd0a6d7de2b9a04a101dd289c88a12eeffb7ab257a986; execution receipt SHA-256 294e2d943aae01ed44fdb414e85595ffff5181445a57714a8893bdfd66e09c09; simulator app SHA-256 1baa0b8dac0826f67b2c07c150afd500a91c7969e834c580cd160a0a7a688cf6",
+      "analysisTime": "2026-11-22",
+      "scope": "Official iPhone 18 Pro simulator 28D7A00A-CBF8-45BD-8ADF-56299C346E72 running current-source QuickJS with Rust Skia Metal drawable and portable-pack-reference-v1",
+      "conclusion": "Passed clean source-bound Rust and UIKit build, app.init, app.lifecycle, page.push, render.commit, RGBA render.snapshot, canvas draw and snapshot, wx.canIUse, attached skia-gpu-metal container surface, and cleanup of the unique simulator app bundle",
+      "limitations": "This is an ad-hoc signed official-simulator result. It does not certify production signing, physical devices, full API conformance, official WeChat behavior or performance acceptance"
     }
   ]
 }
