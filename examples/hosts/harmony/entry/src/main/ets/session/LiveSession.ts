@@ -136,6 +136,13 @@ export interface HarmonySmokeProbeResult {
   gpuProbe: Object;
 }
 
+export interface HarmonyExecutionOperation {
+  status: number;
+  sessionId: string;
+  requestJson?: string;
+  json: string;
+}
+
 /** Convert before multiplying: Number nanoseconds would lose precision. */
 export function unixEpochNanoseconds(nowMs: number): string {
   if (!Number.isSafeInteger(nowMs) || nowMs < 0) throw new Error('ERR_ENGINE: expected non-negative Unix epoch integer milliseconds');
@@ -180,6 +187,7 @@ export class HarmonyLiveSession {
   private trace: Array<BridgeMessage> = [];
   private lastSurfaceStatus: NativeStatus | null = null;
   private smokeProbeCompleted: boolean = false;
+  private operationRecords: Record<string, HarmonyExecutionOperation> = {};
 
   constructor(pack: PortablePack, runtime: HarmonySessionRuntime, options: HarmonySessionOptions,
     onReceipt: (receipt: HarmonySessionReceipt) => void) {
@@ -243,6 +251,8 @@ export class HarmonyLiveSession {
     if (this.lastSurfaceStatus.gpuSurface !== true || this.lastSurfaceStatus.renderer !== 'skia-gpu-gles') return null;
     this.smokeProbeCompleted = true;
     const renderSnapshot = this.runtime.snapshot();
+    const snapshot = JSON.parse(renderSnapshot) as Record<string, Object>;
+    const snapshotSha256 = typeof snapshot.sha256 === 'string' ? snapshot.sha256 : null;
     this.dispatch('api.call', { name: 'wx.canvas.draw', canvasId: 'main', width: 1, height: 1,
       commands: [{ op: 'setFillStyle', args: ['#0a141e'] }, { op: 'fillRect', args: [0, 0, 1, 1] }] });
     const canvasDraw = this.lastResponse('api.call', 'wx.canvas.draw');
@@ -250,6 +260,8 @@ export class HarmonyLiveSession {
     this.dispatch('api.call', { name: 'wx.canIUse', capability: 'wx.getStorage' });
     const apiCall = this.lastResponse('api.call', 'wx.canIUse');
     const surfaceProbe = { schemaVersion: 1, source: 'harmony-arkui-xcomponent', status: 'passed',
+      host: 'harmony', engine: this.options.engine, sessionId: this.options.sessionId,
+      manifestIntegrity: this.pack.integrityRoot, snapshotSha256,
       hostSurfaceAttached: true, containerSurfaceAttached: true, gpuSurface: true,
       rendererBackend: 'skia-gpu-gles', width: this.surfaceWidth, height: this.surfaceHeight,
       framebuffer: this.lastSurfaceStatus.framebuffer ?? null,
@@ -264,6 +276,12 @@ export class HarmonyLiveSession {
       containerSurfaceAttached: false,
       evidenceBoundary: 'device-context-only' };
     return { renderSnapshot, canvasDraw, canvasSnapshot, apiCall, surfaceProbe, gpuProbe };
+  }
+
+  executionOperations(): Record<string, HarmonyExecutionOperation> {
+    const operations: Record<string, HarmonyExecutionOperation> = {};
+    for (const [name, record] of Object.entries(this.operationRecords)) operations[name] = { ...record };
+    return operations;
   }
 
   attachSurface(surfaceId: string, physicalWidth: number, physicalHeight: number): void {
@@ -571,7 +589,12 @@ export class HarmonyLiveSession {
     this.sequence += 1;
     const requestId = `harmony-session-${this.sequence}`;
     const envelope: Envelope = { protocolVersion: '1.0', sessionId: this.options.sessionId, requestId, kind: 'request', op, payload };
-    const messages = this.validateBatch(this.runtime.dispatch(JSON.stringify(envelope)));
+    const requestJson = JSON.stringify(envelope);
+    const responseJson = this.runtime.dispatch(requestJson);
+    const messages = this.validateBatch(responseJson);
+    if (this.operationRecords[op] === undefined) {
+      this.operationRecords[op] = { status: 0, sessionId: this.options.sessionId, requestJson, json: responseJson };
+    }
     const matches = messages.filter((message: BridgeMessage) => message.protocolVersion === '1.0' && message.sessionId === this.options.sessionId &&
       message.requestId === requestId && message.kind === 'response' && message.op === op);
     if (matches.length !== 1 || matches[0].payload.ok !== true) throw new Error(`ERR_ENGINE: missing unique successful ${op} acknowledgement`);

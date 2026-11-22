@@ -127,11 +127,17 @@ test('Harmony smoke requires correlated runtime, direct surface and GPU context 
   ].join('\n')
   writeFileSync(hap, 'HAP fixture')
   writeFileSync(hdc, `#!/usr/bin/env node
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 const args = process.argv.slice(2);
 appendFileSync(process.env.TEST_HDC_COMMANDS, JSON.stringify(args) + '\\n');
 if (args[0] === 'list' && args[1] === 'targets') console.log('emulator-owned');
-else if (args.includes('hilog') && args.at(-1) === '-x') console.log(process.env.TEST_HDC_LOGS);
+else if (args.includes('hilog') && args.at(-1) === '-x') {
+  const commands = readFileSync(process.env.TEST_HDC_COMMANDS, 'utf8').trim().split('\\n').map(JSON.parse);
+  const start = commands.find(command => command.includes('start'));
+  const sessionKey = start.indexOf('weappContainerSessionId');
+  const sessionId = start[sessionKey + 1];
+  console.log(process.env.TEST_HDC_LOGS + '\\nWEAPP_CONTAINER_EXECUTION_RECEIPT ' + JSON.stringify({ path: '/data/storage/el2/base/files/portable-pack-execution.json', sessionId }));
+}
 `, { mode: 0o755 })
   writeFileSync(join(directory, 'package.json'), '{"type":"module"}')
 
@@ -164,5 +170,9 @@ else if (args.includes('hilog') && args.at(-1) === '-x') console.log(process.env
   const start = invoked.find(args => args.includes('start'))
   assert.ok(start)
   assert.ok(start.includes('--pb') && start.includes('weappContainerSmoke') && start.includes('true'))
+  assert.ok(start.includes('--ps') && start.includes('weappContainerSessionId'))
+  assert.ok(start.includes('--ps') && start.includes('weappContainerFixtureId') && start.includes('portable-pack-reference-v1'))
+  assert.ok(start.includes('--ps') && start.includes('weappContainerEngine') && start.includes('quickjs'))
+  assert.ok(invoked.some(args => args.includes('file') && args.includes('recv') && args.includes('/data/storage/el2/base/files/portable-pack-execution.json')))
   assert.ok(invoked.some(args => args.includes('force-stop')))
 })

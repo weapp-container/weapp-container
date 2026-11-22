@@ -9,7 +9,7 @@
  * silently passing them.
  */
 import { createHash, randomUUID } from 'node:crypto'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -556,6 +556,42 @@ function sleepMs(milliseconds) {
   })
 }
 
+function inspectHarmonyBuildReceipt(path, artifactSha256, expectedSource, engine) {
+  if (!path || !existsSync(path)) return { status: 'incomplete', reason: 'Harmony HAP build receipt was not supplied' }
+  try {
+    const receipt = JSON.parse(readFileSync(path, 'utf8'))
+    const sourceCommit = receipt.sourceBefore?.sourceCommit || receipt.sourceAfter?.sourceCommit || null
+    const clean = receipt.sourceBefore?.sourceDirty === false && receipt.sourceAfter?.sourceDirty === false
+      && receipt.sourceBefore?.sourceCommit === receipt.sourceAfter?.sourceCommit
+    const checks = {
+      schema: receipt.schemaVersion === 1 && receipt.scope === 'harmony-hap-build',
+      status: receipt.status === 'passed' && receipt.profile === 'release',
+      source: /^[0-9a-f]{40}$/.test(sourceCommit || '') && sourceCommit === expectedSource,
+      clean,
+      artifact: receipt.artifact?.sha256 === artifactSha256,
+      nativeRelease: receipt.nativeRelease?.sourceCommit === sourceCommit
+        && receipt.nativeRelease?.profile === 'release' && receipt.nativeRelease?.target === 'aarch64-unknown-linux-ohos'
+        && receipt.nativeRelease?.features?.includes(engine === 'quickjs' ? 'quickjs-native-harmony' : 'v8-native-harmony'),
+    }
+    const missing = Object.keys(checks).filter(key => !checks[key])
+    return { status: missing.length === 0 ? 'passed' : 'incomplete', sourceCommit, checks, missing }
+  } catch (error) {
+    return { status: 'incomplete', reason: error.message || String(error) }
+  }
+}
+
+function discoverHarmonyBuildReceipt(hapPath) {
+  let directory = dirname(resolve(hapPath))
+  for (let depth = 0; depth < 10; depth += 1) {
+    const candidate = resolve(directory, 'build-report.json')
+    if (existsSync(candidate)) return candidate
+    const parent = resolve(directory, '..')
+    if (parent === directory) break
+    directory = parent
+  }
+  return null
+}
+
 function extractJsonValues(text) {
   const values = []
   for (let start = 0; start < text.length; start += 1) {
@@ -715,8 +751,11 @@ function harmonySmoke() {
   const install = run('hdc', ['-t', target, 'install', '-r', resolve(hap)], { timeoutMs: 90_000 })
   const clear = run('hdc', ['-t', target, 'shell', 'hilog', '-r'])
   const stop = run('hdc', ['-t', target, 'shell', 'aa', 'force-stop', bundle])
+  const expectedSessionId = `harmony-${randomUUID()}`
+  const fixtureId = 'portable-pack-reference-v1'
   const start = run('hdc', ['-t', target, 'shell', 'aa', 'start', '-a', ability, '-b', bundle,
-    '--pb', 'weappContainerSmoke', 'true'])
+    '--pb', 'weappContainerSmoke', 'true', '--ps', 'weappContainerSessionId', expectedSessionId,
+    '--ps', 'weappContainerFixtureId', fixtureId, '--ps', 'weappContainerEngine', expectedEngine])
   const timeoutMs = Number(process.env.WEAPP_CONTAINER_HARMONY_WAIT_MS || 5_000)
   const pollMs = Math.max(100, Number(process.env.WEAPP_CONTAINER_HARMONY_POLL_MS || 250))
   const startedAt = Date.now()
@@ -724,6 +763,7 @@ function harmonySmoke() {
   let smokeLines = []
   let gpuProbeLines = []
   let surfaceProbeLines = []
+  let receiptLines = []
   let parsed = parseHarmonySmoke([])
   while (Date.now() - startedAt <= timeoutMs) {
     // Collect the complete stream because DevEco projects may emit the
@@ -735,10 +775,23 @@ function harmonySmoke() {
     smokeLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SMOKE'))
     gpuProbeLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_GPU_PROBE'))
     surfaceProbeLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_SURFACE_PROBE'))
+    receiptLines = output.split(/\r?\n/).filter(line => line.includes('WEAPP_CONTAINER_EXECUTION_RECEIPT'))
     parsed = parseHarmonySmoke(smokeLines)
-    if (parsed.missingOperations.length === 0) break
+    if (parsed.missingOperations.length === 0 && receiptLines.length > 0) break
     sleepMs(Math.min(pollMs, Math.max(0, timeoutMs - (Date.now() - startedAt))))
   }
+  const receiptDescriptor = receiptLines.flatMap(extractJsonValues)
+    .find(value => value && typeof value.path === 'string' && value.sessionId === expectedSessionId)
+  const receiptPath = resolve(process.env.TMPDIR || '/tmp', `.weapp-container-harmony-receipt-${process.pid}.json`)
+  try { rmSync(receiptPath, { force: true }) } catch {}
+  const readReceipt = receiptDescriptor
+    ? run('hdc', ['-t', target, 'file', 'recv', '-b', bundle, receiptDescriptor.path, receiptPath], { timeoutMs: 20_000 })
+    : { status: 'error', command: 'hdc file recv', error: 'app-owned execution receipt path was not reported' }
+  let executionReceipt = null
+  if (readReceipt.status === 'passed' && existsSync(receiptPath)) {
+    try { executionReceipt = JSON.parse(readFileSync(receiptPath, 'utf8')) } catch {}
+  }
+  try { rmSync(receiptPath, { force: true }) } catch {}
   // The smoke owns this launch; always stop it after collecting logs, even on
   // a failed launch, so a diagnostic run does not leave the shared emulator
   // foregrounded.
@@ -765,20 +818,49 @@ function harmonySmoke() {
   const gpuProbe = parseGpuProbe(gpuProbeLines, 'harmony-arkui')
   const gpuEvidence = gpuProbe.status === 'passed' && gpuProbe.contextCreated === true
     && gpuProbe.containerSurfaceAttached !== true
+  const artifactSha256 = artifactDigest(resolve(hap))
+  const buildReceiptPath = process.env.WEAPP_CONTAINER_HARMONY_BUILD_RECEIPT || discoverHarmonyBuildReceipt(hap)
+  const buildReceiptInspection = inspectHarmonyBuildReceipt(buildReceiptPath, artifactSha256, expectedSourceCommit || gitRevision(), executionReceipt?.engine || expectedEngine)
+  const executionTarget = { host: 'harmony', id: target, kind: 'device' }
+  const sourceEvidenceReceipt = executionReceipt && buildReceiptInspection.status === 'passed'
+    ? {
+        ...executionReceipt,
+        sourceCommit: buildReceiptInspection.sourceCommit,
+        artifactSha256,
+        build: {
+          status: 'passed', sourceCommit: buildReceiptInspection.sourceCommit, workingTreeDirty: false,
+          host: 'harmony', engine: executionReceipt.engine, artifactSha256,
+        },
+      }
+    : executionReceipt
+  const runtimeReceipt = sourceEvidenceReceipt && inspectPackExecutionReceipt({
+    ...sourceEvidenceReceipt, target: executionTarget, artifactSha256,
+  }, sourceEvidenceReceipt.fixture, {
+    root, expectedCommit: expectedSourceCommit || gitRevision(), expectedCompilerCommit: pinnedCompilerCommit(),
+  })
+  const runtimeBodyPassed = runtimeReceipt && Object.entries(runtimeReceipt.checks)
+    .filter(([name]) => !['source', 'build'].includes(name)).every(([, passed]) => passed)
   return applyRendererGate({
     platform: 'harmony',
-    status: status === 'passed' && directSurface && gpuEvidence ? 'passed' : 'failed',
+    status: status === 'passed' && directSurface && gpuEvidence && (!executionReceipt || runtimeBodyPassed) ? 'passed' : 'failed',
     environment: runtimeEnvironment(target),
     target,
     bundle,
     ability,
     artifact: resolve(hap),
     artifactDigestFile: resolve(hap),
-    artifactSha256: artifactDigest(resolve(hap)),
+    artifactSha256,
     operations: HARMONY_OPERATIONS,
     missingOperations: parsed.missingOperations,
     failedChecks: parsed.failedChecks,
     checks: Object.fromEntries(HARMONY_OPERATIONS.map(operation => [operation, parsed.operations[operation].ok])),
+    executionReceipt,
+    executionEvidenceReceipt: sourceEvidenceReceipt,
+    executionTarget,
+    executionReceiptInspection: runtimeReceipt,
+    buildReceiptPath,
+    buildReceiptInspection,
+    artifactBuildSourcesVerified: buildReceiptInspection.status === 'passed',
     smokeLogs: smokeLines,
     gpuProbe,
     surfaceProbe,

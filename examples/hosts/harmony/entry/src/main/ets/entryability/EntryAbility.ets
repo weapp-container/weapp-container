@@ -10,16 +10,19 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate('weappContainerEngine', 'quickjs');
     AppStorage.setOrCreate('weappContainerRoute', '');
     AppStorage.setOrCreate('weappContainerSessionId', '');
+    AppStorage.setOrCreate('weappContainerFixtureId', 'portable-pack-reference-v1');
     AppStorage.setOrCreate('weappContainerSmoke', false);
     const parameters = want.parameters;
     if (parameters !== undefined) {
       const engine = parameters['weappContainerEngine'];
       const route = parameters['weappContainerRoute'];
       const sessionId = parameters['weappContainerSessionId'];
+      const fixtureId = parameters['weappContainerFixtureId'];
       const smoke = parameters['weappContainerSmoke'];
       if (typeof engine === 'string') AppStorage.setOrCreate('weappContainerEngine', engine);
       if (typeof route === 'string') AppStorage.setOrCreate('weappContainerRoute', route);
       if (typeof sessionId === 'string') AppStorage.setOrCreate('weappContainerSessionId', sessionId);
+      if (typeof fixtureId === 'string') AppStorage.setOrCreate('weappContainerFixtureId', fixtureId);
       if (typeof smoke === 'boolean') AppStorage.setOrCreate('weappContainerSmoke', smoke);
     }
   }

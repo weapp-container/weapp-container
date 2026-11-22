@@ -1,9 +1,10 @@
 import { createWeappContainer } from '../native/WeappContainer';
 import util from '@ohos.util';
+import fs from '@ohos.file.fs';
 import common from '@ohos.app.ability.common';
 import cryptoFramework from '@ohos.security.cryptoFramework';
 import { PortablePack } from '../session/PortablePack';
-import { HarmonyLiveSession, HarmonySessionReceipt, InspectionPage, BridgeMessage, BridgeBatch, BridgePayload, NativeFontInspection } from '../session/LiveSession';
+import { HarmonyLiveSession, HarmonySessionReceipt, HarmonySmokeProbeResult, HarmonyExecutionOperation, InspectionPage, BridgeMessage, BridgeBatch, BridgePayload, NativeFontInspection } from '../session/LiveSession';
 import { abilityLifecycle } from '../session/AbilityLifecycle';
 import { HarmonyHostServices } from '../session/HostServices';
 import { HarmonyDeviceApis } from '../native/HarmonyDeviceApis';
@@ -74,6 +75,14 @@ interface SmokeSnapshotSummary {
   pixels: Array<number>;
 }
 
+interface ExecutionFixture { id: string; sourceCommit: string|null; manifest: Object; }
+interface ExecutionBuild { status: string; sourceCommit: string|null; workingTreeDirty: boolean; host: string; engine: string; artifactSha256: string|null; }
+interface ExecutionReceipt {
+  schemaVersion: number; fixture: ExecutionFixture; host: string; engine: string; status: string;
+  sourceCommit: string|null; artifactSha256: string|null; fixtureId: string; manifestIntegrity: string;
+  sessionId: string; route: string; operations: Record<string,HarmonyExecutionOperation>; surfaceProbe: Object; build: ExecutionBuild;
+}
+
 @Entry
 @Component
 struct Index {
@@ -95,6 +104,8 @@ struct Index {
   private ignoringMultiple: boolean = false;
   private initialSmokeLogged: boolean = false;
   private smokeProbeLogged: boolean = false;
+  private executionReceiptPath: string = '';
+  private executionReceiptFrozen: boolean = false;
 
   aboutToAppear(): void {
     this.closed = false;
@@ -108,6 +119,8 @@ struct Index {
       const hostContext = this.getUIContext().getHostContext();
       if (hostContext === undefined) throw new Error('ERR_HOST_CONTEXT: ArkUI host context is unavailable');
       const context = hostContext as common.UIAbilityContext;
+      this.executionReceiptPath = `${context.filesDir}/portable-pack-execution.json`;
+      this.clearExecutionReceipt();
       this.pack = PortablePack.load((path: string): Uint8Array => context.resourceManager.getRawFileContentSync(path),
         (bytes: Uint8Array): string => util.TextDecoder.create('utf-8', { fatal: true, ignoreBOM: true }).decodeToString(bytes), sha256Bytes);
       this.synchronizeSurface();
@@ -206,12 +219,16 @@ struct Index {
       try{
         const probes=this.session.smokeProbe();
         if(probes!==null){
-          console.info(`WEAPP_CONTAINER_SMOKE render.snapshot ${JSON.stringify(this.snapshotSummary(probes.renderSnapshot))}`);
+          const renderSnapshot=this.snapshotSummary(probes.renderSnapshot);
+          const surfaceProbe=probes.surfaceProbe as Record<string,Object>;
+          surfaceProbe['snapshotSha256']=renderSnapshot.sha256;
+          console.info(`WEAPP_CONTAINER_SMOKE render.snapshot ${JSON.stringify(renderSnapshot)}`);
           console.info(`WEAPP_CONTAINER_SMOKE canvas.draw ${JSON.stringify({messages:[probes.canvasDraw]})}`);
           console.info(`WEAPP_CONTAINER_SMOKE canvas.snapshot ${JSON.stringify(this.snapshotSummary(probes.canvasSnapshot))}`);
           console.info(`WEAPP_CONTAINER_SMOKE api.call ${JSON.stringify({messages:[probes.apiCall]})}`);
           console.info(`WEAPP_CONTAINER_SURFACE_PROBE ${JSON.stringify(probes.surfaceProbe)}`);
           console.info(`WEAPP_CONTAINER_GPU_PROBE ${JSON.stringify(probes.gpuProbe)}`);
+          this.writeExecutionReceipt(renderSnapshot,probes);
         }else throw new Error('ERR_RENDER: the first presented frame did not retain direct EGL surface evidence');
       }catch(error){console.error(`WEAPP_CONTAINER_SMOKE error ${JSON.stringify({message:String(error)})}`);}
     }
@@ -307,6 +324,43 @@ struct Index {
   }
 
   private smokeEnabled(): boolean { return AppStorage.get<boolean>('weappContainerSmoke')===true; }
+
+  private clearExecutionReceipt(): void {
+    if(this.executionReceiptPath.length===0)return;
+    for(const path of [this.executionReceiptPath,`${this.executionReceiptPath}.pending`]){
+      try{fs.accessSync(path);fs.unlinkSync(path);}catch(_error){}
+    }
+  }
+
+  private writeExecutionReceipt(renderSnapshot: SmokeSnapshotSummary, probes: HarmonySmokeProbeResult): void {
+    if(this.executionReceiptFrozen||this.executionReceiptPath.length===0||this.pack===null||this.session===null)return;
+    const operations=this.session.executionOperations() as Record<string,HarmonyExecutionOperation>;
+    const surfaceProbe=probes.surfaceProbe as Record<string,Object>;
+    const sessionId=surfaceProbe['sessionId'] as string;
+    operations['render.snapshot']={status:0,sessionId,json:JSON.stringify(renderSnapshot)};
+    const engine=surfaceProbe['engine'] as string;
+    const fixtureId=AppStorage.get<string>('weappContainerFixtureId')||'portable-pack-reference-v1';
+    if(fixtureId.length===0||fixtureId.length>256)throw new Error('ERR_ENGINE: invalid execution fixture identity');
+    const receipt: ExecutionReceipt={
+      schemaVersion:1,
+      fixture:{id:fixtureId,sourceCommit:null,manifest:this.pack.manifest},
+      host:'harmony',engine,status:'passed',sourceCommit:null,artifactSha256:null,
+      fixtureId,manifestIntegrity:this.pack.integrityRoot,
+      sessionId,route:this.lastReceipt?.route||this.pack.firstRoute(),
+      operations,surfaceProbe,
+      build:{status:'unknown',sourceCommit:null,workingTreeDirty:false,host:'harmony',engine,artifactSha256:null},
+    };
+    const pending=`${this.executionReceiptPath}.pending`;
+    let file: fs.File|null=null;
+    try{
+      file=fs.openSync(pending,fs.OpenMode.READ_WRITE|fs.OpenMode.CREATE|fs.OpenMode.TRUNC|fs.OpenMode.NOFOLLOW);
+      fs.writeSync(file.fd,JSON.stringify(receipt));
+      fs.fsyncSync(file.fd);
+    }finally{if(file!==null)fs.closeSync(file);}
+    fs.renameSync(pending,this.executionReceiptPath);
+    this.executionReceiptFrozen=true;
+    console.info(`WEAPP_CONTAINER_EXECUTION_RECEIPT ${JSON.stringify({path:this.executionReceiptPath,sessionId:surfaceProbe['sessionId']})}`);
+  }
 
   private smokeMessage(message: BridgeMessage): BridgeBatch {
     if(message.op!=='app.init')return {messages:[message]};
