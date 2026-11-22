@@ -138,9 +138,11 @@ internal class AndroidWindowObservationCollector(
             } else {
                 system = ObservedInsets(insets.stableInsetLeft, insets.stableInsetTop, insets.stableInsetRight, insets.stableInsetBottom)
                 status = ObservedInsets(0, insets.stableInsetTop, 0, 0)
-                val value = if (Build.VERSION.SDK_INT >= 28) insets.displayCutout else null
-                cutout = if (value == null) ObservedInsets(0, 0, 0, 0)
+                cutout = if (Build.VERSION.SDK_INT >= 28) {
+                    val value = insets.displayCutout
+                    if (value == null) ObservedInsets(0, 0, 0, 0)
                     else ObservedInsets(value.safeInsetLeft, value.safeInsetTop, value.safeInsetRight, value.safeInsetBottom)
+                } else ObservedInsets(0, 0, 0, 0)
                 source = "Decor incoming WindowInsets.stableInsets; statusBarHeight uses stable top (API26-29 limitation)"
             }
             val orientation = when (surface.resources.configuration.orientation) {
