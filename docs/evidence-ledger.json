@@ -468,8 +468,8 @@
       "version": "workspace commit 897e8a2a2e70a0a6807dcc8ea0406bc43a53bf97",
       "analysisTime": "2026-11-22",
       "scope": "Current-source iOS V8 simulator build attempt",
-      "conclusion": "Blocked before Cargo because the required pinned RUSTY_V8_ARCHIVE, RUSTY_V8_ARCHIVE_SHA256 and RUSTY_V8_SRC_BINDING_PATH inputs are not configured on this host",
-      "limitations": "The prior c40cfd8 iOS V8 simulator receipt is stale for the current source provenance and is not reused as current evidence. No current-source iOS V8 runtime or GPU result is claimed"
+      "conclusion": "The initial current-source attempt was blocked before Cargo because the required pinned RUSTY_V8_ARCHIVE, RUSTY_V8_ARCHIVE_SHA256 and RUSTY_V8_SRC_BINDING_PATH inputs were not configured on this host; this record is superseded by the later current-source iOS V8 pass recorded as ios-v8-current-d3b2592",
+      "limitations": "This record only describes the earlier missing-input attempt. The later ios-v8-current-d3b2592 entry supplies current-source iOS V8 simulator and GPU evidence, while physical-device, production-signing, full API conformance, official WeChat behavior and performance acceptance remain outside its scope"
     },
     {
       "id": "harmony-quickjs-sample-pack-d3b2592",
