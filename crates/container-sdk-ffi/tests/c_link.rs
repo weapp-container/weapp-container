@@ -1,25 +1,27 @@
 //! Build a genuine downstream C executable against Cargo's dynamic artifact.
 //! This is independent of Rust's type checker and exercises the installed ABI.
 
-fn dependency_directory() -> std::path::PathBuf {
+fn dynamic_library_path() -> std::path::PathBuf {
     let current = std::env::current_exe().unwrap();
     let mut cursor = current.parent();
+    let library_name = if cfg!(target_os = "macos") {
+        "libweapp_container_sdk.dylib"
+    } else {
+        "libweapp_container_sdk.so"
+    };
     while let Some(directory) = cursor {
-        let candidate = directory.join("deps");
-        if candidate
-            .join(if cfg!(target_os = "macos") {
-                "libweapp_container_sdk.dylib"
-            } else {
-                "libweapp_container_sdk.so"
-            })
-            .exists()
-        {
-            return candidate;
+        for candidate in [
+            directory.join(library_name),
+            directory.join("deps").join(library_name),
+        ] {
+            if candidate.is_file() {
+                return candidate;
+            }
         }
         cursor = directory.parent();
     }
     panic!(
-        "Cargo dependency directory not found from {}",
+        "Cargo dynamic SDK library not found from {}",
         current.display()
     );
 }
@@ -31,7 +33,8 @@ fn public_c_header_compiles_links_and_runs() {
     use std::process::Command;
     let crate_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let workspace = crate_root.parent().unwrap().parent().unwrap();
-    let deps = dependency_directory();
+    let library = dynamic_library_path();
+    let library_directory = library.parent().unwrap();
     let temporary = tempfile::tempdir().unwrap();
     let executable = temporary.path().join("c-consumer");
     let compiler = std::env::var_os("CC").unwrap_or_else(|| "cc".into());
@@ -45,8 +48,8 @@ fn public_c_header_compiles_links_and_runs() {
         .arg(workspace.join("sdk/contract/include"))
         .arg(crate_root.join("tests/c_consumer.c"))
         .arg("-L")
-        .arg(&deps)
-        .arg(format!("-Wl,-rpath,{}", deps.display()))
+        .arg(library_directory)
+        .arg(format!("-Wl,-rpath,{}", library_directory.display()))
         .arg("-lweapp_container_sdk")
         .arg("-o")
         .arg(&executable)
@@ -99,16 +102,12 @@ fn header_matches_actual_dynamic_exports() {
             declarations.insert(rest[..end].to_owned());
         }
     }
-    let deps = dependency_directory();
+    let library = dynamic_library_path();
     let mut command = Command::new("nm");
     #[cfg(target_os = "macos")]
-    command
-        .arg("-gU")
-        .arg(deps.join("libweapp_container_sdk.dylib"));
+    command.arg("-gU").arg(&library);
     #[cfg(not(target_os = "macos"))]
-    command
-        .args(["-D", "--defined-only"])
-        .arg(deps.join("libweapp_container_sdk.so"));
+    command.args(["-D", "--defined-only"]).arg(&library);
     let result = command
         .output()
         .expect("nm is required for C ABI export validation");
