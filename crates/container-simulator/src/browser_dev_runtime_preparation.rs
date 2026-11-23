@@ -746,10 +746,7 @@ impl BrowserRuntimePreparationOwner {
         if let Some(error) = first_error {
             return Err(error);
         }
-        if pending {
-            return Ok(false);
-        }
-        Ok(true)
+        Ok(!pending)
     }
 
     /// No input/tools/root deletion until the real process and every original
