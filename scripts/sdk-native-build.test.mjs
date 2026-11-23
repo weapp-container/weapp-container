@@ -15,7 +15,7 @@ function fixture() {
   const git = args => { const result = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr); };
   git(['init', '-q']); git(['add', '.']); git(['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'source fixture']);
   const target = process.platform === 'darwin' ? 'aarch64-apple-darwin' : 'x86_64-unknown-linux-gnu';
-  const stub = `#!${process.execPath}\nimport('node:fs').then(fs=>{const name=process.argv[1].split('/').pop();if(name==='rustup')process.stdout.write(process.env.TEST_NATIVE_TOOLS+'/'+process.argv[3]+'\\n');else if(name==='rustc'&&process.argv[2]==='-vV')process.stdout.write('host: '+process.env.TEST_NATIVE_TARGET+'\\n');else if(name==='cargo'&&process.argv[2]==='build'){fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED,JSON.stringify(process.argv.slice(2)));fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED+'.env',JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>key.startsWith('CXXFLAGS_')||key==='MACOSX_DEPLOYMENT_TARGET'))));process.exitCode=99;}else process.stdout.write('inert toolchain fixture; no compilation\\n');});\n`;
+  const stub = `#!${process.execPath}\nimport('node:fs').then(fs=>{const name=process.argv[1].split('/').pop();if(name==='rustup')process.stdout.write(process.env.TEST_NATIVE_TOOLS+'/'+process.argv[3]+'\\n');else if(name==='rustc'&&process.argv[2]==='-vV')process.stdout.write('host: '+process.env.TEST_NATIVE_TARGET+'\\n');else if(name==='cargo'&&process.argv[2]==='build'){fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED,JSON.stringify(process.argv.slice(2)));fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED+'.env',JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>key==='CFLAGS'||key==='CXXFLAGS'||key.startsWith('CXXFLAGS_')||key==='MACOSX_DEPLOYMENT_TARGET'))));process.exitCode=99;}else process.stdout.write('inert toolchain fixture; no compilation\\n');});\n`;
   for (const name of ['rustup', 'cargo', 'rustc', 'rustdoc']) writeFileSync(resolve(tools, name), stub, { mode: 0o755 });
   const ndk = resolve(directory, 'ndk');
   const ndkHost = process.platform === 'darwin' ? 'darwin-aarch64' : 'linux-x86_64';
@@ -112,6 +112,8 @@ test('actual dev entry passes the receipt feature plan to an inert failing Cargo
         assert.equal(cppEnvironment.MACOSX_DEPLOYMENT_TARGET, '12.0');
         assert.equal(receipt.toolchain.cppExceptions, 'disabled-at-rust-ffi-boundary');
       }
+      assert.match(cppEnvironment.CFLAGS, /-ffile-prefix-map=/);
+      assert.match(cppEnvironment.CXXFLAGS, /-ffile-prefix-map=/);
       assert.deepEqual(receipt.artifacts, []);
     } finally { f.remove(); }
   }
