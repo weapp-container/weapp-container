@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weapp Container DevTools</title>
+  <style>
+    :root { color-scheme: light; font: 14px/1.5 "Inter", "Segoe UI", sans-serif; color: #1f2933; background: #f4f6f8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 360px; }
+    main { width: min(760px, calc(100% - 40px)); margin: 48px auto; }
+    header { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid #d7dde2; padding-bottom: 18px; }
+    h1 { margin: 0; font-size: 20px; font-weight: 650; }
+    #status { color: #53616c; font-size: 13px; }
+    form { padding: 24px 0; border-bottom: 1px solid #d7dde2; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    .path-row { display: flex; gap: 8px; }
+    input[type=text] { flex: 1; min-width: 0; height: 40px; border: 1px solid #aab5be; border-radius: 4px; padding: 0 12px; color: inherit; background: white; }
+    button, select { height: 40px; border: 1px solid #9aa7b1; border-radius: 4px; padding: 0 12px; background: white; color: inherit; font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; opacity: .55; }
+    .options { display: flex; align-items: end; gap: 16px; margin-top: 18px; }
+    .options > div { flex: 1; }
+    .actions { display: flex; gap: 8px; }
+    #start { border-color: #177245; background: #177245; color: white; }
+    #stop { border-color: #b84545; background: #b84545; color: white; }
+    #preview { display: none; color: #075d8b; font-weight: 600; text-decoration: none; }
+    #message { min-height: 24px; margin-top: 12px; color: #a12d2d; }
+    h2 { margin: 22px 0 8px; font-size: 14px; }
+    pre { height: 260px; overflow: auto; margin: 0; padding: 12px; border: 1px solid #cbd3d9; border-radius: 4px; background: #fff; color: #36434d; font: 12px/1.55 "IBM Plex Mono", ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+    @media (max-width: 540px) { main { margin: 24px auto; } header { align-items: start; flex-direction: column; gap: 4px; } .path-row, .options { align-items: stretch; flex-direction: column; } .actions { justify-content: flex-end; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><h1>Weapp Container DevTools</h1><div id="status">已停止</div></header>
+    <form id="form">
+      <label for="project">小程序项目目录</label>
+      <div class="path-row">
+        <input id="project" name="project" type="text" autocomplete="off" placeholder="输入项目路径" required>
+        <button id="browse" type="button">选择目录</button>
+      </div>
+      <div class="options">
+        <div><label for="surface">运行方式</label><select id="surface" name="surface"><option value="web">Web Player</option><option value="desktop">Desktop Player</option></select></div>
+        <div class="actions"><button id="start" type="submit">启动</button><button id="stop" type="button" disabled>停止</button></div>
+      </div>
+      <div id="message" role="status"></div>
+      <a id="preview" target="_blank" rel="noopener">打开 Web Player</a>
+    </form>
+    <h2>运行日志</h2>
+    <pre id="logs" aria-live="polite"></pre>
+  </main>
+  <script>
+    const token = new URLSearchParams(location.hash.slice(1)).get('session') ?? ''
+    const project = document.querySelector('#project')
+    const surface = document.querySelector('#surface')
+    const message = document.querySelector('#message')
+    const status = document.querySelector('#status')
+    const logs = document.querySelector('#logs')
+    const start = document.querySelector('#start')
+    const stop = document.querySelector('#stop')
+    const preview = document.querySelector('#preview')
+    async function api(path, body) {
+      const response = await fetch(path, { method: body === undefined ? 'GET' : 'POST', headers: { authorization: `Bearer ${token}`, ...(body === undefined ? {} : { 'content-type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error ?? `HTTP ${response.status}`)
+      return result
+    }
+    async function refresh() {
+      try {
+        const state = await api('/api/status')
+        status.textContent = state.stopping ? '正在停止' : state.running ? '运行中' : state.exitCode === undefined ? '已停止' : `已退出 (${state.exitCode})`
+        project.value = state.project ?? project.value
+        if (state.surface) surface.value = state.surface
+        start.disabled = state.running || state.stopping
+        stop.disabled = !state.running || state.stopping
+        logs.textContent = state.logs.join('\n')
+        logs.scrollTop = logs.scrollHeight
+        if (state.previewUrl) { preview.href = state.previewUrl; preview.style.display = 'inline-block' }
+        else preview.style.display = 'none'
+      } catch (error) { message.textContent = error.message }
+    }
+    document.querySelector('#browse').addEventListener('click', async () => {
+      message.textContent = ''
+      try { const result = await api('/api/browse', {}); if (result.project) project.value = result.project }
+      catch (error) { message.textContent = error.message }
+    })
+    document.querySelector('#form').addEventListener('submit', async event => {
+      event.preventDefault()
+      message.textContent = ''
+      try { await api('/api/start', { project: project.value, surface: surface.value }); await refresh() }
+      catch (error) { message.textContent = error.message }
+    })
+    stop.addEventListener('click', async () => {
+      message.textContent = ''
+      try { await api('/api/stop', {}); await refresh() }
+      catch (error) { message.textContent = error.message }
+    })
+    setInterval(refresh, 1000)
+    refresh()
+  </script>
+</body>
+</html>

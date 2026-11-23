@@ -527,8 +527,8 @@ fn run_dev_cli(arguments: Vec<String>) -> Result<(), Box<dyn std::error::Error>>
     if !software && renderer != "webview" {
         if let Some(web) = web_surface.as_mut() {
             let asset_path = renderer_assets.unwrap_or_else(|| {
-                PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-                    .join("../../artifacts/dual-renderer-dev-assets")
+                container_simulator::tool_distribution_root()
+                    .join("artifacts/dual-renderer-dev-assets")
             });
             web.configure_canvaskit_assets(&asset_path)?;
         }

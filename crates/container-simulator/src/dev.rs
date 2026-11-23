@@ -2376,6 +2376,11 @@ fn resolve_wv_bin(wv_bin: &Path, workspace_root: &Path) -> PathBuf {
     // A checkout normally exposes `wv` through the vendor workspace rather
     // than the user's global PATH. Prefer that fixed toolchain when present;
     // an explicit `--wv-bin` path still bypasses this discovery.
+    let packaged_bin =
+        workspace_root.join("vendor/weapp-vite/node_modules/weapp-vite/bin/weapp-vite.js");
+    if wv_bin == Path::new("wv") && packaged_bin.is_file() {
+        return packaged_bin;
+    }
     let vendor_bin = workspace_root
         .join("vendor/weapp-vite/node_modules/.bin")
         .join(if cfg!(windows) { "wv.cmd" } else { "wv" });
@@ -2880,6 +2885,17 @@ fn resolve_workspace_root(
     // fallback for callers that invoke a relocated executable from elsewhere.
     explicit
         .map(|path| launch_dir.join(path))
+        .or_else(|| {
+            executable.and_then(|path| {
+                path.ancestors().find_map(|directory| {
+                    (directory.join("weapp-devtools.json").is_file()
+                        && directory
+                            .join("tools/container-manifest/bin/container-pack.mjs")
+                            .is_file())
+                    .then(|| directory.to_path_buf())
+                })
+            })
+        })
         .or_else(|| find_workspace_root(launch_dir))
         .or_else(|| {
             executable
@@ -3048,6 +3064,25 @@ mod tests {
         assert_eq!(
             resolve_workspace_root(None, &launch, None, &fixture.root.join("standalone-app")),
             None
+        );
+    }
+
+    #[test]
+    fn workspace_discovery_prefers_the_extracted_distribution_from_any_cwd() {
+        let fixture = WorkspaceDiscoveryFixture::new();
+        let distribution = fixture.root.join("distribution");
+        let packer = distribution.join("tools/container-manifest/bin/container-pack.mjs");
+        fs::create_dir_all(packer.parent().unwrap()).unwrap();
+        fs::write(packer, "// packaged entry").unwrap();
+        fs::write(distribution.join("weapp-devtools.json"), "{}\n").unwrap();
+        let unrelated_checkout = fixture.checkout("unrelated-checkout");
+        let project = fixture.root.join("application");
+        fs::create_dir_all(&project).unwrap();
+        let executable = distribution.join("bin/weapp-simulator");
+
+        assert_eq!(
+            resolve_workspace_root(None, &unrelated_checkout, Some(&executable), &project),
+            Some(distribution)
         );
     }
 

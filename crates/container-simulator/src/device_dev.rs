@@ -4,7 +4,6 @@
 use container_simulator::dev::{DevConfig, DevEvent, DevPackConsumer, DevSupervisor};
 use serde_json::{json, Value};
 use std::io::{BufRead, BufReader, Write};
-use std::path::PathBuf;
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::{atomic::Ordering, mpsc};
 use std::time::{Duration, Instant};
@@ -29,8 +28,8 @@ impl DeviceService {
         config: &DevConfig,
         options: &DeviceOptions,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let script =
-            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../scripts/device-dev-server.mjs");
+        let script = container_simulator::tool_distribution_root()
+            .join("scripts/device-dev-server.mjs");
         if !script.is_file() {
             return Err("ERR_DEV_TOOLS: device-dev-server.mjs is absent".into());
         }

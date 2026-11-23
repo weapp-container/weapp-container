@@ -9,11 +9,36 @@ use crate::browser_dev_aggregate_store::{
 const COMPILER: &str = "0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e";
 
 pub(super) fn fixed_compiler(workspace: &Path) -> Result<String, DevError> {
-    let compiler = workspace.join("vendor/weapp-vite");
+    let vendor = workspace.join("vendor/weapp-vite");
+    let bundled = vendor.join("node_modules/weapp-vite");
+    let compiler = if bundled.is_dir() {
+        bundled
+    } else {
+        vendor.clone()
+    };
     if !compiler.is_dir() {
         return Err(DevError::BrowserRuntime(
             "managed source compiler is unavailable in this distribution".into(),
         ));
+    }
+    if !vendor.join(".git").exists() {
+        let metadata = fs::read(workspace.join("weapp-devtools.json")).map_err(|_| {
+            DevError::BrowserRuntime("packaged compiler identity is unavailable".into())
+        })?;
+        let metadata: serde_json::Value = serde_json::from_slice(&metadata).map_err(|_| {
+            DevError::BrowserRuntime("packaged compiler identity is invalid".into())
+        })?;
+        let package: serde_json::Value =
+            serde_json::from_slice(&fs::read(compiler.join("package.json"))?).map_err(|_| {
+                DevError::BrowserRuntime("packaged compiler manifest is invalid".into())
+            })?;
+        let commit = metadata["weappViteCommit"].as_str().unwrap_or_default();
+        if commit != COMPILER || package["name"] != "weapp-vite" || package["version"] != "7.5.0" {
+            return Err(DevError::BrowserRuntime(
+                "packaged compiler differs from the frozen baseline".into(),
+            ));
+        }
+        return Ok(commit.to_owned());
     }
     let output = Command::new("git")
         .args(["rev-parse", "--verify", "HEAD"])

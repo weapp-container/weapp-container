@@ -27,6 +27,21 @@ use thiserror::Error;
 
 pub mod web;
 
+/// Resolve the repository or extracted DevTools directory that owns this
+/// executable's scripts, compiler, and renderer resources.
+pub fn tool_distribution_root() -> PathBuf {
+    let packaged = std::env::current_exe().ok().and_then(|executable| {
+        executable.ancestors().find_map(|directory| {
+            (directory.join("weapp-devtools.json").is_file()
+                && directory
+                    .join("tools/container-manifest/bin/container-pack.mjs")
+                    .is_file())
+            .then(|| directory.to_path_buf())
+        })
+    });
+    packaged.unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."))
+}
+
 /// Strict, opt-in browser control transport. This does not elect a preview,
 /// construct a Worker, or enable browser watch development by itself.
 pub mod web_control;

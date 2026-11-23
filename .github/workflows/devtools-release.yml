@@ -1,0 +1,142 @@
+name: DevTools release
+
+on:
+  push:
+    tags: ['devtools-v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: devtools-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: macos-universal
+            os: xcode-27
+          - target: linux-x86_64
+            os: ubuntu-24.04
+          - target: windows-x86_64
+            os: windows-2022
+    env:
+      CARGO_INCREMENTAL: '0'
+      RUSTUP_TOOLCHAIN: 1.99.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.1
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target == 'macos-universal' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.target == 'windows-x86_64' && 'x86_64-pc-windows-msvc' || 'x86_64-unknown-linux-gnu' }}
+
+      - uses: ./.github/actions/setup-linux-native
+        if: runner.os == 'Linux'
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install the pinned compiler dependency graph
+        run: corepack pnpm@12.11.2 --dir vendor/weapp-vite install --frozen-lockfile --ignore-scripts
+
+      - name: Build the portable manifest packer
+        run: pnpm --dir tools/container-manifest build
+
+      - name: Build universal macOS simulator
+        if: matrix.target == 'macos-universal'
+        shell: bash
+        run: |
+          cargo build --locked --release -p container-simulator --features desktop-window --target aarch64-apple-darwin
+          cargo build --locked --release -p container-simulator --features desktop-window --target x86_64-apple-darwin
+          node scripts/package-devtools-release.mjs \
+            --target macos-universal \
+            --output "artifacts/weapp-container-devtools-${{ matrix.target }}" \
+            --version "${GITHUB_REF_NAME#devtools-v}" \
+            --simulator-bin target/aarch64-apple-darwin/release/weapp-simulator \
+            --simulator-bin-x86_64 target/x86_64-apple-darwin/release/weapp-simulator
+
+      - name: Build Linux simulator
+        if: matrix.target == 'linux-x86_64'
+        run: cargo build --locked --release -p container-simulator --features desktop-window
+
+      - name: Package Linux DevTools
+        if: matrix.target == 'linux-x86_64'
+        run: node scripts/package-devtools-release.mjs --target linux-x86_64 --output "artifacts/weapp-container-devtools-${{ matrix.target }}" --version "${GITHUB_REF_NAME#devtools-v}" --simulator-bin target/release/weapp-simulator
+
+      - name: Build Windows simulator
+        if: matrix.target == 'windows-x86_64'
+        run: cargo build --locked --release -p container-simulator --features desktop-window
+
+      - name: Package Windows DevTools
+        if: matrix.target == 'windows-x86_64'
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME -replace '^devtools-v', ''
+          node scripts/package-devtools-release.mjs --target windows-x86_64 --output "artifacts/weapp-container-devtools-${{ matrix.target }}" --version $version --simulator-bin target/release/weapp-simulator.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devtools-${{ matrix.target }}
+          path: artifacts/weapp-container-devtools-${{ matrix.target }}.*
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish downloadable DevTools release
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: devtools-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Verify packages and create release checksums
+        run: |
+          set -euo pipefail
+          ls -lh artifacts
+          test "$(find artifacts -maxdepth 1 -type f | wc -l)" -eq 3
+          cd artifacts
+          sha256sum weapp-container-devtools-* > SHA256SUMS
+
+      - name: Create GitHub prerelease with runnable archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh release create "$GITHUB_REF_NAME" \
+            artifacts/weapp-container-devtools-macos-universal.tar.gz \
+            artifacts/weapp-container-devtools-linux-x86_64.tar.gz \
+            artifacts/weapp-container-devtools-windows-x86_64.zip \
+            artifacts/SHA256SUMS \
+            --title "Weapp Container DevTools ${GITHUB_REF_NAME#devtools-v}" \
+            --notes-file <(printf '%s\n' \
+              'This preview release includes directly runnable development tools.' \
+              '' \
+              'Download the archive for your operating system, extract it, and follow the included README.md. Each archive bundles the simulator, Node.js, the pinned weapp-vite compiler, and renderer assets.') \
+            --prerelease

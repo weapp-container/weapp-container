@@ -488,7 +488,6 @@ pub fn run_browser_dev(
     // until the owner, policy and exact bootstrap are all configured below.
     let mut surface = WebSurface::bind_resource_only(options.host, options.port)?;
     let mut config = DevConfig::new(&options.project, simulator);
-    config.workspace_root = Some(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."));
     config.node_bin = options.node_bin;
     config.output_dir = options.output_dir.clone();
     config.pack_consumer = DevPackConsumer::BrowserWorker;
