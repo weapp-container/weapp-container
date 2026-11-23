@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { appendFileSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { RELEASE_REPOSITORY, RELEASE_SDKS, assertCandidate, assertCoreVersions, assertCompleteRelease, assertProductionRun, assertWrapperReceipt, checksReady, releaseNotes, workflowChecks } from './lib/runtime-release.mjs';
+import { RELEASE_REPOSITORY, RELEASE_SDKS, assertCandidate, assertCoreVersions, assertCompleteRelease, assertProductionRun, assertWrapperReceipt, checksReady, previousReleaseTag, releaseNotes, workflowChecks } from './lib/runtime-release.mjs';
 import { NATIVE_TARGETS } from './lib/sdk-native-features.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -138,9 +138,12 @@ async function assemble() {
 
 async function notes() {
   const candidate = localCandidate();
-  const generated = JSON.parse(run('gh', ['api', `repos/${RELEASE_REPOSITORY}/releases/generate-notes`, '--method', 'POST',
-    '-f', `tag_name=runtime-v${candidate.runtimeVersion}`, '-f', `target_commitish=${candidate.sourceCommit}`,
-    '-f', `previous_tag_name=runtime-v${candidate.publishedRuntimeVersion}`]));
+  const tags = run('gh', ['api', '--paginate', '--jq', '.[].name', `repos/${RELEASE_REPOSITORY}/tags`]).trim().split(/\r?\n/).filter(Boolean);
+  const previousTag = previousReleaseTag(candidate, tags);
+  const args = ['api', `repos/${RELEASE_REPOSITORY}/releases/generate-notes`, '--method', 'POST',
+    '-f', `tag_name=runtime-v${candidate.runtimeVersion}`, '-f', `target_commitish=${candidate.sourceCommit}`];
+  if (previousTag) args.push('-f', `previous_tag_name=${previousTag}`);
+  const generated = JSON.parse(run('gh', args));
   writeFileSync(resolve(root, 'artifacts/release/notes.md'), releaseNotes(candidate, generated.body));
 }
 

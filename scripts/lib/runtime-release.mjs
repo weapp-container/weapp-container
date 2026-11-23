@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 export const RELEASE_REPOSITORY = 'weapp-container/weapp-container';
 export const RELEASE_SDKS = ['contract', 'android', 'ios', 'desktop'];
-export const REQUIRED_WORKFLOWS = ['public-ci.yml', 'documentation.yml', 'publication-security.yml'];
+export const REQUIRED_WORKFLOWS = ['checks.yml', 'publication-security.yml'];
 export const RELEASE_ARTIFACTS = [
   ['runtime', 'android', 'arm64-v8a'], ['runtime', 'android', 'x86_64'],
   ['runtime', 'ios', 'arm64-device'], ['runtime', 'ios', 'arm64-simulator'], ['runtime', 'ios', 'x86_64-simulator'],
@@ -86,6 +86,11 @@ export function workflowChecks(runs, sha) {
 
 export function checksReady(runs, sha) {
   return workflowChecks(runs, sha).every(run => run?.status === 'completed' && run.conclusion === 'success');
+}
+
+export function previousReleaseTag(candidate, tags) {
+  const previous = `runtime-v${candidate.publishedRuntimeVersion}`;
+  return previous === `runtime-v${candidate.runtimeVersion}` || !tags.includes(previous) ? undefined : previous;
 }
 
 export function assertWrapperReceipt(receipt, sdk, candidate, targets) {

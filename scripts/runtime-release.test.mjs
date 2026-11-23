@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { RELEASE_REPOSITORY, RELEASE_SDKS, RELEASE_ARTIFACTS, REQUIRED_WORKFLOWS, assertCandidate, assertCoreVersions, assertCompleteRelease,
-  assertProductionRun, assertWrapperReceipt, checksReady, releaseNotes } from './lib/runtime-release.mjs';
+  assertProductionRun, assertWrapperReceipt, checksReady, previousReleaseTag, releaseNotes } from './lib/runtime-release.mjs';
 import { downloadAnonymousAsset } from './runtime-release-published.mjs';
 import { createHash } from 'node:crypto';
 
@@ -46,7 +46,8 @@ test('only successful manually requested main production from this repository is
     { head_branch: 'feature' }, { event: 'pull_request' }, { path: '.github/workflows/ci.yml' }, { conclusion: 'failure' },
     { conclusion: 'cancelled' }, { status: 'in_progress' }, { head_sha: 'main' }]) assert.throws(() => assertProductionRun({ ...production(), ...patch }));
 });
-test('source, documentation and security must all succeed on the exact production SHA', () => {
+test('active source and security workflows must succeed on the exact production SHA', () => {
+  assert.deepEqual(REQUIRED_WORKFLOWS, ['checks.yml', 'publication-security.yml']);
   const runs = REQUIRED_WORKFLOWS.map((file, i) => ({ ...production(), id: i + 1, path: `.github/workflows/${file}`, event: 'push' }));
   assert.equal(checksReady(runs, sha), true);
   assert.equal(checksReady(runs.slice(1), sha), false);
@@ -54,6 +55,13 @@ test('source, documentation and security must all succeed on the exact productio
   for (const patch of [{ conclusion: 'failure' }, { status: 'in_progress' }, { event: 'pull_request' },
     { head_repository: { full_name: 'fork/core' } }]) assert.equal(checksReady([{ ...runs[0], ...patch }, ...runs.slice(1)], sha), false);
   assert.equal(checksReady([...runs, { ...runs[0], id: 100, conclusion: 'cancelled' }], sha), false);
+});
+test('generated notes use a previous tag only when it exists and differs from this release', () => {
+  const value = candidate();
+  assert.equal(previousReleaseTag(value, []), undefined);
+  value.publishedRuntimeVersion = '0.1.0-preview.7.0';
+  assert.equal(previousReleaseTag(value, []), undefined);
+  assert.equal(previousReleaseTag(value, ['runtime-v0.1.0-preview.7.0']), 'runtime-v0.1.0-preview.7.0');
 });
 test('release rejects missing, duplicate, substituted and incomplete universal archives', () => {
   assertCompleteRelease(manifest());
