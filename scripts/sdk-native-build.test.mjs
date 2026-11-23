@@ -88,9 +88,11 @@ test('Windows source paths generate Clang and MSVC prefix mappings', () => {
 
 test('Windows short-path aliases can be represented by the same prefix mapping contract', () => {
   const mappings = nativeSourcePathFlags([
+    ['C:\\Users', 'build-users'],
     ['C:\\Users\\runneradmin\\.cargo', 'cargo'],
     ['C:\\Users\\RUNNER~1\\CARGO~1', 'cargo'],
   ]);
+  assert.ok(mappings.includes('-fmacro-prefix-map=C:\\Users=build-users'));
   assert.ok(mappings.includes('-fmacro-prefix-map=C:\\Users\\RUNNER~1\\CARGO~1=cargo'));
 });
 

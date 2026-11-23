@@ -85,6 +85,7 @@ const cargoSourceHome = resolve(env.CARGO_HOME || resolve(os.homedir(), '.cargo'
 // Dependency panic locations and generated bindings also embed source paths.
 // Put specific mappings last: rustc resolves overlapping remaps from the end.
 const baseSourcePathMappings = [
+  ...(process.platform === 'win32' ? [[dirname(os.homedir()), 'build-users']] : []),
   [os.homedir(), 'build-home'],
   [cargoSourceHome, 'cargo'],
   [targetDir, 'weapp-container-build'],
