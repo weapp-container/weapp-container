@@ -104,6 +104,7 @@ if (awsLcPathEnvironment) {
   env.AWS_LC_SYS_CC = awsLcPathEnvironment.compiler;
   env.AWS_LC_SYS_CXX = awsLcPathEnvironment.compiler;
   env.AWS_LC_SYS_CMAKE_GENERATOR = awsLcPathEnvironment.generator;
+  env.AWS_LC_SYS_CMAKE_BUILDER = awsLcPathEnvironment.builder;
   const awsLcFlags = awsLcPathEnvironment.flags.map(flag => JSON.stringify(flag)).join(' ');
   env.AWS_LC_SYS_CFLAGS = [env.AWS_LC_SYS_CFLAGS, awsLcFlags].filter(Boolean).join(' ');
 }

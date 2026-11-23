@@ -31,6 +31,7 @@ export function awsLcWindowsClangEnvironment(sourcePathMappings) {
     compiler: 'clang-cl',
     flags: clangClSourcePathFlags(sourcePathMappings),
     generator: 'Ninja',
+    builder: '1',
   };
 }
 

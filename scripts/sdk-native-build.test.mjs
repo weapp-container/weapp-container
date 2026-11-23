@@ -78,6 +78,7 @@ test('Windows source paths generate Clang and MSVC prefix mappings', () => {
     compiler: 'clang-cl',
     flags: clangClFlags,
     generator: 'Ninja',
+    builder: '1',
   });
   assert.equal(skiaPathMappingGnArgs(clangClFlags), `extra_cflags += ${JSON.stringify(clangClFlags)}`);
   assert.deepEqual(nativeSourcePathFlags([['/opt/runner/.cargo', 'cargo']]), [
