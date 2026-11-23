@@ -9,6 +9,8 @@ import { nativeIdentity } from '../../sdk/desktop/tools/native-input.mjs';
 import { nativeProducerFixture } from '../fixtures/sdk-native-producer.mjs';
 import { SDK_RELEASE_VERSION, assertCleanNativeSource, assertNativeProducer, assertNativeProducerSet, assertSdkProducer, captureNativeSource, isNativeRuntimeLibrary, verifyNativeProducerFiles } from './sdk-current-release.mjs';
 
+const releasePolicy = JSON.parse(readFileSync(new URL('../../tools/runtime-artifacts/policy.json', import.meta.url), 'utf8'));
+
 test('runtime bodies and MSVC link interfaces retain distinct verification roles', () => {
   for (const file of ['weapp_container_sdk.dll', 'weapp_container_sdk.lib', 'libweapp_container_sdk.a', 'libweapp_container_sdk.so', 'libweapp_container_sdk.dylib', 'native/weapp_container_sdk.dll']) {
     assert.equal(isNativeRuntimeLibrary(file), true, file);
@@ -39,7 +41,7 @@ test('runtime bodies and MSVC link interfaces retain distinct verification roles
 
 test('new native producers and actual desktop wrapper identity projections require one clean current release source', () => {
   const first = nativeProducerFixture(), second = nativeProducerFixture('x86_64-apple-darwin');
-  assert.equal(SDK_RELEASE_VERSION, SDK_RELEASE_VERSION);
+  assert.equal(SDK_RELEASE_VERSION, releasePolicy.runtimeVersion);
   assert.equal(assertNativeProducer(first), first);
   assert.doesNotThrow(() => assertNativeProducer(nativeIdentity(first)));
   assert.doesNotThrow(() => assertNativeProducerSet([first, second], [first.target, second.target]));

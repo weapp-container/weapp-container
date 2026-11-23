@@ -52,7 +52,7 @@ jobs:
         run: |
           pnpm conformance:verify
           pnpm api:inventory:verify
-          node scripts/check-toolchain.mjs --strict --json
+          node scripts/check-toolchain.mjs --json
 
       - name: Verify dependency and source policies
         run: |

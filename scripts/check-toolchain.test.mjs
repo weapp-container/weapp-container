@@ -51,3 +51,9 @@ test('strict setup fails on missing SDKs and ordinary setup still fails on a mis
     assert.equal(result.report.required.find(item => item.command === 'node').available, false)
   })
 })
+
+test('Linux CI does not require platform SDKs that its runner cannot provide', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/checks.yml', import.meta.url), 'utf8')
+  assert.match(workflow, /node scripts\/check-toolchain\.mjs --json/)
+  assert.doesNotMatch(workflow, /node scripts\/check-toolchain\.mjs --strict/)
+})

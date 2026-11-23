@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { NATIVE_TARGETS, parseNativeBuildArgs, nativeBuildPlan, assertNativeFeatureIdentity } from './sdk-native-features.mjs';
-import { SDK_RELEASE_VERSION, assertNativeProducer } from './sdk-current-release.mjs';
+import { assertNativeProducer } from './sdk-current-release.mjs';
 import { nativeProducerFixture } from '../fixtures/sdk-native-producer.mjs';
 import { nativeIdentity as androidIdentity } from '../../sdk/android/tools/native-input.mjs';
 import { nativeIdentity as iosIdentity } from '../../sdk/ios/tools/native-input.mjs';
@@ -44,7 +44,6 @@ test('mode and feature provenance survives all native wrapper projections and re
     for (const patch of [{ viewDiagnostics: undefined }, { viewDiagnostics: 'invalid' }, { features: [...plan.features, 'unknown-feature'] }, { features: [...plan.features, plan.features[0]] }, { sdkVersion: '0.1.0-preview.5.3' }]) assert.throws(() => assertNativeProducer({ ...receipt, ...patch }));
     if (mode !== 'off') assert.throws(() => assertNativeProducer({ ...receipt, viewDiagnostics: 'off' }));
   }
-  assert.equal(SDK_RELEASE_VERSION, '0.1.0-preview.6.0');
 });
 
 test('diagnostic Cargo features remain opt-in and weakly forward both engine providers', () => {
