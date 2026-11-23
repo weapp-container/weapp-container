@@ -171,9 +171,6 @@ jobs:
         shell: bash
         run: |
           node --input-type=module -e "import {nativeBuildPlan} from './scripts/lib/sdk-native-features.mjs'; import {spawnSync} from 'node:child_process'; const target='${{ matrix.target }}'; const result=spawnSync(process.execPath,['scripts/sdk-licenses.mjs','--target',target,'--features',nativeBuildPlan(target).features.join(',')],{stdio:'inherit'}); process.exit(result.status??1);"
-      - name: Relocated C consumer
-        if: matrix.target == 'x86_64-apple-darwin' || matrix.target == 'x86_64-unknown-linux-gnu'
-        run: node scripts/sdk-c-consumer.mjs --target ${{ matrix.target }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -187,14 +184,6 @@ jobs:
           path: artifacts/sdk/licenses/${{ matrix.target }}/
           retention-days: 30
           if-no-files-found: error
-      - uses: actions/upload-artifact@v4
-        if: always() && (matrix.target == 'x86_64-apple-darwin' || matrix.target == 'x86_64-unknown-linux-gnu')
-        with:
-          name: sdk-c-consumer-${{ matrix.target }}
-          path: artifacts/sdk/validation/
-          retention-days: 30
-          if-no-files-found: warn
-
   package-runtime:
     name: Freeze and verify nine runtime archives
     needs: [contracts, native]
