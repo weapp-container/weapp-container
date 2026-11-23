@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import { verifySkiaInput } from './lib/sdk-skia-input.mjs';
 import { parseNativeBuildArgs, nativeBuildPlan } from './lib/sdk-native-features.mjs';
-import { SDK_RELEASE_VERSION, assertCleanNativeSource, captureNativeSource, isNativeRuntimeLibrary } from './lib/sdk-current-release.mjs';
+import { SDK_RELEASE_VERSION, assertCleanNativeSource, captureNativeSource, isNativeRuntimeLibrary, portableNativeCommand } from './lib/sdk-current-release.mjs';
 import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtifact } from './lib/showcase-policy.mjs';
 import { loadShowcaseNativeFont, retainShowcaseNativeFont, verifyShowcaseNativeFont, showcaseNativeFontEnvironment, verifyShowcaseNativeFontArtifact } from './lib/showcase-native-font.mjs';
 import { hardenLinuxStaticArchive } from './lib/sdk-native-hardening.mjs';
@@ -42,6 +42,9 @@ if (platform === 'linux' && process.platform !== 'linux') throw new Error('Linux
 const output = resolve(option('--out', resolve(root, 'artifacts/sdk/native')), target);
 // Share normal workspace Cargo outputs unless the caller selects a cache.
 // Cargo resolves relative environment paths from its working directory.
+const targetDirectorySource = options['--target-dir'] !== undefined
+  ? 'explicit'
+  : process.env.CARGO_TARGET_DIR ? 'environment' : 'workspace-default';
 const targetDir = options['--target-dir'] !== undefined
   ? resolve(options['--target-dir'])
   : resolve(root, process.env.CARGO_TARGET_DIR || 'target');
@@ -150,7 +153,7 @@ const cargoArgs = ['build', '-p', 'container-sdk-ffi', '--no-default-features', 
 if (options['--offline']) cargoArgs.push('--offline');
 const receipt = {
   schemaVersion: 1, sdkVersion: SDK_RELEASE_VERSION, abiVersion: 1, ...captureNativeSource(root),
-  target, targetDir, platform, profile, viewDiagnostics, features: [...plan.features], toolchain,
+  target, targetDirectorySource, platform, profile, viewDiagnostics, features: [...plan.features], toolchain,
   distributionProfile: distribution.distributionProfile, policySha256: distribution.policySha256,
   distributionPolicy: distribution.policyInput,
   ...(nativeFont ? { nativeFontInput: nativeFont } : {}),
@@ -266,7 +269,7 @@ try { if (exitCode === 0) {
       scope: 'Actual static runtime linked into an independent C++ host with typed standard-exception catches',
       sourceSha256: createHash('sha256').update(readFileSync(fixture)).digest('hex'),
       binarySha256: createHash('sha256').update(readFileSync(executable)).digest('hex'),
-      compileCommand: ['xcrun', ...argv], executed: nativeExecution,
+      compileCommand: portableNativeCommand(['xcrun', ...argv], { root, output }), executed: nativeExecution,
     };
   }
   const sourceBeforePublication = captureNativeSource(root);

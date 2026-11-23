@@ -37,6 +37,20 @@ export function captureNativeSource(root) {
   };
 }
 
+export function portableNativeCommand(command, { root, output }) {
+  return command.map(argument => {
+    if (!isAbsolute(argument)) return argument;
+    for (const [directory, label] of [[output, '<output>'], [root, '<repository>']]) {
+      const path = relative(directory, argument);
+      if (path === '') return label;
+      if (!isAbsolute(path) && path !== '..' && !path.startsWith(`..${sep}`)) {
+        return `${label}/${path.split(sep).join('/')}`;
+      }
+    }
+    throw Error('Native validation command contains an unportable absolute path');
+  });
+}
+
 export function assertCleanNativeSource(source, before = source) {
   if (!sourceCommitPattern.test(source?.sourceCommit ?? '') || source.sourceDirty !== false) throw Error('Release native compilation requires clean committed source; dirty status is retained in the failed producer receipt');
   if (source.sourceCommit !== before.sourceCommit || before.sourceDirty !== false) throw Error('Native producer source changed during compilation');

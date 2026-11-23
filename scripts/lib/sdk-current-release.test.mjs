@@ -7,9 +7,19 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { nativeIdentity } from '../../sdk/desktop/tools/native-input.mjs';
 import { nativeProducerFixture } from '../fixtures/sdk-native-producer.mjs';
-import { SDK_RELEASE_VERSION, assertCleanNativeSource, assertNativeProducer, assertNativeProducerSet, assertSdkProducer, captureNativeSource, isNativeRuntimeLibrary, verifyNativeProducerFiles } from './sdk-current-release.mjs';
+import { SDK_RELEASE_VERSION, assertCleanNativeSource, assertNativeProducer, assertNativeProducerSet, assertSdkProducer, captureNativeSource, isNativeRuntimeLibrary, portableNativeCommand, verifyNativeProducerFiles } from './sdk-current-release.mjs';
 
 const releasePolicy = JSON.parse(readFileSync(new URL('../../tools/runtime-artifacts/policy.json', import.meta.url), 'utf8'));
+
+test('native validation command metadata replaces repository and output paths with portable roots', () => {
+  const root = resolve(tmpdir(), 'native-command-source'), output = resolve(root, 'artifacts/native'),
+    command = ['xcrun', 'clang++', '-I', output, resolve(root, 'scripts/fixtures/native-cpp-exception-consumer.cpp'),
+      resolve(output, 'libweapp_container_sdk.a'), '-o', resolve(output, 'validation/consumer')];
+  assert.deepEqual(portableNativeCommand(command, { root, output }), ['xcrun', 'clang++', '-I', '<output>',
+    '<repository>/scripts/fixtures/native-cpp-exception-consumer.cpp', '<output>/libweapp_container_sdk.a',
+    '-o', '<output>/validation/consumer']);
+  assert.throws(() => portableNativeCommand(['/usr/bin/clang'], { root, output }), /unportable absolute path/);
+});
 
 test('runtime bodies and MSVC link interfaces retain distinct verification roles', () => {
   for (const file of ['weapp_container_sdk.dll', 'weapp_container_sdk.lib', 'libweapp_container_sdk.a', 'libweapp_container_sdk.so', 'libweapp_container_sdk.dylib', 'native/weapp_container_sdk.dll']) {

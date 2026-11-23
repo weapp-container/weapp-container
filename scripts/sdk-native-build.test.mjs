@@ -131,7 +131,9 @@ test('native SDK shares the workspace target and honors explicit then environmen
         const expected = selection === 'explicit' ? explicit : resolve(f.root, selection === 'environment' ? inherited : 'target');
         assert.equal(argv[argv.indexOf('--target-dir') + 1], expected);
         const receipt = JSON.parse(readFileSync(resolve(f.out, f.target, 'build.json')));
-        assert.equal(receipt.targetDir, expected);
+        assert.equal(receipt.targetDirectorySource, selection === 'explicit' ? 'explicit'
+          : selection === 'environment' ? 'environment' : 'workspace-default');
+        assert.equal(receipt.targetDir, undefined);
         assert.equal(receipt.profile, profile);
         assert.deepEqual(receipt.artifacts, []);
         assert.equal(existsSync(expected), false, 'entry must not clean or populate the persistent cache itself');
