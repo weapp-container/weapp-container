@@ -28,6 +28,21 @@
   ],
   "allowedLocalPaths": [
     {
+      "path": "scripts/sdk-native-build.test.mjs",
+      "sha256": "a201d2139b967c858d7bfeddfcd4a4fb188b58634fa2dc74d22899703de3015d",
+      "reason": "Synthetic Windows cargo directory used only by the native path-mapping regression test"
+    },
+    {
+      "path": "scripts/sdk-native-build.test.mjs",
+      "sha256": "b3d083840d3ec3a3eaacacf723f006926155d08d8f264e3cdf016f0b01f02661",
+      "reason": "Synthetic Linux cargo directory used only by the native path-mapping regression test"
+    },
+    {
+      "path": "scripts/sdk-native-build.test.mjs",
+      "sha256": "5413a3c0dd7c1c8d770ec4fdcf41897220564e2f40f098398fde39ef65787010",
+      "reason": "Synthetic Linux cargo flag used only by the native path-mapping regression test"
+    },
+    {
       "path": "conformance/recipes/template-format-dependencies/postcss/lib/input.d.ts",
       "sha256": "e04920b4baaf91fcc75144e6e41e4bb8c9ec9309ce5f86687b031f9e2dfb3ba3",
       "reason": "Anonymized regression input or authored path-hardening test; third-party declaration examples retain their original bytes"
