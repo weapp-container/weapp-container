@@ -80,6 +80,9 @@ jobs:
       - name: Verify published tarballs in an external consumer
         run: pnpm testing:install:test
 
+      - name: Build dynamic SDK library for C ABI tests
+        run: cargo build -p container-sdk-ffi --locked
+
       - name: Test Rust workspace
         run: cargo test --workspace --locked -- --test-threads=2
 

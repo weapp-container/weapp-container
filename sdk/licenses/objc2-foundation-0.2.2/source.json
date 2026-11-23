@@ -1,0 +1,9 @@
+{
+  "url": "https://raw.githubusercontent.com/madsmtm/objc2/e282618be4c3a3b9542957e0c8540e9588472ce8/LICENSE.txt",
+  "commit": "e282618be4c3a3b9542957e0c8540e9588472ce8",
+  "sha256": "e353f37b12aefbb9f9b29490e837cfee05d9bda70804b3562839a3285c1df1e5",
+  "package": "objc2-foundation",
+  "version": "0.2.2",
+  "packagePath": "framework-crates/objc2-foundation",
+  "packageVcsInfoSha256": "7b719bdefdecba77a57c93b272ea0dff6e087bc3d2fa8576cd812d6c6af38c27"
+}
