@@ -8,5 +8,5 @@ export function nativeSourcePathFlags(sourcePathMappings, target) {
 }
 
 export function skiaPathMappingGnArgs(pathFlags) {
-  return `extra_cflags = ${JSON.stringify(pathFlags)}`
+  return `extra_cflags += ${JSON.stringify(pathFlags)}`
 }
