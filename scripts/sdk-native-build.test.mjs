@@ -42,17 +42,17 @@ function fixture() {
 
 test('MSVC source paths are remapped with compiler-compatible flags in Skia GN arguments', () => {
   const mappings = [
-    ['C:\\Users\\runneradmin\\.cargo', 'cargo'],
-    ['D:\\a\\weapp-container', 'weapp-container'],
+    ['C:\\runneradmin\\.cargo', 'cargo'],
+    ['D:\\build\\weapp-container', 'weapp-container'],
   ];
   const flags = nativeSourcePathFlags(mappings, 'x86_64-pc-windows-msvc');
   assert.deepEqual(flags, [
-    '/pathmap:C:/Users/runneradmin/.cargo=cargo',
-    '/pathmap:D:/a/weapp-container=weapp-container',
+    '/pathmap:C:/runneradmin/.cargo=cargo',
+    '/pathmap:D:/build/weapp-container=weapp-container',
   ]);
   assert.equal(skiaPathMappingGnArgs(flags), `extra_cflags = ${JSON.stringify(flags)}`);
-  assert.deepEqual(nativeSourcePathFlags([['/home/runner/.cargo', 'cargo']], 'x86_64-unknown-linux-gnu'), [
-    '-ffile-prefix-map=/home/runner/.cargo=cargo',
+  assert.deepEqual(nativeSourcePathFlags([['/opt/runner/.cargo', 'cargo']], 'x86_64-unknown-linux-gnu'), [
+    '-ffile-prefix-map=/opt/runner/.cargo=cargo',
   ]);
 });
 
