@@ -26,12 +26,11 @@ export function clangClSourcePathFlags(sourcePathMappings) {
   });
 }
 
-export function awsLcWindowsClangEnvironment(sourcePathMappings) {
+export function windowsClangEnvironment(sourcePathMappings) {
   return {
     compiler: 'clang-cl',
     flags: clangClSourcePathFlags(sourcePathMappings),
     generator: 'Ninja',
-    builder: '1',
   };
 }
 

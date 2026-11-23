@@ -12,7 +12,7 @@ import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtif
 import { loadShowcaseNativeFont, retainShowcaseNativeFont, verifyShowcaseNativeFont, showcaseNativeFontEnvironment, verifyShowcaseNativeFontArtifact } from './lib/showcase-native-font.mjs';
 import { hardenLinuxStaticArchive } from './lib/sdk-native-hardening.mjs';
 import { hardenDarwinStaticArchive } from './lib/sdk-darwin-hardening.mjs';
-import { awsLcWindowsClangEnvironment, clangClSourcePathFlags, msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
+import { clangClSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs, windowsClangEnvironment } from './lib/sdk-native-path-mapping.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const options = parseNativeBuildArgs(process.argv.slice(2));
@@ -88,24 +88,24 @@ env.CARGO_ENCODED_RUSTFLAGS = [env.CARGO_ENCODED_RUSTFLAGS,
 // cc-based dependencies (QuickJS, ring and Skia bindings) expand __FILE__ in
 // native code. rustc's source maps do not affect those compilation units.
 const nativePathFlags = nativeSourcePathFlags(sourcePathMappings);
-const compilerPathFlags = target.endsWith('-msvc') ? msvcSourcePathFlags(sourcePathMappings) : [];
 const skiaNativePathFlags = target.endsWith('-msvc') ? clangClSourcePathFlags(sourcePathMappings) : nativePathFlags;
-const awsLcPathEnvironment = target.endsWith('-msvc') ? awsLcWindowsClangEnvironment(sourcePathMappings) : null;
-const quotedNativeFlags = [...nativePathFlags, ...compilerPathFlags].map(flag => JSON.stringify(flag)).join(' ');
+const windowsCompilerEnvironment = target.endsWith('-msvc') ? windowsClangEnvironment(sourcePathMappings) : null;
+const compilerPathFlags = windowsCompilerEnvironment?.flags ?? nativePathFlags;
+const quotedNativeFlags = compilerPathFlags.map(flag => JSON.stringify(flag)).join(' ');
 // cc otherwise splits only on whitespace and passes quote characters to the compiler.
 env.CC_SHELL_ESCAPED_FLAGS = '1';
 for (const variable of ['CFLAGS', 'CXXFLAGS', 'CPPFLAGS', 'CMAKE_C_FLAGS', 'CMAKE_CXX_FLAGS']) {
   env[variable] = [env[variable], quotedNativeFlags].filter(Boolean).join(' ');
 }
-if (awsLcPathEnvironment) {
-  // AWS-LC writes __FILE__ into generated Windows crypto objects. cl.exe's
-  // /pathmap only covers debug metadata, so use clang-cl for this crate and
-  // pass its path mappings through the crate-specific CFLAGS override.
-  env.AWS_LC_SYS_CC = awsLcPathEnvironment.compiler;
-  env.AWS_LC_SYS_CXX = awsLcPathEnvironment.compiler;
-  env.AWS_LC_SYS_CMAKE_GENERATOR = awsLcPathEnvironment.generator;
-  env.AWS_LC_SYS_CMAKE_BUILDER = awsLcPathEnvironment.builder;
-  const awsLcFlags = awsLcPathEnvironment.flags.map(flag => JSON.stringify(flag)).join(' ');
+if (windowsCompilerEnvironment) {
+  // Windows native dependencies need the same cl-compatible compiler dialect
+  // as the prefix-map flags. Ninja also lets CMake honor CC and CXX.
+  env.CC = windowsCompilerEnvironment.compiler;
+  env.CXX = windowsCompilerEnvironment.compiler;
+  env.CMAKE_GENERATOR = windowsCompilerEnvironment.generator;
+  env.AWS_LC_SYS_CC = windowsCompilerEnvironment.compiler;
+  env.AWS_LC_SYS_CXX = windowsCompilerEnvironment.compiler;
+  const awsLcFlags = windowsCompilerEnvironment.flags.map(flag => JSON.stringify(flag)).join(' ');
   env.AWS_LC_SYS_CFLAGS = [env.AWS_LC_SYS_CFLAGS, awsLcFlags].filter(Boolean).join(' ');
 }
 if (target.endsWith('-msvc') && profile === 'release') {
