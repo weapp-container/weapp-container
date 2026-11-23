@@ -26,6 +26,14 @@ function query(command, argv) {
   if (r.error || r.status !== 0) throw new Error(`${command} ${argv.join(' ')}: ${r.error?.message || r.stderr}`);
   return r.stdout.trim();
 }
+function windowsShortPath(path) {
+  if (process.platform !== 'win32') return null;
+  const escaped = path.replaceAll('"', '""');
+  const result = spawnSync('cmd.exe', ['/d', '/s', '/c', `for %I in ("${escaped}") do @echo %~sI`], { encoding: 'utf8' });
+  if (result.error || result.status !== 0) return null;
+  const shortPath = result.stdout.trim();
+  return shortPath && shortPath !== path ? shortPath : null;
+}
 const cargo = query('rustup', ['which', 'cargo']);
 const rustc = query('rustup', ['which', 'rustc']);
 const nativeHost = query(rustc, ['-vV']).match(/^host: (.+)$/m)?.[1];
@@ -76,12 +84,16 @@ const toolchain = { rustc: query(rustc, ['--version']), cargo: query(cargo, ['--
 const cargoSourceHome = resolve(env.CARGO_HOME || resolve(os.homedir(), '.cargo'));
 // Dependency panic locations and generated bindings also embed source paths.
 // Put specific mappings last: rustc resolves overlapping remaps from the end.
-const sourcePathMappings = [
+const baseSourcePathMappings = [
   [os.homedir(), 'build-home'],
   [cargoSourceHome, 'cargo'],
   [targetDir, 'weapp-container-build'],
   [root, 'weapp-container'],
 ];
+const sourcePathMappings = baseSourcePathMappings.flatMap(([source, destination]) => {
+  const shortPath = windowsShortPath(source);
+  return shortPath ? [[source, destination], [shortPath, destination]] : [[source, destination]];
+});
 env.CARGO_ENCODED_RUSTFLAGS = [env.CARGO_ENCODED_RUSTFLAGS,
   ...sourcePathMappings.map(([source, destination]) => `--remap-path-prefix=${source}=${destination}`),
 ].filter(Boolean).join('\x1f');

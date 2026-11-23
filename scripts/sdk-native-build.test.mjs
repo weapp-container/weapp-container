@@ -86,6 +86,14 @@ test('Windows source paths generate Clang and MSVC prefix mappings', () => {
   ]);
 });
 
+test('Windows short-path aliases can be represented by the same prefix mapping contract', () => {
+  const mappings = nativeSourcePathFlags([
+    ['C:\\Users\\runneradmin\\.cargo', 'cargo'],
+    ['C:\\Users\\RUNNER~1\\CARGO~1', 'cargo'],
+  ]);
+  assert.ok(mappings.includes('-fmacro-prefix-map=C:\\Users\\RUNNER~1\\CARGO~1=cargo'));
+});
+
 test('actual native entry rejects dirty production source with truthful failed receipt before Cargo', { skip: process.platform === 'win32' }, () => {
   const f = fixture(); try {
     writeFileSync(resolve(f.root, 'uncommitted-runtime.rs'), 'fn must_not_compile() {}\n');
