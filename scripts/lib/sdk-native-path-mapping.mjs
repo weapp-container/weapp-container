@@ -1,6 +1,19 @@
 export function nativeSourcePathFlags(sourcePathMappings) {
-  return sourcePathMappings.map(([source, destination]) =>
-    `-ffile-prefix-map=${source.replaceAll('\\', '/')}=${destination}`)
+  return sourcePathMappings.flatMap(([source, destination]) => {
+    const variants = new Set([source.replaceAll('\\', '/')]);
+    if (source.includes('\\')) variants.add(source);
+    return [...variants].flatMap(path => [
+      `-ffile-prefix-map=${path}=${destination}`,
+      `-fmacro-prefix-map=${path}=${destination}`,
+    ]);
+  });
+}
+
+export function msvcSourcePathFlags(sourcePathMappings) {
+  return sourcePathMappings.flatMap(([source, destination]) => {
+    const variants = new Set([source, source.replaceAll('\\', '/')]);
+    return [...variants].map(path => `/pathmap:${path}=${destination}`);
+  });
 }
 
 export function skiaPathMappingGnArgs(pathFlags) {

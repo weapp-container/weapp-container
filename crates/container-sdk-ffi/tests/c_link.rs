@@ -1,6 +1,29 @@
 //! Build a genuine downstream C executable against Cargo's dynamic artifact.
 //! This is independent of Rust's type checker and exercises the installed ABI.
 
+fn dependency_directory() -> std::path::PathBuf {
+    let current = std::env::current_exe().unwrap();
+    let mut cursor = current.parent();
+    while let Some(directory) = cursor {
+        let candidate = directory.join("deps");
+        if candidate
+            .join(if cfg!(target_os = "macos") {
+                "libweapp_container_sdk.dylib"
+            } else {
+                "libweapp_container_sdk.so"
+            })
+            .exists()
+        {
+            return candidate;
+        }
+        cursor = directory.parent();
+    }
+    panic!(
+        "Cargo dependency directory not found from {}",
+        current.display()
+    );
+}
+
 #[cfg(unix)]
 #[test]
 fn public_c_header_compiles_links_and_runs() {
@@ -8,11 +31,7 @@ fn public_c_header_compiles_links_and_runs() {
     use std::process::Command;
     let crate_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let workspace = crate_root.parent().unwrap().parent().unwrap();
-    let deps = std::env::current_exe()
-        .unwrap()
-        .parent()
-        .unwrap()
-        .to_path_buf();
+    let deps = dependency_directory();
     let temporary = tempfile::tempdir().unwrap();
     let executable = temporary.path().join("c-consumer");
     let compiler = std::env::var_os("CC").unwrap_or_else(|| "cc".into());
@@ -80,11 +99,7 @@ fn header_matches_actual_dynamic_exports() {
             declarations.insert(rest[..end].to_owned());
         }
     }
-    let deps = std::env::current_exe()
-        .unwrap()
-        .parent()
-        .unwrap()
-        .to_path_buf();
+    let deps = dependency_directory();
     let mut command = Command::new("nm");
     #[cfg(target_os = "macos")]
     command

@@ -1,5 +1,5 @@
 import { SDK_RELEASE_VERSION } from './lib/sdk-current-release.mjs';
-import { nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
+import { msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -16,7 +16,7 @@ function fixture() {
   const git = args => { const result = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr); };
   git(['init', '-q']); git(['add', '.']); git(['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'source fixture']);
   const target = process.platform === 'darwin' ? 'aarch64-apple-darwin' : 'x86_64-unknown-linux-gnu';
-  const stub = `#!${process.execPath}\nimport('node:fs').then(fs=>{const name=process.argv[1].split('/').pop();if(name==='rustup')process.stdout.write(process.env.TEST_NATIVE_TOOLS+'/'+process.argv[3]+'\\n');else if(name==='rustc'&&process.argv[2]==='-vV')process.stdout.write('host: '+process.env.TEST_NATIVE_TARGET+'\\n');else if(name==='cargo'&&process.argv[2]==='build'){fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED,JSON.stringify(process.argv.slice(2)));fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED+'.env',JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>key==='CFLAGS'||key==='CXXFLAGS'||key==='SKIA_GN_ARGS'||key==='FORCE_SKIA_BUILD'||key.startsWith('CXXFLAGS_')||key==='MACOSX_DEPLOYMENT_TARGET'))));process.exitCode=99;}else process.stdout.write('inert toolchain fixture; no compilation\\n');});\n`;
+  const stub = `#!${process.execPath}\nimport('node:fs').then(fs=>{const name=process.argv[1].split('/').pop();if(name==='rustup')process.stdout.write(process.env.TEST_NATIVE_TOOLS+'/'+process.argv[3]+'\\n');else if(name==='rustc'&&process.argv[2]==='-vV')process.stdout.write('host: '+process.env.TEST_NATIVE_TARGET+'\\n');else if(name==='cargo'&&process.argv[2]==='build'){fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED,JSON.stringify(process.argv.slice(2)));fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED+'.env',JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>['CFLAGS','CXXFLAGS','CPPFLAGS','CMAKE_C_FLAGS','CMAKE_CXX_FLAGS','CMAKE_ASM_FLAGS','SKIA_GN_ARGS','FORCE_SKIA_BUILD','MACOSX_DEPLOYMENT_TARGET'].includes(key)||key.startsWith('CXXFLAGS_')))));process.exitCode=99;}else process.stdout.write('inert toolchain fixture; no compilation\\n');});\n`;
   for (const name of ['rustup', 'cargo', 'rustc', 'rustdoc']) writeFileSync(resolve(tools, name), stub, { mode: 0o755 });
   const ndk = resolve(directory, 'ndk');
   const ndkHost = process.platform === 'darwin' ? 'darwin-aarch64' : 'linux-x86_64';
@@ -40,7 +40,7 @@ function fixture() {
   return { root, target, out, cargoCalled, run, remove() { rmSync(directory, { recursive: true, force: true }); } };
 }
 
-test('MSVC source paths are remapped with compiler-compatible flags in Skia GN arguments', () => {
+test('Windows source paths generate Clang and MSVC prefix mappings', () => {
   const mappings = [
     ['C:\\runneradmin\\.cargo', 'cargo'],
     ['D:\\build\\weapp-container', 'weapp-container'],
@@ -48,11 +48,25 @@ test('MSVC source paths are remapped with compiler-compatible flags in Skia GN a
   const flags = nativeSourcePathFlags(mappings);
   assert.deepEqual(flags, [
     '-ffile-prefix-map=C:/runneradmin/.cargo=cargo',
+    '-fmacro-prefix-map=C:/runneradmin/.cargo=cargo',
+    '-ffile-prefix-map=C:\\runneradmin\\.cargo=cargo',
+    '-fmacro-prefix-map=C:\\runneradmin\\.cargo=cargo',
     '-ffile-prefix-map=D:/build/weapp-container=weapp-container',
+    '-fmacro-prefix-map=D:/build/weapp-container=weapp-container',
+    '-ffile-prefix-map=D:\\build\\weapp-container=weapp-container',
+    '-fmacro-prefix-map=D:\\build\\weapp-container=weapp-container',
   ]);
-  assert.equal(skiaPathMappingGnArgs(flags), `extra_cflags += ${JSON.stringify(flags)}`);
+  const msvcFlags = msvcSourcePathFlags(mappings);
+  assert.deepEqual(msvcFlags, [
+    '/pathmap:C:\\runneradmin\\.cargo=cargo',
+    '/pathmap:C:/runneradmin/.cargo=cargo',
+    '/pathmap:D:\\build\\weapp-container=weapp-container',
+    '/pathmap:D:/build/weapp-container=weapp-container',
+  ]);
+  assert.equal(skiaPathMappingGnArgs([...flags, ...msvcFlags]), `extra_cflags += ${JSON.stringify([...flags, ...msvcFlags])}`);
   assert.deepEqual(nativeSourcePathFlags([['/opt/runner/.cargo', 'cargo']]), [
     '-ffile-prefix-map=/opt/runner/.cargo=cargo',
+    '-fmacro-prefix-map=/opt/runner/.cargo=cargo',
   ]);
 });
 
@@ -129,8 +143,10 @@ test('actual dev entry passes the receipt feature plan to an inert failing Cargo
         assert.equal(cppEnvironment.MACOSX_DEPLOYMENT_TARGET, '12.0');
         assert.equal(receipt.toolchain.cppExceptions, 'disabled-at-rust-ffi-boundary');
       }
-      assert.match(cppEnvironment.CFLAGS, /-ffile-prefix-map=/);
-      assert.match(cppEnvironment.CXXFLAGS, /-ffile-prefix-map=/);
+      for (const variable of ['CFLAGS', 'CXXFLAGS', 'CPPFLAGS', 'CMAKE_C_FLAGS', 'CMAKE_CXX_FLAGS']) {
+        assert.match(cppEnvironment[variable], /-ffile-prefix-map=/, `${variable} must remap source file paths`);
+        assert.match(cppEnvironment[variable], /-fmacro-prefix-map=/, `${variable} must remap __FILE__ paths`);
+      }
       assert.deepEqual(receipt.artifacts, []);
     } finally { f.remove(); }
   }
