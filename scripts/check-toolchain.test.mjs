@@ -57,4 +57,5 @@ test('Linux CI does not require platform SDKs that its runner cannot provide', a
   assert.match(workflow, /node scripts\/check-toolchain\.mjs --json/)
   assert.doesNotMatch(workflow, /node scripts\/check-toolchain\.mjs --strict/)
   assert.match(workflow, /uses: actions\/checkout@v4\s+with:\s+persist-credentials: false\s+submodules: true/)
+  assert.match(workflow, /uses: subosito\/flutter-action@v2\s+with:\s+flutter-version: '3\.47\.7'/)
 })
