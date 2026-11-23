@@ -1,4 +1,5 @@
 import { SDK_RELEASE_VERSION } from './lib/sdk-current-release.mjs';
+import { nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -10,12 +11,12 @@ function fixture() {
   const directory = realpathSync(mkdtempSync(resolve(tmpdir(), 'native-build-preflight-')));
   const root = resolve(directory, 'source'), tools = resolve(directory, 'tools');
   mkdirSync(resolve(root, 'scripts/lib'), { recursive: true }); mkdirSync(tools);
-  for (const name of ['sdk-native-build.mjs', 'lib/sdk-current-release.mjs', 'lib/sdk-skia-input.mjs', 'lib/sdk-native-features.mjs', 'lib/showcase-policy.mjs', 'lib/showcase-native-font.mjs', 'lib/sdk-native-hardening.mjs', 'lib/sdk-darwin-hardening.mjs']) cpSync(new URL(name, import.meta.url), resolve(root, 'scripts', name));
+  for (const name of ['sdk-native-build.mjs', 'lib/sdk-current-release.mjs', 'lib/sdk-skia-input.mjs', 'lib/sdk-native-features.mjs', 'lib/sdk-native-path-mapping.mjs', 'lib/showcase-policy.mjs', 'lib/showcase-native-font.mjs', 'lib/sdk-native-hardening.mjs', 'lib/sdk-darwin-hardening.mjs']) cpSync(new URL(name, import.meta.url), resolve(root, 'scripts', name));
   writeFileSync(resolve(root, '.gitignore'), 'artifacts/\ntarget/\n');
   const git = args => { const result = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr); };
   git(['init', '-q']); git(['add', '.']); git(['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'source fixture']);
   const target = process.platform === 'darwin' ? 'aarch64-apple-darwin' : 'x86_64-unknown-linux-gnu';
-  const stub = `#!${process.execPath}\nimport('node:fs').then(fs=>{const name=process.argv[1].split('/').pop();if(name==='rustup')process.stdout.write(process.env.TEST_NATIVE_TOOLS+'/'+process.argv[3]+'\\n');else if(name==='rustc'&&process.argv[2]==='-vV')process.stdout.write('host: '+process.env.TEST_NATIVE_TARGET+'\\n');else if(name==='cargo'&&process.argv[2]==='build'){fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED,JSON.stringify(process.argv.slice(2)));fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED+'.env',JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>key==='CFLAGS'||key==='CXXFLAGS'||key.startsWith('CXXFLAGS_')||key==='MACOSX_DEPLOYMENT_TARGET'))));process.exitCode=99;}else process.stdout.write('inert toolchain fixture; no compilation\\n');});\n`;
+  const stub = `#!${process.execPath}\nimport('node:fs').then(fs=>{const name=process.argv[1].split('/').pop();if(name==='rustup')process.stdout.write(process.env.TEST_NATIVE_TOOLS+'/'+process.argv[3]+'\\n');else if(name==='rustc'&&process.argv[2]==='-vV')process.stdout.write('host: '+process.env.TEST_NATIVE_TARGET+'\\n');else if(name==='cargo'&&process.argv[2]==='build'){fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED,JSON.stringify(process.argv.slice(2)));fs.writeFileSync(process.env.TEST_NATIVE_CARGO_CALLED+'.env',JSON.stringify(Object.fromEntries(Object.entries(process.env).filter(([key])=>key==='CFLAGS'||key==='CXXFLAGS'||key==='SKIA_GN_ARGS'||key==='FORCE_SKIA_BUILD'||key.startsWith('CXXFLAGS_')||key==='MACOSX_DEPLOYMENT_TARGET'))));process.exitCode=99;}else process.stdout.write('inert toolchain fixture; no compilation\\n');});\n`;
   for (const name of ['rustup', 'cargo', 'rustc', 'rustdoc']) writeFileSync(resolve(tools, name), stub, { mode: 0o755 });
   const ndk = resolve(directory, 'ndk');
   const ndkHost = process.platform === 'darwin' ? 'darwin-aarch64' : 'linux-x86_64';
@@ -38,6 +39,22 @@ function fixture() {
   };
   return { root, target, out, cargoCalled, run, remove() { rmSync(directory, { recursive: true, force: true }); } };
 }
+
+test('MSVC source paths are remapped with compiler-compatible flags in Skia GN arguments', () => {
+  const mappings = [
+    ['C:\\Users\\runneradmin\\.cargo', 'cargo'],
+    ['D:\\a\\weapp-container', 'weapp-container'],
+  ];
+  const flags = nativeSourcePathFlags(mappings, 'x86_64-pc-windows-msvc');
+  assert.deepEqual(flags, [
+    '/pathmap:C:/Users/runneradmin/.cargo=cargo',
+    '/pathmap:D:/a/weapp-container=weapp-container',
+  ]);
+  assert.equal(skiaPathMappingGnArgs(flags), `extra_cflags = ${JSON.stringify(flags)}`);
+  assert.deepEqual(nativeSourcePathFlags([['/home/runner/.cargo', 'cargo']], 'x86_64-unknown-linux-gnu'), [
+    '-ffile-prefix-map=/home/runner/.cargo=cargo',
+  ]);
+});
 
 test('actual native entry rejects dirty production source with truthful failed receipt before Cargo', { skip: process.platform === 'win32' }, () => {
   const f = fixture(); try {

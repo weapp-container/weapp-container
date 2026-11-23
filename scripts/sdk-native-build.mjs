@@ -12,6 +12,7 @@ import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtif
 import { loadShowcaseNativeFont, retainShowcaseNativeFont, verifyShowcaseNativeFont, showcaseNativeFontEnvironment, verifyShowcaseNativeFontArtifact } from './lib/showcase-native-font.mjs';
 import { hardenLinuxStaticArchive } from './lib/sdk-native-hardening.mjs';
 import { hardenDarwinStaticArchive } from './lib/sdk-darwin-hardening.mjs';
+import { nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const options = parseNativeBuildArgs(process.argv.slice(2));
@@ -86,12 +87,18 @@ env.CARGO_ENCODED_RUSTFLAGS = [env.CARGO_ENCODED_RUSTFLAGS,
 ].filter(Boolean).join('\x1f');
 // cc-based dependencies (QuickJS, ring and Skia bindings) expand __FILE__ in
 // native code. rustc's source maps do not affect those compilation units.
-const nativePathFlags = sourcePathMappings.map(([source, destination]) => `-ffile-prefix-map=${source}=${destination}`);
+const nativePathFlags = nativeSourcePathFlags(sourcePathMappings, target);
 const quotedNativeFlags = nativePathFlags.map(flag => JSON.stringify(flag)).join(' ');
-// cc otherwise splits only on whitespace and passes quote characters to clang.
+// cc otherwise splits only on whitespace and passes quote characters to the compiler.
 env.CC_SHELL_ESCAPED_FLAGS = '1';
 for (const variable of ['CFLAGS', 'CXXFLAGS']) {
   env[variable] = [env[variable], quotedNativeFlags].filter(Boolean).join(' ');
+}
+if (target.endsWith('-msvc') && profile === 'release') {
+  // The upstream Windows Skia cache includes its producer's __FILE__ paths.
+  // Rebuild from the locked crate source so GN applies these mappings.
+  env.FORCE_SKIA_BUILD = '1';
+  env.SKIA_GN_ARGS = [env.SKIA_GN_ARGS?.trim(), skiaPathMappingGnArgs(nativePathFlags)].filter(Boolean).join('\n');
 }
 const runtimeDependencies = [];
 const runtimeNotices = [];

@@ -164,7 +164,7 @@ jobs:
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
       - uses: ./.github/actions/cache-rust-build
         with:
-          key: sdk-native-${{ matrix.target }}
+          key: sdk-native-${{ matrix.target }}${{ matrix.target == 'x86_64-pc-windows-msvc' && '-source-mapped-skia-v1' || '' }}
       - name: Build versioned native SDK
         run: node scripts/sdk-native-build.mjs --target ${{ matrix.target }}
       - name: Collect notices for the exact native feature graph
