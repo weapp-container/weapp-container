@@ -56,4 +56,5 @@ test('Linux CI does not require platform SDKs that its runner cannot provide', a
   const workflow = await readFile(new URL('../.github/workflows/checks.yml', import.meta.url), 'utf8')
   assert.match(workflow, /node scripts\/check-toolchain\.mjs --json/)
   assert.doesNotMatch(workflow, /node scripts\/check-toolchain\.mjs --strict/)
+  assert.match(workflow, /uses: actions\/checkout@v4\s+with:\s+persist-credentials: false\s+submodules: true/)
 })
