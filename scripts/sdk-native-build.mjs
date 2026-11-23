@@ -87,7 +87,7 @@ env.CARGO_ENCODED_RUSTFLAGS = [env.CARGO_ENCODED_RUSTFLAGS,
 ].filter(Boolean).join('\x1f');
 // cc-based dependencies (QuickJS, ring and Skia bindings) expand __FILE__ in
 // native code. rustc's source maps do not affect those compilation units.
-const nativePathFlags = nativeSourcePathFlags(sourcePathMappings, target);
+const nativePathFlags = nativeSourcePathFlags(sourcePathMappings);
 const quotedNativeFlags = nativePathFlags.map(flag => JSON.stringify(flag)).join(' ');
 // cc otherwise splits only on whitespace and passes quote characters to the compiler.
 env.CC_SHELL_ESCAPED_FLAGS = '1';

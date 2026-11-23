@@ -1,10 +1,6 @@
-export function nativeSourcePathFlags(sourcePathMappings, target) {
-  if (target.endsWith('-msvc')) {
-    return sourcePathMappings.map(([source, destination]) =>
-      `/pathmap:${source.replaceAll('\\', '/')}=${destination}`)
-  }
+export function nativeSourcePathFlags(sourcePathMappings) {
   return sourcePathMappings.map(([source, destination]) =>
-    `-ffile-prefix-map=${source}=${destination}`)
+    `-ffile-prefix-map=${source.replaceAll('\\', '/')}=${destination}`)
 }
 
 export function skiaPathMappingGnArgs(pathFlags) {
