@@ -12,7 +12,7 @@ import { loadDistributionInput, verifyDistributionInput, verifyDistributionArtif
 import { loadShowcaseNativeFont, retainShowcaseNativeFont, verifyShowcaseNativeFont, showcaseNativeFontEnvironment, verifyShowcaseNativeFontArtifact } from './lib/showcase-native-font.mjs';
 import { hardenLinuxStaticArchive } from './lib/sdk-native-hardening.mjs';
 import { hardenDarwinStaticArchive } from './lib/sdk-darwin-hardening.mjs';
-import { msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
+import { clangClSourcePathFlags, msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const options = parseNativeBuildArgs(process.argv.slice(2));
@@ -89,8 +89,8 @@ env.CARGO_ENCODED_RUSTFLAGS = [env.CARGO_ENCODED_RUSTFLAGS,
 // native code. rustc's source maps do not affect those compilation units.
 const nativePathFlags = nativeSourcePathFlags(sourcePathMappings);
 const compilerPathFlags = target.endsWith('-msvc') ? msvcSourcePathFlags(sourcePathMappings) : [];
-const allNativePathFlags = [...nativePathFlags, ...compilerPathFlags];
-const quotedNativeFlags = allNativePathFlags.map(flag => JSON.stringify(flag)).join(' ');
+const skiaNativePathFlags = target.endsWith('-msvc') ? clangClSourcePathFlags(sourcePathMappings) : nativePathFlags;
+const quotedNativeFlags = [...nativePathFlags, ...compilerPathFlags].map(flag => JSON.stringify(flag)).join(' ');
 // cc otherwise splits only on whitespace and passes quote characters to the compiler.
 env.CC_SHELL_ESCAPED_FLAGS = '1';
 for (const variable of ['CFLAGS', 'CXXFLAGS', 'CPPFLAGS', 'CMAKE_C_FLAGS', 'CMAKE_CXX_FLAGS']) {
@@ -100,7 +100,7 @@ if (target.endsWith('-msvc') && profile === 'release') {
   // The upstream Windows Skia cache includes its producer's __FILE__ paths.
   // Rebuild from the locked crate source so GN applies these mappings.
   env.FORCE_SKIA_BUILD = '1';
-  env.SKIA_GN_ARGS = [env.SKIA_GN_ARGS?.trim(), skiaPathMappingGnArgs(allNativePathFlags)].filter(Boolean).join('\n');
+  env.SKIA_GN_ARGS = [env.SKIA_GN_ARGS?.trim(), skiaPathMappingGnArgs(skiaNativePathFlags)].filter(Boolean).join('\n');
 }
 const runtimeDependencies = [];
 const runtimeNotices = [];

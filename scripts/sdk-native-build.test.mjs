@@ -1,5 +1,5 @@
 import { SDK_RELEASE_VERSION } from './lib/sdk-current-release.mjs';
-import { msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
+import { clangClSourcePathFlags, msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -63,7 +63,18 @@ test('Windows source paths generate Clang and MSVC prefix mappings', () => {
     '/pathmap:D:\\build\\weapp-container=weapp-container',
     '/pathmap:D:/build/weapp-container=weapp-container',
   ]);
-  assert.equal(skiaPathMappingGnArgs([...flags, ...msvcFlags]), `extra_cflags += ${JSON.stringify([...flags, ...msvcFlags])}`);
+  const clangClFlags = clangClSourcePathFlags(mappings);
+  assert.deepEqual(clangClFlags, [
+    '/clang:-ffile-prefix-map=C:/runneradmin/.cargo=cargo',
+    '/clang:-fmacro-prefix-map=C:/runneradmin/.cargo=cargo',
+    '/clang:-ffile-prefix-map=C:\\runneradmin\\.cargo=cargo',
+    '/clang:-fmacro-prefix-map=C:\\runneradmin\\.cargo=cargo',
+    '/clang:-ffile-prefix-map=D:/build/weapp-container=weapp-container',
+    '/clang:-fmacro-prefix-map=D:/build/weapp-container=weapp-container',
+    '/clang:-ffile-prefix-map=D:\\build\\weapp-container=weapp-container',
+    '/clang:-fmacro-prefix-map=D:\\build\\weapp-container=weapp-container',
+  ]);
+  assert.equal(skiaPathMappingGnArgs(clangClFlags), `extra_cflags += ${JSON.stringify(clangClFlags)}`);
   assert.deepEqual(nativeSourcePathFlags([['/opt/runner/.cargo', 'cargo']]), [
     '-ffile-prefix-map=/opt/runner/.cargo=cargo',
     '-fmacro-prefix-map=/opt/runner/.cargo=cargo',

@@ -16,6 +16,16 @@ export function msvcSourcePathFlags(sourcePathMappings) {
   });
 }
 
+export function clangClSourcePathFlags(sourcePathMappings) {
+  return sourcePathMappings.flatMap(([source, destination]) => {
+    const variants = new Set([source.replaceAll('\\', '/'), source]);
+    return [...variants].flatMap(path => [
+      `/clang:-ffile-prefix-map=${path}=${destination}`,
+      `/clang:-fmacro-prefix-map=${path}=${destination}`,
+    ]);
+  });
+}
+
 export function skiaPathMappingGnArgs(pathFlags) {
   return `extra_cflags += ${JSON.stringify(pathFlags)}`
 }
