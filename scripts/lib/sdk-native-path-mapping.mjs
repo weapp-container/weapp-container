@@ -26,6 +26,14 @@ export function clangClSourcePathFlags(sourcePathMappings) {
   });
 }
 
+export function awsLcWindowsClangEnvironment(sourcePathMappings) {
+  return {
+    compiler: 'clang-cl',
+    flags: clangClSourcePathFlags(sourcePathMappings),
+    generator: 'Ninja',
+  };
+}
+
 export function skiaPathMappingGnArgs(pathFlags) {
   return `extra_cflags += ${JSON.stringify(pathFlags)}`
 }

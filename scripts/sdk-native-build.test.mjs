@@ -1,5 +1,5 @@
 import { SDK_RELEASE_VERSION } from './lib/sdk-current-release.mjs';
-import { clangClSourcePathFlags, msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
+import { awsLcWindowsClangEnvironment, clangClSourcePathFlags, msvcSourcePathFlags, nativeSourcePathFlags, skiaPathMappingGnArgs } from './lib/sdk-native-path-mapping.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -74,6 +74,11 @@ test('Windows source paths generate Clang and MSVC prefix mappings', () => {
     '/clang:-ffile-prefix-map=D:\\build\\weapp-container=weapp-container',
     '/clang:-fmacro-prefix-map=D:\\build\\weapp-container=weapp-container',
   ]);
+  assert.deepEqual(awsLcWindowsClangEnvironment(mappings), {
+    compiler: 'clang-cl',
+    flags: clangClFlags,
+    generator: 'Ninja',
+  });
   assert.equal(skiaPathMappingGnArgs(clangClFlags), `extra_cflags += ${JSON.stringify(clangClFlags)}`);
   assert.deepEqual(nativeSourcePathFlags([['/opt/runner/.cargo', 'cargo']]), [
     '-ffile-prefix-map=/opt/runner/.cargo=cargo',
