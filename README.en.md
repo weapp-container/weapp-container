@@ -17,6 +17,16 @@ pnpm api:inventory:verify
 
 The Node bindings consume source directories or prebuilt portable packs. Callers choose and manage any compiler, host service, or external network integration themselves.
 
+## Native SDK Examples and Release Status
+
+Reference consumers for Android, iOS, React Native, Flutter, and Desktop live in the `sdk/` submodules. They cover pack loading, sessions, views, messages, navigation, storage, and lifecycle ownership. Public registries currently provide the `0.1.0-preview.7.1` prerelease, and no stable version is available. See the [SDK release status](docs/public-sdk-release.en.md), [source build guide](docs/sdk-source-build.en.md), and each SDK README for installation status, limitations, and runnable examples.
+
+- [Android example app](sdk/android/consumer/README.en.md)
+- [iOS UIKit example app](sdk/ios/examples/consumer/README.en.md)
+- [React Native example app](sdk/react-native/example/README.en.md)
+- [Flutter example app](sdk/flutter/example/README.en.md)
+- [Desktop consumer example](sdk/desktop/consumer/README.en.md)
+
 ## DevTools preview
 
 The desktop DevTools packages include pinned Node.js, weapp-vite, the manifest packer and the simulator. After installation, choose a project directory. The launcher checks `project.config.json`, the source `app.json`, the compiler compatibility matrix and project dependencies before starting the Web Player or Desktop Player. The current production samples are `examples/apps/community/official-text`, `ant-design-button`, `taro-blended`, and `examples/apps/shop-demo`.
@@ -61,4 +71,4 @@ cargo run -p container-simulator --features quickjs-native -- \
 
 ## License
 
-Apache-2.0. See [NOTICE](NOTICE) and [SECURITY.md](SECURITY.md).
+Apache-2.0. See [NOTICE](NOTICE) and [SECURITY](SECURITY.en.md).

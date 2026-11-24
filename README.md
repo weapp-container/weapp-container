@@ -17,6 +17,16 @@ pnpm api:inventory:verify
 
 Node 绑定只消费源码目录或已生成的 portable pack。编译器、宿主服务和外部网络由调用方自行选择和管理。
 
+## Native SDK 示例与发行状态
+
+Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于 `sdk/` 子模块中，包含 pack 加载、会话、视图、消息、导航、存储和生命周期用法。公开注册源当前提供 `0.1.0-preview.7.1` 预览包，尚无稳定版本。各平台安装状态、限制和示例运行步骤见[SDK 发行状态](docs/public-sdk-release.md)、[源码构建指南](docs/sdk-source-build.md)及各 SDK README。
+
+- [Android 示例应用](sdk/android/consumer/README.md)
+- [iOS UIKit 示例应用](sdk/ios/examples/consumer/README.md)
+- [React Native 示例应用](sdk/react-native/example/README.md)
+- [Flutter 示例应用](sdk/flutter/example/README.md)
+- [Desktop 消费示例](sdk/desktop/consumer/README.md)
+
 ## DevTools 下载预览
 
 桌面 DevTools 安装包包含固定版本的 Node.js、weapp-vite 编译器、manifest packer 和模拟器。安装后选择项目目录，工具会先检查 `project.config.json`、源 `app.json`、编译器兼容矩阵和项目依赖，再启动 Web Player 或 Desktop Player。当前生产样本为 `examples/apps/community/official-text`、`ant-design-button`、`taro-blended` 和 `examples/apps/shop-demo`。

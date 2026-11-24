@@ -55,8 +55,34 @@
         "repository": "weapp-container/weapp-container",
         "path": "README.md"
       },
-      "reviewedChineseSummary": "weapp-container",
-      "reviewedChineseSha256": "e4f9d1f69722cec13dde8523b17dd83e073406cacbe050e409a421a7ebc0fc10",
+      "reviewedChineseSummary": "SDK 示例应用与源码构建入口",
+      "reviewedChineseSha256": "923d7dc45aa16203194ed3daf5050604ce1cb4cbb34ffe8447692948c6bd4a68",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/public-sdk-release",
+      "zh": "docs/public-sdk-release.md",
+      "en": "docs/public-sdk-release.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/public-sdk-release.md"
+      },
+      "reviewedChineseSummary": "SDK 公开发行状态与稳定版门槛",
+      "reviewedChineseSha256": "6f291f721d69a0fb371d09134078b2e01f49045e65341cf262a44d1415a0ea78",
+      "legacyHeadingIds": []
+    },
+    {
+      "id": "docs/sdk-source-build",
+      "zh": "docs/sdk-source-build.md",
+      "en": "docs/sdk-source-build.en.md",
+      "section": "overview",
+      "source": {
+        "repository": "weapp-container/weapp-container",
+        "path": "docs/sdk-source-build.md"
+      },
+      "reviewedChineseSummary": "已复核各 SDK 的源码构建工具链、示例入口及目标验证边界。",
+      "reviewedChineseSha256": "3ffba8877bc8c32c74011cb49ced6233fc43f7737fe067810c3aa65cb84c11cf",
       "legacyHeadingIds": []
     },
     {
