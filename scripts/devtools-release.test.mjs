@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
+import { generateKeyPairSync, sign } from 'node:crypto'
 import { PassThrough } from 'node:stream'
 import { chmod, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { basename, join } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import test from 'node:test'
-import { buildDebRoot, createDmg, debianPackageVersion, msiProductCode, msiProductVersion, renderDebControl, renderMsiSource } from './lib/devtools-installers.mjs'
+import { buildDebRoot, createDmg, debianPackageVersion, msiProductCode, msiProductVersion, renderDebControl, renderMsiSource, validateInstallerSigningEnvironment } from './lib/devtools-installers.mjs'
 import { collectLicenses, createArchive, packageDevtools } from './package-devtools-release.mjs'
 import { createLauncher, simulatorArguments } from './devtools-launcher.mjs'
+import { canonicalUpdatePayload, checkForUpdate, verifyUpdateManifest } from './lib/devtools-update.mjs'
+import { inspectProject } from './devtools-compatibility.mjs'
+import { createUpdateManifest } from './create-devtools-update-manifest.mjs'
 
 class FakeChild extends EventEmitter {
   constructor() {
@@ -55,6 +59,8 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   await writeFile(join(installRoot, 'bin', simulatorExecutable), 'fixture')
   await chmod(join(installRoot, 'bin', simulatorExecutable), 0o755)
   await writeFile(join(project, 'package.json'), JSON.stringify({ name: 'fixture' }))
+  await writeFile(join(project, 'project.config.json'), JSON.stringify({ compileType: 'miniprogram', miniprogramRoot: '.', srcMiniprogramRoot: '.' }))
+  await writeFile(join(project, 'app.json'), JSON.stringify({ pages: ['pages/index/index'] }))
 
   let page
   let spawnOptions
@@ -88,6 +94,13 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   const browse = await api('/api/browse', {})
   assert.deepEqual((await browse.json()).project, project)
 
+  const preflight = await api('/api/preflight', { project })
+  assert.equal(preflight.status, 200)
+  assert.equal((await preflight.json()).appPath, join(await realpath(project), 'app.json'))
+  const updateCheck = await api('/api/update/check')
+  assert.equal(updateCheck.status, 200)
+  assert.equal((await updateCheck.json()).status, 'disabled')
+
   const start = await api('/api/start', { project, surface: 'web' })
   assert.equal(start.status, 202)
   assert.equal(spawnOptions.cwd, await realpath(project))
@@ -111,7 +124,7 @@ test('launcher validates the project and reports malformed project metadata', as
   await mkdir(join(installRoot, 'scripts'), { recursive: true })
   await writeFile(join(installRoot, 'scripts/devtools-launcher.html'), '<!doctype html>')
   await mkdir(project)
-  await writeFile(join(project, 'package.json'), '{')
+  await writeFile(join(project, 'project.config.json'), '{')
   let page
   const launcher = await createLauncher({ installRoot, openBrowser: value => { page = value } })
   t.after(() => launcher.close())
@@ -123,6 +136,64 @@ test('launcher validates the project and reports malformed project metadata', as
   })
   assert.equal(response.status, 400)
   assert.match((await response.json()).error, /JSON/)
+})
+
+test('update manifests require an Ed25519 signature and select the newest compatible release', async () => {
+  const { publicKey, privateKey } = generateKeyPairSync('ed25519')
+  const unsigned = {
+    schemaVersion: 1,
+    channel: 'stable',
+    releases: [
+      { version: '0.1.0', target: 'macos-universal', arch: 'arm64', url: 'https://example.invalid/new.dmg', sha256: 'a'.repeat(64), size: 10 },
+      { version: '0.0.9', target: 'macos-universal', arch: 'arm64', url: 'https://example.invalid/old.dmg', sha256: 'b'.repeat(64), size: 10 },
+    ],
+  }
+  const signature = sign(null, Buffer.from(canonicalUpdatePayload(unsigned)), privateKey).toString('base64url')
+  const manifest = { ...unsigned, signature }
+  assert.deepEqual(verifyUpdateManifest(manifest, { publicKey: publicKey.export({ type: 'spki', format: 'pem' }) }), unsigned)
+  const result = await checkForUpdate({
+    metadata: {
+      version: '0.0.8', target: 'macos-universal',
+      update: { manifestUrl: 'https://example.invalid/updates.json', publicKey: publicKey.export({ type: 'spki', format: 'pem' }) },
+    },
+    fetchImpl: async () => ({ ok: true, json: async () => manifest }),
+  })
+  assert.equal(result.status, 'available')
+  assert.equal(result.candidate.version, '0.1.0')
+  assert.equal(result.candidate.sha256, 'a'.repeat(64))
+  assert.throws(() => verifyUpdateManifest({ ...manifest, signature: 'invalid' }, { publicKey: publicKey.export({ type: 'spki', format: 'pem' }) }), /signature/)
+  assert.throws(() => verifyUpdateManifest({ ...manifest, releases: [...manifest.releases, { ...manifest.releases[0], version: '0.2.0', url: 'http://example.invalid/bad.dmg' }] }, { publicKey: publicKey.export({ type: 'spki', format: 'pem' }) }), /HTTPS/)
+})
+
+test('the fixed compatibility matrix accepts all four published source projects', async () => {
+  for (const project of [
+    'examples/apps/community/official-text',
+    'examples/apps/community/ant-design-button',
+    'examples/apps/community/taro-blended',
+    'examples/apps/shop-demo',
+  ]) {
+    const result = await inspectProject(resolve(process.cwd(), project))
+    assert.equal(result.compatibility.projectType, 'weapp-vite-miniprogram', project)
+    assert.ok(result.appPath.endsWith('/app.json'), project)
+    assert.equal(result.compatibility.compiler.expected, '0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e')
+  }
+})
+
+test('stable update manifest generation is deterministic over verified installer assets', async t => {
+  const directory = await temporaryDirectory(t)
+  const assets = join(directory, 'assets')
+  await mkdir(assets)
+  for (const filename of ['weapp-container-devtools-macos-universal.dmg', 'weapp-container-devtools-linux-x86_64.deb', 'weapp-container-devtools-windows-x86_64.msi']) {
+    await writeFile(join(assets, filename), `${filename}\n`)
+  }
+  const { privateKey, publicKey } = generateKeyPairSync('ed25519')
+  const manifest = await createUpdateManifest({
+    assetsDirectory: assets, version: '1.0.0', tag: 'devtools-v1.0.0', privateKey,
+    publicKey: publicKey.export({ type: 'spki', format: 'pem' }),
+  })
+  assert.equal(manifest.channel, 'stable')
+  assert.equal(manifest.releases.length, 3)
+  assert.match(manifest.signature, /^[A-Za-z0-9_-]+$/)
 })
 
 test('Linux and macOS archives contain the package root and preserve relative paths', async t => {
@@ -146,16 +217,37 @@ test('installer metadata maps preview versions to native package formats', () =>
   assert.match(renderDebControl('0.1.0-preview.7.2'), /Architecture: amd64/)
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /Version="0\.1\.702"/)
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /InstallScope="perUser"/)
+  assert.match(renderMsiSource('0.1.0-preview.7.2'), /AllowDowngrades="yes"/)
   assert.ok(renderMsiSource('0.1.0-preview.7.2').includes(String.raw`Target="[INSTALLFOLDER]bin\weapp-devtools.vbs"`))
   assert.ok(renderMsiSource('0.1.0-preview.7.2').includes(String.raw`Key="Software\WeappContainer\DevTools"`))
   assert.equal(msiProductCode('0.1.0-preview.7.2'), msiProductCode('0.1.0-preview.7.2'))
   assert.notEqual(msiProductCode('0.1.0-preview.7.1'), msiProductCode('0.1.0-preview.7.2'))
 })
 
+test('launcher refuses malformed installed DevTools metadata', async t => {
+  const directory = await temporaryDirectory(t)
+  const installRoot = join(directory, 'distribution')
+  await mkdir(installRoot, { recursive: true })
+  await writeFile(join(installRoot, 'weapp-devtools.json'), '{')
+  await assert.rejects(createLauncher({ installRoot, openBrowser() {} }), /JSON|position|property/i)
+})
+
 test('installer metadata rejects versions that cannot be represented safely', () => {
   assert.throws(() => msiProductVersion('256.0.0'), /Windows Installer version limits/)
   assert.throws(() => msiProductVersion('0.1.0-preview.10.0'), /Windows Installer version limits/)
   assert.throws(() => debianPackageVersion('preview'), /Unsupported DevTools release version/)
+})
+
+test('stable installer signing fails closed while previews may remain unsigned', () => {
+  assert.deepEqual(validateInstallerSigningEnvironment('macos-universal', '1.0.0-preview.1.0', {}), { enabled: false, notarize: false })
+  assert.throws(() => validateInstallerSigningEnvironment('macos-universal', '1.0.0', {}), /Stable macos-universal signing requires/)
+  assert.deepEqual(validateInstallerSigningEnvironment('macos-universal', '1.0.0-preview.1.0', { WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY: 'Developer ID Application: Example' }), { enabled: true, notarize: false })
+  assert.throws(() => validateInstallerSigningEnvironment('macos-universal', '1.0.0-preview.1.0', { WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_PATH: 'key.p8' }), /Preview macos-universal signing requires/)
+  assert.deepEqual(validateInstallerSigningEnvironment('windows-x86_64', '1.0.0', {
+    WEAPP_DEVTOOLS_WINDOWS_SIGNTOOL: 'signtool.exe',
+    WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PATH: 'certificate.pfx',
+    WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PASSWORD: 'secret',
+  }), { enabled: true })
 })
 
 test('Debian package layout includes launcher, menu entry, icon, licenses, and runtime metadata', async t => {
@@ -210,7 +302,18 @@ test('macOS DMG contains an Applications shortcut and a runnable app bundle', as
   await writeFile(join(source, 'README.md'), 'readme')
   await mkdir(mountPoint)
 
-  await createDmg({ source, output, version: '0.1.0-preview.7.2', iconPath })
+  const signingEnvironment = ['WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY', 'WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_PATH', 'WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID', 'WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER']
+  const previousSigningEnvironment = Object.fromEntries(signingEnvironment.map(name => [name, process.env[name]]))
+  process.env.WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY = '-'
+  for (const name of signingEnvironment.slice(1)) delete process.env[name]
+  try {
+    await createDmg({ source, output, version: '0.1.0-preview.7.2', iconPath })
+  } finally {
+    for (const name of signingEnvironment) {
+      if (previousSigningEnvironment[name] === undefined) delete process.env[name]
+      else process.env[name] = previousSigningEnvironment[name]
+    }
+  }
   execFileSync('hdiutil', ['attach', '-nobrowse', '-readonly', '-mountpoint', mountPoint, output], { stdio: 'ignore' })
   try {
     const app = join(mountPoint, 'Weapp Container DevTools.app')
@@ -218,6 +321,7 @@ test('macOS DMG contains an Applications shortcut and a runnable app bundle', as
     assert.equal(await readFile(join(app, 'Contents/MacOS/WeappContainerDevTools'), 'utf8').then(value => value.startsWith('#!/bin/sh')), true)
     assert.equal(await readFile(join(app, 'Contents/Resources/scripts/devtools-launcher.mjs'), 'utf8'), 'launcher')
     assert.equal((await lstat(join(mountPoint, 'Applications'))).isSymbolicLink(), true)
+    execFileSync('codesign', ['--verify', '--deep', '--strict', app], { stdio: 'ignore' })
   } finally {
     execFileSync('hdiutil', ['detach', mountPoint], { stdio: 'ignore' })
   }

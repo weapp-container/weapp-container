@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { chmod, cp, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
+import { chmod, cp, mkdir, rm, stat, symlink, writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { basename, dirname, join, resolve } from 'node:path'
 
 const MSI_UPGRADE_CODE = '{82C5B778-BA8A-4A35-85D6-5D376851F105}'
@@ -38,6 +39,72 @@ function runInstallerTool(command, args, cwd) {
     if (error.stderr) process.stderr.write(error.stderr)
     throw error
   }
+}
+
+const MAC_SIGNING_IDENTITY = 'WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY'
+const MAC_NOTARY_KEY_PATH = 'WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_PATH'
+const MAC_NOTARY_KEY_ID = 'WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID'
+const MAC_NOTARY_ISSUER = 'WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER'
+const WINDOWS_SIGNTOOL = 'WEAPP_DEVTOOLS_WINDOWS_SIGNTOOL'
+const WINDOWS_CERTIFICATE_PATH = 'WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PATH'
+const WINDOWS_CERTIFICATE_PASSWORD = 'WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PASSWORD'
+
+const isStableVersion = version => !version.includes('-preview.')
+
+function requireCompleteConfiguration(target, version, names, environment) {
+  const supplied = names.filter(name => environment[name])
+  const missing = names.filter(name => !environment[name])
+  if (missing.length && (isStableVersion(version) || supplied.length > 0)) {
+    const releaseKind = isStableVersion(version) ? 'Stable' : 'Preview'
+    throw new Error(`${releaseKind} ${target} signing requires ${names.join(', ')}; missing ${missing.join(', ')}`)
+  }
+  return supplied.length === names.length
+}
+
+export function validateInstallerSigningEnvironment(target, version, environment = process.env) {
+  if (target === 'macos-universal') {
+    const identity = Boolean(environment[MAC_SIGNING_IDENTITY])
+    const notarization = requireCompleteConfiguration(target, version, [MAC_NOTARY_KEY_PATH, MAC_NOTARY_KEY_ID, MAC_NOTARY_ISSUER], environment)
+    if (isStableVersion(version) && !identity) {
+      throw new Error(`Stable ${target} signing requires ${MAC_SIGNING_IDENTITY}`)
+    }
+    return { enabled: identity, notarize: notarization }
+  }
+  if (target === 'windows-x86_64') {
+    const enabled = requireCompleteConfiguration(target, version, [WINDOWS_SIGNTOOL, WINDOWS_CERTIFICATE_PATH, WINDOWS_CERTIFICATE_PASSWORD], environment)
+    return { enabled }
+  }
+  return { enabled: false, notarize: false }
+}
+
+function signMacFile(file, identity) {
+  run('codesign', ['--force', '--options', 'runtime', '--timestamp', '--sign', identity, file], dirname(file))
+  run('codesign', ['--verify', '--strict', '--verbose=2', file], dirname(file))
+}
+
+function signWindowsFile(file, environment) {
+  const signtool = environment[WINDOWS_SIGNTOOL]
+  const certificate = environment[WINDOWS_CERTIFICATE_PATH]
+  const password = environment[WINDOWS_CERTIFICATE_PASSWORD]
+  runInstallerTool(signtool, ['sign', '/fd', 'SHA256', '/td', 'SHA256', '/tr', 'http://timestamp.digicert.com', '/f', certificate, '/p', password, file], dirname(file))
+  runInstallerTool(signtool, ['verify', '/pa', '/all', file], dirname(file))
+}
+
+export async function preparePlatformPayload({ target, source, version, environment = process.env }) {
+  const configuration = validateInstallerSigningEnvironment(target, version, environment)
+  if (!configuration.enabled) return configuration
+  if (target === 'macos-universal') {
+    if (!existsSync(environment[MAC_NOTARY_KEY_PATH]) && configuration.notarize) throw new Error(`macOS notarization key was not found at ${environment[MAC_NOTARY_KEY_PATH]}`)
+    for (const relativePath of ['bin/weapp-simulator', 'node/bin/node']) {
+      const file = join(source, relativePath)
+      if (await stat(file).then(value => value.isFile()).catch(() => false)) signMacFile(file, environment[MAC_SIGNING_IDENTITY])
+    }
+  } else if (target === 'windows-x86_64') {
+    if (!existsSync(environment[WINDOWS_SIGNTOOL])) throw new Error(`Windows signtool was not found at ${environment[WINDOWS_SIGNTOOL]}`)
+    if (!existsSync(environment[WINDOWS_CERTIFICATE_PATH])) throw new Error(`Windows signing certificate was not found at ${environment[WINDOWS_CERTIFICATE_PATH]}`)
+    signWindowsFile(join(source, 'bin/weapp-simulator.exe'), environment)
+  }
+  return configuration
 }
 
 function versionParts(version) {
@@ -80,7 +147,7 @@ export function renderMsiSource(version) {
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="${productCode}" Name="Weapp Container DevTools" Language="1033" Version="${productVersion}" Manufacturer="Weapp Container" UpgradeCode="${MSI_UPGRADE_CODE}">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" Description="Weapp Container DevTools ${xml(version)}" />
-    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of Weapp Container DevTools is already installed." />
+      <MajorUpgrade AllowDowngrades="yes" AllowSameVersionUpgrades="yes" />
     <MediaTemplate EmbedCab="yes" />
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="LocalAppDataFolder">
@@ -212,6 +279,7 @@ export async function buildMacAppBundle({ source, output, version, iconPath, tem
 
 export async function createDmg({ source, output, version, iconPath }) {
   if (process.platform !== 'darwin') throw new Error('DMG packages must be built on macOS')
+  const signing = validateInstallerSigningEnvironment('macos-universal', version)
   const destination = resolve(output)
   const temporaryRoot = `${destination}.tmp`
   const app = join(temporaryRoot, 'Weapp Container DevTools.app')
@@ -222,10 +290,20 @@ export async function createDmg({ source, output, version, iconPath }) {
   try {
     await mkdir(dmgRoot, { recursive: true })
     await buildMacAppBundle({ source, output: app, version, iconPath, temporaryRoot })
+    if (signing.enabled) {
+      if (signing.notarize && !existsSync(process.env[MAC_NOTARY_KEY_PATH])) throw new Error(`macOS notarization key was not found at ${process.env[MAC_NOTARY_KEY_PATH]}`)
+      run('codesign', ['--deep', '--force', '--options', 'runtime', '--timestamp', '--sign', process.env[MAC_SIGNING_IDENTITY], app], dirname(app))
+      run('codesign', ['--verify', '--deep', '--strict', '--verbose=2', app], dirname(app))
+    }
     await cp(app, join(dmgRoot, basename(app)), { recursive: true, dereference: true })
     await symlink('/Applications', join(dmgRoot, 'Applications'))
     run('hdiutil', ['create', '-volname', 'Weapp Container DevTools', '-srcfolder', dmgRoot, '-format', 'UDZO', '-ov', destination], dirname(destination))
     run('hdiutil', ['verify', destination], dirname(destination))
+    if (signing.notarize) {
+      run('xcrun', ['notarytool', 'submit', destination, '--key', process.env[MAC_NOTARY_KEY_PATH], '--key-id', process.env[MAC_NOTARY_KEY_ID], '--issuer', process.env[MAC_NOTARY_ISSUER], '--wait'], dirname(destination))
+      run('xcrun', ['stapler', 'staple', '-v', destination], dirname(destination))
+      run('xcrun', ['stapler', 'validate', destination], dirname(destination))
+    }
     return destination
   } finally {
     await rm(temporaryRoot, { recursive: true, force: true })
@@ -234,6 +312,7 @@ export async function createDmg({ source, output, version, iconPath }) {
 
 export async function createMsi({ source, output, version }) {
   if (process.platform !== 'win32') throw new Error('MSI packages must be built on Windows')
+  const signing = validateInstallerSigningEnvironment('windows-x86_64', version)
   const destination = resolve(output)
   const temporaryRoot = `${destination}.tmp`
   const productSource = join(temporaryRoot, 'product.wxs')
@@ -248,6 +327,11 @@ export async function createMsi({ source, output, version }) {
     runInstallerTool('candle.exe', ['-nologo', `-dSourceDir=${resolve(source)}`, '-out', `${temporaryRoot}\\`, productSource, harvestedSource], temporaryRoot)
     // ICE38 and ICE64 target machine-profile component metadata. This package intentionally installs per-user under LocalAppData.
     runInstallerTool('light.exe', ['-nologo', '-spdb', '-sice:ICE38', '-sice:ICE64', '-out', destination, join(temporaryRoot, 'product.wixobj'), join(temporaryRoot, 'files.wixobj')], temporaryRoot)
+    if (signing.enabled) {
+      if (!existsSync(process.env[WINDOWS_SIGNTOOL])) throw new Error(`Windows signtool was not found at ${process.env[WINDOWS_SIGNTOOL]}`)
+      if (!existsSync(process.env[WINDOWS_CERTIFICATE_PATH])) throw new Error(`Windows signing certificate was not found at ${process.env[WINDOWS_CERTIFICATE_PATH]}`)
+      signWindowsFile(destination, process.env)
+    }
     return destination
   } finally {
     await rm(temporaryRoot, { recursive: true, force: true })

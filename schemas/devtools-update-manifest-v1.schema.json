@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weapp-container.dev/schemas/devtools-update-manifest-v1.schema.json",
+  "title": "Weapp Container DevTools signed update manifest",
+  "type": "object",
+  "required": ["schemaVersion", "channel", "releases", "signature"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "channel": { "const": "stable" },
+    "releases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["version", "target", "url", "size", "sha256"],
+        "properties": {
+          "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+          "target": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+          "arch": { "enum": ["arm64", "x64"] },
+          "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+          "size": { "type": "integer", "minimum": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "signature": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

@@ -3608,16 +3608,18 @@ fn now_timestamp() -> String {
 
 fn browser_renderer_module(path: &str) -> Option<&'static [u8]> {
     match path {
-        "/dev-raster-frame.mjs"
-        | "/dev-raster-client.mjs"
-        | "/dev-raster-preview.mjs"
-        | "/remote-dom.mjs"
-        | "/input-causal-ledger.mjs"
-        | "/dom-presenter.mjs"
-        | "/dom-session-client.mjs"
-        | "/remote-canvaskit.mjs"
-        | "/canvaskit-presenter.mjs"
-        | "/text-flow-plan.mjs" => Some(b""),
+        "/dev-raster-frame.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/dev-raster-frame.mjs")),
+        "/dev-raster-client.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/dev-raster-client.mjs")),
+        "/dev-raster-preview.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/dev-raster-preview.mjs")),
+        "/remote-dom.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/remote-dom.mjs")),
+        "/input-causal-ledger.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/input-causal-ledger.mjs")),
+        "/dom-animation-sample.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/dom-animation-sample.mjs")),
+        "/dom-presenter.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/dom-presenter.mjs")),
+        "/dom-session-client.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/dom-session-client.mjs")),
+        "/surface-input.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/surface-input.mjs")),
+        "/remote-canvaskit.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/remote-canvaskit.mjs")),
+        "/canvaskit-presenter.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/canvaskit-presenter.mjs")),
+        "/text-flow-plan.mjs" => Some(include_bytes!("../../../examples/hosts/web-wasm/text-flow-plan.mjs")),
         _ => None,
     }
 }
@@ -3946,6 +3948,24 @@ mod tests {
             b"GET /api/renderer-config HTTP/1.1\r\nHost: localhost\r\n\r\n".to_vec(),
         );
         assert!(response.starts_with(b"HTTP/1.1 404"));
+    }
+
+    #[test]
+    fn browser_renderer_modules_serve_the_pinned_runtime_sources() {
+        let mut surface = WebSurface::localhost(0).unwrap();
+        for (path, marker) in [
+            ("/remote-dom.mjs", "export class RemoteDomSurface"),
+            ("/dom-session-client.mjs", "export class SseBridgeTransport"),
+            ("/dom-presenter.mjs", "export class DomViewPresenter"),
+            ("/surface-input.mjs", "export function attachSurfaceInput"),
+        ] {
+            let response = exchange(
+                &mut surface,
+                format!("GET {path} HTTP/1.1\r\nHost: localhost\r\n\r\n").into_bytes(),
+            );
+            assert!(response.starts_with(b"HTTP/1.1 200"), "{path}");
+            assert!(String::from_utf8_lossy(&response).contains(marker), "{path}");
+        }
     }
 
     #[test]

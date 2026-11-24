@@ -17,6 +17,12 @@ pnpm api:inventory:verify
 
 Node 绑定只消费源码目录或已生成的 portable pack。编译器、宿主服务和外部网络由调用方自行选择和管理。
 
+## DevTools 下载预览
+
+桌面 DevTools 安装包包含固定版本的 Node.js、weapp-vite 编译器、manifest packer 和模拟器。安装后选择项目目录，工具会先检查 `project.config.json`、源 `app.json`、编译器兼容矩阵和项目依赖，再启动 Web Player 或 Desktop Player。当前生产样本为 `examples/apps/community/official-text`、`ant-design-button`、`taro-blended` 和 `examples/apps/shop-demo`。
+
+发行包中的 `weapp-devtools.json` 记录源码、编译器、Node、兼容矩阵和文件哈希。稳定版使用签名更新清单，macOS 安装包使用 Developer ID 签名并完成公证，Windows MSI 使用 Authenticode 签名。缺少稳定版签名材料时发布工作流会在发布前失败。预览版不会自动参与稳定更新。发行签名、平台安装和官方工具证据按平台单独记录，不能由本地 headless 检查替代。
+
 ## 小游戏
 
 使用 `--game` 打包未加密、已解包的小游戏产物，并通过 QuickJS simulator 启动：

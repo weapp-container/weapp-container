@@ -17,6 +17,12 @@ pnpm api:inventory:verify
 
 The Node bindings consume source directories or prebuilt portable packs. Callers choose and manage any compiler, host service, or external network integration themselves.
 
+## DevTools preview
+
+The desktop DevTools packages include pinned Node.js, weapp-vite, the manifest packer and the simulator. After installation, choose a project directory. The launcher checks `project.config.json`, the source `app.json`, the compiler compatibility matrix and project dependencies before starting the Web Player or Desktop Player. The current production samples are `examples/apps/community/official-text`, `ant-design-button`, `taro-blended`, and `examples/apps/shop-demo`.
+
+Each package includes `weapp-devtools.json` with source, compiler, Node, compatibility and file-hash metadata. Stable releases use a signed update manifest, Developer ID signing and notarization for macOS, and Authenticode signing for Windows MSI. The release workflow fails before publishing when stable signing inputs are missing. Preview releases do not participate in stable updates. Release signing, platform installation and official-tool evidence remain platform-specific and are not replaced by local headless checks.
+
 ## Mini-games
 
 Pack and run an unpacked mini-game build with the QuickJS simulator:

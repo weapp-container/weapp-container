@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weapp-container.dev/schemas/devtools-compatibility-v1.schema.json",
+  "title": "Weapp Container DevTools compatibility metadata",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "projectType",
+    "compiler",
+    "nodeVersion",
+    "packageManager",
+    "supportedProjects",
+    "requiredFiles"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "projectType": { "const": "weapp-vite-miniprogram" },
+    "compiler": {
+      "type": "object",
+      "required": ["name", "version", "commit"],
+      "properties": {
+        "name": { "const": "weapp-vite" },
+        "version": { "type": "string" },
+        "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" }
+      },
+      "additionalProperties": false
+    },
+    "nodeVersion": { "type": "string" },
+    "packageManager": { "type": "string" },
+    "supportedProjects": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "requiredFiles": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+  },
+  "additionalProperties": false
+}

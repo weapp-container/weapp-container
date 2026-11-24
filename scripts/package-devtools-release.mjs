@@ -5,7 +5,8 @@ import { lstatSync } from 'node:fs'
 import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
-import { createPlatformInstaller } from './lib/devtools-installers.mjs'
+import { createPlatformInstaller, preparePlatformPayload } from './lib/devtools-installers.mjs'
+import { compatibilityMetadata } from './devtools-compatibility.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const COMPILER_COMMIT = '0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e'
@@ -387,9 +388,13 @@ async function copyNodeRuntime(source, destination, windows) {
 }
 
 async function copyRuntimeSources(targetRoot) {
-  const files = ['simulator-watch.mjs', 'simulator-source-credit.mjs', 'simulator-watch-diagnostics.mjs', 'device-dev-server.mjs', 'devtools-launcher.mjs', 'devtools-launcher.html']
+  const files = ['simulator-watch.mjs', 'simulator-source-credit.mjs', 'simulator-watch-diagnostics.mjs', 'device-dev-server.mjs', 'devtools-launcher.mjs', 'devtools-launcher.html', 'devtools-compatibility.mjs', 'lib/devtools-update.mjs']
   await mkdir(join(targetRoot, 'scripts'), { recursive: true })
-  for (const file of files) await cp(join(root, 'scripts', file), join(targetRoot, 'scripts', file), { recursive: true, dereference: true })
+  for (const file of files) {
+    const destination = join(targetRoot, 'scripts', file)
+    await mkdir(dirname(destination), { recursive: true })
+    await cp(join(root, 'scripts', file), destination, { recursive: true, dereference: true })
+  }
   const deviceHelpers = join(root, 'scripts/lib/device-dev')
   const helperFiles = (await readdir(deviceHelpers, { withFileTypes: true }))
     .filter(entry => entry.isFile() && entry.name.endsWith('.mjs') && !entry.name.endsWith('.test.mjs'))
@@ -516,8 +521,16 @@ export async function packageDevtools({ target, output, version = '0.1.0-preview
     schemaVersion: 1, name: 'weapp-container-devtools', version, target,
     sourceCommit: run('git', ['rev-parse', 'HEAD']), weappViteCommit: COMPILER_COMMIT,
     weappViteVersion: '7.5.0', nodeVersion: NODE_VERSION, canvaskitVersion: CANVASKIT_VERSION,
+    packageManager: 'pnpm@12.11.2',
+    channel: version.includes('-preview') ? 'preview' : 'stable',
+    compatibility: compatibilityMetadata(),
+    update: {
+      manifestUrl: process.env.WEAPP_DEVTOOLS_UPDATE_MANIFEST_URL || null,
+      publicKey: process.env.WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY || null,
+    },
     entrypoints: { gui: target.startsWith('windows-') ? 'bin/weapp-devtools.cmd' : 'bin/weapp-devtools', cli: 'bin/weapp-simulator' },
   }
+  await preparePlatformPayload({ target, source: staging, version })
   const manifest = await inventory(staging, metadata)
   const archive = target.startsWith('windows-') ? `${staging}.zip` : `${staging}.tar.gz`
   const sourceDirectory = staging.endsWith('/') ? staging.slice(0, -1) : staging

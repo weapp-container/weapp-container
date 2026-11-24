@@ -26,6 +26,8 @@
     #stop { border-color: #b84545; background: #b84545; color: white; }
     #preview { display: none; color: #075d8b; font-weight: 600; text-decoration: none; }
     #message { min-height: 24px; margin-top: 12px; color: #a12d2d; }
+    #compatibility, #update { margin-top: 12px; padding: 10px 12px; border: 1px solid #cbd3d9; border-radius: 4px; background: #fff; color: #53616c; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    #compatibility:empty, #update:empty { display: none; }
     h2 { margin: 22px 0 8px; font-size: 14px; }
     pre { height: 260px; overflow: auto; margin: 0; padding: 12px; border: 1px solid #cbd3d9; border-radius: 4px; background: #fff; color: #36434d; font: 12px/1.55 "IBM Plex Mono", ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
     @media (max-width: 540px) { main { margin: 24px auto; } header { align-items: start; flex-direction: column; gap: 4px; } .path-row, .options { align-items: stretch; flex-direction: column; } .actions { justify-content: flex-end; } }
@@ -38,13 +40,15 @@
       <label for="project">小程序项目目录</label>
       <div class="path-row">
         <input id="project" name="project" type="text" autocomplete="off" placeholder="输入项目路径" required>
-        <button id="browse" type="button">选择目录</button>
+        <button id="browse" type="button">选择目录</button><button id="inspect" type="button">检查项目</button>
       </div>
       <div class="options">
         <div><label for="surface">运行方式</label><select id="surface" name="surface"><option value="web">Web Player</option><option value="desktop">Desktop Player</option></select></div>
         <div class="actions"><button id="start" type="submit">启动</button><button id="stop" type="button" disabled>停止</button></div>
       </div>
       <div id="message" role="status"></div>
+      <div id="compatibility" role="status"></div>
+      <div id="update" role="status"></div>
       <a id="preview" target="_blank" rel="noopener">打开 Web Player</a>
     </form>
     <h2>运行日志</h2>
@@ -55,6 +59,8 @@
     const project = document.querySelector('#project')
     const surface = document.querySelector('#surface')
     const message = document.querySelector('#message')
+    const compatibility = document.querySelector('#compatibility')
+    const update = document.querySelector('#update')
     const status = document.querySelector('#status')
     const logs = document.querySelector('#logs')
     const start = document.querySelector('#start')
@@ -78,17 +84,32 @@
         logs.scrollTop = logs.scrollHeight
         if (state.previewUrl) { preview.href = state.previewUrl; preview.style.display = 'inline-block' }
         else preview.style.display = 'none'
+        if (state.preflight) renderPreflight(state.preflight)
       } catch (error) { message.textContent = error.message }
+    }
+    function renderPreflight(value) {
+      compatibility.textContent = [
+        `项目：${value.packageName ?? '未声明 package.json'}`,
+        `入口：${value.appPath}`,
+        `编译器：${value.compatibility.compiler.version} (${value.compatibility.compiler.expected})`,
+        `依赖：${value.dependenciesInstalled ? '已准备' : `缺少 ${value.compatibility.missingDependencies.join(', ')}，请用随包 pnpm 安装项目依赖`}`,
+      ].join('\n')
+    }
+    async function inspect() {
+      message.textContent = ''
+      try { renderPreflight(await api('/api/preflight', { project: project.value })) }
+      catch (error) { compatibility.textContent = ''; message.textContent = error.message }
     }
     document.querySelector('#browse').addEventListener('click', async () => {
       message.textContent = ''
       try { const result = await api('/api/browse', {}); if (result.project) project.value = result.project }
       catch (error) { message.textContent = error.message }
     })
+    document.querySelector('#inspect').addEventListener('click', inspect)
     document.querySelector('#form').addEventListener('submit', async event => {
       event.preventDefault()
       message.textContent = ''
-      try { await api('/api/start', { project: project.value, surface: surface.value }); await refresh() }
+      try { await inspect(); await api('/api/start', { project: project.value, surface: surface.value }); await refresh() }
       catch (error) { message.textContent = error.message }
     })
     stop.addEventListener('click', async () => {
@@ -98,6 +119,29 @@
     })
     setInterval(refresh, 1000)
     refresh()
+    api('/api/update/check').then(result => {
+      if (result.status === 'available') {
+        update.replaceChildren(document.createTextNode(`发现新版本 ${result.candidate.version}。`))
+        const download = document.createElement('a')
+        download.href = result.candidate.url
+        download.target = '_blank'
+        download.rel = 'noopener noreferrer'
+        download.textContent = '下载新版'
+        download.addEventListener('click', event => {
+          const accepted = window.confirm(`确认从 HTTPS 官方发行地址下载 ${result.candidate.version}？\nSHA-256：${result.candidate.sha256}`)
+          if (!accepted) event.preventDefault()
+        })
+        update.append(document.createTextNode(' '), download)
+        const releases = document.createElement('a')
+        releases.href = 'https://github.com/weapp-container/weapp-container/releases'
+        releases.target = '_blank'
+        releases.rel = 'noopener noreferrer'
+        releases.textContent = '查看全部版本（含回退版本）'
+        update.append(document.createTextNode(' '), releases)
+      } else if (result.status === 'unavailable') {
+        update.textContent = `更新检查不可用：${result.error}`
+      }
+    }).catch(() => {})
   </script>
 </body>
 </html>

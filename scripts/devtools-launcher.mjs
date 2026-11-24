@@ -2,12 +2,14 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto'
 import { spawn, execFile } from 'node:child_process'
 import { createServer } from 'node:http'
-import { access, realpath, readFile, stat } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
 import { constants } from 'node:fs'
 import { homedir } from 'node:os'
 import { delimiter, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
+import { compatibilityMetadata, inspectProject } from './devtools-compatibility.mjs'
+import { checkForUpdate } from './lib/devtools-update.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const runFile = promisify(execFile)
@@ -32,15 +34,8 @@ async function chooseProjectDirectory(platform = process.platform) {
   return stdout.trim()
 }
 
-async function validateProject(value) {
-  if (typeof value !== 'string' || !value.trim()) throw new Error('请选择小程序项目目录')
-  const project = await realpath(value.trim())
-  const metadata = await stat(project)
-  if (!metadata.isDirectory()) throw new Error('项目路径不是目录')
-  const packagePath = join(project, 'package.json')
-  await access(packagePath, constants.R_OK)
-  JSON.parse(await readFile(packagePath, 'utf8'))
-  return project
+export async function validateProject(value, options = {}) {
+  return (await inspectProject(value, options)).project
 }
 
 function sendJson(response, status, value) {
@@ -81,6 +76,20 @@ export async function createLauncher({
   chooseProject = chooseProjectDirectory,
   spawnProcess = spawn,
 } = {}) {
+  let metadata = compatibilityMetadata()
+  try {
+    const packagedMetadata = JSON.parse(await readFile(join(installRoot, 'weapp-devtools.json'), 'utf8'))
+    if (!packagedMetadata || packagedMetadata.schemaVersion !== 1
+      || packagedMetadata.name !== 'weapp-container-devtools'
+      || typeof packagedMetadata.version !== 'string'
+      || typeof packagedMetadata.target !== 'string'
+      || typeof packagedMetadata.weappViteCommit !== 'string') {
+      throw new Error('DevTools 安装元数据无效，请重新安装发行包')
+    }
+    metadata = { ...metadata, ...packagedMetadata }
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error
+  }
   const token = randomBytes(32).toString('hex')
   const logs = []
   let child
@@ -89,6 +98,7 @@ export async function createLauncher({
   let previewUrl
   let exitCode
   let stopping = false
+  let preflight
   const addLog = line => {
     const value = String(line).slice(0, 2048)
     logs.push(value)
@@ -125,7 +135,7 @@ export async function createLauncher({
         const running = child && child.exitCode === null && child.signalCode === null
         return sendJson(response, 200, {
           running: Boolean(running), stopping, project, surface, previewUrl,
-          exitCode, logs: [...logs],
+          exitCode, logs: [...logs], preflight, metadata,
         })
       }
       if (url.pathname === '/api/browse' && request.method === 'POST') {
@@ -137,10 +147,23 @@ export async function createLauncher({
           return sendJson(response, 500, { error: `目录选择器启动失败：${error.message}` })
         }
       }
+      if (url.pathname === '/api/preflight' && request.method === 'POST') {
+        const input = await readJson(request)
+        preflight = await inspectProject(input.project, { metadata })
+        return sendJson(response, 200, preflight)
+      }
+      if (url.pathname === '/api/update/check' && request.method === 'GET') {
+        try {
+          return sendJson(response, 200, await checkForUpdate({ metadata }))
+        } catch (error) {
+          return sendJson(response, 200, { status: 'unavailable', error: error.message })
+        }
+      }
       if (url.pathname === '/api/start' && request.method === 'POST') {
         if (child && child.exitCode === null && child.signalCode === null) return sendJson(response, 409, { error: 'Player 已在运行' })
         const input = await readJson(request)
-        project = await validateProject(input.project)
+        preflight = await inspectProject(input.project, { metadata, requireDependencies: true })
+        project = preflight.project
         surface = input.surface
         const args = simulatorArguments(project, surface)
         previewUrl = undefined
