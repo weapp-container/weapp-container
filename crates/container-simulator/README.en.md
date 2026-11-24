@@ -474,6 +474,19 @@ flush is nonblocking and best effort. Embedders should call this barrier
 before releasing their own surfaces; stopped supervisors no longer poll or
 pump the runtime.
 
+Run the compiler-to-runtime development lifecycle smoke. It waits for explicit
+state/revision changes and correlated SSE receipts, then checks in-place WXSS
+reload, JS session restart, preservation of the last valid session during a
+failed build, bridge diagnostics and recovery. Its JSON report records the
+environment, pinned compiler commit and resource cleanup:
+
+```sh
+pnpm simulator:dev:smoke -- --engine quickjs
+```
+
+This report covers the development simulator path only. It is not evidence of
+WeChat DevTools, GPU, emulator or device conformance.
+
 Run the headless browser smoke to verify canvas pixels, lifecycle/provider
 state, pointer-driven `setData`, a structured runtime error overlay, recovery
 after a WXSS reload, and the shared-session `/embed` client:

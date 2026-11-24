@@ -15,6 +15,65 @@ concurrency:
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
+  simulator-smoke:
+    name: Development simulator smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.1
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify pinned submodules
+        run: pnpm submodule:verify
+
+      - name: Install Linux native build dependencies
+        uses: ./.github/actions/setup-linux-native
+
+      - name: Install pinned compiler dependencies
+        run: corepack pnpm@12.11.2 --dir vendor/weapp-vite install --frozen-lockfile --ignore-scripts
+
+      - name: Build pinned compiler packages
+        run: corepack pnpm@12.11.2 --dir vendor/weapp-vite run build:pkgs
+
+      - name: Cache Rust dependencies
+        uses: ./.github/actions/cache-rust-build
+        with:
+          key: checks-linux
+
+      - name: Run development simulator lifecycle smoke
+        run: >-
+          pnpm simulator:dev:smoke -- --timeout 180000
+          --out "$RUNNER_TEMP/simulator-smoke.json"
+
+      - name: Verify smoke restored its fixture
+        if: always()
+        run: git diff --exit-code -- examples/apps/reference-app
+
+      - name: Upload simulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulator-dev-smoke
+          path: ${{ runner.temp }}/simulator-smoke.json
+          if-no-files-found: ignore
+          retention-days: 14
+
   verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
