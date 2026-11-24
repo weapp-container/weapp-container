@@ -3169,10 +3169,8 @@ impl Session {
                     ));
                 }
             }
-            "show" => {
-                if event.get("options").is_some_and(|value| !value.is_object()) {
-                    return Err(BridgeError::invalid("game.event show options must be an object"));
-                }
+            "show" if event.get("options").is_some_and(|value| !value.is_object()) => {
+                return Err(BridgeError::invalid("game.event show options must be an object"));
             }
             _ => {}
         }
@@ -3231,7 +3229,7 @@ impl Session {
             ));
         }
         let event = object_payload(&request.payload)?;
-        let (event_type, listeners) = self.dispatch_game_event(request, &event)?;
+        let (event_type, listeners) = self.dispatch_game_event(request, event)?;
         let touch = matches!(
             event_type.as_str(),
             "touchstart" | "touchmove" | "touchend" | "touchcancel"
