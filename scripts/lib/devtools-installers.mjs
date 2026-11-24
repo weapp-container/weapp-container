@@ -25,6 +25,15 @@ function run(command, args, cwd) {
   }).trim()
 }
 
+function runInstallerTool(command, args, cwd) {
+  try {
+    return run(command, args, cwd)
+  } catch (error) {
+    if (error.stdout) process.stderr.write(error.stdout)
+    throw error
+  }
+}
+
 function versionParts(version) {
   const match = /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.exec(version)
   if (!match) throw new Error(`Unsupported DevTools release version ${version}`)
@@ -229,7 +238,7 @@ export async function createMsi({ source, output, version }) {
   await mkdir(temporaryRoot, { recursive: true })
   try {
     await writeFile(productSource, renderMsiSource(version))
-    run('heat.exe', ['dir', resolve(source), '-nologo', '-dr', 'INSTALLFOLDER', '-cg', 'DevToolsFiles', '-ag', '-scom', '-sreg', '-srd', '-var', 'var.SourceDir', '-out', harvestedSource], temporaryRoot)
+    runInstallerTool('heat.exe', ['dir', resolve(source), '-nologo', '-dr', 'INSTALLFOLDER', '-cg', 'DevToolsFiles', '-ag', '-scom', '-sreg', '-srd', '-var', 'var.SourceDir', '-out', harvestedSource], temporaryRoot)
     run('candle.exe', ['-nologo', `-dSourceDir=${resolve(source)}`, '-out', `${temporaryRoot}\\`, productSource, harvestedSource], temporaryRoot)
     run('light.exe', ['-nologo', '-out', destination, join(temporaryRoot, 'product.wixobj'), join(temporaryRoot, 'files.wixobj')], temporaryRoot)
     return destination
