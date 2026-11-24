@@ -131,8 +131,17 @@ jobs:
         if: matrix.target == 'windows-x86_64'
         shell: pwsh
         run: |
-          $version = $env:GITHUB_REF_NAME -replace '^devtools-v', ''
-          node scripts/package-devtools-release.mjs --target windows-x86_64 --output "artifacts/weapp-container-devtools-${{ matrix.target }}" --version $version --simulator-bin target/release/weapp-simulator.exe
+          $drive = 'R:'
+          if (Test-Path "$drive\") { throw "Temporary drive $drive is already in use" }
+          subst $drive $env:GITHUB_WORKSPACE
+          try {
+            $version = $env:GITHUB_REF_NAME -replace '^devtools-v', ''
+            $output = "$drive\artifacts\weapp-container-devtools-${{ matrix.target }}"
+            node scripts/package-devtools-release.mjs --target windows-x86_64 --output $output --version $version --simulator-bin target/release/weapp-simulator.exe
+            if ($LASTEXITCODE -ne 0) { throw "Windows DevTools packaging failed with $LASTEXITCODE" }
+          } finally {
+            subst $drive /D
+          }
 
       - name: Validate Windows MSI installation and upgrade entry
         if: matrix.target == 'windows-x86_64'
