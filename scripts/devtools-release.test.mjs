@@ -47,12 +47,13 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   const directory = await temporaryDirectory(t)
   const installRoot = join(directory, 'DevTools Bundle')
   const project = join(directory, 'Example Mini Program')
+  const simulatorExecutable = process.platform === 'win32' ? 'weapp-simulator.exe' : 'weapp-simulator'
   await mkdir(join(installRoot, 'scripts'), { recursive: true })
   await mkdir(join(installRoot, 'bin'), { recursive: true })
   await mkdir(project)
   await writeFile(join(installRoot, 'scripts/devtools-launcher.html'), '<!doctype html><title>DevTools</title>')
-  await writeFile(join(installRoot, 'bin/weapp-simulator'), 'fixture')
-  await chmod(join(installRoot, 'bin/weapp-simulator'), 0o755)
+  await writeFile(join(installRoot, 'bin', simulatorExecutable), 'fixture')
+  await chmod(join(installRoot, 'bin', simulatorExecutable), 0o755)
   await writeFile(join(project, 'package.json'), JSON.stringify({ name: 'fixture' }))
 
   let page
