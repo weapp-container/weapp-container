@@ -6,7 +6,7 @@ use container_ir::{
     hex_digest, AppInfo, CapabilitySupport, ContainerManifestV1, Module, ModuleFormat, ModuleScope,
     Route, RouteKind,
 };
-use container_runtime::{Session, SessionConfig};
+use container_runtime::{Session, SessionConfig, ViewExecutionPolicy};
 use serde_json::{json, Value};
 
 const APP: &str = "module:app.js";
@@ -152,6 +152,9 @@ impl Fixture {
                 manifest,
                 SessionConfig {
                     engine,
+                    view_execution: ViewExecutionPolicy {
+                        batch_timeout_ms: 2_000,
+                    },
                     ..Default::default()
                 },
             )
