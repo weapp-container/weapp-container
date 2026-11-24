@@ -56,6 +56,9 @@ jobs:
         with:
           key: checks-linux
 
+      - name: Build development simulator
+        run: cargo build -p container-simulator --locked --features quickjs-native
+
       - name: Run development simulator lifecycle smoke
         run: >-
           pnpm simulator:dev:smoke -- --timeout 180000
