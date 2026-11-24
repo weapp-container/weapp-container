@@ -23,7 +23,7 @@ jobs:
           - target: macos-universal
             os: xcode-27
           - target: linux-x86_64
-            os: ubuntu-24.04
+            os: ubuntu-22.04
           - target: windows-x86_64
             os: windows-2022
     env:
@@ -75,6 +75,20 @@ jobs:
             --simulator-bin target/aarch64-apple-darwin/release/weapp-simulator \
             --simulator-bin-x86_64 target/x86_64-apple-darwin/release/weapp-simulator
 
+      - name: Validate macOS DMG installation layout
+        if: matrix.target == 'macos-universal'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mount_point="$RUNNER_TEMP/devtools-dmg"
+          mkdir -p "$mount_point"
+          hdiutil attach -nobrowse -readonly -mountpoint "$mount_point" artifacts/weapp-container-devtools-macos-universal.dmg
+          trap 'hdiutil detach "$mount_point" -quiet' EXIT
+          app="$mount_point/Weapp Container DevTools.app"
+          plutil -lint "$app/Contents/Info.plist"
+          test -x "$app/Contents/MacOS/WeappContainerDevTools"
+          "$app/Contents/Resources/node/bin/node" "$app/Contents/Resources/scripts/devtools-launcher.mjs" --help
+
       - name: Build Linux simulator
         if: matrix.target == 'linux-x86_64'
         run: cargo build --locked --release -p container-simulator --features desktop-window
@@ -83,9 +97,29 @@ jobs:
         if: matrix.target == 'linux-x86_64'
         run: node scripts/package-devtools-release.mjs --target linux-x86_64 --output "artifacts/weapp-container-devtools-${{ matrix.target }}" --version "${GITHUB_REF_NAME#devtools-v}" --simulator-bin target/release/weapp-simulator
 
+      - name: Validate Linux DEB installation and launcher
+        if: matrix.target == 'linux-x86_64'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y ./artifacts/weapp-container-devtools-linux-x86_64.deb
+          test -f /usr/share/applications/weapp-container-devtools.desktop
+          weapp-devtools --help
+          sudo apt-get remove -y weapp-container-devtools
+
       - name: Build Windows simulator
         if: matrix.target == 'windows-x86_64'
         run: cargo build --locked --release -p container-simulator --features desktop-window
+
+      - name: Install WiX Toolset
+        if: matrix.target == 'windows-x86_64'
+        shell: pwsh
+        run: |
+          choco install wixtoolset --version=3.14.1 --yes --no-progress
+          $heat = Get-ChildItem "${env:ProgramFiles(x86)}\WiX Toolset*\bin\heat.exe" | Select-Object -First 1
+          if (-not $heat) { throw 'WiX Toolset heat.exe was not found' }
+          $wixBin = Split-Path $heat.FullName
+          Add-Content -Path $env:GITHUB_PATH -Value $wixBin
 
       - name: Package Windows DevTools
         if: matrix.target == 'windows-x86_64'
@@ -93,6 +127,29 @@ jobs:
         run: |
           $version = $env:GITHUB_REF_NAME -replace '^devtools-v', ''
           node scripts/package-devtools-release.mjs --target windows-x86_64 --output "artifacts/weapp-container-devtools-${{ matrix.target }}" --version $version --simulator-bin target/release/weapp-simulator.exe
+
+      - name: Validate Windows MSI installation and upgrade entry
+        if: matrix.target == 'windows-x86_64'
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME -replace '^devtools-v', ''
+          $productCode = node --input-type=module -e "import { msiProductCode } from './scripts/lib/devtools-installers.mjs'; console.log(msiProductCode(process.argv[1]))" $version
+          $msi = (Resolve-Path "artifacts/weapp-container-devtools-windows-x86_64.msi").Path
+          $install = Join-Path $env:LOCALAPPDATA 'Weapp Container DevTools'
+          $installResult = Start-Process msiexec.exe -ArgumentList @('/i', "`"$msi`"", '/qn', '/norestart') -Wait -PassThru
+          if ($installResult.ExitCode -ne 0) { throw "MSI install failed with $($installResult.ExitCode)" }
+          $launcher = Join-Path $install 'bin/weapp-devtools.cmd'
+          if (-not (Test-Path $launcher)) { throw 'Installed launcher was not found' }
+          & $launcher --help
+          if ($LASTEXITCODE -ne 0) { throw "Installed launcher failed with $LASTEXITCODE" }
+          $shortcut = Join-Path $env:APPDATA 'Microsoft/Windows/Start Menu/Programs/Weapp Container DevTools/Weapp Container DevTools.lnk'
+          if (-not (Test-Path $shortcut)) { throw 'Start Menu shortcut was not installed' }
+          $removeResult = Start-Process msiexec.exe -ArgumentList @('/x', $productCode, '/qn', '/norestart') -Wait -PassThru
+          if ($removeResult.ExitCode -ne 0) { throw "MSI uninstall failed with $($removeResult.ExitCode)" }
+          if (Test-Path $install) { throw 'MSI install directory remained after uninstall' }
+
+      - name: Run DevTools release regression tests
+        run: pnpm devtools:release:test
 
       - uses: actions/upload-artifact@v4
         with:
@@ -120,24 +177,88 @@ jobs:
         run: |
           set -euo pipefail
           ls -lh artifacts
-          test "$(find artifacts -maxdepth 1 -type f | wc -l)" -eq 3
+          expected=(
+            weapp-container-devtools-macos-universal.dmg
+            weapp-container-devtools-macos-universal.tar.gz
+            weapp-container-devtools-linux-x86_64.deb
+            weapp-container-devtools-linux-x86_64.tar.gz
+            weapp-container-devtools-windows-x86_64.msi
+            weapp-container-devtools-windows-x86_64.zip
+          )
+          for asset in "${expected[@]}"; do test -f "artifacts/$asset"; done
+          test "$(find artifacts -maxdepth 1 -type f | wc -l)" -eq "${#expected[@]}"
           cd artifacts
           sha256sum weapp-container-devtools-* > SHA256SUMS
+          sha256sum --check SHA256SUMS
 
-      - name: Create GitHub prerelease with runnable archives
+      - name: Create or update GitHub prerelease
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          gh release create "$GITHUB_REF_NAME" \
-            artifacts/weapp-container-devtools-macos-universal.tar.gz \
-            artifacts/weapp-container-devtools-linux-x86_64.tar.gz \
-            artifacts/weapp-container-devtools-windows-x86_64.zip \
-            artifacts/SHA256SUMS \
-            --title "Weapp Container DevTools ${GITHUB_REF_NAME#devtools-v}" \
-            --notes-file <(printf '%s\n' \
-              'This preview release includes directly runnable development tools.' \
-              '' \
-              'Download the archive for your operating system, extract it, and follow the included README.md. Each archive bundles the simulator, Node.js, the pinned weapp-vite compiler, and renderer assets.') \
-            --prerelease
+          notes_file="$RUNNER_TEMP/devtools-release-notes.md"
+          cat > "$notes_file" <<'EOF'
+          This preview release includes installable and portable Weapp Container DevTools packages.
+
+          Installable packages
+          - macOS: open the DMG and drag Weapp Container DevTools.app to Applications.
+          - Windows: run the MSI installer and launch the Start Menu shortcut.
+          - Debian/Ubuntu: install the DEB with `sudo apt install ./weapp-container-devtools-linux-x86_64.deb`.
+
+          Portable packages
+          Extract the archive for your operating system and follow the included README.md.
+
+          The macOS and Windows packages are unsigned preview builds. The first launch may require confirming the operating system security prompt.
+          EOF
+          assets=(
+            artifacts/weapp-container-devtools-macos-universal.dmg
+            artifacts/weapp-container-devtools-macos-universal.tar.gz
+            artifacts/weapp-container-devtools-linux-x86_64.deb
+            artifacts/weapp-container-devtools-linux-x86_64.tar.gz
+            artifacts/weapp-container-devtools-windows-x86_64.msi
+            artifacts/weapp-container-devtools-windows-x86_64.zip
+            artifacts/SHA256SUMS
+          )
+          title="Weapp Container DevTools ${GITHUB_REF_NAME#devtools-v}"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --title "$title" --notes-file "$notes_file" --prerelease
+            gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
+              --verify-tag \
+              --title "$title" \
+              --notes-file "$notes_file" \
+              --prerelease
+          fi
+          gh release view "$GITHUB_REF_NAME" --json isDraft,isPrerelease,assets --jq '.assets[].name' | sort > "$RUNNER_TEMP/release-assets.txt"
+          printf '%s\n' \
+            SHA256SUMS \
+            weapp-container-devtools-linux-x86_64.deb \
+            weapp-container-devtools-linux-x86_64.tar.gz \
+            weapp-container-devtools-macos-universal.dmg \
+            weapp-container-devtools-macos-universal.tar.gz \
+            weapp-container-devtools-windows-x86_64.msi \
+            weapp-container-devtools-windows-x86_64.zip | sort > "$RUNNER_TEMP/expected-release-assets.txt"
+          diff -u "$RUNNER_TEMP/expected-release-assets.txt" "$RUNNER_TEMP/release-assets.txt"
+          release_state="$(gh release view "$GITHUB_REF_NAME" --json isDraft,isPrerelease --jq '[.isDraft, .isPrerelease] | @tsv')"
+          test "$release_state" = $'false\ttrue'
+
+          version="${GITHUB_REF_NAME#devtools-v}"
+          if [[ "$version" =~ ^(.+-preview\.[0-9]+)\.([0-9]+)$ ]]; then
+            series="${BASH_REMATCH[1]}"
+            revision=$((10#${BASH_REMATCH[2]} - 1))
+            if (( revision > 0 )); then
+              previous_tag="devtools-v${series}.${revision}"
+              if gh release view "$previous_tag" >/dev/null 2>&1; then
+                previous_notes="$RUNNER_TEMP/previous-release-notes.md"
+                gh release view "$previous_tag" --json body --jq '.body' > "$previous_notes"
+                marker="Superseded by $GITHUB_REF_NAME"
+                if ! grep -Fq "$marker" "$previous_notes"; then
+                  printf '\n\nSuperseded by [%s](https://github.com/%s/releases/tag/%s).\n' \
+                    "$GITHUB_REF_NAME" "$GH_REPO" "$GITHUB_REF_NAME" >> "$previous_notes"
+                  gh release edit "$previous_tag" --notes-file "$previous_notes"
+                fi
+              fi
+            fi
+          fi

@@ -1,6 +1,16 @@
 # Weapp Container DevTools
 
-This archive contains the directly runnable Weapp Container development tools.
+This package contains the directly runnable Weapp Container development tools.
+
+## Install the desktop package
+
+The GitHub Release provides an installer for each desktop platform.
+
+- macOS: open the `.dmg` and drag `Weapp Container DevTools.app` to Applications. This preview build is unsigned, so macOS may require opening it from Finder with Control-click and Open.
+- Windows: run the `.msi` installer and use the Start Menu shortcut. Windows may show an unsigned publisher warning for this preview build.
+- Debian or Ubuntu: install the `.deb` with `sudo apt install ./weapp-container-devtools-linux-x86_64.deb`, then launch `Weapp Container DevTools` from the application menu or run `weapp-devtools`.
+
+The portable `.tar.gz` and `.zip` packages remain available for environments where an installer is not suitable.
 
 ## Start the graphical launcher
 
@@ -21,9 +31,9 @@ On Ubuntu 22.04 or 24.04, Desktop Player also requires the system OpenGL, X11,
 XKB, and fontconfig libraries. Install them if they are not already present.
 
 ```sh
-sudo apt install libgl1 libx11-6 libxkbcommon0 libfontconfig1
+sudo apt install libgl1 libx11-6 libxkbcommon0 libfontconfig1 xdg-utils zenity
 ```
 
 The Web Player does not require a desktop session.
 
-The archive is a preview release. Check `weapp-devtools.json` for the exact source commit, compiler commit, Node version, target, and file hashes.
+This is a preview release. Check `weapp-devtools.json` for the exact source commit, compiler commit, Node version, target, and file hashes.

@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
 import { PassThrough } from 'node:stream'
-import { chmod, mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
+import { chmod, lstat, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import test from 'node:test'
+import { buildDebRoot, createDmg, debianPackageVersion, msiProductCode, msiProductVersion, renderDebControl, renderMsiSource } from './lib/devtools-installers.mjs'
 import { createArchive, packageDevtools } from './package-devtools-release.mjs'
 import { createLauncher, simulatorArguments } from './devtools-launcher.mjs'
 
@@ -133,6 +134,75 @@ test('Linux and macOS archives contain the package root and preserve relative pa
   await createArchive(source, archive, 'linux-x86_64')
   const listing = execFileSync('tar', ['-tzf', archive], { encoding: 'utf8' })
   assert.match(listing, new RegExp(`^${basename(source)}/bin/weapp-devtools$`, 'm'))
+})
+
+test('installer metadata maps preview versions to native package formats', () => {
+  assert.equal(msiProductVersion('0.1.0-preview.7.2'), '0.1.702')
+  assert.equal(msiProductVersion('0.1.0'), '0.1.999')
+  assert.equal(msiProductVersion('0.1.1-preview.1.0'), '0.1.1100')
+  assert.equal(debianPackageVersion('0.1.0-preview.7.2'), '0.1.0~preview.7.2')
+  assert.match(renderDebControl('0.1.0-preview.7.2'), /Version: 0\.1\.0~preview\.7\.2/)
+  assert.match(renderDebControl('0.1.0-preview.7.2'), /Architecture: amd64/)
+  assert.match(renderMsiSource('0.1.0-preview.7.2'), /Version="0\.1\.702"/)
+  assert.match(renderMsiSource('0.1.0-preview.7.2'), /InstallScope="perUser"/)
+  assert.ok(renderMsiSource('0.1.0-preview.7.2').includes(String.raw`Target="[INSTALLFOLDER]bin\weapp-devtools.vbs"`))
+  assert.ok(renderMsiSource('0.1.0-preview.7.2').includes(String.raw`Key="Software\WeappContainer\DevTools"`))
+  assert.equal(msiProductCode('0.1.0-preview.7.2'), msiProductCode('0.1.0-preview.7.2'))
+  assert.notEqual(msiProductCode('0.1.0-preview.7.1'), msiProductCode('0.1.0-preview.7.2'))
+})
+
+test('installer metadata rejects versions that cannot be represented safely', () => {
+  assert.throws(() => msiProductVersion('256.0.0'), /Windows Installer version limits/)
+  assert.throws(() => msiProductVersion('0.1.0-preview.10.0'), /Windows Installer version limits/)
+  assert.throws(() => debianPackageVersion('preview'), /Unsupported DevTools release version/)
+})
+
+test('Debian package layout includes launcher, menu entry, icon, licenses, and runtime metadata', async t => {
+  const directory = await temporaryDirectory(t)
+  const source = join(directory, 'DevTools Bundle')
+  const packageRoot = join(directory, 'deb-root')
+  const iconPath = join(directory, 'icon.png')
+  await mkdir(join(source, 'bin'), { recursive: true })
+  await writeFile(join(source, 'bin/weapp-devtools'), 'launcher')
+  await writeFile(join(source, 'LICENSE'), 'license')
+  await writeFile(join(source, 'README.md'), 'readme')
+  await writeFile(iconPath, 'icon')
+
+  await buildDebRoot(source, packageRoot, '0.1.0-preview.7.2', iconPath)
+
+  assert.match(await readFile(join(packageRoot, 'DEBIAN/control'), 'utf8'), /Version: 0\.1\.0~preview\.7\.2/)
+  assert.equal(await readFile(join(packageRoot, 'usr/bin/weapp-devtools'), 'utf8'), '#!/bin/sh\nset -eu\nexec /opt/weapp-container-devtools/bin/weapp-devtools "$@"\n')
+  assert.match(await readFile(join(packageRoot, 'usr/share/applications/weapp-container-devtools.desktop'), 'utf8'), /Exec=weapp-devtools gui/)
+  assert.equal(await readFile(join(packageRoot, 'usr/share/icons/hicolor/128x128/apps/weapp-container-devtools.png'), 'utf8'), 'icon')
+  assert.equal(await readFile(join(packageRoot, 'usr/share/doc/weapp-container-devtools/copyright'), 'utf8'), 'license')
+})
+
+test('macOS DMG contains an Applications shortcut and a runnable app bundle', async t => {
+  if (process.platform !== 'darwin') return t.skip('DMG validation requires macOS')
+  const directory = await temporaryDirectory(t)
+  const source = join(directory, 'DevTools Bundle')
+  const output = join(directory, 'weapp-container-devtools.dmg')
+  const iconPath = join(process.cwd(), 'assets/brand/png/weapp-container-avatar-128.png')
+  const mountPoint = join(directory, 'mounted')
+  await mkdir(join(source, 'node/bin'), { recursive: true })
+  await mkdir(join(source, 'scripts'), { recursive: true })
+  await writeFile(join(source, 'node/bin/node'), 'node')
+  await writeFile(join(source, 'scripts/devtools-launcher.mjs'), 'launcher')
+  await writeFile(join(source, 'LICENSE'), 'license')
+  await writeFile(join(source, 'README.md'), 'readme')
+  await mkdir(mountPoint)
+
+  await createDmg({ source, output, version: '0.1.0-preview.7.2', iconPath })
+  execFileSync('hdiutil', ['attach', '-nobrowse', '-readonly', '-mountpoint', mountPoint, output], { stdio: 'ignore' })
+  try {
+    const app = join(mountPoint, 'Weapp Container DevTools.app')
+    assert.equal(await readFile(join(app, 'Contents/Info.plist'), 'utf8').then(value => /CFBundleIdentifier/.test(value)), true)
+    assert.equal(await readFile(join(app, 'Contents/MacOS/WeappContainerDevTools'), 'utf8').then(value => value.startsWith('#!/bin/sh')), true)
+    assert.equal(await readFile(join(app, 'Contents/Resources/scripts/devtools-launcher.mjs'), 'utf8'), 'launcher')
+    assert.equal((await lstat(join(mountPoint, 'Applications'))).isSymbolicLink(), true)
+  } finally {
+    execFileSync('hdiutil', ['detach', mountPoint], { stdio: 'ignore' })
+  }
 })
 
 test('package refuses unknown targets before touching the output directory', async t => {

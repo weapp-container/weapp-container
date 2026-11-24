@@ -5,6 +5,7 @@ import { lstatSync } from 'node:fs'
 import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
+import { createPlatformInstaller } from './lib/devtools-installers.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const COMPILER_COMMIT = '0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e'
@@ -517,9 +518,19 @@ export async function packageDevtools({ target, output, version = '0.1.0-preview
   const manifest = await inventory(staging, metadata)
   const archive = target.startsWith('windows-') ? `${staging}.zip` : `${staging}.tar.gz`
   const sourceDirectory = staging.endsWith('/') ? staging.slice(0, -1) : staging
-  await createArchive(sourceDirectory, archive, target)
-  await rm(temporaryRoot, { recursive: true, force: true })
-  return { archive, directory: staging, manifest }
+  try {
+    await createArchive(sourceDirectory, archive, target)
+    const installer = await createPlatformInstaller({
+      target,
+      source: sourceDirectory,
+      output: staging,
+      version,
+      iconPath: join(root, 'assets/brand/png/weapp-container-avatar-1024.png'),
+    })
+    return { archive, installer, directory: staging, manifest }
+  } finally {
+    await rm(temporaryRoot, { recursive: true, force: true })
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -529,6 +540,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       target: option(args, '--target'), output: option(args, '--output', resolve(root, 'artifacts/devtools-release')), version: option(args, '--version', '0.1.0-preview.7.1'), simulatorBinary: option(args, '--simulator-bin'), simulatorBinaryX86_64: option(args, '--simulator-bin-x86_64'),
       nodeDistribution: option(args, '--node-dist'), rendererAssets: option(args, '--renderer-assets'),
     })
-    process.stdout.write(`${JSON.stringify({ archive: result.archive, directory: result.directory, files: result.manifest.files.length }, null, 2)}\n`)
+    process.stdout.write(`${JSON.stringify({ archive: result.archive, installer: result.installer, directory: result.directory, files: result.manifest.files.length }, null, 2)}\n`)
   } catch (error) { console.error(error.message); process.exitCode = 1 }
 }
