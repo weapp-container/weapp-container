@@ -63,6 +63,16 @@ test('game packs use schema 4 and reject page View resources', async (context) =
     'wx.createCanvas', 'wx.createCanvasContext', 'wx.canvas.draw', 'wx.getWindowInfo',
     'wx.onTouchStart', 'wx.offTouchStart', 'wx.onTouchMove', 'wx.offTouchMove',
     'wx.onTouchEnd', 'wx.offTouchEnd', 'wx.onTouchCancel', 'wx.offTouchCancel',
+    'wx.onShow', 'wx.offShow', 'wx.onHide', 'wx.offHide',
+    'wx.onAudioInterruptionBegin', 'wx.offAudioInterruptionBegin',
+    'wx.onAudioInterruptionEnd', 'wx.offAudioInterruptionEnd',
+    'wx.onMemoryWarning', 'wx.offMemoryWarning',
+    'wx.onDeviceMotionChange', 'wx.offDeviceMotionChange',
+    'wx.onAccelerometerChange', 'wx.offAccelerometerChange',
+    'wx.onKeyboardHeightChange', 'wx.offKeyboardHeightChange',
+    'wx.onKeyDown', 'wx.offKeyDown', 'wx.onKeyUp', 'wx.offKeyUp',
+    'wx.onWindowResize', 'wx.offWindowResize',
+    'requestAnimationFrame', 'cancelAnimationFrame',
   ]) {
     assert.equal(result.manifest.capabilities[name], 'partial');
   }

@@ -226,7 +226,18 @@ function __container_canvas_context_impl(canvasId, canvasSize, owner) {
     finally { state.admitting = false; }
   };
   Object.defineProperty(api, "__containerFlushGameFrame", {
-    value: function() { if (state.commands.length) api.draw(); },
+    value: function(force) { if (force || state.commands.length) api.draw(); },
+    configurable: false,
+    enumerable: false,
+    writable: false
+  });
+  Object.defineProperty(api, "__containerResizeGameCanvas", {
+    value: function() {
+      state.commands = [];
+      state.commandBytes = 0;
+      state.drawing = defaults();
+      state.stack = [];
+    },
     configurable: false,
     enumerable: false,
     writable: false
@@ -297,6 +308,13 @@ function __container_create_game_canvas() {
     const number = Number(value);
     return isFinite(number) && number > 0 && number <= 16384 ? Math.floor(number) : fallback;
   };
+  const resizeDimension = function(value, axis) {
+    const number = Number(value);
+    if (!isFinite(number) || number < 0 || number > 16384) {
+      throw { errMsg: name + ":fail invalid " + axis, code: "ERR_INVALID_REQUEST", api: name };
+    }
+    return Math.floor(number);
+  };
   const size = {
     width: dimension(window.windowWidth || window.screenWidth, 300),
     height: dimension(window.windowHeight || window.screenHeight, 150)
@@ -311,9 +329,15 @@ function __container_create_game_canvas() {
   }
   return {
     get width() { return size.width; },
-    set width(value) { size.width = dimension(value, 300); },
+    set width(value) {
+      size.width = resizeDimension(value, "width");
+      if (context) context.__containerResizeGameCanvas();
+    },
     get height() { return size.height; },
-    set height(value) { size.height = dimension(value, 150); },
+    set height(value) {
+      size.height = resizeDimension(value, "height");
+      if (context) context.__containerResizeGameCanvas();
+    },
     getContext: function(kind) {
       if (String(kind || "2d") !== "2d") throw { errMsg: name + ":fail unsupported context type", code: "ERR_UNSUPPORTED_CAPABILITY", api: name };
       return context2d();

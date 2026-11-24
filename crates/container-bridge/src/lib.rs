@@ -27,6 +27,10 @@ pub mod op {
     pub const PAGE_REPLACE: &str = "page.replace";
     /// Deliver native touch input to a schema-v4 mini-game AppService.
     pub const GAME_TOUCH: &str = "game.touch";
+    /// Deliver a normalized, host-independent input or lifecycle event to a
+    /// schema-v4 mini-game AppService. `game.touch` remains a compatibility
+    /// alias for touch-only callers.
+    pub const GAME_EVENT: &str = "game.event";
     pub const DATA_PATCH_BATCH: &str = "data.patch.batch";
     pub const EVENT_BATCH: &str = "event.batch";
     pub const RENDER_COMMIT: &str = "render.commit";
@@ -87,6 +91,7 @@ pub mod op {
                 | PAGE_POP
                 | PAGE_REPLACE
                 | GAME_TOUCH
+                | GAME_EVENT
                 | DATA_PATCH_BATCH
                 | EVENT_BATCH
                 | RENDER_COMMIT
@@ -631,6 +636,12 @@ mod tests {
     #[test]
     fn game_touch_is_a_known_bridge_operation() {
         let envelope = BridgeEnvelope::event("s1", op::GAME_TOUCH, json!({}));
+        assert!(envelope.is_known_operation());
+    }
+
+    #[test]
+    fn game_event_is_a_known_bridge_operation() {
+        let envelope = BridgeEnvelope::event("s1", op::GAME_EVENT, json!({"type":"keydown"}));
         assert!(envelope.is_known_operation());
     }
 
