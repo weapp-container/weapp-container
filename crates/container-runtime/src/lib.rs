@@ -2963,7 +2963,7 @@ impl Session {
             "touchcancel" => "wx.onTouchCancel",
             _ => unreachable!("event type was validated above"),
         };
-        if self.effective_capability(&api_name) == CapabilitySupport::Unsupported {
+        if self.effective_capability(api_name) == CapabilitySupport::Unsupported {
             return Err(BridgeError::new(
                 BridgeErrorCode::UnsupportedCapability,
                 format!("{api_name} is unsupported on this session"),
