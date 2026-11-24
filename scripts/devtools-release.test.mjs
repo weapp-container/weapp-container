@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
 import { PassThrough } from 'node:stream'
-import { chmod, lstat, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises'
+import { chmod, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import test from 'node:test'
 import { buildDebRoot, createDmg, debianPackageVersion, msiProductCode, msiProductVersion, renderDebControl, renderMsiSource } from './lib/devtools-installers.mjs'
-import { createArchive, packageDevtools } from './package-devtools-release.mjs'
+import { collectLicenses, createArchive, packageDevtools } from './package-devtools-release.mjs'
 import { createLauncher, simulatorArguments } from './devtools-launcher.mjs'
 
 class FakeChild extends EventEmitter {
@@ -175,6 +175,23 @@ test('Debian package layout includes launcher, menu entry, icon, licenses, and r
   assert.match(await readFile(join(packageRoot, 'usr/share/applications/weapp-container-devtools.desktop'), 'utf8'), /Exec=weapp-devtools gui/)
   assert.equal(await readFile(join(packageRoot, 'usr/share/icons/hicolor/128x128/apps/weapp-container-devtools.png'), 'utf8'), 'icon')
   assert.equal(await readFile(join(packageRoot, 'usr/share/doc/weapp-container-devtools/copyright'), 'utf8'), 'license')
+})
+
+test('dependency licenses use shallow paths for Windows Installer harvesting', async t => {
+  const directory = await temporaryDirectory(t)
+  const installRoot = join(directory, 'DevTools Bundle')
+  const packageRoot = join(installRoot, 'vendor/weapp-vite/node_modules/@scope/compiler/node_modules/parser/node_modules/types/node_modules/string-utils')
+  await mkdir(packageRoot, { recursive: true })
+  await writeFile(join(packageRoot, 'package.json'), JSON.stringify({ name: '@scope/string-utils', version: '1.2.3' }))
+  await writeFile(join(packageRoot, 'LICENSE'), 'license text')
+
+  await collectLicenses(installRoot)
+
+  const licenseDirectory = join(installRoot, 'LICENSES/dependencies')
+  const [packageDirectory] = await readdir(licenseDirectory)
+  assert.match(packageDirectory, /^@scope\+string-utils-1\.2\.3-[a-f0-9]{8}$/)
+  assert.equal(await readFile(join(licenseDirectory, packageDirectory, 'LICENSE'), 'utf8'), 'license text')
+  assert.ok(join(licenseDirectory, packageDirectory, 'LICENSE').length < 180)
 })
 
 test('macOS DMG contains an Applications shortcut and a runnable app bundle', async t => {

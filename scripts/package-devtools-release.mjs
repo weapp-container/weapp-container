@@ -418,7 +418,7 @@ async function writeLaunchers(targetRoot, target) {
   }
 }
 
-async function collectLicenses(targetRoot) {
+export async function collectLicenses(targetRoot) {
   const roots = ['node_modules', 'vendor/weapp-vite/node_modules']
   const copied = new Set()
   const visit = async directory => {
@@ -435,7 +435,10 @@ async function collectLicenses(targetRoot) {
           for (const file of await readdir(path, { withFileTypes: true })) {
             if (!file.isFile() || !/^(?:licen[cs]e|notice|copying)(?:\.|$)/i.test(file.name)) continue
             const relativePackage = relative(targetRoot, path).split(sep).join('/')
-            const destination = join(targetRoot, 'LICENSES/dependencies', relativePackage, file.name)
+            const packageName = pkg.name.replaceAll('/', '+')
+            const packageVersion = pkg.version || 'unknown'
+            const packageHash = createHash('sha1').update(relativePackage).digest('hex').slice(0, 8)
+            const destination = join(targetRoot, 'LICENSES/dependencies', `${packageName}-${packageVersion}-${packageHash}`, file.name)
             await mkdir(dirname(destination), { recursive: true })
             await cp(join(path, file.name), destination)
           }
