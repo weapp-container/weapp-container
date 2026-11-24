@@ -68,6 +68,9 @@ pub use markup::{
 };
 
 pub const MANIFEST_SCHEMA_VERSION: u32 = 1;
+/// Unpacked mini-game manifests use a distinct schema so page hosts cannot
+/// silently interpret a game package as a route-based mini-program.
+pub const GAME_MANIFEST_SCHEMA_VERSION: u32 = 4;
 pub const VIEW_COMPILER_NAME: &str = "weapp-container-wxs";
 pub const VIEW_COMPILER_VERSION: &str = "1.0.0";
 pub const VIEW_COMPILER_ABI: &str = "1.0";
@@ -387,6 +390,10 @@ impl Default for ContainerManifestV1 {
 }
 
 impl ContainerManifestV1 {
+    pub fn is_game(&self) -> bool {
+        self.schema_version == GAME_MANIFEST_SCHEMA_VERSION
+    }
+
     /// Manifest-level prerequisite for retaining a live execution session.
     /// Compiler provenance and presentation resources may change; registrations,
     /// module graphs, configuration and declared capabilities must stay fixed.
@@ -470,11 +477,12 @@ impl ContainerManifestV1 {
         if self.schema_version != MANIFEST_SCHEMA_VERSION
             && self.schema_version != MODERN_MANIFEST_SCHEMA_VERSION
             && self.schema_version != RENDERING_MANIFEST_SCHEMA_VERSION
+            && self.schema_version != GAME_MANIFEST_SCHEMA_VERSION
         {
             return Err(ManifestError::InvalidField {
                 field: "schema_version",
                 reason: format!(
-                    "expected manifest schema 1, 2 or 3, got {}",
+                    "expected manifest schema 1, 2, 3 or 4, got {}",
                     self.schema_version
                 ),
             });
@@ -495,6 +503,84 @@ impl ContainerManifestV1 {
                 reason: "rendering requires schemaVersion 3 and schemaVersion 3 requires rendering"
                     .into(),
             });
+        }
+        if self.schema_version == GAME_MANIFEST_SCHEMA_VERSION {
+            if self.app.app_json != "game.json" || self.app.entry_module != "game.js" {
+                return Err(ManifestError::InvalidField {
+                    field: "app",
+                    reason: "game manifests require game.json and game.js".into(),
+                });
+            }
+            if !self.routes.is_empty() {
+                return Err(ManifestError::InvalidField {
+                    field: "routes",
+                    reason: "game manifests cannot declare page routes".into(),
+                });
+            }
+            if !self.templates.is_empty()
+                || !self.styles.is_empty()
+                || !self.components.is_empty()
+                || !self.view_scripts.is_empty()
+                || self.view_compilation.is_some()
+                || self.modern_view.is_some()
+                || self.rendering.is_some()
+            {
+                return Err(ManifestError::InvalidField {
+                    field: "game",
+                    reason: "game manifests cannot carry page View resources".into(),
+                });
+            }
+            if self.assets.iter().any(|asset| {
+                let path = asset.path.to_ascii_lowercase();
+                [".wxml", ".wxss", ".wxs"]
+                    .iter()
+                    .any(|extension| path.ends_with(extension))
+            }) {
+                return Err(ManifestError::InvalidField {
+                    field: "assets",
+                    reason: "game manifests cannot carry page View resources".into(),
+                });
+            }
+            let game_modules = self
+                .modules
+                .iter()
+                .filter(|module| module.id == "module:game.json" || module.id == "module:game.js")
+                .count();
+            if game_modules != 2 {
+                return Err(ManifestError::InvalidField {
+                    field: "modules",
+                    reason: "game manifests require module:game.json and module:game.js".into(),
+                });
+            }
+            if self
+                .modules
+                .iter()
+                .any(|module| module.scope != ModuleScope::App)
+            {
+                return Err(ManifestError::InvalidField {
+                    field: "modules.scope",
+                    reason: "game modules must be app-scoped".into(),
+                });
+            }
+            let game_json = self
+                .modules
+                .iter()
+                .find(|module| module.id == "module:game.json");
+            let game_js = self
+                .modules
+                .iter()
+                .find(|module| module.id == "module:game.js");
+            if game_json.is_none_or(|module| {
+                module.format != ModuleFormat::Json || module.scope != ModuleScope::App
+            }) || game_js.is_none_or(|module| {
+                !matches!(module.format, ModuleFormat::Commonjs | ModuleFormat::Esm)
+                    || module.scope != ModuleScope::App
+            }) {
+                return Err(ManifestError::InvalidField {
+                    field: "modules",
+                    reason: "game entry modules must be app-scoped game.json and game.js".into(),
+                });
+            }
         }
         self.validate_rendering()?;
         self.validate_modern_view()?;
@@ -1199,6 +1285,88 @@ mod tests {
                 ..
             })
         ));
+    }
+
+    fn game_manifest() -> ContainerManifestV1 {
+        let mut manifest = manifest();
+        manifest.schema_version = GAME_MANIFEST_SCHEMA_VERSION;
+        manifest.app = AppInfo {
+            app_json: "game.json".into(),
+            entry_module: "game.js".into(),
+        };
+        manifest.assets.clear();
+        manifest.modules = vec![
+            Module {
+                id: "module:game.json".into(),
+                sha256: "a".repeat(64),
+                format: ModuleFormat::Json,
+                scope: ModuleScope::App,
+                dependencies: vec![],
+            },
+            Module {
+                id: "module:game.js".into(),
+                sha256: "b".repeat(64),
+                format: ModuleFormat::Commonjs,
+                scope: ModuleScope::App,
+                dependencies: vec![],
+            },
+        ];
+        manifest
+    }
+
+    #[test]
+    fn game_manifest_requires_app_scoped_game_entry_modules() {
+        let valid = game_manifest();
+        assert!(valid.is_game());
+        valid.validate().unwrap();
+
+        let mut invalid = valid.clone();
+        invalid.modules[0].format = ModuleFormat::Commonjs;
+        assert!(invalid.validate().is_err());
+
+        let mut invalid = valid.clone();
+        invalid.modules[1].scope = ModuleScope::Page;
+        assert!(invalid.validate().is_err());
+
+        let mut invalid = valid.clone();
+        invalid.modules.push(Module {
+            id: "module:utils.js".into(),
+            sha256: "c".repeat(64),
+            format: ModuleFormat::Commonjs,
+            scope: ModuleScope::Page,
+            dependencies: vec![],
+        });
+        assert!(invalid.validate().is_err());
+
+        let mut invalid = valid.clone();
+        invalid.routes.push(Route {
+            id: "route:page".into(),
+            path: "page".into(),
+            kind: RouteKind::Page,
+            config: None,
+            entry_module: "page.js".into(),
+        });
+        assert!(invalid.validate().is_err());
+    }
+
+    #[test]
+    fn game_manifest_rejects_page_view_resources_and_legacy_game_metadata() {
+        let valid = game_manifest();
+        let mut invalid = valid.clone();
+        invalid.assets.push(Asset {
+            path: "pages/index/index.wxml".into(),
+            sha256: "c".repeat(64),
+            mime: "text/plain".into(),
+            size: 0,
+        });
+        assert!(invalid.validate().is_err());
+
+        let mut legacy = manifest();
+        legacy.app = AppInfo {
+            app_json: "game.json".into(),
+            entry_module: "game.js".into(),
+        };
+        assert!(!legacy.is_game());
     }
 
     fn wxs_manifest() -> ContainerManifestV1 {

@@ -2,7 +2,7 @@
 
 [简体中文](README.md) · **English**
 
-An independent open-source portable runtime for loading mini-program-shaped pages, components, scripts, and styles in a controlled process. The repository contains a manifest packer, Rust runtime, QuickJS/V8 engines, a simulator, and Node test bindings.
+An independent open-source portable runtime for loading mini-program-shaped pages, components, scripts, and styles in a controlled process. It also accepts unpacked, unencrypted mini-game output through a schema-v4 manifest, with a Canvas 2D subset and host-delivered touch input. The repository contains a manifest packer, Rust runtime, QuickJS/V8 engines, a simulator, and Node test bindings.
 
 This project has no affiliation, authorization, or commercial relationship with any third-party platform, brand, service, or SDK. The repository provides only a portable runtime, manifest format, and compatibility identifiers. It contains no official tools, native platform SDKs, account system, or external-service bridge; callers own any external permissions and network behavior.
 
@@ -16,6 +16,16 @@ pnpm api:inventory:verify
 ```
 
 The Node bindings consume source directories or prebuilt portable packs. Callers choose and manage any compiler, host service, or external network integration themselves.
+
+Pack and run an unpacked mini-game build with the QuickJS simulator:
+
+```sh
+pnpm container:pack -- ./game-dist --game --out ./artifacts/game
+cargo run -p container-simulator --features quickjs-native -- \
+  run --pack ./artifacts/game --snapshot ./artifacts/game/snapshot.json
+```
+
+This path requires `game.json` and `game.js`. It does not decrypt platform packages. The portable game runtime currently covers a Canvas 2D subset, `requestAnimationFrame`, and touch events delivered by the host through `game.touch`; game APIs and official DevTools/device parity remain partial or unverified.
 
 ## Open-source mini-program examples
 

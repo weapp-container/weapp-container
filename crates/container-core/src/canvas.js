@@ -225,6 +225,12 @@ function __container_canvas_context_impl(canvasId, canvasSize, owner) {
     }
     finally { state.admitting = false; }
   };
+  Object.defineProperty(api, "__containerFlushGameFrame", {
+    value: function() { if (state.commands.length) api.draw(); },
+    configurable: false,
+    enumerable: false,
+    writable: false
+  });
   return api;
 }
 // Offscreen canvas uses the same batched CanvasFrame contract as an on-page
@@ -274,6 +280,42 @@ function __container_create_offscreen_canvas(options) {
         __container_errors.push(error);
         throw error;
       }
+      return context2d();
+    },
+    toDataURL: function() {
+      const error = { errMsg: name + ":fail toDataURL requires a host snapshot provider", code: "ERR_UNSUPPORTED_CAPABILITY", api: name };
+      __container_errors.push(error);
+      return Promise.reject(error);
+    }
+  };
+}
+function __container_create_game_canvas() {
+  const name = "wx.createCanvas";
+  if (__container_capability(name) === "unsupported") throw __container_error(name, "unsupported");
+  const window = __container_sync_api("wx.getWindowInfo") || {};
+  const dimension = function(value, fallback) {
+    const number = Number(value);
+    return isFinite(number) && number > 0 && number <= 16384 ? Math.floor(number) : fallback;
+  };
+  const size = {
+    width: dimension(window.windowWidth || window.screenWidth, 300),
+    height: dimension(window.windowHeight || window.screenHeight, 150)
+  };
+  const canvasId = "game";
+  let context = null;
+  function context2d() {
+    if (!context) {
+      context = __container_canvas_context_impl(canvasId, size, null);
+    }
+    return context;
+  }
+  return {
+    get width() { return size.width; },
+    set width(value) { size.width = dimension(value, 300); },
+    get height() { return size.height; },
+    set height(value) { size.height = dimension(value, 150); },
+    getContext: function(kind) {
+      if (String(kind || "2d") !== "2d") throw { errMsg: name + ":fail unsupported context type", code: "ERR_UNSUPPORTED_CAPABILITY", api: name };
       return context2d();
     },
     toDataURL: function() {

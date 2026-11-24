@@ -45,6 +45,16 @@ cargo run -p container-simulator -- \
   --report artifacts/simulator/report.json
 ```
 
+schema v4 小游戏包使用相同的 simulator 入口。启动时不会创建页面路由，`game.js` 的 `wx.createCanvas()` 使用独立的 `game` Canvas 表面，报告和 `--snapshot` 会读取该表面。原生触摸输入通过 `game.touch` 进入 `wx.onTouchStart`、`wx.onTouchMove`、`wx.onTouchEnd` 和 `wx.onTouchCancel`。
+
+```sh
+pnpm container:pack -- ./game-dist --game --out ./artifacts/game
+cargo run -p container-simulator -- \
+  run --pack artifacts/game \
+  --snapshot artifacts/game/snapshot.json \
+  --report artifacts/game/report.json
+```
+
 重放一个 JSONL 桥接脚本。每条非空行对应一个 `BridgeEnvelope` 或一个 `{"messages":[...]}` 批量消息：
 
 ```sh

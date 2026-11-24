@@ -20,7 +20,18 @@ export { canonicalize, sha256 } from './json-integrity.mjs';
  */
 
 export const MANIFEST_SCHEMA_VERSION = 1;
+export const GAME_MANIFEST_SCHEMA_VERSION = 4;
 export const MANIFEST_PROTOCOL_VERSION = '1.0';
+const GAME_CAPABILITIES = Object.freeze([
+  'wx.createCanvas',
+  'wx.createCanvasContext',
+  'wx.canvas.draw',
+  'wx.getWindowInfo',
+  'wx.onTouchStart', 'wx.offTouchStart',
+  'wx.onTouchMove', 'wx.offTouchMove',
+  'wx.onTouchEnd', 'wx.offTouchEnd',
+  'wx.onTouchCancel', 'wx.offTouchCancel',
+]);
 
 const STATUS = new Set(['full', 'partial', 'unsupported']);
 // Release matrix uses explicit desktop targets; `desktop` remains a CLI/surface
@@ -245,9 +256,11 @@ function normalizeRelative(value: string) {
   return parts.filter(Boolean).join('/');
 }
 
-function scopeFor(file: string) {
+function scopeFor(file: string, gameMode = false) {
   const normalized = file.toLowerCase();
-  if (normalized === 'app.js' || normalized === 'app.json' || normalized === 'app.wxss') return 'app';
+  if (normalized === 'app.js' || normalized === 'app.json' || normalized === 'app.wxss'
+    || normalized === 'game.js' || normalized === 'game.json') return 'app';
+  if (gameMode && !normalized.endsWith('.wxml') && !normalized.endsWith('.wxss') && !normalized.endsWith('.wxs')) return 'app';
   if (normalized.startsWith('components/') || normalized.includes('/components/')) return 'component';
   return 'page';
 }
@@ -1114,7 +1127,7 @@ function extractStaticMultipleSlots(source: string) {
   return undefined;
 }
 
-function classifyFiles(files: string[]) {
+function classifyFiles(files: string[], gameMode = false) {
   const modules = [];
   const viewScripts: string[] = [];
   const templates = [];
@@ -1125,7 +1138,7 @@ function classifyFiles(files: string[]) {
     if (ext === '.wxs') viewScripts.push(file);
     else if (['.js', '.mjs', '.cjs', '.json'].includes(ext)) modules.push(file);
     else if (ext === '.wxml') templates.push(file);
-    else if (['.wxss', '.css'].includes(ext)) styles.push(file);
+    else if ((ext === '.wxss' || ext === '.css') && !gameMode) styles.push(file);
     else assets.push(file);
   }
   return { modules, viewScripts, templates, styles, assets };
@@ -1194,8 +1207,6 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
   const compilerCommit = options.compilerCommit ?? 'unknown';
   const platform = options.platform ?? 'weapp';
   let modernConfig;
-  try { modernConfig = await loadModernViewConfig(options); }
-  catch (caught) { const error = errorInfo(caught); diagnostics.push(diagnostic('error', error.code ?? 'ERR_MODERN_VIEW_CONFIG', error.message, error.path, error.location)); }
   if (platform !== 'weapp') {
     diagnostics.push(diagnostic('error', 'ERR_UNSUPPORTED_PLATFORM', `Portable IR currently accepts only the weapp output platform, got ${platform}`));
   }
@@ -1206,20 +1217,41 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
     diagnostics.push(diagnostic('error', 'ERR_INPUT_NOT_FOUND', `Cannot scan input directory: ${error.message}`));
     return { manifest: null, blobs: new Map(), diagnostics };
   }
-  const appJsonFile = path.join(root, 'app.json');
+  const gameMode = options.mode === 'game' || (options.mode !== 'app' && files.includes('game.json') && !files.includes('app.json'));
+  if (!gameMode) {
+    try { modernConfig = await loadModernViewConfig(options); }
+    catch (caught) { const error = errorInfo(caught); diagnostics.push(diagnostic('error', error.code ?? 'ERR_MODERN_VIEW_CONFIG', error.message, error.path, error.location)); }
+  }
+  const configName = gameMode ? 'game.json' : 'app.json';
+  const entryName = gameMode ? 'game.js' : 'app.js';
+  const appJsonFile = path.join(root, configName);
   let appJson;
   let appJsonSource = '';
   try {
-    const result = await readJson(appJsonFile, 'app.json', diagnostics);
+    const result = await readJson(appJsonFile, configName, diagnostics);
     appJson = result.value;
     appJsonSource = result.source;
   } catch (caught) { const error = errorInfo(caught);
-    diagnostics.push(diagnostic('error', 'ERR_INVALID_MANIFEST', `Cannot read app.json: ${error.message}`, 'app.json'));
+    diagnostics.push(diagnostic('error', 'ERR_INVALID_MANIFEST', `Cannot read ${configName}: ${error.message}`, configName));
     appJson = null;
   }
-  if (!files.includes('app.json')) diagnostics.push(diagnostic('error', 'ERR_INVALID_MANIFEST', '微信产物缺少 app.json', 'app.json'));
-  const routeList = await routeRecords(appJson, root, diagnostics);
-  const classified = classifyFiles(files);
+  if (!files.includes(configName)) diagnostics.push(diagnostic('error', 'ERR_INVALID_MANIFEST', `微信产物缺少 ${configName}`, configName));
+  if (gameMode && (!appJson || typeof appJson !== 'object' || Array.isArray(appJson))) {
+    diagnostics.push(diagnostic('error', 'ERR_INVALID_MANIFEST', 'game.json 顶层必须是 JSON 对象', 'game.json'));
+  }
+  const routeList = gameMode ? [] : await routeRecords(appJson, root, diagnostics);
+  const forbiddenGameViewFiles = gameMode
+    ? files.filter((file) => ['.wxml', '.wxss', '.wxs'].includes(path.posix.extname(file).toLowerCase()))
+    : [];
+  const classified = classifyFiles(gameMode ? files.filter((file) => !forbiddenGameViewFiles.includes(file)) : files, gameMode);
+  if (forbiddenGameViewFiles.length) {
+    diagnostics.push(diagnostic(
+      'error',
+      'ERR_GAME_VIEW_RESOURCES',
+      '小游戏产物不能包含 WXML、WXSS 或 WXS 页面 View 资源',
+      forbiddenGameViewFiles[0],
+    ));
+  }
   const blobs = new Map<string, Buffer>();
   const contentFor = async (file: string) => {
     const bytes = await fs.readFile(path.join(root, file));
@@ -1265,7 +1297,7 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
       id: `module:${file}`,
       sha256: hash,
       format,
-      scope: scopeFor(file),
+      scope: scopeFor(file, gameMode),
       ...(dependencies.length ? { dependencies: [...new Set(dependencies)].sort(compareUtf8) } : {}),
     });
   }
@@ -1343,7 +1375,7 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
     try {
       const ir = parseWxss(bytes.toString('utf8'));
       const { hash } = irContentFor(ir);
-      styles.push({ id: `style:${file}`, wxssIr: pointer(hash), scope: scopeFor(file) });
+      styles.push({ id: `style:${file}`, wxssIr: pointer(hash), scope: scopeFor(file, gameMode) });
     } catch (caught) { const error = errorInfo(caught);
       diagnostics.push(diagnostic('error', 'ERR_INVALID_MANIFEST', `Invalid WXSS: ${error.message}`, file));
     }
@@ -1358,10 +1390,10 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
   // Preserve usingComponents declarations as an explicit relation table. The
   // original JSON remains a content-addressed module; this table is the
   // normalized index used by hosts to resolve component templates.
-  const jsonFiles = ['app.json', ...classified.modules.filter((file) => file.endsWith('.json') && file !== 'app.json')];
+  const jsonFiles = [configName, ...classified.modules.filter((file) => file.endsWith('.json') && file !== configName)];
   for (const file of jsonFiles.sort(compareUtf8)) {
     let config;
-    if (file === 'app.json') config = appJson;
+    if (file === configName) config = appJson;
     else {
       const result = await readJson(path.join(root, file), file, diagnostics);
       config = result.value;
@@ -1407,18 +1439,27 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
   let capabilities;
   try {
     capabilities = applyCapabilities(options.capabilities);
+    if (gameMode) {
+      const source = options.capabilities as Record<string, unknown> | undefined;
+      const overrides = source?.capabilities && typeof source.capabilities === 'object'
+        && !Array.isArray(source.capabilities)
+        ? source.capabilities : source;
+      for (const name of GAME_CAPABILITIES) {
+        if (!overrides || !Object.hasOwn(overrides, name)) capabilities[name] = 'partial';
+      }
+    }
   } catch (caught) { const error = errorInfo(caught);
     diagnostics.push(diagnostic('error', 'ERR_INVALID_CAPABILITY', error.message));
     return { manifest: null, blobs, diagnostics, appJsonSource };
   }
   let rendering;
-  try { rendering = buildRendererProfiles(routeList, appJson, sourceConfigs, modernConfig); }
+  try { rendering = gameMode ? undefined : buildRendererProfiles(routeList, appJson, sourceConfigs, modernConfig); }
   catch (caught) { const error = errorInfo(caught); diagnostics.push(diagnostic('error', error.code ?? 'ERR_RENDERER_CONFIG', error.message, error.path)); }
   const manifest = {
-    schemaVersion: rendering ? RENDERING_MANIFEST_SCHEMA_VERSION : modernView ? 2 : MANIFEST_SCHEMA_VERSION,
+    schemaVersion: gameMode ? GAME_MANIFEST_SCHEMA_VERSION : rendering ? RENDERING_MANIFEST_SCHEMA_VERSION : modernView ? 2 : MANIFEST_SCHEMA_VERSION,
     protocolVersion: MANIFEST_PROTOCOL_VERSION,
     compiler: { name: 'weapp-vite', commit: compilerCommit, platform },
-    app: { appJson: 'app.json', entryModule: 'app.js' },
+    app: { appJson: configName, entryModule: entryName },
     routes: routeList,
     modules: modules.sort((a, b) => compareUtf8(a.id, b.id)),
     ...(viewScripts.length ? { viewScripts: viewScripts.sort((a, b) => compareUtf8(a.id, b.id)) } : {}),
@@ -1432,7 +1473,7 @@ export async function buildManifest(inputRoot: string, options: PackOptions = {}
     capabilities: Object.fromEntries(Object.keys(capabilities).sort(compareUtf8).map((name) => [name, capabilities[name]])),
     integrity: { algorithm: 'sha256', root: '' },
   };
-  if (!files.includes('app.js')) diagnostics.push(diagnostic('warning', 'APP_ENTRY_MISSING', '微信产物缺少 app.js; the manifest still reserves app.js as the entry module', 'app.js'));
+  if (!files.includes(entryName)) diagnostics.push(diagnostic(gameMode ? 'error' : 'warning', gameMode ? 'GAME_ENTRY_MISSING' : 'APP_ENTRY_MISSING', `微信产物缺少 ${entryName}; manifest reserves it as the entry module`, entryName));
   const rootInput = { ...manifest, integrity: { algorithm: 'sha256', root: '' } };
   manifest.integrity.root = sha256(Buffer.from(canonicalize(rootInput), 'utf8'));
   return { manifest, blobs, diagnostics, appJsonSource,

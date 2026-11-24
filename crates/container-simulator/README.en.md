@@ -86,6 +86,24 @@ cargo run -p container-simulator -- \
   --report artifacts/simulator/report.json
 ```
 
+Schema-v4 mini-game packs use the same simulator entry point. Startup skips
+page routing, `wx.createCanvas()` uses the dedicated `game` Canvas surface, and
+reports and `--snapshot` read that surface. Hosts deliver touch input with the
+`game.touch` bridge operation, which dispatches to `wx.onTouchStart`,
+`wx.onTouchMove`, `wx.onTouchEnd`, or `wx.onTouchCancel`.
+
+```sh
+pnpm container:pack -- ./game-dist --game --out ./artifacts/game
+cargo run -p container-simulator --features quickjs-native -- \
+  run --pack artifacts/game \
+  --snapshot artifacts/game/snapshot.json \
+  --report artifacts/game/report.json
+```
+
+The current portable game path covers a Canvas 2D subset and host-driven
+animation/touch input. A passing headless simulator run does not certify
+official DevTools, GPU, emulator, or device behavior.
+
 Replay a JSONL bridge script. Each non-empty line is one `BridgeEnvelope` or a
 `{"messages":[...]}` batch:
 

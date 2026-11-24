@@ -14,6 +14,7 @@ Options:
   --compiler-commit <sha>     weapp-vite commit recorded in compiler.commit
   --capabilities <file>       JSON capability overrides or a capability matrix
   --platform <platform>       Input platform (default: weapp)
+  --game                      Pack an unpacked小游戏 directory (game.json + game.js)
   --project <dir>             Source project containing container.config.json
   --config <file>             Project-relative container config path
   --resolve-root <dir>        Installed npm dependency root for a source snapshot
@@ -38,6 +39,7 @@ function parseArgs(argv: string[]) {
     else if (arg === '--compiler-commit') args.compilerCommit = argv[++i];
     else if (arg === '--capabilities') args.capabilitiesFile = argv[++i];
     else if (arg === '--platform') args.platform = argv[++i];
+    else if (arg === '--game') args.mode = 'game';
     else if (arg === '--project') args.project = next(arg, ++i);
     else if (arg === '--config') args.configFile = next(arg, ++i);
     else if (arg === '--resolve-root') args.resolveRoot = next(arg, ++i);
@@ -66,6 +68,7 @@ if (!args.input || !args.out) {
       compilerCommit: args.compilerCommit ?? 'unknown',
       platform: args.platform,
       capabilities,
+      mode: args.mode,
       project: args.project,
       configFile: args.configFile,
       resolveRoot: args.resolveRoot,

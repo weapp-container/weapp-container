@@ -46,6 +46,38 @@ test('canonicalize is stable and sha256 hashes UTF-8 bytes', () => {
   assert.equal(sha256(Buffer.from('hello')), '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824');
 });
 
+test('game packs use schema 4 and reject page View resources', async (context) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'weapp-container-game-'));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  await writeFile(path.join(root, 'game.json'), '{"deviceOrientation":"portrait"}\n');
+  await writeFile(path.join(root, 'game.js'), 'GameGlobal.gameLoaded = true;\n');
+  const result = await buildManifest(root, { mode: 'game', compilerCommit: 'game-pack' });
+  assert.deepEqual(result.diagnostics.filter(item => item.severity === 'error'), []);
+  assert.equal(result.manifest.schemaVersion, 4);
+  assert.deepEqual(result.manifest.app, { appJson: 'game.json', entryModule: 'game.js' });
+  assert.deepEqual(result.manifest.routes, []);
+  assert.deepEqual(result.manifest.modules.map(module => [module.id, module.scope]), [
+    ['module:game.js', 'app'], ['module:game.json', 'app'],
+  ]);
+  for (const name of [
+    'wx.createCanvas', 'wx.createCanvasContext', 'wx.canvas.draw', 'wx.getWindowInfo',
+    'wx.onTouchStart', 'wx.offTouchStart', 'wx.onTouchMove', 'wx.offTouchMove',
+    'wx.onTouchEnd', 'wx.offTouchEnd', 'wx.onTouchCancel', 'wx.offTouchCancel',
+  ]) {
+    assert.equal(result.manifest.capabilities[name], 'partial');
+  }
+  const overrides = await buildManifest(root, {
+    mode: 'game',
+    compilerCommit: 'game-pack',
+    capabilities: { capabilities: { 'wx.createCanvas': 'unsupported' } },
+  });
+  assert.equal(overrides.manifest.capabilities['wx.createCanvas'], 'unsupported');
+  assert.equal(overrides.manifest.capabilities['wx.onTouchStart'], 'partial');
+  await writeFile(path.join(root, 'index.wxml'), '<view/>');
+  const invalid = await buildManifest(root, { mode: 'game', compilerCommit: 'game-pack' });
+  assert.ok(invalid.diagnostics.some(item => item.code === 'ERR_GAME_VIEW_RESOURCES'));
+});
+
 test('wx:key bare property names remain literal metadata instead of executable expressions', async (context) => {
   const root = await fixture();
   context.after(() => rm(root, { recursive: true, force: true }));
@@ -355,7 +387,7 @@ test('all locked host API catalog names survive capability packing and every sch
   const catalog=JSON.parse(await readFile(new URL('../../../crates/container-runtime/src/host-api-catalog.json',import.meta.url),'utf8'));
   const names=catalog.apis.map(api=>api.name);
   const matrix=capabilityMatrix(Object.fromEntries(names.map(name=>[name,'partial'])));
-  for(const schemaName of ['container-manifest-v1','container-manifest-v2','container-manifest-v3','capability-matrix-v1']) {
+  for(const schemaName of ['container-manifest-v1','container-manifest-v2','container-manifest-v3','container-manifest-v4','capability-matrix-v1']) {
     const schema=JSON.parse(await readFile(new URL(`../../../schemas/${schemaName}.schema.json`,import.meta.url),'utf8'));
     const pattern=new RegExp(schema.properties.capabilities.propertyNames.pattern);
     for(const name of names) {assert.equal(pattern.test(name),true,`${schemaName}: ${name}`);assert.equal(matrix.capabilities[name].status,'partial');}
