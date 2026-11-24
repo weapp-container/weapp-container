@@ -41,6 +41,10 @@ Android、Flutter 和 React Native 包版本已通过 Maven Central、pub.dev、
 - [Flutter consumer](../sdk/flutter/example/README.md)
 - [Desktop consumer](../sdk/desktop/consumer/README.md)
 
+## 发布渠道
+
+发布工具按 SDK 语义版本选择渠道。`X.Y.Z` 创建 GitHub 稳定版并设为 latest，带 prerelease 标识的版本创建 GitHub prerelease。npm 包分别使用 `latest` 和 `preview` dist-tag；Maven Central、CocoaPods 与 pub.dev 继续按不可变版本号发布。当前公开版本仍是上表所列的 prerelease，尚未生成稳定版本的安装坐标。
+
 ## 稳定版发行门槛
 
 稳定发行需要独立稳定版本、每个 SDK 的固定安装归档、匿名安装消费验证，以及对应包管理器的目标平台构建记录。当前 `.7.1` 是 prerelease，不能作为稳定版记录。iOS / Desktop 的 GitHub 归档未发布，因此引用这些归档的 SPM、CocoaPods 和 React Native iOS 安装路径也不能报告可用。

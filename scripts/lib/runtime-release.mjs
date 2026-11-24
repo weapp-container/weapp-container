@@ -11,8 +11,22 @@ export const RELEASE_ARTIFACTS = [
   ['android-sdk', 'android', 'universal'], ['ios-sdk', 'ios', 'universal'],
   ['desktop-sdk', 'macos', 'universal'], ['desktop-sdk', 'linux', 'x86_64'], ['desktop-sdk', 'windows', 'x86_64'],
 ];
-const version = /^\d+\.\d+\.\d+-[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*$/;
+const version = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*)?$/;
 const commit = /^[a-f0-9]{40}$/;
+
+export function releaseChannel(value) {
+  assert.match(value, version, 'Release version must be stable semver or an explicit prerelease');
+  return value.includes('-') ? 'preview' : 'stable';
+}
+
+export function isStableRelease(value) {
+  return releaseChannel(value) === 'stable';
+}
+
+export function githubReleaseChannel(value) {
+  const stable = isStableRelease(value);
+  return { prerelease: !stable, latest: stable };
+}
 
 export function assertCoreVersions(manifests, lock, runtimeVersion) {
   const crates = ['container-sdk', 'container-sdk-ffi'];
@@ -58,7 +72,8 @@ export function assertCandidate(candidate, policy, pins) {
   assert.equal(candidate.schemaVersion, 1);
   assert.equal(candidate.repository, RELEASE_REPOSITORY);
   assert.equal(candidate.prepareRelease, true, 'Production did not request release preparation');
-  assert.match(candidate.runtimeVersion, version, 'Only explicit prerelease versions are accepted');
+  releaseChannel(candidate.runtimeVersion);
+  releaseChannel(candidate.publishedRuntimeVersion);
   assert.match(candidate.publishedRuntimeVersion, version);
   assert.equal(candidate.runtimeVersion, policy.runtimeVersion);
   assert.equal(candidate.publishedRuntimeVersion, policy.publishedRuntimeVersion);
@@ -114,11 +129,14 @@ export function assertWrapperReceipt(receipt, sdk, candidate, targets) {
 }
 
 export function releaseNotes(candidate, changelog) {
-  return `# Weapp Container ${candidate.runtimeVersion}\n\nPublic preview, C ABI ${candidate.abiVersion}.\n\n${changelog}\n\n`
+  const channel = releaseChannel(candidate.runtimeVersion);
+  const title = channel === 'stable' ? 'Stable release' : 'Public preview';
+  const publication = channel === 'stable' ? 'this stable release' : 'this prerelease';
+  return `# Weapp Container ${candidate.runtimeVersion}\n\n${title}, C ABI ${candidate.abiVersion}.\n\n${changelog}\n\n`
     + `## Build and verification\n\nCore source: [${candidate.sourceCommit}](https://github.com/${RELEASE_REPOSITORY}/commit/${candidate.sourceCommit}).\n`
     + `Production: https://github.com/${RELEASE_REPOSITORY}/actions/runs/${candidate.runtimeRunId}.\n\n`
     + RELEASE_SDKS.map(sdk => `- ${sdk}: [${candidate.sdks[sdk].commit}](https://github.com/${candidate.sdks[sdk].repository}/commit/${candidate.sdks[sdk].commit})`).join('\n')
     + '\n\nNine runtime archives: Android arm64-v8a/x86_64; iOS arm64 device and arm64/x86_64 simulator; macOS arm64/x86_64; Linux/Windows x86_64. Five wrapper archives: Android universal, iOS universal, and macOS/Linux/Windows Desktop.\n\n'
     + 'All 14 archives passed hashes, license collection, fresh offline installation, cache revalidation and incorrect-hash rejection. Android passed independent AAR/R8 consumer compilation and 16KB alignment checks. iOS passed staged SwiftPM compilation and Pod lint. Desktop passed installed consumers on macOS, Linux and Windows.\n\n'
-    + '## Limitations\n\nThese checks do not establish physical-device or hardware-GPU execution, full WeChat compatibility, or completion of npm, Maven Central, CocoaPods Trunk or pub.dev publication. Review the attached manifest, provenance and SHA256SUMS before publishing this prerelease.\n';
+    + `## Limitations\n\nThese checks do not establish physical-device or hardware-GPU execution, full WeChat compatibility, or completion of npm, Maven Central, CocoaPods Trunk or pub.dev publication. Review the attached manifest, provenance and SHA256SUMS before publishing ${publication}.\n`;
 }

@@ -6,7 +6,7 @@ import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { open } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { RELEASE_REPOSITORY } from './lib/runtime-release.mjs';
+import { RELEASE_REPOSITORY, isStableRelease } from './lib/runtime-release.mjs';
 import { verifyRelease } from '../tools/runtime-artifacts/tools/publish.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -40,7 +40,7 @@ async function main(tag) {
   const policy = JSON.parse(readFileSync(join(root, 'tools/runtime-artifacts/policy.json')));
   assert.equal(tag, `runtime-v${policy.runtimeVersion}`);
   const release = JSON.parse(execFileSync('gh', ['api', `repos/${RELEASE_REPOSITORY}/releases/tags/${tag}`], { encoding: 'utf8' }));
-  assert.equal(release.tag_name, tag); assert.equal(release.draft, false); assert.equal(release.prerelease, true);
+  assert.equal(release.tag_name, tag); assert.equal(release.draft, false); assert.equal(release.prerelease, !isStableRelease(policy.runtimeVersion));
   assert.equal(release.assets.length, 17, 'Expected 14 archives and three metadata assets');
   const out = join(root, 'artifacts/published'), files = join(out, 'files');
   mkdirSync(files, { recursive: true });

@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { RELEASE_REPOSITORY, RELEASE_SDKS, RELEASE_ARTIFACTS, REQUIRED_WORKFLOWS, assertCandidate, assertCoreVersions, assertCompleteRelease,
-  assertProductionRun, assertWrapperReceipt, checksReady, previousReleaseTag, releaseNotes } from './lib/runtime-release.mjs';
+  assertProductionRun, assertWrapperReceipt, checksReady, previousReleaseTag, releaseNotes, releaseChannel, isStableRelease, githubReleaseChannel } from './lib/runtime-release.mjs';
 import { downloadAnonymousAsset } from './runtime-release-published.mjs';
 import { createHash } from 'node:crypto';
 
@@ -39,6 +39,24 @@ test('candidate version can advance without changing the published contract or l
     const invalid = candidate(); change(invalid); assert.throws(() => assertCandidate(invalid, policy));
   }
   assert.throws(() => assertCandidate(value, policy, Object.fromEntries(RELEASE_SDKS.map(sdk => [sdk, sha]))), /gitlink/);
+});
+test('release channels accept stable semver and preserve preview semantics', () => {
+  assert.equal(releaseChannel('0.1.0'), 'stable');
+  assert.equal(releaseChannel('0.1.0-preview.7.1'), 'preview');
+  assert.equal(isStableRelease('0.1.0'), true);
+  assert.equal(isStableRelease('0.1.0-preview.7.1'), false);
+  assert.deepEqual(githubReleaseChannel('0.1.0'), { prerelease: false, latest: true });
+  assert.deepEqual(githubReleaseChannel('0.1.0-preview.7.1'), { prerelease: true, latest: false });
+  assert.throws(() => releaseChannel('0.1.0+build'), /stable semver/);
+  const value = candidate();
+  value.runtimeVersion = '0.1.0';
+  value.publishedRuntimeVersion = '0.1.0-preview.7.1';
+  value.contractVersion = '0.1.0';
+  for (const sdk of RELEASE_SDKS) value.sdks[sdk].version = '0.1.0';
+  assert.equal(assertCandidate(value, { ...policy, runtimeVersion: '0.1.0', publishedRuntimeVersion: '0.1.0-preview.7.1', contractVersion: '0.1.0' }), value);
+  const notes = releaseNotes(value, 'Reviewed changes');
+  assert.match(notes, /Stable release/);
+  assert.match(notes, /publishing this stable release/);
 });
 test('only successful manually requested main production from this repository is accepted', () => {
   assertProductionRun(production());

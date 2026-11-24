@@ -41,6 +41,10 @@ Each SDK example uses a portable fixture with a matching runtime version. Review
 - [Flutter consumer](../sdk/flutter/example/README.en.md)
 - [Desktop consumer](../sdk/desktop/consumer/README.en.md)
 
+## Release Channels
+
+The release tools select a channel from the SDK semantic version. `X.Y.Z` creates a GitHub stable release and marks it latest. Versions with a prerelease identifier create GitHub prereleases. npm packages use the `latest` and `preview` dist-tags respectively. Maven Central, CocoaPods, and pub.dev continue to publish immutable version numbers. The currently public versions remain the prereleases listed above, and no stable installation coordinates have been produced.
+
 ## Stable Release Requirements
 
 A stable release needs a distinct stable version, immutable installation archives for each SDK, anonymous installation-consumer verification, and target-platform build records for each package manager. `.7.1` is a prerelease and cannot be recorded as stable. The iOS and Desktop GitHub archives are unpublished, so SPM, CocoaPods, and React Native iOS paths that reference those archives cannot be reported as available.

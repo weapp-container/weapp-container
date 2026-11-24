@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { selectArtifact } from '../../../sdk/contract/tools/runtime-artifacts.mjs';
-import { assertCompleteRelease } from '../../../scripts/lib/runtime-release.mjs';
+import { assertCompleteRelease, githubReleaseChannel } from '../../../scripts/lib/runtime-release.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const policy = JSON.parse(await readFile(new URL('../policy.json', import.meta.url)));
@@ -76,6 +76,7 @@ function absent(path, invoke) {
 }
 export function publishVerifiedRelease(plan, directory, notesFile, invoke = run, { draftOnly = false } = {}) {
   const repo = plan.repository;
+  const channel = githubReleaseChannel(policy.runtimeVersion);
   assert.equal(repo, policy.repository);
   assert.equal(plan.tag, `runtime-v${policy.runtimeVersion}`);
   assert.equal(invoke('git', ['rev-parse', 'HEAD']).trim(), plan.sourceCommit, 'Publication checkout must match producer source');
@@ -86,7 +87,7 @@ export function publishVerifiedRelease(plan, directory, notesFile, invoke = run,
   absent(`repos/${repo}/git/ref/tags/${plan.tag}`, invoke);
   const created = JSON.parse(invoke('gh', ['api', `repos/${repo}/releases`, '--method', 'POST',
     '-f', `tag_name=${plan.tag}`, '-f', `target_commitish=${plan.sourceCommit}`,
-    '-F', 'draft=true', '-F', 'prerelease=true', '-f', `name=${plan.tag}`, '-F', `body=@${notesFile}`]));
+    '-F', 'draft=true', '-F', `prerelease=${channel.prerelease}`, '-f', `name=${plan.tag}`, '-F', `body=@${notesFile}`]));
   assert.ok(Number.isSafeInteger(created.id) && created.id > 0, 'Draft creation returned no release ID');
   const endpoint = `repos/${repo}/releases/${created.id}`;
   console.error(`Inspect retained draft: https://github.com/${repo}/releases (release ID ${created.id})`);
@@ -96,7 +97,7 @@ export function publishVerifiedRelease(plan, directory, notesFile, invoke = run,
   const release = JSON.parse(invoke('gh', ['api', endpoint]));
   assert.equal(release.id, created.id);
   assert.equal(release.draft, true);
-  assert.equal(release.prerelease, true);
+  assert.equal(release.prerelease, channel.prerelease);
   assert.equal(release.tag_name, plan.tag);
   assert.equal(release.target_commitish, plan.sourceCommit);
   assert.equal(release.assets.length, plan.files.length);
@@ -107,7 +108,7 @@ export function publishVerifiedRelease(plan, directory, notesFile, invoke = run,
     assert.equal(matches[0].size, file.size);
     assert.equal(matches[0].digest, `sha256:${file.sha256}`, 'GitHub digest must match the reviewed local bytes');
   }
-  if (!draftOnly) invoke('gh', ['api', endpoint, '--method', 'PATCH', '-F', 'draft=false', '-F', 'prerelease=true', '-f', 'make_latest=false']);
+  if (!draftOnly) invoke('gh', ['api', endpoint, '--method', 'PATCH', '-F', 'draft=false', '-F', `prerelease=${channel.prerelease}`, '-f', `make_latest=${channel.latest}`]);
   return { status: draftOnly ? 'draft' : 'published', repository: repo, tag: plan.tag, sourceCommit: plan.sourceCommit,
     releaseId: created.id, url: release.html_url ?? created.html_url ?? `https://github.com/${repo}/releases` };
 }
