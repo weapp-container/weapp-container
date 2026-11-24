@@ -1968,6 +1968,30 @@ impl Session {
             self.observer_frame_valid = false;
             Vec::new()
         };
+        if self.manifest.is_game() && viewport_changed && self.engine_provider_available() {
+            let orientation = self
+                .config
+                .host
+                .display_metrics
+                .as_ref()
+                .map(|display| display.device_orientation)
+                .unwrap_or(if width > height {
+                    HostDeviceOrientation::Landscape
+                } else {
+                    HostDeviceOrientation::Portrait
+                });
+            self.call_engine(
+                CallTarget::Global {
+                    name: "__container_dispatch_game_event".into(),
+                },
+                vec![json!({
+                    "type": "resize",
+                    "size": {"windowWidth": width, "windowHeight": height},
+                    "deviceOrientation": orientation,
+                })],
+            )?;
+            self.append_engine_effects(&mut messages)?;
+        }
         if layout_changed {
             let layout = self
                 .config
@@ -2535,7 +2559,7 @@ impl Session {
         let result = storage_sync.and_then(|()| match envelope.op.as_str() {
             op::APP_INIT => self.handle_init(envelope),
             op::APP_LIFECYCLE => self.handle_lifecycle(envelope),
-            op::GAME_TOUCH => self.handle_game_touch(envelope),
+            op::GAME_TOUCH | op::GAME_EVENT => self.handle_game_event(envelope),
             op::PAGE_PUSH => self.handle_page_push(envelope),
             op::PAGE_POP => self.handle_page_pop(envelope),
             op::PAGE_REPLACE => self.handle_page_replace(envelope),
@@ -2932,7 +2956,268 @@ impl Session {
         })
     }
 
-    fn handle_game_touch(
+    fn game_event_api(event_type: &str) -> Option<&'static str> {
+        Some(match event_type {
+            "touchstart" => "wx.onTouchStart",
+            "touchmove" => "wx.onTouchMove",
+            "touchend" => "wx.onTouchEnd",
+            "touchcancel" => "wx.onTouchCancel",
+            "show" => "wx.onShow",
+            "hide" => "wx.onHide",
+            "audiointerruptionbegin" => "wx.onAudioInterruptionBegin",
+            "audiointerruptionend" => "wx.onAudioInterruptionEnd",
+            "memorywarning" => "wx.onMemoryWarning",
+            "devicemotionchange" => "wx.onDeviceMotionChange",
+            "accelerometerchange" => "wx.onAccelerometerChange",
+            "keyboardheightchange" => "wx.onKeyboardHeightChange",
+            "keydown" => "wx.onKeyDown",
+            "keyup" => "wx.onKeyUp",
+            "resize" => "wx.onWindowResize",
+            _ => return None,
+        })
+    }
+
+    fn validate_game_event_payload(
+        event_type: &str,
+        event: &Map<String, Value>,
+        legacy_touch: bool,
+    ) -> Result<(), BridgeError> {
+        let allowed = match event_type {
+            "touchstart" | "touchmove" | "touchend" | "touchcancel" =>
+                &["type", "touches", "changedTouches", "timestampMs"][..],
+            "show" => &["type", "options", "timestampMs"][..],
+            "hide" => &["type", "timestampMs"][..],
+            "audiointerruptionbegin" | "audiointerruptionend" => &["type", "timestampMs"][..],
+            "memorywarning" => &["type", "level", "usedBytes", "timestampMs"][..],
+            "devicemotionchange" =>
+                &["type", "alpha", "beta", "gamma", "interval", "timestampMs"][..],
+            "accelerometerchange" => &["type", "x", "y", "z", "timestampMs"][..],
+            "keyboardheightchange" => &["type", "height", "duration", "timestampMs"][..],
+            "keydown" | "keyup" => &[
+                "type", "key", "code", "altKey", "ctrlKey", "metaKey", "shiftKey",
+                "repeat", "timestampMs",
+            ][..],
+            "resize" => &["type", "size", "deviceOrientation", "timestampMs"][..],
+            _ => return Err(BridgeError::invalid("unsupported game event type")),
+        };
+        if !legacy_touch && event.keys().any(|key| !allowed.contains(&key.as_str())) {
+            return Err(BridgeError::invalid(format!(
+                "game.event {event_type} contains an unknown field"
+            )));
+        }
+        if let Some(timestamp) = event.get("timestampMs") {
+            let value = timestamp.as_f64().ok_or_else(|| {
+                BridgeError::invalid("game.event timestampMs must be a finite non-negative number")
+            })?;
+            if !value.is_finite() || value < 0.0 {
+                return Err(BridgeError::invalid(
+                    "game.event timestampMs must be a finite non-negative number",
+                ));
+            }
+        }
+        let finite = |key: &str, minimum: f64, maximum: f64| -> Result<f64, BridgeError> {
+            let value = event.get(key).and_then(Value::as_f64).ok_or_else(|| {
+                BridgeError::invalid(format!("game.event {event_type} requires numeric {key}"))
+            })?;
+            if !value.is_finite() || value < minimum || value > maximum {
+                return Err(BridgeError::invalid(format!(
+                    "game.event {event_type} {key} is outside the supported range"
+                )));
+            }
+            Ok(value)
+        };
+        let optional_finite = |key: &str, minimum: f64, maximum: f64| -> Result<(), BridgeError> {
+            if event.contains_key(key) {
+                finite(key, minimum, maximum)?;
+            }
+            Ok(())
+        };
+        match event_type {
+            "touchstart" | "touchmove" | "touchend" | "touchcancel" => {
+                for key in ["touches", "changedTouches"] {
+                    let values = event.get(key).and_then(Value::as_array).ok_or_else(|| {
+                        BridgeError::invalid(format!("game.event {key} must be an array"))
+                    })?;
+                    if values.len() > 32 || values.iter().any(|touch| !touch.is_object()) {
+                        return Err(BridgeError::invalid(format!(
+                            "game.event {key} must contain at most 32 touch objects"
+                        )));
+                    }
+                    if !legacy_touch {
+                        for touch in values {
+                            let point = touch.as_object().expect("object checked above");
+                            if point.keys().any(|name| {
+                                !["identifier", "x", "y", "pageX", "pageY"]
+                                    .contains(&name.as_str())
+                            }) {
+                                return Err(BridgeError::invalid(
+                                    "game.event touch point contains an unknown field",
+                                ));
+                            }
+                            if point.get("identifier").and_then(Value::as_u64).is_none() {
+                                return Err(BridgeError::invalid(
+                                    "game.event touch point requires a non-negative identifier",
+                                ));
+                            }
+                            for coordinate in ["x", "y", "pageX", "pageY"] {
+                                let value = point
+                                    .get(coordinate)
+                                    .and_then(Value::as_f64)
+                                    .ok_or_else(|| {
+                                        BridgeError::invalid(format!(
+                                            "game.event touch point requires numeric {coordinate}"
+                                        ))
+                                    })?;
+                                if !value.is_finite() || value.abs() > 1_000_000.0 {
+                                    return Err(BridgeError::invalid(
+                                        "game.event touch coordinates must be finite and bounded",
+                                    ));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            "keydown" | "keyup" => {
+                let key = event.get("key").and_then(Value::as_str).ok_or_else(|| {
+                    BridgeError::invalid(format!("game.event {event_type} requires key"))
+                })?;
+                if key.is_empty() || key.len() > 128 {
+                    return Err(BridgeError::invalid(
+                        "game.event keyboard key must contain 1 to 128 bytes",
+                    ));
+                }
+                if let Some(code) = event.get("code") {
+                    if !code
+                        .as_str()
+                        .is_some_and(|value| !value.is_empty() && value.len() <= 128)
+                    {
+                        return Err(BridgeError::invalid(
+                            "game.event keyboard code must contain 1 to 128 bytes",
+                        ));
+                    }
+                }
+                for modifier in ["altKey", "ctrlKey", "metaKey", "shiftKey", "repeat"] {
+                    if event.get(modifier).is_some_and(|value| !value.is_boolean()) {
+                        return Err(BridgeError::invalid(format!(
+                            "game.event keyboard {modifier} must be boolean"
+                        )));
+                    }
+                }
+            }
+            "devicemotionchange" => {
+                for axis in ["alpha", "beta", "gamma"] {
+                    finite(axis, -1_000_000.0, 1_000_000.0)?;
+                }
+                optional_finite("interval", 0.0, 60_000.0)?;
+            }
+            "accelerometerchange" => {
+                for axis in ["x", "y", "z"] {
+                    finite(axis, -1_000.0, 1_000.0)?;
+                }
+            }
+            "keyboardheightchange" => {
+                finite("height", 0.0, 16_384.0)?;
+                optional_finite("duration", 0.0, 60_000.0)?;
+            }
+            "memorywarning" => {
+                if let Some(level) = event.get("level") {
+                    if !matches!(level.as_str(), Some("moderate" | "critical")) {
+                        return Err(BridgeError::invalid(
+                            "game.event memorywarning level must be moderate or critical",
+                        ));
+                    }
+                }
+                if event
+                    .get("usedBytes")
+                    .is_some_and(|value| value.as_u64().is_none())
+                {
+                    return Err(BridgeError::invalid(
+                        "game.event memorywarning usedBytes must be a non-negative integer",
+                    ));
+                }
+            }
+            "resize" => {
+                let size = event
+                    .get("size")
+                    .and_then(Value::as_object)
+                    .ok_or_else(|| BridgeError::invalid("game.event resize requires a size object"))?;
+                if size
+                    .keys()
+                    .any(|key| !["windowWidth", "windowHeight"].contains(&key.as_str()))
+                {
+                    return Err(BridgeError::invalid(
+                        "game.event resize size contains an unknown field",
+                    ));
+                }
+                for key in ["windowWidth", "windowHeight"] {
+                    let value = size.get(key).and_then(Value::as_f64).ok_or_else(|| {
+                        BridgeError::invalid(format!("game.event resize requires {key}"))
+                    })?;
+                    if !value.is_finite() || value <= 0.0 || value > 16_384.0 {
+                        return Err(BridgeError::invalid(
+                            "game.event resize dimensions must be finite values in (0, 16384]",
+                        ));
+                    }
+                }
+                if event
+                    .get("deviceOrientation")
+                    .is_some_and(|value| !matches!(value.as_str(), Some("portrait" | "landscape")))
+                {
+                    return Err(BridgeError::invalid(
+                        "game.event deviceOrientation must be portrait or landscape",
+                    ));
+                }
+            }
+            "show" if event.get("options").is_some_and(|value| !value.is_object()) => {
+                return Err(BridgeError::invalid("game.event show options must be an object"));
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+
+    fn dispatch_game_event(
+        &mut self,
+        request: &BridgeEnvelope,
+        event: &Map<String, Value>,
+    ) -> Result<(String, usize), BridgeError> {
+        let event_type = event
+            .get("type")
+            .and_then(Value::as_str)
+            .ok_or_else(|| BridgeError::invalid("game.event requires type"))?;
+        let api_name = Self::game_event_api(event_type)
+            .ok_or_else(|| BridgeError::invalid(format!("game.event type {event_type} is unsupported")))?;
+        let legacy_touch = request.op == op::GAME_TOUCH;
+        if legacy_touch && !event_type.starts_with("touch") {
+            return Err(BridgeError::invalid(
+                "game.touch only supports touch events; use game.event",
+            ));
+        }
+        Self::validate_game_event_payload(event_type, event, legacy_touch)?;
+        if self.effective_capability(api_name) == CapabilitySupport::Unsupported {
+            return Err(BridgeError::new(
+                BridgeErrorCode::UnsupportedCapability,
+                format!("{api_name} is unsupported on this session"),
+            ));
+        }
+        let listeners = if self.engine_provider_available() {
+            self.call_engine(
+                CallTarget::Global {
+                    name: "__container_dispatch_game_event".into(),
+                },
+                vec![Value::Object(event.clone())],
+            )?
+            .first()
+            .and_then(Value::as_u64)
+            .unwrap_or_default() as usize
+        } else {
+            0
+        };
+        Ok((event_type.to_owned(), listeners))
+    }
+
+    fn handle_game_event(
         &mut self,
         request: &BridgeEnvelope,
     ) -> Result<Vec<BridgeEnvelope>, BridgeError> {
@@ -2940,66 +3225,15 @@ impl Session {
         if !self.manifest.is_game() {
             return Err(BridgeError::new(
                 BridgeErrorCode::UnsupportedCapability,
-                "game.touch requires a schema-v4 mini-game manifest",
+                "game events require a schema-v4 mini-game manifest",
             ));
         }
         let event = object_payload(&request.payload)?;
-        let event_type = event
-            .get("type")
-            .and_then(Value::as_str)
-            .ok_or_else(|| BridgeError::invalid("game.touch requires type"))?;
-        if !matches!(
-            event_type,
+        let (event_type, listeners) = self.dispatch_game_event(request, event)?;
+        let touch = matches!(
+            event_type.as_str(),
             "touchstart" | "touchmove" | "touchend" | "touchcancel"
-        ) {
-            return Err(BridgeError::invalid(format!(
-                "game.touch type {event_type} is unsupported"
-            )));
-        }
-        let api_name = match event_type {
-            "touchstart" => "wx.onTouchStart",
-            "touchmove" => "wx.onTouchMove",
-            "touchend" => "wx.onTouchEnd",
-            "touchcancel" => "wx.onTouchCancel",
-            _ => unreachable!("event type was validated above"),
-        };
-        if self.effective_capability(api_name) == CapabilitySupport::Unsupported {
-            return Err(BridgeError::new(
-                BridgeErrorCode::UnsupportedCapability,
-                format!("{api_name} is unsupported on this session"),
-            ));
-        }
-        for key in ["touches", "changedTouches"] {
-            let values = event.get(key).and_then(Value::as_array).ok_or_else(|| {
-                BridgeError::invalid(format!("game.touch {key} must be an array"))
-            })?;
-            if values.len() > 32 || values.iter().any(|touch| !touch.is_object()) {
-                return Err(BridgeError::invalid(format!(
-                    "game.touch {key} must contain at most 32 touch objects"
-                )));
-            }
-        }
-        let listeners = if self.engine_provider_available() {
-            let listeners = self
-                .call_engine(
-                    CallTarget::Global {
-                        name: "__container_dispatch_game_touch".into(),
-                    },
-                    vec![Value::Object(event.clone())],
-                )?
-                .first()
-                .and_then(Value::as_u64)
-                .unwrap_or_default() as usize;
-            self.call_engine(
-                CallTarget::Global {
-                    name: "__container_flush_game_canvas".into(),
-                },
-                Vec::new(),
-            )?;
-            listeners
-        } else {
-            0
-        };
+        );
         let mut messages = vec![
             self.response(
                 request,
@@ -3008,8 +3242,12 @@ impl Session {
             self.diagnostic(
                 request,
                 "debug",
-                "mini-game touch event consumed",
-                json!({"type": event_type}),
+                if touch {
+                    "mini-game touch event consumed"
+                } else {
+                    "mini-game event consumed"
+                },
+                json!({"type": event_type, "operation": request.op}),
             ),
         ];
         self.append_engine_effects(&mut messages)?;
@@ -3816,6 +4054,31 @@ impl Session {
         } else {
             Ok(())
         };
+        if self.manifest.is_game() && self.engine_provider_available() && !duplicate_visibility {
+            let game_event = match event {
+                LifecycleEvent::Launch | LifecycleEvent::Show => Some("show"),
+                LifecycleEvent::Hide => Some("hide"),
+                LifecycleEvent::Unload => None,
+            };
+            if let Some(event_type) = game_event {
+                let options = if event_type == "show" {
+                    request
+                        .payload
+                        .get("options")
+                        .or_else(|| request.payload.get("launchOptions"))
+                        .cloned()
+                        .unwrap_or_else(|| self.launch_options.clone())
+                } else {
+                    Value::Null
+                };
+                self.call_engine(
+                    CallTarget::Global {
+                        name: "__container_dispatch_game_event".into(),
+                    },
+                    vec![json!({"type": event_type, "options": options})],
+                )?;
+            }
+        }
         // The core foreground/background transition was committed before
         // App user code. A thrown hook must not leave components with the
         // opposite visibility; return the original hook error afterwards.

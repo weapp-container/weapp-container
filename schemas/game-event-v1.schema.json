@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sonofmagic/weapp-container/schemas/game-event-v1.schema.json",
+  "title": "Portable Mini Game Event",
+  "description": "Normalized host-to-runtime event payloads for schema-v4 mini games.",
+  "oneOf": [
+    { "$ref": "#/$defs/touchStart" },
+    { "$ref": "#/$defs/touchMove" },
+    { "$ref": "#/$defs/touchEnd" },
+    { "$ref": "#/$defs/touchCancel" },
+    { "$ref": "#/$defs/show" },
+    { "$ref": "#/$defs/hide" },
+    { "$ref": "#/$defs/audioInterruptionBegin" },
+    { "$ref": "#/$defs/audioInterruptionEnd" },
+    { "$ref": "#/$defs/memoryWarning" },
+    { "$ref": "#/$defs/deviceMotion" },
+    { "$ref": "#/$defs/accelerometer" },
+    { "$ref": "#/$defs/keyboardHeight" },
+    { "$ref": "#/$defs/keyboardEvent" },
+    { "$ref": "#/$defs/resize" }
+  ],
+  "$defs": {
+    "timestamp": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Optional monotonic milliseconds from the host event source."
+    },
+    "touchPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifier", "x", "y", "pageX", "pageY"],
+      "properties": {
+        "identifier": { "type": "integer", "minimum": 0 },
+        "x": { "type": "number", "minimum": -1000000, "maximum": 1000000 },
+        "y": { "type": "number", "minimum": -1000000, "maximum": 1000000 },
+        "pageX": { "type": "number", "minimum": -1000000, "maximum": 1000000 },
+        "pageY": { "type": "number", "minimum": -1000000, "maximum": 1000000 }
+      }
+    },
+    "touches": {
+      "type": "array",
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/touchPoint" }
+    },
+    "touchStart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "touches", "changedTouches"],
+      "properties": {
+        "type": { "const": "touchstart" },
+        "touches": { "$ref": "#/$defs/touches" },
+        "changedTouches": { "$ref": "#/$defs/touches" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "touchMove": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "touches", "changedTouches"],
+      "properties": {
+        "type": { "const": "touchmove" },
+        "touches": { "$ref": "#/$defs/touches" },
+        "changedTouches": { "$ref": "#/$defs/touches" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "touchEnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "touches", "changedTouches"],
+      "properties": {
+        "type": { "const": "touchend" },
+        "touches": { "$ref": "#/$defs/touches" },
+        "changedTouches": { "$ref": "#/$defs/touches" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "touchCancel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "touches", "changedTouches"],
+      "properties": {
+        "type": { "const": "touchcancel" },
+        "touches": { "$ref": "#/$defs/touches" },
+        "changedTouches": { "$ref": "#/$defs/touches" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "show": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "show" },
+        "options": { "type": "object" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "hide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "hide" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "audioInterruptionBegin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "audiointerruptionbegin" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "audioInterruptionEnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "audiointerruptionend" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "memoryWarning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "memorywarning" },
+        "level": { "enum": ["moderate", "critical"] },
+        "usedBytes": { "type": "integer", "minimum": 0 },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "deviceMotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "alpha", "beta", "gamma"],
+      "properties": {
+        "type": { "const": "devicemotionchange" },
+        "alpha": { "type": "number" },
+        "beta": { "type": "number" },
+        "gamma": { "type": "number" },
+        "interval": { "type": "number", "minimum": 0, "maximum": 60000 },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "accelerometer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "x", "y", "z"],
+      "properties": {
+        "type": { "const": "accelerometerchange" },
+        "x": { "type": "number", "minimum": -1000, "maximum": 1000 },
+        "y": { "type": "number", "minimum": -1000, "maximum": 1000 },
+        "z": { "type": "number", "minimum": -1000, "maximum": 1000 },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "keyboardHeight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "height"],
+      "properties": {
+        "type": { "const": "keyboardheightchange" },
+        "height": { "type": "number", "minimum": 0, "maximum": 16384 },
+        "duration": { "type": "number", "minimum": 0, "maximum": 60000 },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "keyboardEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "key"],
+      "properties": {
+        "type": { "enum": ["keydown", "keyup"] },
+        "key": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "code": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "altKey": { "type": "boolean" },
+        "ctrlKey": { "type": "boolean" },
+        "metaKey": { "type": "boolean" },
+        "shiftKey": { "type": "boolean" },
+        "repeat": { "type": "boolean" },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "resize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "size"],
+      "properties": {
+        "type": { "const": "resize" },
+        "size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["windowWidth", "windowHeight"],
+          "properties": {
+            "windowWidth": { "type": "number", "exclusiveMinimum": 0, "maximum": 16384 },
+            "windowHeight": { "type": "number", "exclusiveMinimum": 0, "maximum": 16384 }
+          }
+        },
+        "deviceOrientation": { "enum": ["portrait", "landscape"] },
+        "timestampMs": { "$ref": "#/$defs/timestamp" }
+      }
+    }
+  }
+}

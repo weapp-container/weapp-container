@@ -45,7 +45,7 @@ cargo run -p container-simulator -- \
   --report artifacts/simulator/report.json
 ```
 
-schema v4 小游戏包使用相同的 simulator 入口。启动时不会创建页面路由，`game.js` 的 `wx.createCanvas()` 使用独立的 `game` Canvas 表面，报告和 `--snapshot` 会读取该表面。原生触摸输入通过 `game.touch` 进入 `wx.onTouchStart`、`wx.onTouchMove`、`wx.onTouchEnd` 和 `wx.onTouchCancel`。
+schema v4 小游戏包使用相同的 simulator 入口。启动时不会创建页面路由，`game.js` 的 `wx.createCanvas()` 使用独立的 `game` Canvas 表面，报告和 `--snapshot` 会读取该表面。宿主通过平台无关的 `game.event` 提交规范化触摸、键盘、传感器、音频中断和内存告警事件。显示/隐藏沿用 `app.lifecycle`，viewport 更新会自动调整游戏 Canvas 并触发 `wx.onWindowResize`。载荷格式见 [game-event-v1.schema.json](../../schemas/game-event-v1.schema.json)。旧版 `game.touch` 仍可用于触摸事件。
 
 ```sh
 pnpm container:pack -- ./game-dist --game --out ./artifacts/game

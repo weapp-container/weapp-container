@@ -529,7 +529,9 @@
         "wx.onTouchEnd",
         "wx.offTouchEnd",
         "wx.onTouchCancel",
-        "wx.offTouchCancel"
+        "wx.offTouchCancel",
+        "requestAnimationFrame",
+        "cancelAnimationFrame"
       ],
       "support": "partial",
       "hostCoverage": {
@@ -540,10 +542,54 @@
         "v8": "partial"
       },
       "permission": "graphics",
-      "difference": "Schema-v4 game manifests enable a dedicated game Canvas surface and deliver bounded touch batches through the game.touch bridge. Startup and requestAnimationFrame boundaries commit CanvasFrame snapshots, while native presenters own GPU and device input lifetimes. Official DevTools, GPU and device parity remain unverified.",
+      "difference": "Schema-v4 game manifests enable a dedicated game Canvas surface and deliver bounded normalized touch batches through the host-independent game.event bridge; game.touch remains a compatibility alias. requestAnimationFrame callbacks share the runtime performance timestamp, batch on the host timer, pause while hidden, and commit CanvasFrame snapshots. Lifecycle and viewport changes use the shared app.lifecycle and host-geometry boundaries. Hosts own GPU and device input lifetimes. Official DevTools, GPU and device parity remain unverified.",
       "conformance": [
         "game-canvas-001",
-        "game-touch-001"
+        "game-touch-001",
+        "game-frame-001"
+      ],
+      "minimumManifestVersion": "4.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
+      "id": "mini-game.events",
+      "names": [
+        "wx.onShow",
+        "wx.offShow",
+        "wx.onHide",
+        "wx.offHide",
+        "wx.onAudioInterruptionBegin",
+        "wx.offAudioInterruptionBegin",
+        "wx.onAudioInterruptionEnd",
+        "wx.offAudioInterruptionEnd",
+        "wx.onMemoryWarning",
+        "wx.offMemoryWarning",
+        "wx.onDeviceMotionChange",
+        "wx.offDeviceMotionChange",
+        "wx.onAccelerometerChange",
+        "wx.offAccelerometerChange",
+        "wx.onKeyboardHeightChange",
+        "wx.offKeyboardHeightChange",
+        "wx.onKeyDown",
+        "wx.offKeyDown",
+        "wx.onKeyUp",
+        "wx.offKeyUp",
+        "wx.onWindowResize",
+        "wx.offWindowResize"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "portable": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "host-events",
+      "difference": "Listeners are runtime-owned, capability-gated and removed with the game session. game.event payloads follow schemas/game-event-v1.schema.json for touch, keyboard, sensor, audio-interruption and memory-warning events. The shared app.lifecycle operation dispatches show/hide, while host geometry updates resize the game Canvas and dispatch window-resize listeners. Missing host sources report unsupported through effective capability negotiation. Official DevTools and device event parity remain unverified.",
+      "conformance": [
+        "game-event-001",
+        "game-lifecycle-001"
       ],
       "minimumManifestVersion": "4.0",
       "minimumProtocolVersion": "1.0"

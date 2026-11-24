@@ -31,6 +31,21 @@ const GAME_CAPABILITIES = Object.freeze([
   'wx.onTouchMove', 'wx.offTouchMove',
   'wx.onTouchEnd', 'wx.offTouchEnd',
   'wx.onTouchCancel', 'wx.offTouchCancel',
+  // Game input and lifecycle events are delivered through the portable
+  // `game.event` bridge operation. Hosts normalize native events to this
+  // contract instead of selecting a platform-specific JavaScript facade.
+  'wx.onShow', 'wx.offShow',
+  'wx.onHide', 'wx.offHide',
+  'wx.onAudioInterruptionBegin', 'wx.offAudioInterruptionBegin',
+  'wx.onAudioInterruptionEnd', 'wx.offAudioInterruptionEnd',
+  'wx.onMemoryWarning', 'wx.offMemoryWarning',
+  'wx.onDeviceMotionChange', 'wx.offDeviceMotionChange',
+  'wx.onAccelerometerChange', 'wx.offAccelerometerChange',
+  'wx.onKeyboardHeightChange', 'wx.offKeyboardHeightChange',
+  'wx.onKeyDown', 'wx.offKeyDown',
+  'wx.onKeyUp', 'wx.offKeyUp',
+  'wx.onWindowResize', 'wx.offWindowResize',
+  'requestAnimationFrame', 'cancelAnimationFrame',
 ]);
 
 const STATUS = new Set(['full', 'partial', 'unsupported']);

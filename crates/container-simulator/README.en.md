@@ -88,9 +88,13 @@ cargo run -p container-simulator -- \
 
 Schema-v4 mini-game packs use the same simulator entry point. Startup skips
 page routing, `wx.createCanvas()` uses the dedicated `game` Canvas surface, and
-reports and `--snapshot` read that surface. Hosts deliver touch input with the
-`game.touch` bridge operation, which dispatches to `wx.onTouchStart`,
-`wx.onTouchMove`, `wx.onTouchEnd`, or `wx.onTouchCancel`.
+reports and `--snapshot` read that surface. Hosts submit normalized touch,
+keyboard, sensor, audio-interruption and memory-warning events through the
+platform-neutral `game.event` bridge operation. App visibility uses the shared
+`app.lifecycle` operation, and viewport updates resize the game Canvas and
+notify `wx.onWindowResize`. Payloads follow
+[`game-event-v1.schema.json`](../../schemas/game-event-v1.schema.json). The
+legacy `game.touch` operation remains available for touch-only callers.
 
 ```sh
 pnpm container:pack -- ./game-dist --game --out ./artifacts/game
