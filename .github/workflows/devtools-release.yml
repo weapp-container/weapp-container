@@ -115,10 +115,16 @@ jobs:
         if: matrix.target == 'windows-x86_64'
         shell: pwsh
         run: |
-          choco install wixtoolset --version=3.14.1 --yes --no-progress
-          $heat = Get-ChildItem "${env:ProgramFiles(x86)}\WiX Toolset*\bin\heat.exe" | Select-Object -First 1
+          choco install wixtoolset --yes --no-progress
+          $heat = Get-ChildItem @(
+            "${env:ProgramFiles(x86)}\WiX Toolset*\bin\heat.exe",
+            "${env:ProgramFiles}\WiX Toolset*\bin\heat.exe"
+          ) -ErrorAction SilentlyContinue | Select-Object -First 1
           if (-not $heat) { throw 'WiX Toolset heat.exe was not found' }
           $wixBin = Split-Path $heat.FullName
+          foreach ($tool in @('candle.exe', 'light.exe')) {
+            if (-not (Test-Path (Join-Path $wixBin $tool))) { throw "WiX Toolset $tool was not found" }
+          }
           Add-Content -Path $env:GITHUB_PATH -Value $wixBin
 
       - name: Package Windows DevTools
