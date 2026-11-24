@@ -144,8 +144,9 @@ test('update manifests require an Ed25519 signature and select the newest compat
     schemaVersion: 1,
     channel: 'stable',
     releases: [
-      { version: '0.1.0', target: 'macos-universal', arch: 'arm64', url: 'https://example.invalid/new.dmg', sha256: 'a'.repeat(64), size: 10 },
-      { version: '0.0.9', target: 'macos-universal', arch: 'arm64', url: 'https://example.invalid/old.dmg', sha256: 'b'.repeat(64), size: 10 },
+      { version: '0.2.0', target: 'macos-universal', arch: process.arch === 'arm64' ? 'x64' : 'arm64', url: 'https://example.invalid/incompatible.dmg', sha256: 'c'.repeat(64), size: 10 },
+      { version: '0.1.0', target: 'macos-universal', url: 'https://example.invalid/new.dmg', sha256: 'a'.repeat(64), size: 10 },
+      { version: '0.0.9', target: 'macos-universal', url: 'https://example.invalid/old.dmg', sha256: 'b'.repeat(64), size: 10 },
     ],
   }
   const signature = sign(null, Buffer.from(canonicalUpdatePayload(unsigned)), privateKey).toString('base64url')
