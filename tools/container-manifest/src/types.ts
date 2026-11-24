@@ -3,7 +3,7 @@ export type JsonObject = Record<string, any>
 export interface Diagnostic { severity: 'error' | 'warning'; code: string; message: string; path?: string; details?: unknown }
 export type CapabilityStatus = 'full' | 'partial' | 'unsupported'
 export type CapabilityOverrides = Record<string, CapabilityStatus | { status: CapabilityStatus }> | { capabilities: Record<string, CapabilityStatus | { status: CapabilityStatus }> }
-export interface PackOptions { compilerCommit?: string | undefined; platform?: string | undefined; project?: string | undefined; configFile?: string | undefined; resolveRoot?: string | undefined; capabilities?: CapabilityOverrides | undefined }
+export interface PackOptions { compilerCommit?: string | undefined; platform?: string | undefined; project?: string | undefined; configFile?: string | undefined; resolveRoot?: string | undefined; capabilities?: CapabilityOverrides | undefined; mode?: 'app' | 'game' | undefined }
 export interface Route { id: string; path: string; kind: string; entryModule: string; config?: string }
 export interface WxmlDirectives { ifExpr?: string; elifExpr?: string; forExpr?: string; forKey?: string; forItem?: string; forIndex?: string; elseBranch?: boolean; events?: Record<string, string> }
 export type WxmlNode = { kind: 'element'; tag: string; attrs: Record<string, string>; bindings: string[]; directives?: WxmlDirectives; boundValues?: Record<string, unknown>; children: WxmlNode[] } | { kind: 'text'; value: string; bindings: string[] } | { kind: 'comment'; value: string; bindings?: string[] }

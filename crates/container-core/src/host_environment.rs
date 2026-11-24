@@ -61,6 +61,7 @@ pub fn app_service_environment_bootstrap(facade: &str) -> String {
         include_str!("selector-query.js"),
         include_str!("route-transaction.js"),
         include_str!("lifecycle-notifications.js"),
+        include_str!("game-runtime.js"),
         include_str!("performance.js"),
         include_str!("component-pages.js"),
         include_str!("modules.js"),

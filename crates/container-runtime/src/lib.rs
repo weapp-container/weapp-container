@@ -2535,6 +2535,7 @@ impl Session {
         let result = storage_sync.and_then(|()| match envelope.op.as_str() {
             op::APP_INIT => self.handle_init(envelope),
             op::APP_LIFECYCLE => self.handle_lifecycle(envelope),
+            op::GAME_TOUCH => self.handle_game_touch(envelope),
             op::PAGE_PUSH => self.handle_page_push(envelope),
             op::PAGE_POP => self.handle_page_pop(envelope),
             op::PAGE_REPLACE => self.handle_page_replace(envelope),
@@ -2809,6 +2810,14 @@ impl Session {
         self.prepare_engine_environment()?;
         #[cfg(any(feature = "quickjs-native", feature = "v8-native"))]
         self.install_host_services_bridge()?;
+        if self.manifest.is_game() && self.engine_provider_available() {
+            self.call_engine(
+                CallTarget::Global {
+                    name: "__container_enable_game_runtime".into(),
+                },
+                Vec::new(),
+            )?;
+        }
         // A host may include the content-addressed module bytes in the
         // handshake.  This keeps app startup a single batch boundary while
         // retaining the explicit `module.load` operation for lazy loading.
@@ -2832,6 +2841,14 @@ impl Session {
         // for retry. Omitting the module batch must not turn those unevaluated
         // route factories into an initialized application.
         self.resolve_loaded_page_modules()?;
+        if self.manifest.is_game() && self.engine_provider_available() {
+            self.call_engine(
+                CallTarget::Global {
+                    name: "__container_flush_game_canvas".into(),
+                },
+                Vec::new(),
+            )?;
+        }
         self.initialized = true;
         self.prepare_engine_environment()?;
         let mut app_launch_result = Value::Null;
@@ -2840,7 +2857,8 @@ impl Session {
         // dispatch the standard onLaunch hook through the same batch engine
         // boundary used by module.call.  Headless/protocol sessions keep the
         // old handshake semantics and simply report no hook invocation.
-        if !self.app_launch_invoked
+        if !self.manifest.is_game()
+            && !self.app_launch_invoked
             && self.engine_provider_available()
             && self.entry_module_evaluated()
         {
@@ -2912,6 +2930,90 @@ impl Session {
                     || id == &format!("module:{entry}")
                     || id.strip_prefix("module:") == Some(entry))
         })
+    }
+
+    fn handle_game_touch(
+        &mut self,
+        request: &BridgeEnvelope,
+    ) -> Result<Vec<BridgeEnvelope>, BridgeError> {
+        self.ensure_initialized()?;
+        if !self.manifest.is_game() {
+            return Err(BridgeError::new(
+                BridgeErrorCode::UnsupportedCapability,
+                "game.touch requires a schema-v4 mini-game manifest",
+            ));
+        }
+        let event = object_payload(&request.payload)?;
+        let event_type = event
+            .get("type")
+            .and_then(Value::as_str)
+            .ok_or_else(|| BridgeError::invalid("game.touch requires type"))?;
+        if !matches!(
+            event_type,
+            "touchstart" | "touchmove" | "touchend" | "touchcancel"
+        ) {
+            return Err(BridgeError::invalid(format!(
+                "game.touch type {event_type} is unsupported"
+            )));
+        }
+        let api_name = match event_type {
+            "touchstart" => "wx.onTouchStart",
+            "touchmove" => "wx.onTouchMove",
+            "touchend" => "wx.onTouchEnd",
+            "touchcancel" => "wx.onTouchCancel",
+            _ => unreachable!("event type was validated above"),
+        };
+        if self.effective_capability(&api_name) == CapabilitySupport::Unsupported {
+            return Err(BridgeError::new(
+                BridgeErrorCode::UnsupportedCapability,
+                format!("{api_name} is unsupported on this session"),
+            ));
+        }
+        for key in ["touches", "changedTouches"] {
+            let values = event.get(key).and_then(Value::as_array).ok_or_else(|| {
+                BridgeError::invalid(format!("game.touch {key} must be an array"))
+            })?;
+            if values.len() > 32 || values.iter().any(|touch| !touch.is_object()) {
+                return Err(BridgeError::invalid(format!(
+                    "game.touch {key} must contain at most 32 touch objects"
+                )));
+            }
+        }
+        let listeners = if self.engine_provider_available() {
+            let listeners = self
+                .call_engine(
+                    CallTarget::Global {
+                        name: "__container_dispatch_game_touch".into(),
+                    },
+                    vec![Value::Object(event.clone())],
+                )?
+                .first()
+                .and_then(Value::as_u64)
+                .unwrap_or_default() as usize;
+            self.call_engine(
+                CallTarget::Global {
+                    name: "__container_flush_game_canvas".into(),
+                },
+                Vec::new(),
+            )?;
+            listeners
+        } else {
+            0
+        };
+        let mut messages = vec![
+            self.response(
+                request,
+                json!({"ok": true, "type": event_type, "listeners": listeners}),
+            ),
+            self.diagnostic(
+                request,
+                "debug",
+                "mini-game touch event consumed",
+                json!({"type": event_type}),
+            ),
+        ];
+        self.append_engine_effects(&mut messages)?;
+        Ok(messages)
     }
 
     fn page_registration_index(&self, path: &str) -> usize {

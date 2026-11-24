@@ -519,6 +519,36 @@
       "minimumProtocolVersion": "1.0"
     },
     {
+      "id": "mini-game.canvas-input",
+      "names": [
+        "wx.createCanvas",
+        "wx.onTouchStart",
+        "wx.offTouchStart",
+        "wx.onTouchMove",
+        "wx.offTouchMove",
+        "wx.onTouchEnd",
+        "wx.offTouchEnd",
+        "wx.onTouchCancel",
+        "wx.offTouchCancel"
+      ],
+      "support": "partial",
+      "hostCoverage": {
+        "portable": "partial"
+      },
+      "engineCoverage": {
+        "quickjs": "partial",
+        "v8": "partial"
+      },
+      "permission": "graphics",
+      "difference": "Schema-v4 game manifests enable a dedicated game Canvas surface and deliver bounded touch batches through the game.touch bridge. Startup and requestAnimationFrame boundaries commit CanvasFrame snapshots, while native presenters own GPU and device input lifetimes. Official DevTools, GPU and device parity remain unverified.",
+      "conformance": [
+        "game-canvas-001",
+        "game-touch-001"
+      ],
+      "minimumManifestVersion": "4.0",
+      "minimumProtocolVersion": "1.0"
+    },
+    {
       "id": "wx.media-camera-location",
       "names": [
         "wx.chooseMedia",

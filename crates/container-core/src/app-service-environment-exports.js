@@ -50,6 +50,7 @@ globalThis.__container_create_video_context = __container_create_video_context;
 globalThis.__container_create_camera_context = __container_create_camera_context;
 globalThis.__container_canvas_context = __container_canvas_context;
 globalThis.__container_create_offscreen_canvas = __container_create_offscreen_canvas;
+globalThis.__container_create_game_canvas = __container_create_game_canvas;
 globalThis.__container_connect_socket = __container_connect_socket;
 globalThis.__container_api_call = __container_api_call;
 globalThis.__container_resolve_api = __container_resolve_api;

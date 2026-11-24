@@ -25,6 +25,8 @@ pub mod op {
     pub const PAGE_PUSH: &str = "page.push";
     pub const PAGE_POP: &str = "page.pop";
     pub const PAGE_REPLACE: &str = "page.replace";
+    /// Deliver native touch input to a schema-v4 mini-game AppService.
+    pub const GAME_TOUCH: &str = "game.touch";
     pub const DATA_PATCH_BATCH: &str = "data.patch.batch";
     pub const EVENT_BATCH: &str = "event.batch";
     pub const RENDER_COMMIT: &str = "render.commit";
@@ -84,6 +86,7 @@ pub mod op {
                 | PAGE_PUSH
                 | PAGE_POP
                 | PAGE_REPLACE
+                | GAME_TOUCH
                 | DATA_PATCH_BATCH
                 | EVENT_BATCH
                 | RENDER_COMMIT
@@ -623,6 +626,12 @@ mod tests {
         assert_eq!(value["sessionId"], "s1");
         assert_eq!(value["requestId"], "r1");
         assert!(envelope.validate().is_ok());
+    }
+
+    #[test]
+    fn game_touch_is_a_known_bridge_operation() {
+        let envelope = BridgeEnvelope::event("s1", op::GAME_TOUCH, json!({}));
+        assert!(envelope.is_known_operation());
     }
 
     #[test]

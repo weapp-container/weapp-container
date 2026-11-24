@@ -834,7 +834,9 @@ impl Simulator {
         let mut next =
             Self::from_pack_dir_with_raster_policy(&path, self.config.clone(), raster_policy)?;
         next.set_trace_retention(self.trace.retention);
-        let reload = if (!previously_active || self.started)
+        let game_transition = self.manifest.is_game() || next.manifest.is_game();
+        let reload = if !game_transition
+            && (!previously_active || self.started)
             && classify_manifest_reload(&self.manifest, &next.manifest) == DevReloadKind::InPlace
             && !dev_reload::requires_view_script_restart(
                 &self.manifest,
@@ -862,12 +864,17 @@ impl Simulator {
             .session()
             .and_then(|session| session.app_service().pages().current())
             .map(|page| page.path.as_str());
-        let selected_route =
-            route_for_manifest(next.config.route.as_deref(), current_route, &next.manifest)
-                .ok_or_else(|| {
-                    SimulatorError::Config("manifest has no routes; pass --route".into())
-                })?;
-        next.config.route = Some(selected_route.clone());
+        let selected_route = if next.manifest.is_game() {
+            None
+        } else {
+            Some(
+                route_for_manifest(next.config.route.as_deref(), current_route, &next.manifest)
+                    .ok_or_else(|| {
+                        SimulatorError::Config("manifest has no routes; pass --route".into())
+                    })?,
+            )
+        };
+        next.config.route = selected_route.clone();
         // Full restarts receive a new session id before their isolated startup
         // run. This lets the candidate validate the exact bridge identity that
         // will be published to Web/desktop hosts, while stale envelopes from
@@ -886,7 +893,7 @@ impl Simulator {
             next =
                 Self::from_pack_dir_with_raster_policy(path, next.config.clone(), raster_policy)?;
             next.set_trace_retention(self.trace.retention);
-            next.config.route = Some(selected_route);
+            next.config.route = selected_route;
         }
         // A pristine pre-run runtime has no state to keep. An activated runtime
         // without completed simulator bookkeeping was classified Restart above
@@ -1119,7 +1126,9 @@ impl Simulator {
             return Ok(self.report("passed"));
         }
         let started = Instant::now();
-        let route = self.selected_route()?;
+        let route = (!self.manifest.is_game())
+            .then(|| self.selected_route())
+            .transpose()?;
         let launch_options = if self.config.launch_options.is_object() {
             self.config.launch_options.clone()
         } else {
@@ -1141,28 +1150,30 @@ impl Simulator {
             op::APP_LIFECYCLE,
             json!({"event": "launch", "options": self.config.launch_options}),
         )?;
-        self.dispatch_startup(
-            op::PAGE_PUSH,
-            json!({"path": route, "query": self.config.launch_options.get("query").cloned().unwrap_or_else(|| json!({})), "data": self.config.initial_data}),
-        )?;
-        let rendered_state = self.current_render_state();
-        let rendered = self.render_current_page()?;
-        if self.current_renderer_profile() != RendererProfile::WebView {
-            if let Some(error) = dev_render_error(&rendered) {
-                return Err(error);
+        if let Some(route) = route {
+            self.dispatch_startup(
+                op::PAGE_PUSH,
+                json!({"path": route, "query": self.config.launch_options.get("query").cloned().unwrap_or_else(|| json!({})), "data": self.config.initial_data}),
+            )?;
+            let rendered_state = self.current_render_state();
+            let rendered = self.render_current_page()?;
+            if self.current_renderer_profile() != RendererProfile::WebView {
+                if let Some(error) = dev_render_error(&rendered) {
+                    return Err(error);
+                }
+            }
+            self.dev_errors.extend(
+                rendered
+                    .messages
+                    .into_iter()
+                    .filter(|message| message.op == op::ERROR),
+            );
+            if self.current_renderer_profile() != RendererProfile::WebView {
+                self.last_render_attempt = rendered_state.clone();
+                self.rendered_state = rendered_state;
             }
         }
-        self.dev_errors.extend(
-            rendered
-                .messages
-                .into_iter()
-                .filter(|message| message.op == op::ERROR),
-        );
         self.started = true;
-        if self.current_renderer_profile() != RendererProfile::WebView {
-            self.last_render_attempt = rendered_state.clone();
-            self.rendered_state = rendered_state;
-        }
         self.elapsed_ms = started.elapsed().as_millis();
         Ok(self.report("passed"))
     }
@@ -1200,6 +1211,9 @@ impl Simulator {
                 ),
                 &batch,
             );
+        }
+        if self.manifest.is_game() {
+            return Ok(batch);
         }
         let state = self.current_render_state();
         self.reconcile_browser_dev_pack();
@@ -1516,36 +1530,46 @@ impl Simulator {
     }
 
     pub fn write_snapshot(&self, path: impl AsRef<Path>) -> Result<(), SimulatorError> {
-        let snapshot = self.host.render_snapshot().map_err(SimulatorError::Host)?;
+        let snapshot = if self.manifest.is_game() {
+            self.host
+                .canvas_snapshot("game")
+                .map_err(SimulatorError::Host)?
+        } else {
+            self.host.render_snapshot().map_err(SimulatorError::Host)?
+        };
         write_json(path, &snapshot)
     }
 
     pub fn report(&self, status: &str) -> SimulatorReport {
-        let snapshot = self
-            .host
-            .render_snapshot_ref()
-            .ok()
-            .map(|snapshot| SnapshotSummary {
-                frame_id: snapshot.frame_id,
-                width: snapshot.width,
-                height: snapshot.height,
-                stride: snapshot.stride,
-                format: snapshot.format.clone(),
-                pixel_bytes: snapshot.pixels.len(),
-            });
+        let snapshot = (if self.manifest.is_game() {
+            self.host.canvas_snapshot("game").ok()
+        } else {
+            self.host.render_snapshot_ref().ok().cloned()
+        })
+        .map(|snapshot| SnapshotSummary {
+            frame_id: snapshot.frame_id,
+            width: snapshot.width,
+            height: snapshot.height,
+            stride: snapshot.stride,
+            format: snapshot.format.clone(),
+            pixel_bytes: snapshot.pixels.len(),
+        });
         SimulatorReport {
             schema_version: 1,
             session_id: self.config.session_id.clone(),
             status: status.to_owned(),
             engine: self.config.engine,
             compiler: self.manifest.compiler.clone(),
-            route: self
-                .host
-                .session()
-                .and_then(|session| session.app_service().pages().current())
-                .map(|page| page.path.clone())
-                .or_else(|| self.config.route.clone())
-                .or_else(|| self.manifest.routes.first().map(|route| route.path.clone())),
+            route: if self.manifest.is_game() {
+                None
+            } else {
+                self.host
+                    .session()
+                    .and_then(|session| session.app_service().pages().current())
+                    .map(|page| page.path.clone())
+                    .or_else(|| self.config.route.clone())
+                    .or_else(|| self.manifest.routes.first().map(|route| route.path.clone()))
+            },
             renderer: self.host.renderer_backend().ok().map(str::to_owned),
             lifecycle_state: self.host.lifecycle_state().ok().map(|state| format!("{state:?}")),
             trace_count: self.trace.len(),
@@ -1887,8 +1911,8 @@ mod tests {
     use super::*;
     use container_core::{DataPatch, DataPatchBatch, PageId, TimerKind};
     use container_ir::{
-        parse_wxml, parse_wxss, AppInfo, CompilerInfo, Integrity, Route, RouteKind, Style,
-        StyleScope, Template,
+        parse_wxml, parse_wxss, AppInfo, CapabilitySupport, CompilerInfo, Integrity, Module,
+        ModuleFormat, ModuleScope, Route, RouteKind, Style, StyleScope, Template,
     };
     use container_render_skia::Renderer;
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -1934,6 +1958,88 @@ mod tests {
         let path = root.join("manifest.json");
         fs::write(&path, serde_json::to_vec(&manifest).unwrap()).unwrap();
         (root, manifest.integrity.root)
+    }
+
+    #[cfg(feature = "quickjs-native")]
+    fn game_pack() -> PathBuf {
+        let nonce = TEST_PACK_ID.fetch_add(1, Ordering::Relaxed);
+        let root = std::env::temp_dir().join(format!(
+            "weapp-simulator-game-test-{}-{nonce}",
+            std::process::id()
+        ));
+        fs::create_dir_all(root.join("blobs/sha256")).unwrap();
+        let game_json = r#"{"deviceOrientation":"portrait"}"#;
+        let game_js = r#"
+const canvas = wx.createCanvas();
+const context = canvas.getContext('2d');
+let touches = 0;
+function paint(color) {
+  context.fillStyle = color;
+  context.fillRect(0, 0, 2, 2);
+}
+paint('#ff0000');
+wx.onTouchStart(function(event) {
+  touches += event.touches.length;
+  paint('#0000ff');
+});
+exports.state = function() { return {touches}; };
+"#;
+        let game_json_hash = hex_digest(game_json.as_bytes());
+        let game_js_hash = hex_digest(game_js.as_bytes());
+        fs::write(root.join("blobs/sha256").join(&game_json_hash), game_json).unwrap();
+        fs::write(root.join("blobs/sha256").join(&game_js_hash), game_js).unwrap();
+        let mut manifest = ContainerManifestV1 {
+            schema_version: container_ir::GAME_MANIFEST_SCHEMA_VERSION,
+            compiler: CompilerInfo {
+                name: "weapp-vite".into(),
+                commit: "sim-game-test".into(),
+                platform: "weapp".into(),
+            },
+            app: AppInfo {
+                app_json: "game.json".into(),
+                entry_module: "game.js".into(),
+            },
+            modules: vec![
+                Module {
+                    id: "module:game.json".into(),
+                    sha256: game_json_hash,
+                    format: ModuleFormat::Json,
+                    scope: ModuleScope::App,
+                    dependencies: Vec::new(),
+                },
+                Module {
+                    id: "module:game.js".into(),
+                    sha256: game_js_hash,
+                    format: ModuleFormat::Commonjs,
+                    scope: ModuleScope::App,
+                    dependencies: Vec::new(),
+                },
+            ],
+            integrity: Integrity {
+                algorithm: "sha256".into(),
+                root: String::new(),
+            },
+            ..Default::default()
+        };
+        for name in [
+            "wx.createCanvas",
+            "wx.createCanvasContext",
+            "wx.canvas.draw",
+            "wx.getWindowInfo",
+            "wx.onTouchStart",
+            "wx.offTouchStart",
+        ] {
+            manifest
+                .capabilities
+                .insert(name.into(), CapabilitySupport::Full);
+        }
+        manifest.refresh_integrity().unwrap();
+        fs::write(
+            root.join("manifest.json"),
+            serde_json::to_vec(&manifest).unwrap(),
+        )
+        .unwrap();
+        root
     }
 
     fn render_pack(path: &Path, route: &str, wxml_source: &str, wxss_source: &str) {
@@ -2476,6 +2582,43 @@ mod tests {
             .iter()
             .any(|message| message.payload["ok"] == true));
         assert_eq!(simulator.trace().len(), 1);
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    #[cfg(feature = "quickjs-native")]
+    fn game_pack_runs_without_page_route_and_paints_touch_frame() {
+        let root = game_pack();
+        let mut simulator = Simulator::from_pack_dir(&root, SimulatorConfig::default()).unwrap();
+        let report = simulator.run().unwrap();
+        assert_eq!(report.status, "passed");
+        assert_eq!(report.route, None);
+        assert_eq!(
+            report.snapshot.as_ref().map(|snapshot| snapshot.width),
+            Some(375)
+        );
+        assert_eq!(
+            &simulator.host().canvas_snapshot("game").unwrap().pixels[..4],
+            &[255, 0, 0, 255]
+        );
+
+        let touch = simulator
+            .dispatch_request(
+                op::GAME_TOUCH,
+                json!({
+                    "type": "touchstart",
+                    "touches": [{"identifier": 1, "pageX": 1, "pageY": 1}],
+                    "changedTouches": [{"identifier": 1, "pageX": 1, "pageY": 1}]
+                }),
+            )
+            .unwrap();
+        assert_eq!(touch.messages[0].payload["ok"], true);
+        assert_eq!(touch.messages[0].payload["listeners"], 1);
+        assert_eq!(
+            &simulator.host().canvas_snapshot("game").unwrap().pixels[..4],
+            &[0, 0, 255, 255]
+        );
+        assert_eq!(simulator.report("passed").route, None);
         let _ = fs::remove_dir_all(root);
     }
 
