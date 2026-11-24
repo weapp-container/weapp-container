@@ -246,7 +246,8 @@ export async function createMsi({ source, output, version }) {
     await writeFile(productSource, renderMsiSource(version))
     runInstallerTool('heat.exe', ['dir', resolve(source), '-nologo', '-dr', 'INSTALLFOLDER', '-cg', 'DevToolsFiles', '-ag', '-scom', '-sreg', '-srd', '-var', 'var.SourceDir', '-out', harvestedSource], temporaryRoot)
     runInstallerTool('candle.exe', ['-nologo', `-dSourceDir=${resolve(source)}`, '-out', `${temporaryRoot}\\`, productSource, harvestedSource], temporaryRoot)
-    runInstallerTool('light.exe', ['-nologo', '-out', destination, join(temporaryRoot, 'product.wixobj'), join(temporaryRoot, 'files.wixobj')], temporaryRoot)
+    // ICE38 targets machine-profile component key paths. This package intentionally installs per-user under LocalAppData.
+    runInstallerTool('light.exe', ['-nologo', '-sice:ICE38', '-out', destination, join(temporaryRoot, 'product.wixobj'), join(temporaryRoot, 'files.wixobj')], temporaryRoot)
     return destination
   } finally {
     await rm(temporaryRoot, { recursive: true, force: true })
