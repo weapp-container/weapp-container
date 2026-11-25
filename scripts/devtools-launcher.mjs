@@ -164,7 +164,7 @@ export async function createLauncher({
         const input = await readJson(request)
         preflight = await inspectProject(input.project, { metadata, requireDependencies: true })
         project = preflight.project
-        surface = input.surface
+        surface = input.surface ?? 'desktop'
         const args = simulatorArguments(project, surface)
         previewUrl = undefined
         exitCode = undefined
@@ -223,7 +223,7 @@ export async function createLauncher({
   })
   const { port } = server.address()
   const page = `http://127.0.0.1:${port}/#session=${token}`
-  openBrowser(page)
+  if (openBrowser) openBrowser(page)
   return {
     page,
     async close() {
@@ -288,6 +288,20 @@ async function main(arguments_) {
     return
   }
   if (command === 'dev') return runDirect(arguments_.slice(1))
+  if (command === 'native') {
+    const launcher = await createLauncher({ openBrowser: null })
+    let closing
+    const close = () => {
+      closing ??= launcher.close().finally(() => process.exit())
+      return closing
+    }
+    process.stdin.once('end', close)
+    process.stdin.resume()
+    process.once('SIGINT', close)
+    process.once('SIGTERM', close)
+    process.stdout.write(`${launcher.page}\n`)
+    return
+  }
   if (command && command !== 'gui') throw new Error(`Unknown command: ${command}`)
   const launcher = await createLauncher()
   process.stdout.write(`Weapp Container DevTools: ${launcher.page}\n`)

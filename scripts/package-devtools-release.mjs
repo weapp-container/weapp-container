@@ -5,21 +5,16 @@ import { lstatSync } from 'node:fs'
 import { basename, dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
+import { isDeepStrictEqual } from 'node:util'
+import rendererPins from './devtools-renderer-pins.json' with { type: 'json' }
 import { createPlatformInstaller, preparePlatformPayload } from './lib/devtools-installers.mjs'
 import { compatibilityMetadata } from './devtools-compatibility.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const COMPILER_COMMIT = '0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e'
 const NODE_VERSION = '24.22.2'
-const CANVASKIT_VERSION = '0.42.0'
-const CANVASKIT = {
-  javascript: { path: 'vendor/canvaskit/canvaskit.js', size: 123707, sha256: '894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5' },
-  wasm: { path: 'vendor/canvaskit/canvaskit.wasm', size: 8242911, sha256: 'aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959' },
-  license: { path: 'vendor/canvaskit/LICENSE', size: 1635, sha256: 'd27678cba0d529e77201e2d2a053628143e986aad8f1e77f7039ad4366c8f978' },
-  package: { path: 'vendor/canvaskit/package.json', size: 2359, sha256: '81ecbaba46a245d6e7d317c805462f2efc21ec252577eae88ff99ed406928997' },
-  font: { path: 'vendor/fonts/NotoSansSC.ttf', size: 17772300, sha256: 'a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da' },
-  fontLicense: { path: 'vendor/fonts/OFL.txt', size: 4388, sha256: '1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9' },
-}
+const CANVASKIT_VERSION = rendererPins.canvaskitVersion
+const CANVASKIT = rendererPins.assets
 const NODE_TARGETS = {
   'macos-arm64': { node: 'darwin-arm64', os: 'darwin', cpu: 'arm64', archive: 'tar.gz' },
   'macos-x86_64': { node: 'darwin-x64', os: 'darwin', cpu: 'x64', archive: 'tar.gz' },
@@ -244,6 +239,10 @@ async function copyCompiler(targetRoot, target, temporaryRoot) {
   const workspaceRoot = join(targetRoot, 'vendor/weapp-vite')
   const sourceWorkspace = join(root, 'vendor/weapp-vite')
   const compilerSource = join(sourceWorkspace, 'packages/weapp-vite')
+  const compilerEntry = join(compilerSource, 'dist/cli.mjs')
+  if (!(await stat(compilerEntry).then(value => value.isFile()).catch(() => false))) {
+    throw new Error(`Pinned weapp-vite compiler is not built: ${compilerEntry}; run corepack pnpm@12.11.2 --dir vendor/weapp-vite run build:pkgs`)
+  }
   await mkdir(join(workspaceRoot, 'packages'), { recursive: true })
   await copyPackageFiles(compilerSource, join(workspaceRoot, 'packages/weapp-vite'))
   const packageManifest = await packageJson(compilerSource)
@@ -283,6 +282,25 @@ async function fetchBytes(url) {
 }
 
 async function prepareRendererAssets(targetRoot, temporaryRoot, suppliedAssets) {
+  const expectedAsset = key => ({
+    url: `/renderer-assets/${CANVASKIT[key].path}`,
+    sha256: CANVASKIT[key].sha256,
+    size: CANVASKIT[key].size,
+  })
+  const expectedConfig = {
+    schemaVersion: 1,
+    renderer: 'canvaskit',
+    fallback: 'error',
+    canvaskit: {
+      version: CANVASKIT_VERSION,
+      variant: 'full',
+      javascript: expectedAsset('javascript'),
+      wasm: expectedAsset('wasm'),
+      license: expectedAsset('license'),
+      package: expectedAsset('package'),
+    },
+    font: { binary: expectedAsset('font'), license: expectedAsset('fontLicense') },
+  }
   if (suppliedAssets) {
     await cp(resolve(suppliedAssets), join(targetRoot, 'artifacts/dual-renderer-dev-assets'), { recursive: true, dereference: true })
     const config = JSON.parse(await readFile(join(targetRoot, 'artifacts/dual-renderer-dev-assets/runtime-config.json'), 'utf8'))
@@ -290,9 +308,7 @@ async function prepareRendererAssets(targetRoot, temporaryRoot, suppliedAssets) 
       const bytes = await readFile(join(targetRoot, 'artifacts/dual-renderer-dev-assets', value.path))
       if (bytes.length !== value.size || sha256(bytes) !== value.sha256) throw new Error(`Renderer integrity mismatch: ${value.path}`)
     }
-    if (config.canvaskit?.version !== CANVASKIT_VERSION
-      || config.font?.binary?.sha256 !== CANVASKIT.font.sha256
-      || config.font?.binary?.size !== CANVASKIT.font.size) {
+    if (!isDeepStrictEqual(config, expectedConfig)) {
       throw new Error('Renderer runtime-config.json does not match the bundled assets')
     }
     return
@@ -314,16 +330,7 @@ async function prepareRendererAssets(targetRoot, temporaryRoot, suppliedAssets) 
   const fontLicense = await fetchBytes('https://raw.githubusercontent.com/google/fonts/a85815a42757630ce188fdad368c2dfc444d4773/ofl/notosanssc/OFL.txt')
   await writeFile(join(output, CANVASKIT.font.path), font)
   await writeFile(join(output, CANVASKIT.fontLicense.path), fontLicense)
-  const config = {
-    schemaVersion: 1, renderer: 'canvaskit', fallback: 'error',
-    canvaskit: { version: CANVASKIT_VERSION, variant: 'full',
-      javascript: { url: '/renderer-assets/vendor/canvaskit/canvaskit.js', sha256: sha256(await readFile(join(output, CANVASKIT.javascript.path))), size: CANVASKIT.javascript.size },
-      wasm: { url: '/renderer-assets/vendor/canvaskit/canvaskit.wasm', sha256: sha256(await readFile(join(output, CANVASKIT.wasm.path))), size: CANVASKIT.wasm.size },
-      license: { url: '/renderer-assets/vendor/canvaskit/LICENSE', sha256: CANVASKIT.license.sha256, size: CANVASKIT.license.size },
-      package: { url: '/renderer-assets/vendor/canvaskit/package.json', sha256: CANVASKIT.package.sha256, size: CANVASKIT.package.size } },
-    font: { binary: { url: '/renderer-assets/vendor/fonts/NotoSansSC.ttf', sha256: sha256(font), size: font.length }, license: { url: '/renderer-assets/vendor/fonts/OFL.txt', sha256: sha256(fontLicense), size: fontLicense.length } },
-  }
-  await writeFile(join(output, 'runtime-config.json'), json(config))
+  await writeFile(join(output, 'runtime-config.json'), json(expectedConfig))
   for (const [name, value] of Object.entries(CANVASKIT)) {
     const bytes = await readFile(join(output, value.path))
     if (bytes.length !== value.size || sha256(bytes) !== value.sha256) throw new Error(`Renderer integrity mismatch: ${name}`)
@@ -381,7 +388,7 @@ async function copyNodeRuntime(source, destination, windows) {
 }
 
 async function copyRuntimeSources(targetRoot) {
-  const files = ['simulator-watch.mjs', 'simulator-source-credit.mjs', 'simulator-watch-diagnostics.mjs', 'device-dev-server.mjs', 'devtools-launcher.mjs', 'devtools-launcher.html', 'devtools-compatibility.mjs', 'lib/devtools-update.mjs']
+  const files = ['simulator-watch.mjs', 'simulator-source-credit.mjs', 'simulator-watch-diagnostics.mjs', 'device-dev-server.mjs', 'devtools-launcher.mjs', 'devtools-launcher.html', 'devtools-compatibility.mjs', 'devtools-renderer-pins.json', 'lib/devtools-update.mjs']
   await mkdir(join(targetRoot, 'scripts'), { recursive: true })
   for (const file of files) {
     const destination = join(targetRoot, 'scripts', file)
@@ -406,12 +413,12 @@ async function writeLaunchers(targetRoot, target) {
   const windows = target.startsWith('windows-')
   await mkdir(join(targetRoot, 'bin'), { recursive: true })
   if (windows) {
-    await writeFile(join(targetRoot, 'bin/weapp-devtools.cmd'), '@echo off\r\n"%~dp0..\\node\\node.exe" "%~dp0..\\scripts\\devtools-launcher.mjs" %*\r\n')
+    await writeFile(join(targetRoot, 'bin/weapp-devtools.cmd'), '@echo off\r\nif "%~1"=="" (\r\n  "%~dp0weapp-devtools-native.exe"\r\n  exit /b %errorlevel%\r\n)\r\nif "%~1"=="gui" (\r\n  "%~dp0weapp-devtools-native.exe"\r\n  exit /b %errorlevel%\r\n)\r\n"%~dp0..\\node\\node.exe" "%~dp0..\\scripts\\devtools-launcher.mjs" %*\r\n')
     await writeFile(join(targetRoot, 'bin/pnpm.cmd'), '@echo off\r\n"%~dp0..\\node\\node.exe" "%~dp0..\\node\\node_modules\\corepack\\dist\\corepack.js" pnpm@12.11.2 %*\r\n')
-    await writeFile(join(targetRoot, 'bin/weapp-devtools.vbs'), 'Set shell = CreateObject("WScript.Shell")\r\nroot = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)\r\ncommand = Chr(34) & root & "\\..\\node\\node.exe" & Chr(34) & " " & Chr(34) & root & "\\..\\scripts\\devtools-launcher.mjs" & Chr(34) & " gui"\r\nshell.Run command, 0, False\r\n')
+    await writeFile(join(targetRoot, 'bin/weapp-devtools.vbs'), 'Set shell = CreateObject("WScript.Shell")\r\nroot = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)\r\ncommand = Chr(34) & root & "\\weapp-devtools-native.exe" & Chr(34)\r\nshell.Run command, 0, False\r\n')
   } else {
     const nodePath = target.startsWith('macos-') || target.startsWith('linux-') ? '../node/bin/node' : '../node/node'
-    await writeFile(join(targetRoot, 'bin/weapp-devtools'), `#!/bin/sh\nset -eu\nHERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\nexec "$HERE/${nodePath}" "$HERE/../scripts/devtools-launcher.mjs" "$@"\n`, { mode: 0o755 })
+    await writeFile(join(targetRoot, 'bin/weapp-devtools'), `#!/bin/sh\nset -eu\nHERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\nif [ "$#" -eq 0 ] || [ "$1" = gui ]; then exec "$HERE/weapp-devtools-native"; fi\nexec "$HERE/${nodePath}" "$HERE/../scripts/devtools-launcher.mjs" "$@"\n`, { mode: 0o755 })
     await writeFile(join(targetRoot, 'bin/pnpm'), '#!/bin/sh\nset -eu\nHERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\nexec "$HERE/../node/bin/node" "$HERE/../node/lib/node_modules/corepack/dist/corepack.js" pnpm@12.11.2 "$@"\n', { mode: 0o755 })
   }
 }
@@ -483,7 +490,7 @@ export async function createArchive(source, output, target) {
   }
 }
 
-export async function packageDevtools({ target, output, version = '0.1.0-preview.7.1', simulatorBinary, nodeDistribution, rendererAssets }) {
+export async function packageDevtools({ target, output, version = '0.1.0-preview.7.1', simulatorBinary, nativeLauncherBinary, nodeDistribution, rendererAssets }) {
   if (!NODE_TARGETS[target]) throw new Error(`Unsupported target ${target}`)
   const staging = resolve(output)
   const temporaryRoot = `${staging}.tmp`
@@ -491,11 +498,18 @@ export async function packageDevtools({ target, output, version = '0.1.0-preview
   await rm(temporaryRoot, { recursive: true, force: true })
   await mkdir(staging, { recursive: true })
   await mkdir(temporaryRoot, { recursive: true })
-  const binaryName = target.startsWith('windows-') ? 'weapp-simulator.exe' : 'weapp-simulator'
+  const windows = target.startsWith('windows-')
+  const binaryName = windows ? 'weapp-simulator.exe' : 'weapp-simulator'
+  const nativeLauncherName = windows ? 'weapp-devtools-native.exe' : 'weapp-devtools-native'
   if (!simulatorBinary) throw new Error('--simulator-bin is required')
+  if (!nativeLauncherBinary) throw new Error('--native-launcher-bin is required')
   await mkdir(join(staging, 'bin'), { recursive: true })
   await cp(resolve(simulatorBinary), join(staging, 'bin', binaryName), { recursive: true, dereference: true })
-  if (!target.startsWith('windows-')) await run('chmod', ['755', join(staging, 'bin', binaryName)])
+  await cp(resolve(nativeLauncherBinary), join(staging, 'bin', nativeLauncherName), { recursive: true, dereference: true })
+  if (!windows) {
+    await run('chmod', ['755', join(staging, 'bin', binaryName)])
+    await run('chmod', ['755', join(staging, 'bin', nativeLauncherName)])
+  }
   await prepareRendererAssets(staging, temporaryRoot, rendererAssets)
   await copyRuntimeSources(staging)
   await copyManifestPacker(staging, NODE_TARGETS[target], temporaryRoot)
@@ -540,7 +554,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     const result = await packageDevtools({
       target: option(args, '--target'), output: option(args, '--output', resolve(root, 'artifacts/devtools-release')), version: option(args, '--version', '0.1.0-preview.7.1'), simulatorBinary: option(args, '--simulator-bin'),
-      nodeDistribution: option(args, '--node-dist'), rendererAssets: option(args, '--renderer-assets'),
+      nativeLauncherBinary: option(args, '--native-launcher-bin'), nodeDistribution: option(args, '--node-dist'), rendererAssets: option(args, '--renderer-assets'),
     })
     process.stdout.write(`${JSON.stringify({ archive: result.archive, installer: result.installer, directory: result.directory, files: result.manifest.files.length }, null, 2)}\n`)
   } catch (error) { console.error(error.message); process.exitCode = 1 }

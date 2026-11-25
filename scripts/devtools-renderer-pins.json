@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "renderer": "canvaskit",
+  "canvaskitVersion": "0.42.0",
+  "assets": {
+    "javascript": {
+      "path": "vendor/canvaskit/canvaskit.js",
+      "size": 123707,
+      "sha256": "894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5"
+    },
+    "wasm": {
+      "path": "vendor/canvaskit/canvaskit.wasm",
+      "size": 8242911,
+      "sha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959"
+    },
+    "license": {
+      "path": "vendor/canvaskit/LICENSE",
+      "size": 1635,
+      "sha256": "d27678cba0d529e77201e2d2a053628143e986aad8f1e77f7039ad4366c8f978"
+    },
+    "package": {
+      "path": "vendor/canvaskit/package.json",
+      "size": 2359,
+      "sha256": "81ecbaba46a245d6e7d317c805462f2efc21ec252577eae88ff99ed406928997"
+    },
+    "font": {
+      "path": "vendor/fonts/NotoSansSC.ttf",
+      "size": 17772300,
+      "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da"
+    },
+    "fontLicense": {
+      "path": "vendor/fonts/OFL.txt",
+      "size": 4388,
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+    }
+  }
+}

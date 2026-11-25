@@ -118,6 +118,9 @@ jobs:
         with:
           key: checks-linux
 
+      - name: Check native DevTools launcher
+        run: cargo check --locked --no-default-features --features native-launcher -p container-simulator --bin weapp-devtools-native
+
       - name: Verify portable fixtures and API inventory
         run: |
           pnpm conformance:verify
