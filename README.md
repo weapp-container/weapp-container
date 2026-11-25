@@ -6,7 +6,15 @@
 
 本项目由社区独立开发，与 Tencent/WeChat、Ant Group/Alipay 及其平台、品牌或服务不存在隶属、官方授权、背书或商业合作关系。文中的平台名称、商标与 API 标识仅用于说明兼容目标或上游样例来源，相关权利归各自权利人所有。本仓库另含按随附许可证分发的第三方开源代码。
 
-## 快速开始
+## 下载使用
+
+直接使用桌面 DevTools：打开[下载页](https://container.weapp.dev/downloads/)，选择适合系统与处理器的安装包，然后在工具中打开已有的小程序项目。也可打开[在线演示](https://container.weapp.dev/)体验固定样例，无需下载项目源码。
+
+在应用中集成时，从对应平台的公开 SDK 包或发行归档开始，见下方[SDK 发行状态](docs/public-sdk-release.md)。
+
+## 仓库开发检查
+
+下面的命令面向维护和贡献者，不是普通应用的安装或预览步骤。
 
 ```sh
 pnpm install
@@ -19,7 +27,7 @@ Node 绑定只消费源码目录或已生成的 portable pack。编译器、宿�
 
 ## Native SDK 示例与发行状态
 
-Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于 `sdk/` 子模块中，包含 pack 加载、会话、视图、消息、导航、存储和生命周期用法。公开注册源当前提供 `0.1.0-preview.7.1` 预览包，尚无稳定版本。各平台安装状态、限制和示例运行步骤见[SDK 发行状态](docs/public-sdk-release.md)、[源码构建指南](docs/sdk-source-build.md)及各 SDK README。
+Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于 `sdk/` 子模块中，包含 pack 加载、会话、视图、消息、导航、存储和生命周期用法。公开注册源当前提供 `0.1.0-preview.7.1` 预览包，尚无稳定版本。各平台的普通安装方式、限制和示例运行步骤见[SDK 发行状态](docs/public-sdk-release.md)及各 SDK README。[源码构建指南](docs/sdk-source-build.md)只适用于维护 SDK 或重建发行物。
 
 - [Android 示例应用](sdk/android/consumer/README.md)
 - [iOS UIKit 示例应用](sdk/ios/examples/consumer/README.md)

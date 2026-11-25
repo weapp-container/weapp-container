@@ -1,8 +1,10 @@
-# SDK 源码构建指南
+# SDK 维护者源码构建指南
 
 **简体中文** · [English](sdk-source-build.en.md)
 
-核心仓库固定了 Android、iOS、Desktop、Flutter、React Native 和 Contract SDK 子模块。首次接入建议从同一核心提交构建运行库，并使用 SDK README 中对应的消费示例验证平台封装。
+本指南仅供 SDK 维护者和发行贡献者使用，用于修改封装、重建运行库或生成发行归档。普通应用应从[公开 SDK 发行物](public-sdk-release.md)开始，直接使用已发布的包管理器依赖或预编译归档，不需要下载核心仓库源码。
+
+核心仓库固定了 Android、iOS、Desktop、Flutter、React Native 和 Contract SDK 子模块。维护者从同一核心提交构建运行库，并使用 SDK README 中对应的消费示例验证平台封装。
 
 ## 准备源码与 portable pack
 

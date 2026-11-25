@@ -6,7 +6,15 @@ An independent open-source portable runtime for loading mini-program-shaped page
 
 This community-developed project is not affiliated with, officially authorized or endorsed by, or commercially partnered with Tencent/WeChat, Ant Group/Alipay, or their platforms and services. Platform names, marks, and API identifiers describe compatibility targets or upstream sample sources. All rights in those marks remain with their respective owners. Third-party open-source code is distributed under the licenses included with each component.
 
-## Quick start
+## Download and use
+
+Use the desktop DevTools from the [download page](https://container.weapp.dev/downloads/). Choose the installer for your operating system and processor, then open an existing mini-program project. You can also try fixed samples in the [online demo](https://container.weapp.dev/) without downloading project source.
+
+For application integration, start with the public SDK package or release archive for your platform. See the [SDK release status](docs/public-sdk-release.en.md).
+
+## Repository development checks
+
+These commands are for maintainers and contributors, not required to install or preview the application.
 
 ```sh
 pnpm install
@@ -19,7 +27,7 @@ The Node bindings consume source directories or prebuilt portable packs. Callers
 
 ## Native SDK Examples and Release Status
 
-Reference consumers for Android, iOS, React Native, Flutter, and Desktop live in the `sdk/` submodules. They cover pack loading, sessions, views, messages, navigation, storage, and lifecycle ownership. Public registries currently provide the `0.1.0-preview.7.1` prerelease, and no stable version is available. See the [SDK release status](docs/public-sdk-release.en.md), [source build guide](docs/sdk-source-build.en.md), and each SDK README for installation status, limitations, and runnable examples.
+Reference consumers for Android, iOS, React Native, Flutter, and Desktop live in the `sdk/` submodules. They cover pack loading, sessions, views, messages, navigation, storage, and lifecycle ownership. Public registries currently provide the `0.1.0-preview.7.1` prerelease, and no stable version is available. See the [SDK release status](docs/public-sdk-release.en.md) and each SDK README for normal installation methods, limitations, and runnable examples. The [source build guide](docs/sdk-source-build.en.md) is for SDK maintainers rebuilding release artifacts.
 
 - [Android example app](sdk/android/consumer/README.en.md)
 - [iOS UIKit example app](sdk/ios/examples/consumer/README.en.md)

@@ -1,8 +1,10 @@
-# SDK Source Build Guide
+# SDK Maintainer Source Build Guide
 
 [简体中文](sdk-source-build.md) · **English**
 
-The core repository pins the Android, iOS, Desktop, Flutter, React Native, and Contract SDK submodules. For an initial integration, build the runtime from one core revision and validate the platform wrapper with the matching consumer example in its SDK README.
+This guide is for SDK maintainers and release contributors who modify wrappers, rebuild runtimes, or produce release archives. Application developers should start with the [public SDK releases](public-sdk-release.en.md), using the published package-manager dependency or prebuilt archive for their platform. A core source checkout is not required for normal use.
+
+The core repository pins the Android, iOS, Desktop, Flutter, React Native, and Contract SDK submodules. Maintainers build runtimes from one core revision and validate the platform wrapper with the matching consumer example in its SDK README.
 
 ## Check Out the Source and Create a Portable Pack
 
