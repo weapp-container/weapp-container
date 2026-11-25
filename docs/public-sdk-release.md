@@ -97,7 +97,7 @@ NODE
 
 ### GitHub 配置位置
 
-在各仓库的 **Settings > Secrets and variables > Actions** 添加 secrets；公钥添加为 repository variable。文件与字段的对应关系如下：`.p12` 的 Base64 内容写入 `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64`，`.p8` 的 Base64 内容写入 `WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_BASE64`，`.pfx` 的 Base64 内容写入 `WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_BASE64`。三个证书导出密码分别写入对应 `*_PASSWORD` 字段；Mac identity 写入 `WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY`；API Key 的 Key ID 和 Issuer ID 写入同名 secrets。为 `WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD` 另生成强随机密码并存入 password manager。文件先编码为单行 Base64，工作流会在临时 runner 还原。不要提交证书、`.netrc`、GPG 私钥或密钥文件，也不要把它们发送到聊天。
+在各仓库的 **Settings > Secrets and variables > Actions** 添加 secrets；公钥添加为 repository variable。文件与字段的对应关系如下：`.p12` 的 Base64 内容写入 `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64`，`.p8` 的 Base64 内容写入 `WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_BASE64`，`.pfx` 的 Base64 内容写入 `WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_BASE64`。三个证书导出密码分别写入对应 `*_PASSWORD` 字段；Mac identity 写入 `WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY`；API Key 的 Key ID 和 Issuer ID 写入同名 secrets。为 `WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD` 另生成强随机密码并存入 password manager。文件先编码为单行 Base64，工作流会在临时 runner 还原。不要提交证书、`.netrc`、GPG 私钥或密钥文件。
 
 核心仓库当前还需要 DevTools secrets `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64`、`WEAPP_DEVTOOLS_MACOS_CERTIFICATE_PASSWORD`、`WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD`、`WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY`、`WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_BASE64`、`WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID`、`WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER`、`WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_BASE64`、`WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PASSWORD` 和 `WEAPP_DEVTOOLS_UPDATE_PRIVATE_KEY`，以及变量 `WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY`。Android Maven secrets 已配置；npm 和 pub.dev 发布流程使用 GitHub OIDC，不需要长期保存发布 token。
 

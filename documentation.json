@@ -69,7 +69,7 @@
         "path": "docs/public-sdk-release.md"
       },
       "reviewedChineseSummary": "已复核稳定发行状态、签名证书申请、Maven/CocoaPods 凭据、历史归档访问、npm/pub.dev OIDC 和 DevTools 密钥配置。",
-      "reviewedChineseSha256": "2d407ca240861d0f04481a610a857e03d10377d2ccccc4965eb4c68babf9a327",
+      "reviewedChineseSha256": "2a404d63ed5cbab152457a707f3b4bce6f1e2564dda275febc638eff267f3dad",
       "legacyHeadingIds": []
     },
     {
