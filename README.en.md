@@ -26,6 +26,7 @@ Reference consumers for Android, iOS, React Native, Flutter, and Desktop live in
 - [React Native example app](sdk/react-native/example/README.en.md)
 - [Flutter example app](sdk/flutter/example/README.en.md)
 - [Desktop consumer example](sdk/desktop/consumer/README.en.md)
+- [Contract C ABI host example](sdk/contract/examples/consumer/README.en.md)
 
 ## DevTools preview
 

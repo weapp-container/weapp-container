@@ -26,6 +26,7 @@ Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于
 - [React Native 示例应用](sdk/react-native/example/README.md)
 - [Flutter 示例应用](sdk/flutter/example/README.md)
 - [Desktop 消费示例](sdk/desktop/consumer/README.md)
+- [Contract C ABI 宿主示例](sdk/contract/examples/consumer/README.md)
 
 ## DevTools 下载预览
 

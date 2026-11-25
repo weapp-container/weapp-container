@@ -56,7 +56,7 @@
         "path": "README.md"
       },
       "reviewedChineseSummary": "SDK 示例应用与源码构建入口",
-      "reviewedChineseSha256": "923d7dc45aa16203194ed3daf5050604ce1cb4cbb34ffe8447692948c6bd4a68",
+      "reviewedChineseSha256": "7d32868172f9b213d15d6a4fe2d141e7d435e4969cb50cd3ef5fc617f8c79ed6",
       "legacyHeadingIds": []
     },
     {
@@ -68,8 +68,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "已复核稳定发行状态、签名证书申请、Maven/CocoaPods 凭据、历史归档访问、npm/pub.dev OIDC 和 DevTools 密钥配置。",
-      "reviewedChineseSha256": "52c949846e80251bedb04e406d726339c96fddea1c8b3e679ff9ccaee7ae6f3c",
+      "reviewedChineseSummary": "各 SDK 稳定发行状态、示例入口与维护者凭据申请步骤",
+      "reviewedChineseSha256": "634c21963c5ab93d8400a15f13802e978ba847088c6e815ee35ee5b27b93fb6b",
       "legacyHeadingIds": []
     },
     {
@@ -81,8 +81,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/sdk-source-build.md"
       },
-      "reviewedChineseSummary": "已复核各 SDK 的源码构建工具链、示例入口及目标验证边界。",
-      "reviewedChineseSha256": "3ffba8877bc8c32c74011cb49ced6233fc43f7737fe067810c3aa65cb84c11cf",
+      "reviewedChineseSummary": "各 SDK 本机构建环境、运行示例与构建记录",
+      "reviewedChineseSha256": "bbd5392d939bc9d4d672bd1627c6c51baa2c150675bad2fe2cf414595cf1a00a",
       "legacyHeadingIds": []
     },
     {
