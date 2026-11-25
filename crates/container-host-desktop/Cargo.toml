@@ -62,23 +62,8 @@ glow = { version = "0.18", optional = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = { version = "0.6.5", optional = true, default-features = false }
-objc2-app-kit = {
-    version = "0.3.2",
-    optional = true,
-    default-features = false,
-    features = ["objc2-quartz-core", "NSResponder", "NSView"],
-}
+objc2-app-kit = { version = "0.3.2", optional = true, default-features = false, features = ["objc2-quartz-core", "NSResponder", "NSView"] }
 objc2-foundation = { version = "0.3.2", optional = true, default-features = false, features = ["NSGeometry"] }
-objc2-metal = {
-    version = "0.3.2",
-    optional = true,
-    default-features = false,
-    features = ["MTLDevice", "MTLCommandBuffer", "MTLCommandQueue", "MTLDrawable", "MTLPixelFormat"],
-}
-objc2-quartz-core = {
-    version = "0.3.2",
-    optional = true,
-    default-features = false,
-    features = ["objc2-metal", "CAMetalLayer"],
-}
+objc2-metal = { version = "0.3.2", optional = true, default-features = false, features = ["MTLDevice", "MTLCommandBuffer", "MTLCommandQueue", "MTLDrawable", "MTLPixelFormat"] }
+objc2-quartz-core = { version = "0.3.2", optional = true, default-features = false, features = ["objc2-metal", "CAMetalLayer"] }
 

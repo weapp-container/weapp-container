@@ -13,6 +13,8 @@ const LINUX_DEPENDENCIES = [
   'libx11-6',
   'libxkbcommon0',
   'libfontconfig1',
+  'libgtk-3-0',
+  'libwebkit2gtk-4.1-0',
   'xdg-utils',
   'zenity',
 ]
@@ -95,14 +97,17 @@ export async function preparePlatformPayload({ target, source, version, environm
   if (!configuration.enabled) return configuration
   if (target === 'macos-arm64' || target === 'macos-x86_64') {
     if (!existsSync(environment[MAC_NOTARY_KEY_PATH]) && configuration.notarize) throw new Error(`macOS notarization key was not found at ${environment[MAC_NOTARY_KEY_PATH]}`)
-    for (const relativePath of ['bin/weapp-simulator', 'node/bin/node']) {
+    for (const relativePath of ['bin/weapp-simulator', 'bin/weapp-devtools-native', 'node/bin/node']) {
       const file = join(source, relativePath)
       if (await stat(file).then(value => value.isFile()).catch(() => false)) signMacFile(file, environment[MAC_SIGNING_IDENTITY])
     }
   } else if (target === 'windows-x86_64') {
     if (!existsSync(environment[WINDOWS_SIGNTOOL])) throw new Error(`Windows signtool was not found at ${environment[WINDOWS_SIGNTOOL]}`)
     if (!existsSync(environment[WINDOWS_CERTIFICATE_PATH])) throw new Error(`Windows signing certificate was not found at ${environment[WINDOWS_CERTIFICATE_PATH]}`)
-    signWindowsFile(join(source, 'bin/weapp-simulator.exe'), environment)
+    for (const relativePath of ['bin/weapp-simulator.exe', 'bin/weapp-devtools-native.exe']) {
+      const file = join(source, relativePath)
+      if (existsSync(file)) signWindowsFile(file, environment)
+    }
   }
   return configuration
 }
@@ -272,7 +277,7 @@ export async function buildMacAppBundle({ source, output, version, iconPath, tem
 </dict>
 </plist>
 `)
-  await writeFile(executable, '#!/bin/sh\nset -eu\nRESOURCES="$(CDPATH= cd -- "$(dirname -- "$0")/../Resources" && pwd)"\nexec "$RESOURCES/node/bin/node" "$RESOURCES/scripts/devtools-launcher.mjs" gui\n', { mode: 0o755 })
+  await writeFile(executable, '#!/bin/sh\nset -eu\nRESOURCES="$(CDPATH= cd -- "$(dirname -- "$0")/../Resources" && pwd)"\nexec "$RESOURCES/bin/weapp-devtools-native"\n', { mode: 0o755 })
   await chmod(executable, 0o755)
   return app
 }

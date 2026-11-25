@@ -11,12 +11,18 @@ description = "Deterministic developer simulator and JSONL harness for Weapp Con
 name = "weapp-simulator"
 path = "src/main.rs"
 
+[[bin]]
+name = "weapp-devtools-native"
+path = "src/devtools_native.rs"
+required-features = ["native-launcher"]
+
 [features]
 default = ["quickjs-native", "skia-raster"]
 quickjs-native = ["container-runtime/quickjs-native"]
 v8-native = ["container-runtime/v8-native"]
 skia-raster = ["container-render-skia/skia-backend", "container-runtime/skia-backend"]
 desktop-window = ["dep:container-host-desktop", "dep:winit", "container-host-desktop/window"]
+native-launcher = ["dep:gtk", "dep:tao", "dep:wry"]
 
 [dependencies]
 container-bridge = { path = "../container-bridge" }
@@ -24,6 +30,8 @@ container-core = { path = "../container-core" }
 container-host-common = { path = "../container-host-common" }
 container-host-desktop = { path = "../container-host-desktop", optional = true }
 winit = { version = "0.30", optional = true }
+tao = { version = "0.37", optional = true }
+wry = { version = "0.57.4", optional = true, default-features = false, features = ["os-webview"] }
 container-ir = { path = "../container-ir" }
 container-render-skia = { path = "../container-render-skia" }
 container-runtime = { path = "../container-runtime" }
@@ -43,6 +51,9 @@ container-host-desktop = { path = "../container-host-desktop", optional = true, 
 
 [target.'cfg(any(target_os = "windows", target_os = "linux"))'.dependencies]
 container-host-desktop = { path = "../container-host-desktop", optional = true, features = ["gl-window"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+gtk = { version = "0.18", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Diagnostics_ToolHelp", "Win32_System_JobObjects", "Win32_System_Threading"] }

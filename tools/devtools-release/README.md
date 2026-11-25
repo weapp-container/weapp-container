@@ -45,7 +45,7 @@ Run `Unblock-File` on a ZIP before extracting it. If SmartScreen still appears, 
 
 ## Start the graphical launcher
 
-Run `bin/weapp-devtools` on macOS or Linux, or `bin/weapp-devtools.cmd` on Windows. The launcher opens a local browser window where you can choose an existing `weapp-vite` project and start either the Web Player or Desktop Player.
+Run `bin/weapp-devtools` on macOS or Linux, or `bin/weapp-devtools.cmd` on Windows. The launcher opens a native app window where you can choose an existing `weapp-vite` project and start either the Desktop Player or Web Player. Desktop Player is selected by default.
 
 The archive includes the fixed `weapp-vite` compiler, its production dependencies, Node.js, the manifest packer, and the renderer resources used by the simulator. The selected project must have its declared dependencies installed. Use the bundled `pnpm` command in the package when the launcher reports missing dependencies.
 
@@ -58,11 +58,12 @@ bin/weapp-devtools dev --project /absolute/project --surface desktop
 
 The Web Player listens on a local loopback port and can be opened from the launcher logs. Desktop Player requires a graphical session on the host operating system.
 
-On Ubuntu 22.04 or 24.04, Desktop Player also requires the system OpenGL, X11,
-XKB, and fontconfig libraries. Install them if they are not already present.
+On Ubuntu 22.04 or 24.04, the app window and Desktop Player require the GTK,
+WebKitGTK, OpenGL, X11, XKB, and fontconfig libraries. The installer declares
+these runtime dependencies. Install them if using the portable archive.
 
 ```sh
-sudo apt install libgl1 libx11-6 libxkbcommon0 libfontconfig1 xdg-utils zenity
+sudo apt install libgtk-3-0 libwebkit2gtk-4.1-0 libgl1 libx11-6 libxkbcommon0 libfontconfig1 xdg-utils zenity
 ```
 
 The Web Player does not require a desktop session.

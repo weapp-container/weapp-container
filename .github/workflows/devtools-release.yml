@@ -63,6 +63,9 @@ jobs:
       - name: Install the pinned compiler dependency graph
         run: corepack pnpm@12.11.2 --dir vendor/weapp-vite install --frozen-lockfile --ignore-scripts
 
+      - name: Build the pinned compiler packages
+        run: corepack pnpm@12.11.2 --dir vendor/weapp-vite run build:pkgs
+
       - name: Prepare stable macOS signing keychain
         if: ${{ startsWith(matrix.target, 'macos-') && !contains(github.ref_name, '-preview.') }}
         shell: bash
@@ -122,12 +125,13 @@ jobs:
             macos-x86_64) rust_target=x86_64-apple-darwin ;;
             *) exit 1 ;;
           esac
-          cargo build --locked --release -p container-simulator --features desktop-window --target "$rust_target"
+          cargo build --locked --release -p container-simulator --features desktop-window,native-launcher --target "$rust_target" --bin weapp-simulator --bin weapp-devtools-native
           node scripts/package-devtools-release.mjs \
             --target "${{ matrix.target }}" \
             --output "artifacts/weapp-container-devtools-${{ matrix.target }}" \
             --version "${GITHUB_REF_NAME#devtools-v}" \
-            --simulator-bin "target/$rust_target/release/weapp-simulator"
+            --simulator-bin "target/$rust_target/release/weapp-simulator" \
+            --native-launcher-bin "target/$rust_target/release/weapp-devtools-native"
 
       - name: Validate macOS DMG installation layout
         if: startsWith(matrix.target, 'macos-')
@@ -150,26 +154,29 @@ jobs:
           app="$mount_point/Weapp Container DevTools.app"
           plutil -lint "$app/Contents/Info.plist"
           test -x "$app/Contents/MacOS/WeappContainerDevTools"
-          "$app/Contents/Resources/node/bin/node" "$app/Contents/Resources/scripts/devtools-launcher.mjs" --help
-          echo "DevTools launcher help command completed"
+          "$app/Contents/Resources/bin/weapp-devtools-native" --help
+          test -f "$app/Contents/Resources/vendor/weapp-vite/node_modules/weapp-vite/dist/cli.mjs"
+          echo "Native launcher and pinned compiler package are present"
           expected_arch=${{ matrix.target == 'macos-arm64' && 'arm64' || 'x86_64' }}
           simulator_arch="$(lipo -archs "$app/Contents/Resources/bin/weapp-simulator")"
+          native_arch="$(lipo -archs "$app/Contents/Resources/bin/weapp-devtools-native")"
           node_arch="$(lipo -archs "$app/Contents/Resources/node/bin/node")"
-          printf 'Expected architecture: %s\nSimulator architecture: %s\nNode architecture: %s\n' "$expected_arch" "$simulator_arch" "$node_arch"
+          printf 'Expected architecture: %s\nSimulator architecture: %s\nNative launcher architecture: %s\nNode architecture: %s\n' "$expected_arch" "$simulator_arch" "$native_arch" "$node_arch"
           test "$simulator_arch" = "$expected_arch"
+          test "$native_arch" = "$expected_arch"
           test "$node_arch" = "$expected_arch"
           if [[ "$GITHUB_REF_NAME" != *-preview.* ]]; then
             codesign --verify --deep --strict --verbose=2 "$app"
             spctl --assess --type open --verbose=2 "$app"
           fi
 
-      - name: Build Linux simulator
+      - name: Build Linux simulator and native launcher
         if: matrix.target == 'linux-x86_64'
-        run: cargo build --locked --release -p container-simulator --features desktop-window
+        run: cargo build --locked --release -p container-simulator --features desktop-window,native-launcher --bin weapp-simulator --bin weapp-devtools-native
 
       - name: Package Linux DevTools
         if: matrix.target == 'linux-x86_64'
-        run: node scripts/package-devtools-release.mjs --target linux-x86_64 --output "artifacts/weapp-container-devtools-${{ matrix.target }}" --version "${GITHUB_REF_NAME#devtools-v}" --simulator-bin target/release/weapp-simulator
+        run: node scripts/package-devtools-release.mjs --target linux-x86_64 --output "artifacts/weapp-container-devtools-${{ matrix.target }}" --version "${GITHUB_REF_NAME#devtools-v}" --simulator-bin target/release/weapp-simulator --native-launcher-bin target/release/weapp-devtools-native
 
       - name: Validate Linux DEB installation and launcher
         if: matrix.target == 'linux-x86_64'
@@ -179,11 +186,13 @@ jobs:
           sudo apt-get install -y ./artifacts/weapp-container-devtools-linux-x86_64.deb
           test -f /usr/share/applications/weapp-container-devtools.desktop
           weapp-devtools --help
+          test -x /opt/weapp-container-devtools/bin/weapp-devtools-native
+          test -f /opt/weapp-container-devtools/vendor/weapp-vite/node_modules/weapp-vite/dist/cli.mjs
           sudo apt-get remove -y weapp-container-devtools
 
-      - name: Build Windows simulator
+      - name: Build Windows simulator and native launcher
         if: matrix.target == 'windows-x86_64'
-        run: cargo build --locked --release -p container-simulator --features desktop-window
+        run: cargo build --locked --release -p container-simulator --features desktop-window,native-launcher --bin weapp-simulator --bin weapp-devtools-native
 
       - name: Install WiX Toolset
         if: matrix.target == 'windows-x86_64'
@@ -232,7 +241,7 @@ jobs:
           try {
             $version = $env:GITHUB_REF_NAME -replace '^devtools-v', ''
             $output = "$drive\artifacts\weapp-container-devtools-${{ matrix.target }}"
-            node scripts/package-devtools-release.mjs --target windows-x86_64 --output $output --version $version --simulator-bin target/release/weapp-simulator.exe
+            node scripts/package-devtools-release.mjs --target windows-x86_64 --output $output --version $version --simulator-bin target/release/weapp-simulator.exe --native-launcher-bin target/release/weapp-devtools-native.exe
             if ($LASTEXITCODE -ne 0) { throw "Windows DevTools packaging failed with $LASTEXITCODE" }
           } finally {
             subst $drive /D

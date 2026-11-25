@@ -44,6 +44,7 @@ async function temporaryDirectory(t) {
 test('simulator CLI arguments keep paths with spaces as one argument', () => {
   const project = '/tmp/example mini program'
   assert.deepEqual(simulatorArguments(project, 'web'), ['dev', '--project', project, '--surface', 'web'])
+  assert.deepEqual(simulatorArguments(project, 'desktop'), ['dev', '--project', project, '--surface', 'desktop'])
   assert.throws(() => simulatorArguments(project, 'mobile'), /请选择 Web Player 或 Desktop Player/)
 })
 
@@ -55,7 +56,7 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   await mkdir(join(installRoot, 'scripts'), { recursive: true })
   await mkdir(join(installRoot, 'bin'), { recursive: true })
   await mkdir(project)
-  await writeFile(join(installRoot, 'scripts/devtools-launcher.html'), '<!doctype html><title>DevTools</title>')
+  await writeFile(join(installRoot, 'scripts/devtools-launcher.html'), await readFile(resolve(process.cwd(), 'scripts/devtools-launcher.html'), 'utf8'))
   await writeFile(join(installRoot, 'bin', simulatorExecutable), 'fixture')
   await chmod(join(installRoot, 'bin', simulatorExecutable), 0o755)
   await writeFile(join(project, 'package.json'), JSON.stringify({ name: 'fixture' }))
@@ -63,13 +64,15 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   await writeFile(join(project, 'app.json'), JSON.stringify({ pages: ['pages/index/index'] }))
 
   let page
+  let spawnArguments
   let spawnOptions
   let ownedChild
   const launcher = await createLauncher({
     installRoot,
     openBrowser: value => { page = value },
     chooseProject: async () => project,
-    spawnProcess: (_executable, _arguments, options) => {
+    spawnProcess: (_executable, arguments_, options) => {
+      spawnArguments = arguments_
       spawnOptions = options
       ownedChild = new FakeChild()
       setImmediate(() => ownedChild.stdout.write('weapp-simulator: web surface http://127.0.0.1:43121\n'))
@@ -81,7 +84,10 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   const pageUrl = new URL(page)
   const html = await fetch(pageUrl)
   assert.equal(html.status, 200)
-  assert.match(await html.text(), /DevTools/)
+  const launcherHtml = await html.text()
+  assert.match(launcherHtml, /DevTools/)
+  assert.match(launcherHtml, /<option value="desktop" selected>Desktop Player<\/option>/)
+  assert.match(launcherHtml, /<option value="web">Web Player<\/option>/)
   const token = new URLSearchParams(pageUrl.hash.slice(1)).get('session')
   const api = async (path, body, headers = {}) => fetch(new URL(path, pageUrl), {
     method: body === undefined ? 'GET' : 'POST',
@@ -101,8 +107,9 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   assert.equal(updateCheck.status, 200)
   assert.equal((await updateCheck.json()).status, 'disabled')
 
-  const start = await api('/api/start', { project, surface: 'web' })
+  const start = await api('/api/start', { project })
   assert.equal(start.status, 202)
+  assert.deepEqual(spawnArguments, ['dev', '--project', await realpath(project), '--surface', 'desktop'])
   assert.equal(spawnOptions.cwd, await realpath(project))
   assert.ok(spawnOptions.env.PATH.includes(join(installRoot, 'bin')))
   assert.equal((await api('/api/start', { project, surface: 'web' })).status, 409)
@@ -115,6 +122,11 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   assert.equal(stopped.status, 200)
   assert.equal(ownedChild.signalCode, 'SIGINT')
   assert.equal((await (await api('/api/status')).json()).running, false)
+
+  const webStart = await api('/api/start', { project, surface: 'web' })
+  assert.equal(webStart.status, 202)
+  assert.deepEqual(spawnArguments, ['dev', '--project', await realpath(project), '--surface', 'web'])
+  await api('/api/stop', {})
 })
 
 test('launcher validates the project and reports malformed project metadata', async t => {
@@ -216,6 +228,8 @@ test('installer metadata maps preview versions to native package formats', () =>
   assert.equal(debianPackageVersion('0.1.0-preview.7.2'), '0.1.0~preview.7.2')
   assert.match(renderDebControl('0.1.0-preview.7.2'), /Version: 0\.1\.0~preview\.7\.2/)
   assert.match(renderDebControl('0.1.0-preview.7.2'), /Architecture: amd64/)
+  assert.match(renderDebControl('0.1.0-preview.7.2'), /libgtk-3-0/)
+  assert.match(renderDebControl('0.1.0-preview.7.2'), /libwebkit2gtk-4\.1-0/)
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /Version="0\.1\.702"/)
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /InstallScope="perUser"/)
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /AllowDowngrades="yes"/)
@@ -298,8 +312,11 @@ test('macOS DMG contains an Applications shortcut and a runnable app bundle', as
   const output = join(directory, 'weapp-container-devtools.dmg')
   const iconPath = join(process.cwd(), 'assets/brand/png/weapp-container-avatar-128.png')
   const mountPoint = join(directory, 'mounted')
+  await mkdir(join(source, 'bin'), { recursive: true })
   await mkdir(join(source, 'node/bin'), { recursive: true })
   await mkdir(join(source, 'scripts'), { recursive: true })
+  await writeFile(join(source, 'bin/weapp-devtools-native'), 'native launcher')
+  await chmod(join(source, 'bin/weapp-devtools-native'), 0o755)
   await writeFile(join(source, 'node/bin/node'), 'node')
   await writeFile(join(source, 'scripts/devtools-launcher.mjs'), 'launcher')
   await writeFile(join(source, 'LICENSE'), 'license')
@@ -322,7 +339,11 @@ test('macOS DMG contains an Applications shortcut and a runnable app bundle', as
   try {
     const app = join(mountPoint, 'Weapp Container DevTools.app')
     assert.equal(await readFile(join(app, 'Contents/Info.plist'), 'utf8').then(value => /CFBundleIdentifier/.test(value)), true)
-    assert.equal(await readFile(join(app, 'Contents/MacOS/WeappContainerDevTools'), 'utf8').then(value => value.startsWith('#!/bin/sh')), true)
+    const appExecutable = await readFile(join(app, 'Contents/MacOS/WeappContainerDevTools'), 'utf8')
+    assert.equal(appExecutable.startsWith('#!/bin/sh'), true)
+    assert.match(appExecutable, /exec "\$RESOURCES\/bin\/weapp-devtools-native"/)
+    assert.equal(await readFile(join(app, 'Contents/Resources/bin/weapp-devtools-native'), 'utf8'), 'native launcher')
+    assert.equal((await lstat(join(app, 'Contents/Resources/bin/weapp-devtools-native'))).mode & 0o111, 0o111)
     assert.equal(await readFile(join(app, 'Contents/Resources/scripts/devtools-launcher.mjs'), 'utf8'), 'launcher')
     assert.equal((await lstat(join(mountPoint, 'Applications'))).isSymbolicLink(), true)
     execFileSync('codesign', ['--verify', '--deep', '--strict', app], { stdio: 'ignore' })

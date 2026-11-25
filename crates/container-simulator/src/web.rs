@@ -103,7 +103,7 @@ const MAX_BRIDGE_REQUESTS: usize = 64;
 const MAX_BRIDGE_QUEUE_BYTES: usize = 8 * 1024 * 1024;
 const HTTP_DEADLINE: Duration = Duration::from_secs(5);
 const MAX_RENDERER_ASSET_BYTES: usize = 32 * 1024 * 1024;
-const RENDERER_PINS: &str = "{}";
+const RENDERER_PINS: &str = include_str!("../../../scripts/devtools-renderer-pins.json");
 
 #[derive(Debug)]
 struct CachedRenderFrame {
