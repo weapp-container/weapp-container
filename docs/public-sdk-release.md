@@ -61,7 +61,7 @@ Android、Flutter 和 React Native 包版本已通过 Maven Central、pub.dev、
 
 - **Maven Central（`sdk-android`）**：在 Central Portal 验证命名空间 `io.github.weapp-container`，然后从账户设置生成 **User Token**。将 token 的 username/password 分别作为 `MAVEN_CENTRAL_USERNAME`、`MAVEN_CENTRAL_PASSWORD`。它们是 CI 发布凭据，不是 Central Portal 登录密码。另用 GnuPG 生成可用于分离签名的 OpenPGP 密钥，将公钥发布到公开 keyserver，并把 ASCII-armored 私钥设为 `WEAPP_SIGNING_KEY`；私钥有口令时再设置 `WEAPP_SIGNING_PASSWORD`。Android workflow 在 `sdk-android` 仓库读取这些 Actions secrets。
 - **历史运行库私有归档**：只有 manifest 指向冻结历史版本时才需要 `WEAPP_CONTAINER_RUNTIME_TOKEN`。先请仓库维护者授予 `weapp-container/runtime-artifacts-private-archive` 读取权限，再创建仅对该仓库有 **Contents: read** 权限的 fine-grained GitHub token，并通过环境变量注入。当前 preview.7.1 和源码构建不需要它。
-- **CocoaPods（`sdk-ios`、`sdk-desktop`）**：安装 CocoaPods 后运行 `pod trunk register maintainer@example.com "Maintainer Name"`，打开验证邮件中的链接。Trunk 账户生成的 token 会保存在用户 `~/.netrc` 的 `trunk.cocoapods.org` 项中。将该项的 token 分别设为两个仓库的 `COCOAPODS_TRUNK_TOKEN` secret。首次发布 Pod 时，发布账号会成为 owner，之后由 owner 邀请其他维护者。
+- **CocoaPods（`sdk-ios`、`sdk-desktop`）**：安装 CocoaPods 后运行 `pod trunk register maintainer@example.com "Maintainer Name"`，打开验证邮件中的链接。Trunk 账户生成的 token 会保存在用户 `~/.netrc` 的 `trunk.cocoapods.org` 项中。将该项的 token 分别设为两个仓库的 `COCOAPODS_TRUNK_TOKEN` secret。首次发布 Pod 的账号会成为 owner，后续维护者由该 owner 管理。
 - **npm（`sdk-contract`、`sdk-react-native`）**：发布账号必须拥有对应 `@weapp-container` 包的发布权限。首次创建新包时由维护者登录 npm 并完成 2FA 发布。包可用后，在 npm 包设置中为准确的 GitHub repository 和 `publish-npm.yml` 配置 trusted publisher。发布 workflow 已使用 OIDC，后续不需要长期 npm token。
 - **pub.dev（`sdk-flutter`）**：维护者需要有七个包的发布权限。现有包在各自 pub.dev 管理页配置 GitHub trusted publisher，指向 `weapp-container/sdk-flutter`。发布 workflow 使用 OIDC，不需要把 pub.dev token 存入 GitHub。新增包首次发布仍由包所有者进行人工发布，再配置 trusted publisher。
 
