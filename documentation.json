@@ -55,8 +55,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "README.md"
       },
-      "reviewedChineseSummary": "SDK 示例应用与源码构建入口",
-      "reviewedChineseSha256": "daee6fb8d26a6a50b05125b78429fd5db4f49f0e3c3d495f63a9483446f4c8a5",
+      "reviewedChineseSummary": "普通用户从 DevTools 下载页或公开 SDK 发行物开始，仓库检查仅供维护者使用",
+      "reviewedChineseSha256": "a6e3e7b96470214dc32eaa2e1d3262a2542d74134f2f2ad0a9b459d390c677a2",
       "legacyHeadingIds": []
     },
     {
@@ -81,8 +81,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/sdk-source-build.md"
       },
-      "reviewedChineseSummary": "各 SDK 本机构建环境、运行示例与构建记录",
-      "reviewedChineseSha256": "bbd5392d939bc9d4d672bd1627c6c51baa2c150675bad2fe2cf414595cf1a00a",
+      "reviewedChineseSummary": "本指南仅供 SDK 维护者和发行贡献者用于重建运行库与发行归档",
+      "reviewedChineseSha256": "6cb859a9474861f76818bedfb459fa1f73725526e179b4b25e01b0d218c42021",
       "legacyHeadingIds": []
     },
     {
