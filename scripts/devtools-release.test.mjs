@@ -144,9 +144,9 @@ test('update manifests require an Ed25519 signature and select the newest compat
     schemaVersion: 1,
     channel: 'stable',
     releases: [
-      { version: '0.2.0', target: 'macos-universal', arch: process.arch === 'arm64' ? 'x64' : 'arm64', url: 'https://example.invalid/incompatible.dmg', sha256: 'c'.repeat(64), size: 10 },
-      { version: '0.1.0', target: 'macos-universal', url: 'https://example.invalid/new.dmg', sha256: 'a'.repeat(64), size: 10 },
-      { version: '0.0.9', target: 'macos-universal', url: 'https://example.invalid/old.dmg', sha256: 'b'.repeat(64), size: 10 },
+      { version: '0.2.0', target: 'macos-arm64', arch: 'x64', url: 'https://example.invalid/incompatible.dmg', sha256: 'c'.repeat(64), size: 10 },
+      { version: '0.1.0', target: 'macos-arm64', arch: 'arm64', url: 'https://example.invalid/new.dmg', sha256: 'a'.repeat(64), size: 10 },
+      { version: '0.0.9', target: 'macos-arm64', arch: 'arm64', url: 'https://example.invalid/old.dmg', sha256: 'b'.repeat(64), size: 10 },
     ],
   }
   const signature = sign(null, Buffer.from(canonicalUpdatePayload(unsigned)), privateKey).toString('base64url')
@@ -154,7 +154,7 @@ test('update manifests require an Ed25519 signature and select the newest compat
   assert.deepEqual(verifyUpdateManifest(manifest, { publicKey: publicKey.export({ type: 'spki', format: 'pem' }) }), unsigned)
   const result = await checkForUpdate({
     metadata: {
-      version: '0.0.8', target: 'macos-universal',
+      version: '0.0.8', target: 'macos-arm64',
       update: { manifestUrl: 'https://example.invalid/updates.json', publicKey: publicKey.export({ type: 'spki', format: 'pem' }) },
     },
     fetchImpl: async () => ({ ok: true, json: async () => manifest }),
@@ -184,7 +184,7 @@ test('stable update manifest generation is deterministic over verified installer
   const directory = await temporaryDirectory(t)
   const assets = join(directory, 'assets')
   await mkdir(assets)
-  for (const filename of ['weapp-container-devtools-macos-universal.dmg', 'weapp-container-devtools-linux-x86_64.deb', 'weapp-container-devtools-windows-x86_64.msi']) {
+  for (const filename of ['weapp-container-devtools-macos-arm64.dmg', 'weapp-container-devtools-macos-x86_64.dmg', 'weapp-container-devtools-linux-x86_64.deb', 'weapp-container-devtools-windows-x86_64.msi']) {
     await writeFile(join(assets, filename), `${filename}\n`)
   }
   const { privateKey, publicKey } = generateKeyPairSync('ed25519')
@@ -193,7 +193,7 @@ test('stable update manifest generation is deterministic over verified installer
     publicKey: publicKey.export({ type: 'spki', format: 'pem' }),
   })
   assert.equal(manifest.channel, 'stable')
-  assert.equal(manifest.releases.length, 3)
+  assert.equal(manifest.releases.length, 4)
   assert.match(manifest.signature, /^[A-Za-z0-9_-]+$/)
 })
 
@@ -240,10 +240,12 @@ test('installer metadata rejects versions that cannot be represented safely', ()
 })
 
 test('stable installer signing fails closed while previews may remain unsigned', () => {
-  assert.deepEqual(validateInstallerSigningEnvironment('macos-universal', '1.0.0-preview.1.0', {}), { enabled: false, notarize: false })
-  assert.throws(() => validateInstallerSigningEnvironment('macos-universal', '1.0.0', {}), /Stable macos-universal signing requires/)
-  assert.deepEqual(validateInstallerSigningEnvironment('macos-universal', '1.0.0-preview.1.0', { WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY: 'Developer ID Application: Example' }), { enabled: true, notarize: false })
-  assert.throws(() => validateInstallerSigningEnvironment('macos-universal', '1.0.0-preview.1.0', { WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_PATH: 'key.p8' }), /Preview macos-universal signing requires/)
+  for (const target of ['macos-arm64', 'macos-x86_64']) {
+    assert.deepEqual(validateInstallerSigningEnvironment(target, '1.0.0-preview.1.0', {}), { enabled: false, notarize: false })
+    assert.throws(() => validateInstallerSigningEnvironment(target, '1.0.0', {}), new RegExp(`Stable ${target} signing requires`))
+    assert.deepEqual(validateInstallerSigningEnvironment(target, '1.0.0-preview.1.0', { WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY: 'Developer ID Application: Example' }), { enabled: true, notarize: false })
+    assert.throws(() => validateInstallerSigningEnvironment(target, '1.0.0-preview.1.0', { WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_PATH: 'key.p8' }), new RegExp(`Preview ${target} signing requires`))
+  }
   assert.deepEqual(validateInstallerSigningEnvironment('windows-x86_64', '1.0.0', {
     WEAPP_DEVTOOLS_WINDOWS_SIGNTOOL: 'signtool.exe',
     WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PATH: 'certificate.pfx',
@@ -308,7 +310,7 @@ test('macOS DMG contains an Applications shortcut and a runnable app bundle', as
   process.env.WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY = '-'
   for (const name of signingEnvironment.slice(1)) delete process.env[name]
   try {
-    await createDmg({ source, output, version: '0.1.0-preview.7.2', iconPath })
+    await createDmg({ target: 'macos-arm64', source, output, version: '0.1.0-preview.7.2', iconPath })
   } finally {
     for (const name of signingEnvironment) {
       if (previousSigningEnvironment[name] === undefined) delete process.env[name]

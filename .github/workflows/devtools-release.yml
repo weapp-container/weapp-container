@@ -20,7 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: macos-universal
+          - target: macos-arm64
+            os: xcode-27
+          - target: macos-x86_64
             os: xcode-27
           - target: linux-x86_64
             os: ubuntu-22.04
@@ -50,7 +52,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: '1.99.1'
-          targets: ${{ matrix.target == 'macos-universal' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.target == 'windows-x86_64' && 'x86_64-pc-windows-msvc' || 'x86_64-unknown-linux-gnu' }}
+          targets: ${{ matrix.target == 'macos-arm64' && 'aarch64-apple-darwin' || matrix.target == 'macos-x86_64' && 'x86_64-apple-darwin' || matrix.target == 'windows-x86_64' && 'x86_64-pc-windows-msvc' || 'x86_64-unknown-linux-gnu' }}
 
       - uses: ./.github/actions/setup-linux-native
         if: runner.os == 'Linux'
@@ -62,7 +64,7 @@ jobs:
         run: corepack pnpm@12.11.2 --dir vendor/weapp-vite install --frozen-lockfile --ignore-scripts
 
       - name: Prepare stable macOS signing keychain
-        if: ${{ matrix.target == 'macos-universal' && !contains(github.ref_name, '-preview.') }}
+        if: ${{ startsWith(matrix.target, 'macos-') && !contains(github.ref_name, '-preview.') }}
         shell: bash
         env:
           WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64: ${{ secrets.WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64 }}
@@ -107,8 +109,8 @@ jobs:
       - name: Build the portable manifest packer
         run: pnpm --dir tools/container-manifest build
 
-      - name: Build universal macOS simulator
-        if: matrix.target == 'macos-universal'
+      - name: Build macOS simulator and package
+        if: startsWith(matrix.target, 'macos-')
         shell: bash
         env:
           WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY: ${{ secrets.WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY }}
@@ -116,28 +118,34 @@ jobs:
           WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID: ${{ secrets.WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID }}
           WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER: ${{ secrets.WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER }}
         run: |
-          cargo build --locked --release -p container-simulator --features desktop-window --target aarch64-apple-darwin
-          cargo build --locked --release -p container-simulator --features desktop-window --target x86_64-apple-darwin
+          case "${{ matrix.target }}" in
+            macos-arm64) rust_target=aarch64-apple-darwin ;;
+            macos-x86_64) rust_target=x86_64-apple-darwin ;;
+            *) exit 1 ;;
+          esac
+          cargo build --locked --release -p container-simulator --features desktop-window --target "$rust_target"
           node scripts/package-devtools-release.mjs \
-            --target macos-universal \
+            --target "${{ matrix.target }}" \
             --output "artifacts/weapp-container-devtools-${{ matrix.target }}" \
             --version "${GITHUB_REF_NAME#devtools-v}" \
-            --simulator-bin target/aarch64-apple-darwin/release/weapp-simulator \
-            --simulator-bin-x86_64 target/x86_64-apple-darwin/release/weapp-simulator
+            --simulator-bin "target/$rust_target/release/weapp-simulator"
 
       - name: Validate macOS DMG installation layout
-        if: matrix.target == 'macos-universal'
+        if: startsWith(matrix.target, 'macos-')
         shell: bash
         run: |
           set -euo pipefail
           mount_point="$RUNNER_TEMP/devtools-dmg"
           mkdir -p "$mount_point"
-          hdiutil attach -nobrowse -readonly -mountpoint "$mount_point" artifacts/weapp-container-devtools-macos-universal.dmg
+          hdiutil attach -nobrowse -readonly -mountpoint "$mount_point" "artifacts/weapp-container-devtools-${{ matrix.target }}.dmg"
           trap 'hdiutil detach "$mount_point" -quiet' EXIT
           app="$mount_point/Weapp Container DevTools.app"
           plutil -lint "$app/Contents/Info.plist"
           test -x "$app/Contents/MacOS/WeappContainerDevTools"
           "$app/Contents/Resources/node/bin/node" "$app/Contents/Resources/scripts/devtools-launcher.mjs" --help
+          expected_arch=${{ matrix.target == 'macos-arm64' && 'arm64' || 'x86_64' }}
+          test "$(lipo -archs "$app/Contents/Resources/bin/weapp-simulator")" = "$expected_arch"
+          test "$(lipo -archs "$app/Contents/Resources/node/bin/node")" = "$expected_arch"
           if [[ "$GITHUB_REF_NAME" != *-preview.* ]]; then
             codesign --verify --deep --strict --verbose=2 "$app"
             spctl --assess --type open --verbose=2 "$app"
@@ -278,8 +286,10 @@ jobs:
           set -euo pipefail
           ls -lh artifacts
           expected=(
-            weapp-container-devtools-macos-universal.dmg
-            weapp-container-devtools-macos-universal.tar.gz
+            weapp-container-devtools-macos-arm64.dmg
+            weapp-container-devtools-macos-arm64.tar.gz
+            weapp-container-devtools-macos-x86_64.dmg
+            weapp-container-devtools-macos-x86_64.tar.gz
             weapp-container-devtools-linux-x86_64.deb
             weapp-container-devtools-linux-x86_64.tar.gz
             weapp-container-devtools-windows-x86_64.msi
@@ -325,8 +335,10 @@ jobs:
           EOF
           fi
           assets=(
-            artifacts/weapp-container-devtools-macos-universal.dmg
-            artifacts/weapp-container-devtools-macos-universal.tar.gz
+            artifacts/weapp-container-devtools-macos-arm64.dmg
+            artifacts/weapp-container-devtools-macos-arm64.tar.gz
+            artifacts/weapp-container-devtools-macos-x86_64.dmg
+            artifacts/weapp-container-devtools-macos-x86_64.tar.gz
             artifacts/weapp-container-devtools-linux-x86_64.deb
             artifacts/weapp-container-devtools-linux-x86_64.tar.gz
             artifacts/weapp-container-devtools-windows-x86_64.msi
@@ -350,8 +362,10 @@ jobs:
             SHA256SUMS \
             weapp-container-devtools-linux-x86_64.deb \
             weapp-container-devtools-linux-x86_64.tar.gz \
-            weapp-container-devtools-macos-universal.dmg \
-            weapp-container-devtools-macos-universal.tar.gz \
+            weapp-container-devtools-macos-arm64.dmg \
+            weapp-container-devtools-macos-arm64.tar.gz \
+            weapp-container-devtools-macos-x86_64.dmg \
+            weapp-container-devtools-macos-x86_64.tar.gz \
             weapp-container-devtools-windows-x86_64.msi \
             weapp-container-devtools-windows-x86_64.zip | sort > "$RUNNER_TEMP/expected-release-assets.txt"
           if [[ -f artifacts/updates.json ]]; then printf '%s\n' updates.json >> "$RUNNER_TEMP/expected-release-assets.txt"; sort -o "$RUNNER_TEMP/expected-release-assets.txt" "$RUNNER_TEMP/expected-release-assets.txt"; fi

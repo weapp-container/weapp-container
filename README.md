@@ -38,13 +38,15 @@ Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于
 
 当前 GitHub prerelease 的 macOS 和 Windows 安装包没有平台签名，首次启动可能显示系统警告。只从对应 GitHub Release 下载，并先用发布页的 `SHA256SUMS` 核对文件哈希。确认来源和哈希后，可以按平台移除下载隔离标记。
 
-macOS 先打开 `.dmg`，将 `Weapp Container DevTools.app` 拖到 Applications，再执行：
+macOS 按处理器架构选择对应的 `.dmg`，Apple Silicon 选择 `macos-arm64`，Intel Mac 选择 `macos-x86_64`。打开 DMG，将 `Weapp Container DevTools.app` 拖到 Applications，再执行：
 
 ```sh
-shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-arm64.dmg"
 xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
 open "/Applications/Weapp Container DevTools.app"
 ```
+
+网站下载页会在浏览器提供可靠架构提示时标记匹配的 DMG。Safari 以及未提供可靠架构提示的浏览器会同时显示两个选项，请按 Mac 的处理器架构手动选择。便携 `.tar.gz` 与 `.zip` 仍保留在 GitHub Release 中，但网站只提供可直接安装的 DMG、DEB 和 MSI。
 
 `xattr` 只会移除这个应用的 macOS quarantine 元数据，不会创建签名或公证。应用安装在其他目录时，替换为实际路径。不要为了运行预览版而全局关闭 Gatekeeper。
 

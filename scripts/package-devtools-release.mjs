@@ -23,7 +23,6 @@ const CANVASKIT = {
 const NODE_TARGETS = {
   'macos-arm64': { node: 'darwin-arm64', os: 'darwin', cpu: 'arm64', archive: 'tar.gz' },
   'macos-x86_64': { node: 'darwin-x64', os: 'darwin', cpu: 'x64', archive: 'tar.gz' },
-  'macos-universal': { node: ['darwin-arm64', 'darwin-x64'], os: 'darwin', cpu: ['arm64', 'x64'], archive: 'tar.gz', universal: true },
   'linux-x86_64': { node: 'linux-x64', os: 'linux', cpu: 'x64', archive: 'tar.gz' },
   'windows-x86_64': { node: 'win-x64', os: 'win32', cpu: 'x64', archive: 'zip' },
 }
@@ -348,12 +347,6 @@ async function prepareNode(targetRoot, target, temporaryRoot, suppliedNode) {
       source = join(temporaryRoot, `node-v${NODE_VERSION}-${nodeTarget}`)
     }
     if (index === 0) await copyNodeRuntime(source, destination, info.archive === 'zip')
-    else if (info.universal) {
-      const merged = join(temporaryRoot, 'node-universal')
-      run('lipo', ['-create', join(destination, 'bin/node'), join(source, 'bin/node'), '-output', merged])
-      await cp(merged, join(destination, 'bin/node'))
-      await rm(merged, { force: true })
-    }
   }
   if (info.archive === 'zip') await writeFile(join(targetRoot, 'node-path.txt'), 'node.exe\n')
   else await writeFile(join(targetRoot, 'node-path.txt'), 'bin/node\n')
@@ -490,7 +483,7 @@ export async function createArchive(source, output, target) {
   }
 }
 
-export async function packageDevtools({ target, output, version = '0.1.0-preview.7.1', simulatorBinary, simulatorBinaryX86_64, nodeDistribution, rendererAssets }) {
+export async function packageDevtools({ target, output, version = '0.1.0-preview.7.1', simulatorBinary, nodeDistribution, rendererAssets }) {
   if (!NODE_TARGETS[target]) throw new Error(`Unsupported target ${target}`)
   const staging = resolve(output)
   const temporaryRoot = `${staging}.tmp`
@@ -502,13 +495,6 @@ export async function packageDevtools({ target, output, version = '0.1.0-preview
   if (!simulatorBinary) throw new Error('--simulator-bin is required')
   await mkdir(join(staging, 'bin'), { recursive: true })
   await cp(resolve(simulatorBinary), join(staging, 'bin', binaryName), { recursive: true, dereference: true })
-  if (NODE_TARGETS[target].universal) {
-    if (!simulatorBinaryX86_64) throw new Error('--simulator-bin-x86_64 is required for macos-universal')
-    const merged = join(temporaryRoot, 'weapp-simulator-universal')
-    run('lipo', ['-create', resolve(simulatorBinary), resolve(simulatorBinaryX86_64), '-output', merged])
-    await cp(merged, join(staging, 'bin', binaryName))
-    await rm(merged, { force: true })
-  }
   if (!target.startsWith('windows-')) await run('chmod', ['755', join(staging, 'bin', binaryName)])
   await prepareRendererAssets(staging, temporaryRoot, rendererAssets)
   await copyRuntimeSources(staging)
@@ -553,7 +539,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const args = process.argv.slice(2)
   try {
     const result = await packageDevtools({
-      target: option(args, '--target'), output: option(args, '--output', resolve(root, 'artifacts/devtools-release')), version: option(args, '--version', '0.1.0-preview.7.1'), simulatorBinary: option(args, '--simulator-bin'), simulatorBinaryX86_64: option(args, '--simulator-bin-x86_64'),
+      target: option(args, '--target'), output: option(args, '--output', resolve(root, 'artifacts/devtools-release')), version: option(args, '--version', '0.1.0-preview.7.1'), simulatorBinary: option(args, '--simulator-bin'),
       nodeDistribution: option(args, '--node-dist'), rendererAssets: option(args, '--renderer-assets'),
     })
     process.stdout.write(`${JSON.stringify({ archive: result.archive, installer: result.installer, directory: result.directory, files: result.manifest.files.length }, null, 2)}\n`)

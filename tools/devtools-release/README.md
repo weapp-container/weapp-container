@@ -11,7 +11,7 @@ three community examples and `examples/apps/shop-demo`.
 
 The GitHub Release provides an installer for each desktop platform.
 
-- macOS: open the `.dmg` and drag `Weapp Container DevTools.app` to Applications.
+- macOS: choose `macos-arm64.dmg` for Apple Silicon or `macos-x86_64.dmg` for Intel, then open the `.dmg` and drag `Weapp Container DevTools.app` to Applications.
 - Windows: run the `.msi` installer and use the Start Menu shortcut.
 - Debian or Ubuntu: install the `.deb` with `sudo apt install ./weapp-container-devtools-linux-x86_64.deb`, then launch `Weapp Container DevTools` from the application menu or run `weapp-devtools`.
 
@@ -24,10 +24,12 @@ The current GitHub prerelease macOS and Windows packages are unsigned. Download 
 On macOS, open the `.dmg` and copy `Weapp Container DevTools.app` to Applications before running:
 
 ```sh
-shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-arm64.dmg"
 xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
 open "/Applications/Weapp Container DevTools.app"
 ```
+
+The website marks the matching macOS DMG when the browser exposes a reliable architecture hint. Safari and browsers without a reliable hint show both DMGs for manual selection. Portable `.tar.gz` and `.zip` archives remain available in GitHub Releases, but the website exposes only directly installable packages.
 
 `xattr` removes only the app's quarantine metadata. It does not add a Developer ID signature or notarization. Replace the path when the app is installed elsewhere. Do not disable Gatekeeper globally.
 

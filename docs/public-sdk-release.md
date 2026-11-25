@@ -7,7 +7,7 @@
 | SDK / 发行物 | `0.1.0-preview.7.1` 状态 | 当前限制 |
 | --- | --- | --- |
 | 核心运行库 | GitHub `runtime-v0.1.0-preview.7.1` prerelease 可匿名下载 | 不是稳定版 |
-| DevTools | GitHub `devtools-v0.1.0-preview.7.2` prerelease 可匿名下载 | macOS 与 Windows 包未签名；不是稳定版 |
+| DevTools | GitHub `devtools-v0.1.0-preview.7.3` prerelease 可匿名下载 | macOS 提供 arm64 与 x86_64 DMG；macOS 与 Windows 包未签名；不是稳定版 |
 | Android | Maven Central 坐标 `io.github.weapp-container:weapp-container-android:0.1.0-preview.7.1` 可解析 | 仅预览版 |
 | Contract | npm `@weapp-container/sdk-contract@0.1.0-preview.7.1` 可安装，`preview` dist-tag 已指向该版本 | `latest` 仍是历史 `0.1.0-preview.7.0`，不是稳定版 |
 | React Native | npm `@weapp-container/react-native@0.1.0-preview.7.1` 可安装，`preview` dist-tag 指向该版本；Android 依赖可解析 | `latest` 也指向预览版；iOS 原生依赖的固定归档 URL 尚不可用 |
@@ -38,15 +38,17 @@ Android、Flutter、Contract 和 React Native 包版本已通过 Maven Central�
 
 ## 未签名预览版 DevTools 安装
 
-当前 `devtools-v0.1.0-preview.7.2` 的 macOS 和 Windows 安装包没有平台签名，首次启动可能显示系统警告。只从对应 GitHub Release 下载，并先将下载文件的 SHA-256 与发布页的 `SHA256SUMS` 对照。确认来源和哈希后，按平台移除下载隔离标记。
+当前 `devtools-v0.1.0-preview.7.3` 的 macOS 和 Windows 安装包没有平台签名，首次启动可能显示系统警告。macOS 下载时按处理器架构选择 arm64 或 x86_64 DMG。只从对应 GitHub Release 下载，并先将下载文件的 SHA-256 与发布页的 `SHA256SUMS` 对照。确认来源和哈希后，按平台移除下载隔离标记。
 
 macOS 先打开 `.dmg`，将 `Weapp Container DevTools.app` 拖到 Applications，再执行：
 
 ```sh
-shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-arm64.dmg"
 xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
 open "/Applications/Weapp Container DevTools.app"
 ```
+
+网站下载页会在浏览器提供可靠架构提示时标记匹配的 DMG。Safari 以及未提供可靠架构提示的浏览器会同时显示两个选项，请手动选择。便携 `.tar.gz` 与 `.zip` 仍保留在 GitHub Release 中，网站下载页只提供可直接安装的 DMG、DEB 和 MSI。
 
 `xattr` 只会移除这个应用的 quarantine 元数据，不会创建签名或公证。应用安装在其他目录时替换实际路径。不要全局关闭 Gatekeeper。
 

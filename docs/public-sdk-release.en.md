@@ -7,7 +7,7 @@ Checked on 2026-11-25. Every currently visible release is a prerelease. There is
 | SDK / artifact | `0.1.0-preview.7.1` status | Current limitation |
 | --- | --- | --- |
 | Core runtime | GitHub prerelease `runtime-v0.1.0-preview.7.1` is anonymously downloadable | Prerelease only |
-| DevTools | GitHub prerelease `devtools-v0.1.0-preview.7.2` is anonymously downloadable | macOS and Windows packages are unsigned; prerelease only |
+| DevTools | GitHub prerelease `devtools-v0.1.0-preview.7.3` is anonymously downloadable | macOS provides arm64 and x86_64 DMGs; macOS and Windows packages are unsigned; prerelease only |
 | Android | Maven Central coordinate `io.github.weapp-container:weapp-container-android:0.1.0-preview.7.1` resolves | Prerelease only |
 | Contract | npm `@weapp-container/sdk-contract@0.1.0-preview.7.1` installs, and its `preview` dist-tag points to that version | `latest` still points to historical `0.1.0-preview.7.0`, which is not stable |
 | React Native | npm package `@weapp-container/react-native@0.1.0-preview.7.1` installs, its `preview` dist-tag points to that version, and its Android dependency resolves | `latest` also points to a prerelease; the pinned iOS native archive URL is unavailable |
@@ -38,15 +38,17 @@ Android, Flutter, Contract, and React Native package versions were checked throu
 
 ## Unsigned DevTools prerelease installation
 
-The current `devtools-v0.1.0-preview.7.2` macOS and Windows installers are not platform-signed, so the first launch may show an operating-system warning. Download only from the matching GitHub Release and compare the downloaded file's SHA-256 with the `SHA256SUMS` entry published there before removing its download marker.
+The current `devtools-v0.1.0-preview.7.3` macOS and Windows installers are not platform-signed, so the first launch may show an operating-system warning. Choose the macOS DMG that matches the processor architecture, either arm64 or x86_64. Download only from the matching GitHub Release and compare the downloaded file's SHA-256 with the `SHA256SUMS` entry published there before removing its download marker.
 
 On macOS, open the `.dmg`, drag `Weapp Container DevTools.app` to Applications, then run:
 
 ```sh
-shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-arm64.dmg"
 xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
 open "/Applications/Weapp Container DevTools.app"
 ```
+
+The website marks the matching DMG when the browser exposes a reliable architecture hint. Safari and browsers without a reliable hint show both options for manual selection. Portable `.tar.gz` and `.zip` archives remain in the GitHub Release, while the website download page exposes only directly installable DMG, DEB, and MSI packages.
 
 `xattr` removes only this app's quarantine metadata. It does not create a signature or notarization. Replace the path when the app is installed elsewhere. Do not disable Gatekeeper globally.
 

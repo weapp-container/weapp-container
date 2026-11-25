@@ -38,13 +38,15 @@ Each package includes `weapp-devtools.json` with source, compiler, Node, compati
 
 The current GitHub prerelease macOS and Windows installers are not platform-signed, so the first launch may show an operating-system warning. Download only from the matching GitHub Release and compare the file with the `SHA256SUMS` entry published there before removing the download marker.
 
-On macOS, open the `.dmg`, drag `Weapp Container DevTools.app` to Applications, then run:
+On macOS, choose the `.dmg` that matches the processor architecture. Choose `macos-arm64` for Apple Silicon and `macos-x86_64` for Intel Macs. Open the DMG, drag `Weapp Container DevTools.app` to Applications, then run:
 
 ```sh
-shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-arm64.dmg"
 xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
 open "/Applications/Weapp Container DevTools.app"
 ```
+
+The website marks the matching DMG when the browser exposes a reliable architecture hint. Safari and browsers without a reliable hint show both options for manual selection. Portable `.tar.gz` and `.zip` archives remain in the GitHub Release, while the website exposes only directly installable DMG, DEB, and MSI packages.
 
 `xattr` removes only this app's macOS quarantine metadata. It does not create a signature or notarization. Replace the path when the app is installed elsewhere. Do not disable Gatekeeper globally to run a prerelease.
 

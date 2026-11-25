@@ -62,7 +62,7 @@ function requireCompleteConfiguration(target, version, names, environment) {
 }
 
 export function validateInstallerSigningEnvironment(target, version, environment = process.env) {
-  if (target === 'macos-universal') {
+  if (target === 'macos-arm64' || target === 'macos-x86_64') {
     const identity = Boolean(environment[MAC_SIGNING_IDENTITY])
     const notarization = requireCompleteConfiguration(target, version, [MAC_NOTARY_KEY_PATH, MAC_NOTARY_KEY_ID, MAC_NOTARY_ISSUER], environment)
     if (isStableVersion(version) && !identity) {
@@ -93,7 +93,7 @@ function signWindowsFile(file, environment) {
 export async function preparePlatformPayload({ target, source, version, environment = process.env }) {
   const configuration = validateInstallerSigningEnvironment(target, version, environment)
   if (!configuration.enabled) return configuration
-  if (target === 'macos-universal') {
+  if (target === 'macos-arm64' || target === 'macos-x86_64') {
     if (!existsSync(environment[MAC_NOTARY_KEY_PATH]) && configuration.notarize) throw new Error(`macOS notarization key was not found at ${environment[MAC_NOTARY_KEY_PATH]}`)
     for (const relativePath of ['bin/weapp-simulator', 'node/bin/node']) {
       const file = join(source, relativePath)
@@ -277,9 +277,10 @@ export async function buildMacAppBundle({ source, output, version, iconPath, tem
   return app
 }
 
-export async function createDmg({ source, output, version, iconPath }) {
+export async function createDmg({ target, source, output, version, iconPath }) {
   if (process.platform !== 'darwin') throw new Error('DMG packages must be built on macOS')
-  const signing = validateInstallerSigningEnvironment('macos-universal', version)
+  if (target !== 'macos-arm64' && target !== 'macos-x86_64') throw new Error(`Unsupported macOS DMG target ${target}`)
+  const signing = validateInstallerSigningEnvironment(target, version)
   const destination = resolve(output)
   const temporaryRoot = `${destination}.tmp`
   const app = join(temporaryRoot, 'Weapp Container DevTools.app')
@@ -339,7 +340,7 @@ export async function createMsi({ source, output, version }) {
 }
 
 export async function createPlatformInstaller({ target, source, output, version, iconPath }) {
-  if (target === 'macos-universal') return createDmg({ source, output: `${output}.dmg`, version, iconPath })
+  if (target === 'macos-arm64' || target === 'macos-x86_64') return createDmg({ target, source, output: `${output}.dmg`, version, iconPath })
   if (target === 'windows-x86_64') return createMsi({ source, output: `${output}.msi`, version })
   if (target === 'linux-x86_64') return createDeb({ source, output: `${output}.deb`, version, iconPath })
   throw new Error(`Unsupported installer target ${target}`)

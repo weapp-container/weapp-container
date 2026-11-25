@@ -16,7 +16,8 @@ export async function createUpdateManifest({ assetsDirectory, version, tag, priv
   if (!/^devtools-v\d+\.\d+\.\d+$/.test(tag || '')) throw new Error('Invalid stable DevTools release tag')
   if (!privateKey || !publicKey) throw new Error('Stable update signing requires private and public keys')
   const targetAssets = new Map([
-    ['weapp-container-devtools-macos-universal.dmg', { target: 'macos-universal' }],
+    ['weapp-container-devtools-macos-arm64.dmg', { target: 'macos-arm64', arch: 'arm64' }],
+    ['weapp-container-devtools-macos-x86_64.dmg', { target: 'macos-x86_64', arch: 'x64' }],
     ['weapp-container-devtools-linux-x86_64.deb', { target: 'linux-x86_64', arch: 'x64' }],
     ['weapp-container-devtools-windows-x86_64.msi', { target: 'windows-x86_64', arch: 'x64' }],
   ])
