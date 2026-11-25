@@ -68,8 +68,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "各 SDK 稳定发行状态、示例入口与维护者凭据申请步骤",
-      "reviewedChineseSha256": "51defa0e294a4a10bd7ff51a2ef3e94aa10869d0e93a96afc965d41d29c502c9",
+      "reviewedChineseSummary": "已复核当前预览发行版本、Contract npm dist-tag、各 SDK 安装边界与维护者凭据申请路径。",
+      "reviewedChineseSha256": "f2e45557cc5b711f239ef9662b162de660ba30383cae999aba74059ce429f780",
       "legacyHeadingIds": []
     },
     {
