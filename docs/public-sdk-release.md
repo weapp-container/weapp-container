@@ -62,11 +62,11 @@ Android、Flutter 和 React Native 包版本已通过 Maven Central、pub.dev、
 | npm / pub.dev 发布权限 | npm 包和 pub.dev 包分别配置 GitHub trusted publisher | 自动发布，通过 OIDC 短期授权 |
 | DevTools 更新签名密钥 | 维护者本机生成 Ed25519 密钥对并加密备份私钥 | 更新清单签名 |
 
-私钥、导出密码和 token 通过密码管理器与 GitHub Secrets 分发，不要贴入 issue、PR、日志或聊天。
+私钥、导出密码和 token 通过密码管理器与 GitHub Secrets 分发，不要贴入 issue、PR、日志或消息。
 
 ### macOS DevTools 签名与公证
 
-由组织负责人加入 [Apple Developer Program](https://developer.apple.com/programs/enroll/)。组织注册通常需要法定实体信息、D-U-N-S 编号和有权代表组织签署协议的人员。加入团队后，在 Apple Developer 的 **Certificates, Identifiers & Profiles** 创建 **Developer ID Application** 证书。使用 Keychain Access 创建 CSR，下载证书并安装到签名 Mac，再从 Keychain Access 将证书和对应私钥导出为带密码的 `.p12`。`WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY` 使用 `security find-identity -v -p codesigning` 显示的完整 identity。
+由组织负责人加入 [Apple Developer Program](https://developer.apple.com/programs/enroll/)。组织注册通常需要法定实体信息、D-U-N-S 编号和有权代表组织签署协议的人员。加入组织后，在 Apple Developer 的 **Certificates, Identifiers & Profiles** 创建 **Developer ID Application** 证书。使用 Keychain Access 创建 CSR，下载证书并安装到签名 Mac，再从 Keychain Access 将证书和对应私钥导出为带密码的 `.p12`。`WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY` 使用 `security find-identity -v -p codesigning` 显示的完整 identity。
 
 由有权限的 App Store Connect 管理员打开 **Users and Access > Integrations > App Store Connect API**，创建 **Team API key**，下载 `.p8` 并记录 Key ID、Issuer ID。Apple 只允许下载一次 `.p8`，应在创建时完成加密备份。它用于 Apple 公证服务，不是 Developer ID 证书。
 
