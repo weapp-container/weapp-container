@@ -22,7 +22,6 @@ Component({
             type: String,
             value: 'medium',
         },
-        icon: String,
         loading: Boolean,
         danger: Boolean,
         formType: {

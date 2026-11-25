@@ -1,5 +1,5 @@
 <view class="page">
-  <view class="page-heading">微信官方文本组件示例</view>
+  <view class="page-heading">上游文本组件示例</view>
   <scroll-view class="text-box" scroll-y scroll-top="{{scrollTop}}">
     <block wx:for="{{extraLine}}" wx:key="index">
       <text class="text-line">{{item}}</text>

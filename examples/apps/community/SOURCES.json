@@ -3,8 +3,8 @@
   "license": "MIT",
   "examples": [
     {
-      "id": "official-text",
-      "directory": "official-text",
+      "id": "miniprogram-demo-text",
+      "directory": "miniprogram-demo-text",
       "repository": "https://github.com/wechat-miniprogram/miniprogram-demo",
       "commit": "0fe5c7df8e90582dd0b89e283df7fe32e04413f9",
       "sourcePaths": [
@@ -33,7 +33,6 @@
         "package/compiled/wechat/src/Button",
         "package/compiled/wechat/src/Container",
         "package/compiled/wechat/src/Loading",
-        "package/compiled/wechat/src/Icon",
         "package/compiled/wechat/src/_util",
         "package/compiled/wechat/src/style"
       ],
@@ -42,6 +41,7 @@
         "Copied the compiled WeChat package dependency closure needed by the button demo.",
         "Renamed component directories to lowercase and updated local component paths.",
         "Expanded CSS custom-property fallbacks to literal values for the container WXSS subset.",
+        "Omitted the optional icon component and its remote icon font from this standalone button sample.",
         "Added a standalone page demonstrating button variants, states, and tap handling."
       ]
     },

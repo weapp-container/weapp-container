@@ -4,7 +4,7 @@
 
 独立的开源便携运行时，用于在受控进程中加载小程序格式的页面、组件、脚本和样式，也支持以独立 Canvas、定时器和平台无关事件桥接运行未加密小游戏包。项目提供 manifest 打包器、Rust 运行时、QuickJS/V8 执行引擎、模拟器以及 Node 测试绑定。
 
-本项目与任何第三方平台、品牌、服务或 SDK 没有隶属、授权或商业合作关系。仓库只提供便携运行时、清单格式和兼容性接口名称，不包含官方工具、原生平台 SDK、账户系统或外部服务桥接。所有外部权限与网络能力都由调用方自行实现。
+本项目由社区独立开发，与腾讯/微信、蚂蚁集团/支付宝及其平台、品牌或服务不存在隶属、官方授权、背书或商业合作关系。文中的平台名称、商标与 API 标识仅用于说明兼容目标或上游样例来源，相关权利归各自权利人所有。本仓库另含按随附许可证分发的第三方开源代码。
 
 ## 快速开始
 
@@ -30,7 +30,7 @@ Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于
 
 ## DevTools 下载预览
 
-桌面 DevTools 安装包包含固定版本的 Node.js、weapp-vite 编译器、manifest packer 和模拟器。安装后选择项目目录，工具会先检查 `project.config.json`、源 `app.json`、编译器兼容矩阵和项目依赖，再启动 Web Player 或 Desktop Player。当前生产样本为 `examples/apps/community/official-text`、`ant-design-button`、`taro-blended` 和 `examples/apps/shop-demo`。
+桌面 DevTools 安装包包含固定版本的 Node.js、weapp-vite 编译器、manifest packer 和模拟器。安装后选择项目目录，工具会先检查 `project.config.json`、源 `app.json`、编译器兼容矩阵和项目依赖，再启动 Web Player 或 Desktop Player。当前生产样本为 `examples/apps/community/miniprogram-demo-text`、`ant-design-button`、`taro-blended` 和 `examples/apps/shop-demo`。
 
 发行包中的 `weapp-devtools.json` 记录源码、编译器、Node、兼容矩阵和文件哈希。稳定版使用签名更新清单，macOS 安装包使用 Developer ID 签名并完成公证，Windows MSI 使用 Authenticode 签名。缺少稳定版签名材料时发布工作流会在发布前失败。预览版不会自动参与稳定更新。发行签名、平台安装和官方工具证据按平台单独记录，不能由本地 headless 检查替代。
 
@@ -48,26 +48,28 @@ cargo run -p container-simulator --features quickjs-native -- \
 
 ## 开源小程序示例
 
-`examples/apps/community/` 收录了微信官方文本页、Ant Design Mini 按钮组件和 Taro blended-basic 页面三个经过整理的可运行快照。每个样例保留上游 MIT 许可证，并在目录说明与 `SOURCES.json` 中记录仓库、固定提交和本地调整。
+`examples/apps/community/` 收录了上游 `miniprogram-demo` 文本页、Ant Design Mini 按钮组件和 Taro blended-basic 页面三个经过整理的可运行快照。每个样例保留上游 MIT 许可证，并在目录说明与 `SOURCES.json` 中记录仓库、固定提交和本地调整。
 
 ```sh
 pnpm --dir vendor/weapp-vite exec wv build \
-  "$PWD/examples/apps/community/official-text" -p weapp \
-  --outDir "$PWD/artifacts/community/official-text/raw"
-pnpm container:pack -- artifacts/community/official-text/raw \
-  --out artifacts/community/official-text/pack \
+  "$PWD/examples/apps/community/miniprogram-demo-text" -p weapp \
+  --outDir "$PWD/artifacts/community/miniprogram-demo-text/raw"
+pnpm container:pack -- artifacts/community/miniprogram-demo-text/raw \
+  --out artifacts/community/miniprogram-demo-text/pack \
   --compiler-commit "$(git -C vendor/weapp-vite rev-parse HEAD)"
+cp examples/apps/community/miniprogram-demo-text/LICENSE.upstream \
+  artifacts/community/miniprogram-demo-text/pack/LICENSE.upstream
 pnpm simulator:dev:smoke -- \
-  --project examples/apps/community/official-text
+  --project examples/apps/community/miniprogram-demo-text
 ```
 
-另外两个样例将命令中的 `official-text` 分别替换为 `ant-design-button` 和 `taro-blended`。样例列表、逐项命令和来源见 [`examples/apps/community/README.md`](examples/apps/community/README.md)。
+另外两个样例将命令中的 `miniprogram-demo-text` 分别替换为 `ant-design-button` 和 `taro-blended`。样例列表、逐项命令和来源见 [`examples/apps/community/README.md`](examples/apps/community/README.md)。
 
 在浏览器中保持模拟器运行：
 
 ```sh
 cargo run -p container-simulator --features quickjs-native -- \
-  dev --project examples/apps/community/official-text --surface web
+  dev --project examples/apps/community/miniprogram-demo-text --surface web
 ```
 
 ## 许可证

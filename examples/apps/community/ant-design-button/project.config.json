@@ -1,5 +1,5 @@
 {
-  "description": "Curated Ant Design Mini WeChat Button example",
+  "description": "Curated Ant Design Mini button example",
   "compileType": "miniprogram",
   "miniprogramRoot": "dist/",
   "srcMiniprogramRoot": ".",

@@ -168,7 +168,7 @@ test('update manifests require an Ed25519 signature and select the newest compat
 
 test('the fixed compatibility matrix accepts all four published source projects', async () => {
   for (const project of [
-    'examples/apps/community/official-text',
+    'examples/apps/community/miniprogram-demo-text',
     'examples/apps/community/ant-design-button',
     'examples/apps/community/taro-blended',
     'examples/apps/shop-demo',

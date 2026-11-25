@@ -1,5 +1,5 @@
 {
-  "description": "Curated official WeChat mini-program text component example",
+  "description": "Curated upstream miniprogram-demo text component snapshot",
   "compileType": "miniprogram",
   "miniprogramRoot": "dist/",
   "srcMiniprogramRoot": ".",

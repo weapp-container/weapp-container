@@ -14,7 +14,7 @@ export const DEVTOOLS_COMPATIBILITY = Object.freeze({
   nodeVersion: '24.22.2',
   packageManager: 'pnpm@12.11.2',
   supportedProjects: Object.freeze([
-    'examples/apps/community/official-text',
+    'examples/apps/community/miniprogram-demo-text',
     'examples/apps/community/ant-design-button',
     'examples/apps/community/taro-blended',
     'examples/apps/shop-demo',
