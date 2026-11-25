@@ -175,7 +175,7 @@ test('the fixed compatibility matrix accepts all four published source projects'
   ]) {
     const result = await inspectProject(resolve(process.cwd(), project))
     assert.equal(result.compatibility.projectType, 'weapp-vite-miniprogram', project)
-    assert.ok(result.appPath.endsWith('/app.json'), project)
+    assert.equal(basename(result.appPath), 'app.json', project)
     assert.equal(result.compatibility.compiler.expected, '0ad7ba6269b97c03ec95de9e6c9e9e2d8773f84e')
   }
 })

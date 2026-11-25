@@ -137,14 +137,27 @@ jobs:
           mount_point="$RUNNER_TEMP/devtools-dmg"
           mkdir -p "$mount_point"
           hdiutil attach -nobrowse -readonly -mountpoint "$mount_point" "artifacts/weapp-container-devtools-${{ matrix.target }}.dmg"
-          trap 'hdiutil detach "$mount_point" -quiet' EXIT
+          cleanup_dmg() {
+            result=$?
+            trap - EXIT
+            if ! hdiutil detach "$mount_point" -quiet; then
+              echo "Unable to detach DMG mounted at $mount_point" >&2
+              if [[ "$result" -eq 0 ]]; then result=1; fi
+            fi
+            exit "$result"
+          }
+          trap cleanup_dmg EXIT
           app="$mount_point/Weapp Container DevTools.app"
           plutil -lint "$app/Contents/Info.plist"
           test -x "$app/Contents/MacOS/WeappContainerDevTools"
           "$app/Contents/Resources/node/bin/node" "$app/Contents/Resources/scripts/devtools-launcher.mjs" --help
+          echo "DevTools launcher help command completed"
           expected_arch=${{ matrix.target == 'macos-arm64' && 'arm64' || 'x86_64' }}
-          test "$(lipo -archs "$app/Contents/Resources/bin/weapp-simulator")" = "$expected_arch"
-          test "$(lipo -archs "$app/Contents/Resources/node/bin/node")" = "$expected_arch"
+          simulator_arch="$(lipo -archs "$app/Contents/Resources/bin/weapp-simulator")"
+          node_arch="$(lipo -archs "$app/Contents/Resources/node/bin/node")"
+          printf 'Expected architecture: %s\nSimulator architecture: %s\nNode architecture: %s\n' "$expected_arch" "$simulator_arch" "$node_arch"
+          test "$simulator_arch" = "$expected_arch"
+          test "$node_arch" = "$expected_arch"
           if [[ "$GITHUB_REF_NAME" != *-preview.* ]]; then
             codesign --verify --deep --strict --verbose=2 "$app"
             spctl --assess --type open --verbose=2 "$app"
