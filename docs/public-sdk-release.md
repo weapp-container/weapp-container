@@ -76,7 +76,7 @@ gpg --armor --export YOUR_KEY_ID > /secure/path/weapp-signing-public.asc
 gpg --keyserver hkps://keys.openpgp.org --send-keys YOUR_KEY_ID
 ```
 
-将 `YOUR_KEY_ID` 替换为刚创建密钥的 ID，并将 `/secure/path` 替换为仅维护者可读的目录。把私钥文件内容作为 `WEAPP_SIGNING_KEY` secret 保存，不要打印到日志或粘贴到聊天。
+将 `YOUR_KEY_ID` 替换为刚创建密钥的 ID，并将 `/secure/path` 替换为仅维护者可读的目录。把私钥文件内容作为 `WEAPP_SIGNING_KEY` secret 保存。
 
 ### DevTools 更新密钥
 

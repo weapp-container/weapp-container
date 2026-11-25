@@ -76,7 +76,7 @@ gpg --armor --export YOUR_KEY_ID > /secure/path/weapp-signing-public.asc
 gpg --keyserver hkps://keys.openpgp.org --send-keys YOUR_KEY_ID
 ```
 
-Replace `YOUR_KEY_ID` with the generated key ID and `/secure/path` with a directory readable only by the maintainer. Store the private file contents as the `WEAPP_SIGNING_KEY` secret. Do not print it in logs or paste it into chat.
+Replace `YOUR_KEY_ID` with the generated key ID and `/secure/path` with a directory readable only by the maintainer. Store the private file contents as the `WEAPP_SIGNING_KEY` secret.
 
 ### DevTools update key
 
