@@ -6,11 +6,11 @@
 
 核心仓库固定了 Android、iOS、Desktop、Flutter、React Native 和 Contract SDK 子模块。维护者从同一核心提交构建运行库，并使用 SDK README 中对应的消费示例验证平台封装。
 
-## 准备源码与 portable pack
+## 在已有源码工作区准备 portable pack
+
+维护者应使用已经准备好的 `weapp-container` 源码工作区，并在核心提交对应的目录中执行下面命令。普通应用不需要准备这个工作区。
 
 ```sh
-git clone --recurse-submodules https://github.com/weapp-container/weapp-container.git
-cd weapp-container
 corepack enable
 pnpm install --frozen-lockfile
 node sdk/contract/fixtures/make-acceptance-pack.mjs --out artifacts/hello-pack

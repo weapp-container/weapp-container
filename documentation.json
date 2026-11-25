@@ -81,8 +81,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/sdk-source-build.md"
       },
-      "reviewedChineseSummary": "本指南仅供 SDK 维护者和发行贡献者用于重建运行库与发行归档",
-      "reviewedChineseSha256": "6cb859a9474861f76818bedfb459fa1f73725526e179b4b25e01b0d218c42021",
+      "reviewedChineseSummary": "本指南仅供 SDK 维护者和发行贡献者在已有源码工作区中重建运行库与发行归档",
+      "reviewedChineseSha256": "d2736be5a8a99b9c1f03d80ebe077c849b70d5cfa543d212b36b2ad4e8609b08",
       "legacyHeadingIds": []
     },
     {

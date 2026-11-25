@@ -6,11 +6,11 @@ This guide is for SDK maintainers and release contributors who modify wrappers, 
 
 The core repository pins the Android, iOS, Desktop, Flutter, React Native, and Contract SDK submodules. Maintainers build runtimes from one core revision and validate the platform wrapper with the matching consumer example in its SDK README.
 
-## Check Out the Source and Create a Portable Pack
+## Create a Portable Pack in an Existing Source Workspace
+
+Maintainers should use an already prepared `weapp-container` source workspace and run the commands below from the directory for the pinned core revision. Application developers do not need this workspace.
 
 ```sh
-git clone --recurse-submodules https://github.com/weapp-container/weapp-container.git
-cd weapp-container
 corepack enable
 pnpm install --frozen-lockfile
 node sdk/contract/fixtures/make-acceptance-pack.mjs --out artifacts/hello-pack
