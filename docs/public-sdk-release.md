@@ -47,11 +47,40 @@ Android、Flutter 和 React Native 包版本已通过 Maven Central、pub.dev、
 
 ## 维护者凭据
 
-DevTools macOS 签名需要组织加入 [Apple Developer Program](https://developer.apple.com/programs/enroll/)。在 Apple Developer 账号创建 **Developer ID Application** 证书，在 Keychain Access 安装后导出含私钥的密码保护 `.p12`。签名 identity 使用 `security find-identity -v -p codesigning` 显示的完整名称。再到 App Store Connect 的 **Users and Access > Integrations > App Store Connect API** 创建 Team API key，下载 `.p8` 并记录 Key ID、Issuer ID。`.p8` 私钥只提供下载一次。
+### macOS DevTools 签名与公证
 
-Windows 稳定安装包需要经过组织身份验证、可导出为 `.pfx` 且包含私钥的公开信任 Authenticode 证书。当前 workflow 直接导入 PFX。硬件令牌专用或云端签名证书需要先为 workflow 接入对应签名工具。
+由组织负责人加入 [Apple Developer Program](https://developer.apple.com/programs/enroll/)。在 Apple Developer 的 **Certificates, Identifiers & Profiles** 创建 **Developer ID Application** 证书，使用 Keychain Access 生成 CSR，下载证书并安装到签名 Mac。将证书和对应私钥一起导出为带密码的 `.p12`。`WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY` 使用 `security find-identity -v -p codesigning` 显示的完整 identity。
 
-DevTools 更新清单使用项目维护者生成的 Ed25519 密钥，不需要向证书机构申请。在仓库外的受保护目录运行以下 Node.js 24 命令：
+在 App Store Connect 的 **Users and Access > Integrations > App Store Connect API** 创建 **Team API key**，下载 `.p8` 并记录 Key ID、Issuer ID。Apple 只允许下载一次 `.p8`，应在创建时完成加密备份。它用于 Apple 公证服务，不是 Developer ID 证书。
+
+### Windows DevTools 签名
+
+向公开信任的 CA 申请 Authenticode 代码签名证书，并完成 CA 要求的组织身份核验。下单前确认私钥可以导出为包含私钥的 `.pfx`，因为当前 workflow 在临时 Windows runner 上直接导入 PFX。仅能通过硬件令牌或云签名服务调用的证书不兼容当前 workflow，需要先实现对应签名集成。
+
+### SDK 注册源凭据
+
+- **Maven Central（`sdk-android`）**：在 Central Portal 验证命名空间 `io.github.weapp-container`，然后从账户设置生成 **User Token**。将 token 的 username/password 分别作为 `MAVEN_CENTRAL_USERNAME`、`MAVEN_CENTRAL_PASSWORD`。它们是 CI 发布凭据，不是 Central Portal 登录密码。另用 GnuPG 生成可用于分离签名的 OpenPGP 密钥，将公钥发布到公开 keyserver，并把 ASCII-armored 私钥设为 `WEAPP_SIGNING_KEY`；私钥有口令时再设置 `WEAPP_SIGNING_PASSWORD`。Android workflow 在 `sdk-android` 仓库读取这些 Actions secrets。
+- **历史运行库私有归档**：只有 manifest 指向冻结历史版本时才需要 `WEAPP_CONTAINER_RUNTIME_TOKEN`。先请仓库维护者授予 `weapp-container/runtime-artifacts-private-archive` 读取权限，再创建仅对该仓库有 **Contents: read** 权限的 fine-grained GitHub token，并通过环境变量注入。当前 preview.7.1 和源码构建不需要它。
+- **CocoaPods（`sdk-ios`、`sdk-desktop`）**：安装 CocoaPods 后运行 `pod trunk register maintainer@example.com "Maintainer Name"`，打开验证邮件中的链接。Trunk 账户生成的 token 会保存在用户 `~/.netrc` 的 `trunk.cocoapods.org` 项中。将该项的 token 分别设为两个仓库的 `COCOAPODS_TRUNK_TOKEN` secret。首次发布 Pod 时，发布账号会成为 owner，之后由 owner 邀请其他维护者。
+- **npm（`sdk-contract`、`sdk-react-native`）**：发布账号必须拥有对应 `@weapp-container` 包的发布权限。首次创建新包时由维护者登录 npm 并完成 2FA 发布。包可用后，在 npm 包设置中为准确的 GitHub repository 和 `publish-npm.yml` 配置 trusted publisher。发布 workflow 已使用 OIDC，后续不需要长期 npm token。
+- **pub.dev（`sdk-flutter`）**：维护者需要有七个包的发布权限。现有包在各自 pub.dev 管理页配置 GitHub trusted publisher，指向 `weapp-container/sdk-flutter`。发布 workflow 使用 OIDC，不需要把 pub.dev token 存入 GitHub。新增包首次发布仍由包所有者进行人工发布，再配置 trusted publisher。
+
+首次创建 Maven 签名密钥时，在本机生成并导出到仓库外的受保护目录，再把公钥发布到公开 keyserver：
+
+```sh
+gpg --full-generate-key
+gpg --list-secret-keys --keyid-format LONG
+umask 077
+gpg --armor --export-secret-keys YOUR_KEY_ID > /secure/path/weapp-signing-private.asc
+gpg --armor --export YOUR_KEY_ID > /secure/path/weapp-signing-public.asc
+gpg --keyserver hkps://keys.openpgp.org --send-keys YOUR_KEY_ID
+```
+
+将 `YOUR_KEY_ID` 替换为刚创建密钥的 ID，并将 `/secure/path` 替换为仅维护者可读的目录。把私钥文件内容作为 `WEAPP_SIGNING_KEY` secret 保存，不要打印到日志或粘贴到聊天。
+
+### DevTools 更新密钥
+
+更新清单使用项目维护者生成的 Ed25519 密钥，不需要向证书机构申请。在仓库外的受保护目录运行以下 Node.js 24 命令：
 
 ```sh
 node --input-type=module <<'NODE'
@@ -64,22 +93,15 @@ writeFileSync('weapp-devtools-update-public.pem', publicKey.export({ type: 'spki
 NODE
 ```
 
-加密备份私钥，并在整个稳定更新周期沿用同一密钥对。把私钥内容设为核心仓库 secret `WEAPP_DEVTOOLS_UPDATE_PRIVATE_KEY`，公钥内容设为 variable `WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY`。新 DevTools 客户端会内置该公钥来验证更新。
+加密备份私钥，并在整个稳定更新周期沿用同一密钥对。把私钥内容设为核心仓库 secret `WEAPP_DEVTOOLS_UPDATE_PRIVATE_KEY`，公钥内容设为 variable `WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY`。新 DevTools 客户端会内置该公钥来验证更新。丢失私钥会导致后续更新无法由已发布客户端信任。
 
-在 CocoaPods Trunk 注册发行账号并完成邮件验证：
+### GitHub 配置位置
 
-```sh
-pod trunk register maintainer@example.com "Maintainer Name"
-pod trunk me
-```
-
-验证后，CocoaPods CLI 将认证 token 存在用户目录的 `.netrc` 中。将 `trunk.cocoapods.org` 条目里的 token 设置为 `sdk-ios` 和 `sdk-desktop` 两个仓库各自的 GitHub Actions secret `COCOAPODS_TRUNK_TOKEN`。不要把 `.netrc`、证书密码或密钥提交到仓库。
-
-在相应仓库的 **Settings > Secrets and variables > Actions** 录入签名材料。`.p12`、`.p8`、`.pfx` 以 Base64 内容存入对应 secret；GitHub Actions workflow 会在临时 runner 上还原文件。`WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD` 是维护者在密码管理器中生成的强随机值。
+在各仓库的 **Settings > Secrets and variables > Actions** 添加 secrets；公钥添加为 repository variable。文件与字段的对应关系如下：`.p12` 的 Base64 内容写入 `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64`，`.p8` 的 Base64 内容写入 `WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_BASE64`，`.pfx` 的 Base64 内容写入 `WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_BASE64`。三个证书导出密码分别写入对应 `*_PASSWORD` 字段；Mac identity 写入 `WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY`；API Key 的 Key ID 和 Issuer ID 写入同名 secrets。为 `WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD` 另生成强随机密码并存入 password manager。文件先编码为单行 Base64，工作流会在临时 runner 还原。不要提交证书、`.netrc`、GPG 私钥或密钥文件，也不要把它们发送到聊天。
 
 核心仓库当前还需要 DevTools secrets `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64`、`WEAPP_DEVTOOLS_MACOS_CERTIFICATE_PASSWORD`、`WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD`、`WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY`、`WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_BASE64`、`WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID`、`WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER`、`WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_BASE64`、`WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PASSWORD` 和 `WEAPP_DEVTOOLS_UPDATE_PRIVATE_KEY`，以及变量 `WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY`。Android Maven secrets 已配置；npm 和 pub.dev 发布流程使用 GitHub OIDC，不需要长期保存发布 token。
 
-申请入口：[Apple Developer ID certificates](https://developer.apple.com/help/account/certificates/create-developer-id-certificates/)、[App Store Connect API keys](https://developer.apple.com/help/app-store-connect/manage-keys/create-api-keys-for-app-store-connect-api/)、[CocoaPods Trunk setup](https://guides.cocoapods.org/making/getting-setup-with-trunk.html)、[GitHub Actions secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)。
+申请入口：[Apple Developer ID certificates](https://developer.apple.com/help/account/certificates/create-developer-id-certificates/)、[App Store Connect API keys](https://developer.apple.com/help/app-store-connect/manage-keys/create-api-keys-for-app-store-connect-api/)、[Sonatype Central user tokens](https://central.sonatype.org/publish/generate-portal-token/)、[GnuPG key management](https://www.gnupg.org/documentation/manuals/gnupg/OpenPGP-Key-Management.html)、[npm trusted publishers](https://docs.npmjs.com/trusted-publishers)、[pub.dev automated publishing](https://dart.dev/tools/pub/automated-publishing)、[CocoaPods Trunk setup](https://guides.cocoapods.org/making/getting-setup-with-trunk.html) 和 [GitHub Actions secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)。
 
 ## 稳定版发行门槛
 

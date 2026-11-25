@@ -47,9 +47,38 @@ The release tools select a channel from the SDK semantic version. `X.Y.Z` create
 
 ## Maintainer Credentials
 
-DevTools macOS signing requires organization enrollment in the [Apple Developer Program](https://developer.apple.com/programs/enroll/). Create a **Developer ID Application** certificate in the Apple Developer account, install it in Keychain Access, and export the private key with the certificate as a password-protected `.p12` file. Use the full identity printed by `security find-identity -v -p codesigning`. Create a Team API key in App Store Connect under **Users and Access > Integrations > App Store Connect API**, download the `.p8` file, and record its Key ID and Issuer ID. Apple provides the private key file only once.
+### macOS DevTools signing and notarization
 
-Windows stable installers require a publicly trusted Authenticode certificate issued after organization identity validation. The current workflow expects an exportable `.pfx` file containing its private key and a password. Hardware-token-only and cloud signing keys need a corresponding signing integration in the workflow.
+Have an organization administrator enroll in the [Apple Developer Program](https://developer.apple.com/programs/enroll/). In **Certificates, Identifiers & Profiles**, create a **Developer ID Application** certificate, generate its CSR in Keychain Access, download the certificate, and install it on the signing Mac. Export the certificate and matching private key together as a password-protected `.p12`. Set `WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY` to the full identity printed by `security find-identity -v -p codesigning`.
+
+In App Store Connect, open **Users and Access > Integrations > App Store Connect API**, create a **Team API key**, download its `.p8`, and record the Key ID and Issuer ID. Apple only makes the `.p8` available once, so create an encrypted backup immediately. This key authenticates notarization and is separate from the Developer ID certificate.
+
+### Windows DevTools signing
+
+Obtain an Authenticode code-signing certificate from a publicly trusted CA and complete its organization identity checks. Before ordering, confirm that the private key can be exported as a `.pfx` containing the private key. The current workflow imports that PFX on an ephemeral Windows runner. A certificate usable only through a hardware token or cloud-signing service requires a matching workflow integration first.
+
+### SDK registry credentials
+
+- **Maven Central (`sdk-android`)**: Verify the `io.github.weapp-container` namespace in Central Portal, then generate a **User Token** from account settings. Set its username and password as `MAVEN_CENTRAL_USERNAME` and `MAVEN_CENTRAL_PASSWORD`. These are CI credentials, not the Portal login password. Generate an OpenPGP key with GnuPG that supports detached signing, publish its public key to a public keyserver, and set the ASCII-armored private key as `WEAPP_SIGNING_KEY`. Set `WEAPP_SIGNING_PASSWORD` when that private key has a passphrase. The Android workflow reads these Actions secrets in the `sdk-android` repository.
+- **Historical private runtime archives**: `WEAPP_CONTAINER_RUNTIME_TOKEN` is required only when a manifest selects a frozen historical version. Ask a repository maintainer to grant access to `weapp-container/runtime-artifacts-private-archive`, then create a fine-grained GitHub token with **Contents: read** access to that repository and inject it through the environment. The current preview.7.1 and source-build paths do not require this token.
+- **CocoaPods (`sdk-ios`, `sdk-desktop`)**: Install CocoaPods and run `pod trunk register maintainer@example.com "Maintainer Name"`, then follow the verification email. Trunk stores its account token in the `trunk.cocoapods.org` entry in `~/.netrc`. Set that token as the `COCOAPODS_TRUNK_TOKEN` secret in both repositories. The account that publishes a Pod becomes its owner and can invite additional maintainers.
+- **npm (`sdk-contract`, `sdk-react-native`)**: The publisher needs permission for the relevant `@weapp-container` package. A maintainer manually publishes a new package after logging into npm and completing 2FA. Once the package exists, configure a trusted publisher in its npm settings for the exact GitHub repository and `publish-npm.yml` workflow. The workflows use OIDC, so later releases need no long-lived npm token.
+- **pub.dev (`sdk-flutter`)**: The publisher needs release access to all seven packages. Configure a GitHub trusted publisher on each existing package's pub.dev admin page, targeting `weapp-container/sdk-flutter`. The publication workflow uses OIDC and needs no pub.dev token in GitHub. A new package still needs an owner to make its first manual publication before setting up its trusted publisher.
+
+To create the Maven signing key, generate it locally and export it to a protected directory outside the repository, then publish its public key to a public keyserver:
+
+```sh
+gpg --full-generate-key
+gpg --list-secret-keys --keyid-format LONG
+umask 077
+gpg --armor --export-secret-keys YOUR_KEY_ID > /secure/path/weapp-signing-private.asc
+gpg --armor --export YOUR_KEY_ID > /secure/path/weapp-signing-public.asc
+gpg --keyserver hkps://keys.openpgp.org --send-keys YOUR_KEY_ID
+```
+
+Replace `YOUR_KEY_ID` with the generated key ID and `/secure/path` with a directory readable only by the maintainer. Store the private file contents as the `WEAPP_SIGNING_KEY` secret. Do not print it in logs or paste it into chat.
+
+### DevTools update key
 
 The DevTools update manifest uses an Ed25519 key pair generated by the maintainer. No certificate authority issues it. Run this Node.js 24 command from a protected directory outside the repository:
 
@@ -64,22 +93,15 @@ writeFileSync('weapp-devtools-update-public.pem', publicKey.export({ type: 'spki
 NODE
 ```
 
-Keep an encrypted backup and use the same key pair throughout the stable update lifecycle. Set the private PEM as the core repository secret `WEAPP_DEVTOOLS_UPDATE_PRIVATE_KEY` and the public PEM as the repository variable `WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY`. New DevTools clients embed that public key to verify updates.
+Keep an encrypted backup and use the same key pair throughout the stable update lifecycle. Set the private PEM as the core repository secret `WEAPP_DEVTOOLS_UPDATE_PRIVATE_KEY` and the public PEM as the repository variable `WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY`. New DevTools clients embed that public key to verify updates. Losing the private key prevents future updates from being trusted by already released clients.
 
-Register the publisher with CocoaPods Trunk and verify the email address:
+### GitHub configuration
 
-```sh
-pod trunk register maintainer@example.com "Maintainer Name"
-pod trunk me
-```
-
-After verification, CocoaPods stores the authentication token in the user's `.netrc`. Set the token from the `trunk.cocoapods.org` entry as the GitHub Actions secret `COCOAPODS_TRUNK_TOKEN` in both `sdk-ios` and `sdk-desktop`. Do not commit `.netrc`, certificate passwords, or key files.
-
-Enter credentials under each repository's **Settings > Secrets and variables > Actions**. Base64-encode the `.p12`, `.p8`, and `.pfx` files before setting their corresponding secrets. The workflow restores them on ephemeral runners. Generate `WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD` as a strong random value and keep it in a password manager.
+Add secrets under each repository's **Settings > Secrets and variables > Actions**. Add the public update key as a repository variable. Set the Base64 contents of `.p12`, `.p8`, and `.pfx` as `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64`, `WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_BASE64`, and `WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_BASE64`, respectively. Put the certificate export passwords in their matching `*_PASSWORD` secrets, the Mac identity in `WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY`, and the API Key ID and Issuer ID in their matching secrets. Generate a separate strong password for `WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD` and keep it in a password manager. Encode files as single-line Base64 values. The workflow restores them on ephemeral runners. Never commit certificates, `.netrc`, GPG private keys, or key files, and never send them in chat.
 
 The core repository requires DevTools secrets `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_BASE64`, `WEAPP_DEVTOOLS_MACOS_CERTIFICATE_PASSWORD`, `WEAPP_DEVTOOLS_MACOS_KEYCHAIN_PASSWORD`, `WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY`, `WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_BASE64`, `WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID`, `WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER`, `WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_BASE64`, `WEAPP_DEVTOOLS_WINDOWS_SIGNING_CERTIFICATE_PASSWORD`, and `WEAPP_DEVTOOLS_UPDATE_PRIVATE_KEY`, plus the variable `WEAPP_DEVTOOLS_UPDATE_PUBLIC_KEY`. Android Maven secrets are configured. npm and pub.dev workflows use GitHub OIDC and need no long-lived publication token.
 
-Application guides: [Apple Developer ID certificates](https://developer.apple.com/help/account/certificates/create-developer-id-certificates/), [App Store Connect API keys](https://developer.apple.com/help/app-store-connect/manage-keys/create-api-keys-for-app-store-connect-api/), [CocoaPods Trunk setup](https://guides.cocoapods.org/making/getting-setup-with-trunk.html), and [GitHub Actions secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions).
+Application guides: [Apple Developer ID certificates](https://developer.apple.com/help/account/certificates/create-developer-id-certificates/), [App Store Connect API keys](https://developer.apple.com/help/app-store-connect/manage-keys/create-api-keys-for-app-store-connect-api/), [Sonatype Central user tokens](https://central.sonatype.org/publish/generate-portal-token/), [GnuPG key management](https://www.gnupg.org/documentation/manuals/gnupg/OpenPGP-Key-Management.html), [npm trusted publishers](https://docs.npmjs.com/trusted-publishers), [pub.dev automated publishing](https://dart.dev/tools/pub/automated-publishing), [CocoaPods Trunk setup](https://guides.cocoapods.org/making/getting-setup-with-trunk.html), and [GitHub Actions secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-for-github-actions).
 
 ## Stable Release Requirements
 

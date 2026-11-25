@@ -68,8 +68,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "SDK 公开发行状态、稳定版门槛与维护者凭据申请流程",
-      "reviewedChineseSha256": "0b2ec35263f1b7a4bfc18a9c40229961d280f523a7ebb28be21e000156b2031f",
+      "reviewedChineseSummary": "已复核稳定发行状态、签名证书申请、Maven/CocoaPods 凭据、历史归档访问、npm/pub.dev OIDC 和 DevTools 密钥配置。",
+      "reviewedChineseSha256": "44ff8636e15c91e47e89506dec1f882e35e397de22f790686cbcfe13a815b2e2",
       "legacyHeadingIds": []
     },
     {
