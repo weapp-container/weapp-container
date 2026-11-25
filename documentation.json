@@ -68,8 +68,8 @@
         "repository": "weapp-container/weapp-container",
         "path": "docs/public-sdk-release.md"
       },
-      "reviewedChineseSummary": "SDK 公开发行状态与稳定版门槛",
-      "reviewedChineseSha256": "6f291f721d69a0fb371d09134078b2e01f49045e65341cf262a44d1415a0ea78",
+      "reviewedChineseSummary": "SDK 公开发行状态、稳定版门槛与维护者凭据申请流程",
+      "reviewedChineseSha256": "0b2ec35263f1b7a4bfc18a9c40229961d280f523a7ebb28be21e000156b2031f",
       "legacyHeadingIds": []
     },
     {
