@@ -34,6 +34,30 @@ The desktop DevTools packages include pinned Node.js, weapp-vite, the manifest p
 
 Each package includes `weapp-devtools.json` with source, compiler, Node, compatibility and file-hash metadata. Stable releases use a signed update manifest, Developer ID signing and notarization for macOS, and Authenticode signing for Windows MSI. The release workflow fails before publishing when stable signing inputs are missing. Preview releases do not participate in stable updates. Release signing, platform installation and official-tool evidence remain platform-specific and are not replaced by local headless checks.
 
+### Launch unsigned prereleases
+
+The current GitHub prerelease macOS and Windows installers are not platform-signed, so the first launch may show an operating-system warning. Download only from the matching GitHub Release and compare the file with the `SHA256SUMS` entry published there before removing the download marker.
+
+On macOS, open the `.dmg`, drag `Weapp Container DevTools.app` to Applications, then run:
+
+```sh
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
+open "/Applications/Weapp Container DevTools.app"
+```
+
+`xattr` removes only this app's macOS quarantine metadata. It does not create a signature or notarization. Replace the path when the app is installed elsewhere. Do not disable Gatekeeper globally to run a prerelease.
+
+For the Windows MSI, verify the hash, remove that file's Zone Identifier, and start it from PowerShell:
+
+```powershell
+Get-FileHash "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi" -Algorithm SHA256
+Unblock-File -Path "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi"
+Start-Process "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi"
+```
+
+For a ZIP package, run `Unblock-File` on the ZIP before extracting it. If SmartScreen still appears, choose **More info** > **Run anyway** only after the release source and hash have been verified. `Unblock-File` removes only the downloaded file's Zone Identifier. It does not create an Authenticode signature. Do not disable Defender or SmartScreen globally. Platform-signed stable packages, with notarization on macOS, should not require these manual steps.
+
 ## Mini-games
 
 Pack and run an unpacked mini-game build with the QuickJS simulator:

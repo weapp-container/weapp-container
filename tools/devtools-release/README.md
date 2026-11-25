@@ -17,6 +17,30 @@ The GitHub Release provides an installer for each desktop platform.
 
 The portable `.tar.gz` and `.zip` packages remain available for environments where an installer is not suitable.
 
+## Launch an unsigned prerelease
+
+The current GitHub prerelease macOS and Windows packages are unsigned. Download only from the matching GitHub Release and verify the installer or archive against its `SHA256SUMS` entry before bypassing an operating-system warning.
+
+On macOS, open the `.dmg` and copy `Weapp Container DevTools.app` to Applications before running:
+
+```sh
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
+open "/Applications/Weapp Container DevTools.app"
+```
+
+`xattr` removes only the app's quarantine metadata. It does not add a Developer ID signature or notarization. Replace the path when the app is installed elsewhere. Do not disable Gatekeeper globally.
+
+For the Windows MSI, verify the hash and remove the downloaded-file Zone Identifier in PowerShell:
+
+```powershell
+Get-FileHash "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi" -Algorithm SHA256
+Unblock-File -Path "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi"
+Start-Process "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi"
+```
+
+Run `Unblock-File` on a ZIP before extracting it. If SmartScreen still appears, select **More info** > **Run anyway** only after verifying the release source and hash. `Unblock-File` does not add an Authenticode signature. Do not disable Defender or SmartScreen globally. Platform-signed stable packages, with notarization on macOS, should not require these manual steps.
+
 ## Start the graphical launcher
 
 Run `bin/weapp-devtools` on macOS or Linux, or `bin/weapp-devtools.cmd` on Windows. The launcher opens a local browser window where you can choose an existing `weapp-vite` project and start either the Web Player or Desktop Player.

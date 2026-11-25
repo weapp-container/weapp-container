@@ -34,6 +34,30 @@ Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于
 
 发行包中的 `weapp-devtools.json` 记录源码、编译器、Node、兼容矩阵和文件哈希。稳定版使用签名更新清单，macOS 安装包使用 Developer ID 签名并完成公证，Windows MSI 使用 Authenticode 签名。缺少稳定版签名材料时发布工作流会在发布前失败。预览版不会自动参与稳定更新。发行签名、平台安装和官方工具证据按平台单独记录，不能由本地 headless 检查替代。
 
+### 未签名预览版启动
+
+当前 GitHub prerelease 的 macOS 和 Windows 安装包没有平台签名，首次启动可能显示系统警告。只从对应 GitHub Release 下载，并先用发布页的 `SHA256SUMS` 核对文件哈希。确认来源和哈希后，可以按平台移除下载隔离标记。
+
+macOS 先打开 `.dmg`，将 `Weapp Container DevTools.app` 拖到 Applications，再执行：
+
+```sh
+shasum -a 256 "$HOME/Downloads/weapp-container-devtools-macos-universal.dmg"
+xattr -dr com.apple.quarantine "/Applications/Weapp Container DevTools.app"
+open "/Applications/Weapp Container DevTools.app"
+```
+
+`xattr` 只会移除这个应用的 macOS quarantine 元数据，不会创建签名或公证。应用安装在其他目录时，替换为实际路径。不要为了运行预览版而全局关闭 Gatekeeper。
+
+Windows MSI 可以在 PowerShell 中核对哈希、移除该文件的 Zone Identifier 后启动：
+
+```powershell
+Get-FileHash "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi" -Algorithm SHA256
+Unblock-File -Path "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi"
+Start-Process "$env:USERPROFILE\Downloads\weapp-container-devtools-windows-x86_64.msi"
+```
+
+使用 ZIP 时，先对 ZIP 执行 `Unblock-File`，再解压。若 SmartScreen 仍然出现，在已经核对来源和哈希后选择 **More info** > **Run anyway**。`Unblock-File` 只会移除下载文件的 Zone Identifier，不会创建 Authenticode 签名。不要全局关闭 Defender 或 SmartScreen。完成平台签名的稳定版（macOS 另需公证）通常不需要这些手动步骤。
+
 ## 小游戏
 
 使用 `--game` 打包未加密、已解包的小游戏产物，并通过 QuickJS simulator 启动：

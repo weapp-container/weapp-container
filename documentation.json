@@ -56,7 +56,7 @@
         "path": "README.md"
       },
       "reviewedChineseSummary": "SDK 示例应用与源码构建入口",
-      "reviewedChineseSha256": "7d32868172f9b213d15d6a4fe2d141e7d435e4969cb50cd3ef5fc617f8c79ed6",
+      "reviewedChineseSha256": "daee6fb8d26a6a50b05125b78429fd5db4f49f0e3c3d495f63a9483446f4c8a5",
       "legacyHeadingIds": []
     },
     {
@@ -69,7 +69,7 @@
         "path": "docs/public-sdk-release.md"
       },
       "reviewedChineseSummary": "已复核当前预览发行版本、Contract npm dist-tag、各 SDK 安装边界与维护者凭据申请路径。",
-      "reviewedChineseSha256": "f2e45557cc5b711f239ef9662b162de660ba30383cae999aba74059ce429f780",
+      "reviewedChineseSha256": "f5cf85bad997006c7cb960fc54c087b11e4e47e281afb5361d208074d48c8306",
       "legacyHeadingIds": []
     },
     {
