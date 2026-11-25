@@ -147,7 +147,7 @@ export function renderMsiSource(version) {
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="${productCode}" Name="Weapp Container DevTools" Language="1033" Version="${productVersion}" Manufacturer="Weapp Container" UpgradeCode="${MSI_UPGRADE_CODE}">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perUser" Description="Weapp Container DevTools ${xml(version)}" />
-      <MajorUpgrade AllowDowngrades="yes" AllowSameVersionUpgrades="yes" />
+      <MajorUpgrade AllowDowngrades="yes" />
     <MediaTemplate EmbedCab="yes" />
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="LocalAppDataFolder">

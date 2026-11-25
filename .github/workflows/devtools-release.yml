@@ -114,7 +114,6 @@ jobs:
         shell: bash
         env:
           WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY: ${{ secrets.WEAPP_DEVTOOLS_MACOS_SIGNING_IDENTITY }}
-          WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_PATH: ${{ runner.temp }}/weapp-devtools-notary-key.p8
           WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID: ${{ secrets.WEAPP_DEVTOOLS_MACOS_NOTARY_KEY_ID }}
           WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER: ${{ secrets.WEAPP_DEVTOOLS_MACOS_NOTARY_ISSUER }}
         run: |

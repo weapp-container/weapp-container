@@ -154,7 +154,7 @@ test('update manifests require an Ed25519 signature and select the newest compat
   assert.deepEqual(verifyUpdateManifest(manifest, { publicKey: publicKey.export({ type: 'spki', format: 'pem' }) }), unsigned)
   const result = await checkForUpdate({
     metadata: {
-      version: '0.0.8', target: 'macos-arm64',
+      version: '0.0.8', target: 'macos-arm64', arch: 'arm64',
       update: { manifestUrl: 'https://example.invalid/updates.json', publicKey: publicKey.export({ type: 'spki', format: 'pem' }) },
     },
     fetchImpl: async () => ({ ok: true, json: async () => manifest }),
@@ -219,6 +219,7 @@ test('installer metadata maps preview versions to native package formats', () =>
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /Version="0\.1\.702"/)
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /InstallScope="perUser"/)
   assert.match(renderMsiSource('0.1.0-preview.7.2'), /AllowDowngrades="yes"/)
+  assert.doesNotMatch(renderMsiSource('0.1.0-preview.7.2'), /AllowSameVersionUpgrades/)
   assert.ok(renderMsiSource('0.1.0-preview.7.2').includes(String.raw`Target="[INSTALLFOLDER]bin\weapp-devtools.vbs"`))
   assert.ok(renderMsiSource('0.1.0-preview.7.2').includes(String.raw`Key="Software\WeappContainer\DevTools"`))
   assert.equal(msiProductCode('0.1.0-preview.7.2'), msiProductCode('0.1.0-preview.7.2'))

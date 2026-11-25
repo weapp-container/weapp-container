@@ -504,7 +504,7 @@ export async function packageDevtools({ target, output, version = '0.1.0-preview
   await prepareNode(staging, target, temporaryRoot, nodeDistribution)
   await writeLaunchers(staging, target)
   const metadata = {
-    schemaVersion: 1, name: 'weapp-container-devtools', version, target,
+    schemaVersion: 1, name: 'weapp-container-devtools', version, target, arch: NODE_TARGETS[target].cpu,
     sourceCommit: run('git', ['rev-parse', 'HEAD']), weappViteCommit: COMPILER_COMMIT,
     weappViteVersion: '7.5.0', nodeVersion: NODE_VERSION, canvaskitVersion: CANVASKIT_VERSION,
     packageManager: 'pnpm@12.11.2',

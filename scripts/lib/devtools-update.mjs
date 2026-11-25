@@ -71,7 +71,7 @@ export async function checkForUpdate({ metadata, fetchImpl = fetch }) {
   if (!response.ok) throw new Error(`Update manifest request failed: HTTP ${response.status}`)
   if (response.url && new URL(response.url).protocol !== 'https:') throw new Error('Update manifest redirect must use HTTPS')
   const manifest = verifyUpdateManifest(await response.json(), { publicKey: update.publicKey })
-  const candidate = selectUpdate(manifest, { version: metadata.version, target: metadata.target })
+  const candidate = selectUpdate(manifest, { version: metadata.version, target: metadata.target, arch: metadata.arch ?? process.arch })
   return { status: candidate ? 'available' : 'current', candidate }
 }
 
