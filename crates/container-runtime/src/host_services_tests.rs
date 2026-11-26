@@ -891,6 +891,117 @@ mod host_services_contract {
             );
         }
 
+        fn native_task_event_subscriptions_cover_progress_and_chunks(engine: EngineKind) {
+            let source = r#"
+              const log=[];let requestTask,downloadTask,uploadTask;
+              exports.start=()=>{
+                requestTask=wx.request({url:'https://test.invalid/request'});
+                downloadTask=wx.downloadFile({url:'https://test.invalid/download'});
+                uploadTask=wx.uploadFile({url:'https://test.invalid/upload',filePath:'/tmp/payload'});
+                requestTask.onChunkReceived(e=>log.push(['chunk',e.data instanceof ArrayBuffer,Array.from(new Uint8Array(e.data))]));
+                requestTask.onHeadersReceived(e=>log.push(['request-header',e.header.x]));
+                downloadTask.onProgressUpdate(e=>log.push(['download-progress',e.progress,e.totalBytesWritten,e.totalBytesExpectedToWrite]));
+                uploadTask.onProgressUpdate(e=>log.push(['upload-progress',e.progress,e.totalBytesSent,e.totalBytesExpectedToSend]));
+                return [typeof requestTask.onChunkReceived,typeof requestTask.onHeadersReceived,typeof downloadTask.onProgressUpdate,typeof uploadTask.onProgressUpdate];
+              };
+              exports.remove=()=>{requestTask.offChunkReceived();downloadTask.offProgressUpdate();return true;};
+              exports.read=()=>log;
+            "#;
+            let apis = [
+                "wx.request",
+                "wx.downloadFile",
+                "wx.uploadFile",
+                "object:RequestTask.onChunkReceived",
+                "object:RequestTask.offChunkReceived",
+                "object:RequestTask.onHeadersReceived",
+                "object:RequestTask.offHeadersReceived",
+                "object:DownloadTask.onProgressUpdate",
+                "object:DownloadTask.offProgressUpdate",
+                "object:UploadTask.onProgressUpdate",
+                "object:UploadTask.offProgressUpdate",
+            ];
+            let mut session = make(engine, source, &apis, &[]);
+            assert_eq!(
+                call(&mut session, "start"),
+                json!(["function", "function", "function", "function"])
+            );
+            let requests = calls(&mut session);
+            assert_eq!(requests.len(), 7, "three task factories and four subscriptions");
+            let request_object_id = requests[0].2["objectId"].as_str().unwrap().to_owned();
+            let download_object_id = requests[1].2["objectId"].as_str().unwrap().to_owned();
+            let upload_object_id = requests[2].2["objectId"].as_str().unwrap().to_owned();
+            let subscriptions = requests
+                .iter()
+                .skip(3)
+                .map(|request| request.2["subscriptionId"].as_str().unwrap().to_owned())
+                .collect::<Vec<_>>();
+            for request in &requests[3..] {
+                session.complete_host_api_call(&request.0, Ok(json!({}))).unwrap();
+            }
+            session.dispatch_host_api_event(HostApiEvent {
+                session_id: session.config.session_id.clone(),
+                account_epoch: u64::MAX,
+                subscription_id: subscriptions[0].clone(),
+                sequence: 1,
+                value: json!({"data":{"__weappBinary":{"type":"ArrayBuffer","bytes":[0,127,255]}}}),
+                object_id: Some(request_object_id.clone()),
+                event: Some("ChunkReceived".into()),
+            }).unwrap();
+            session.dispatch_host_api_event(HostApiEvent {
+                session_id: session.config.session_id.clone(),
+                account_epoch: u64::MAX,
+                subscription_id: subscriptions[1].clone(),
+                sequence: 1,
+                value: json!({"header":{"x":"native"}}),
+                object_id: Some(request_object_id),
+                event: Some("HeadersReceived".into()),
+            }).unwrap();
+            session.dispatch_host_api_event(HostApiEvent {
+                session_id: session.config.session_id.clone(),
+                account_epoch: u64::MAX,
+                subscription_id: subscriptions[2].clone(),
+                sequence: 1,
+                value: json!({"progress":42,"totalBytesWritten":42,"totalBytesExpectedToWrite":100}),
+                object_id: Some(download_object_id),
+                event: Some("ProgressUpdate".into()),
+            }).unwrap();
+            session.dispatch_host_api_event(HostApiEvent {
+                session_id: session.config.session_id.clone(),
+                account_epoch: u64::MAX,
+                subscription_id: subscriptions[3].clone(),
+                sequence: 1,
+                value: json!({"progress":75,"totalBytesSent":75,"totalBytesExpectedToSend":100}),
+                object_id: Some(upload_object_id),
+                event: Some("ProgressUpdate".into()),
+            }).unwrap();
+            assert_eq!(
+                call(&mut session, "read"),
+                json!([
+                    ["chunk", true, [0,127,255]],
+                    ["request-header", "native"],
+                    ["download-progress", 42, 42, 100],
+                    ["upload-progress", 75, 75, 100]
+                ])
+            );
+            call(&mut session, "remove");
+            let removals = calls(&mut session);
+            assert_eq!(removals.len(), 2);
+            for removal in removals {
+                session.complete_host_api_call(&removal.0, Ok(json!({}))).unwrap();
+            }
+            let stale = session.dispatch_host_api_event(HostApiEvent {
+                session_id: session.config.session_id.clone(),
+                account_epoch: u64::MAX,
+                subscription_id: subscriptions[0].clone(),
+                sequence: 2,
+                value: json!({"data":{"__weappBinary":{"type":"ArrayBuffer","bytes":[9]}}}),
+                object_id: None,
+                event: Some("ChunkReceived".into()),
+            }).unwrap();
+            assert!(stale.messages.is_empty(), "off must revoke queued task events");
+            assert_eq!(call(&mut session, "read").as_array().unwrap().len(), 4);
+        }
+
         fn revocation_never_enters_guest(engine: EngineKind) {
             let source = r#"let count=0;exports.start=()=>{wx.login({fail:()=>count++,complete:()=>count++}).catch(()=>count++);weappContainer.identity.onChange(()=>count++);return true;};exports.read=()=>count;"#;
             let mut session = make(
@@ -1984,6 +2095,10 @@ exports.read=()=>[seen,inheritedReads];
                     #[test]
                     fn native_tasks_preserve_callbacks_abort_and_binary() {
                         native_tasks_cancel_and_transfer_binary($engine);
+                    }
+                    #[test]
+                    fn native_task_events_cover_progress_chunks_headers_and_off() {
+                        native_task_event_subscriptions_cover_progress_and_chunks($engine);
                     }
                     #[test]
                     fn native_inline_float_binary_preserves_js_callback_and_promise_order() {

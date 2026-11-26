@@ -210,6 +210,7 @@ fn installer_exception_never_enters_application_exception_coercion() {
         installHostEnvironment: function() {
           throw {toString() { globalThis.__installerCoercions += 1; return 'trap'; }};
         },
+        batchCall: function() { return '[]'; },
         captureReceiverIncarnations: function() { return '{}'; },
         createReceiverEventDispatcher: function() { return function() {}; },
         bindEventChannel: function() { return false; },

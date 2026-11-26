@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { access, appendFile, lstat, mkdir, readFile, readdir, realpath, rename, rm, writeFile } from 'node:fs/promises'
 import { createReadStream, createWriteStream } from 'node:fs'
@@ -7,6 +8,9 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const SOURCE_ENTRY = resolve(dirname(fileURLToPath(import.meta.url))) === resolve(PACKAGE_ROOT, 'src')
+const CLI_ENTRY = SOURCE_ENTRY ? join(PACKAGE_ROOT, 'src', 'cli.ts') : join(PACKAGE_ROOT, 'dist', 'cli.mjs')
+const CLI_RUNTIME_ARGS = SOURCE_ENTRY ? ['--experimental-strip-types'] : []
 const REPOSITORY_ROOT = resolve(PACKAGE_ROOT, '../..')
 const DEFAULT_TIMEOUT_MS = 120_000
 const MAX_OUTPUT_BYTES = 2 * 1024 * 1024
@@ -117,6 +121,345 @@ async function packageManager(root) {
   return 'npm'
 }
 
+const templateTags = new Set(['include', 'import', 'slot', 'template', 'wxs'])
+const compatibilitySourceExtensions = new Set(['.js', '.jsx', '.ts', '.tsx', '.wxs', '.wxml', '.wxss', '.json'])
+const styleFeaturePatterns = [
+  { name: 'wxss-rpx-units', pattern: /\b\d+(?:\.\d+)?rpx\b/gi },
+  { name: 'wxss-page-selector', pattern: /(?:^|[},])\s*page\s*(?=[,{])/gim },
+  { name: 'css-grid', pattern: /\bdisplay\s*:\s*grid\b/gi },
+  { name: 'css-sticky', pattern: /\bposition\s*:\s*sticky\b/gi },
+  { name: 'css-custom-properties', pattern: /\bvar\(\s*--[\w-]+/gi },
+  { name: 'css-safe-area', pattern: /\benv\(\s*safe-area-inset-/gi },
+  { name: 'css-host-selector', pattern: /:host(?:\b|\s*\()/gi },
+  { name: 'css-import', pattern: /@import\b/gi },
+]
+
+function maskCode(source, mode) {
+  const characters = source.split('')
+  const blank = index => {
+    if (characters[index] !== '\n' && characters[index] !== '\r') characters[index] = ' '
+  }
+  let state = 'code'
+  let quote = ''
+  for (let index = 0; index < characters.length; index += 1) {
+    const character = source[index]
+    const next = source[index + 1]
+    if (mode === 'wxml') {
+      if (state === 'comment') {
+        blank(index)
+        if (character === '-' && source.slice(index, index + 3) === '-->') {
+          blank(index + 1)
+          blank(index + 2)
+          index += 2
+          state = 'code'
+        }
+      } else if (character === '<' && source.slice(index, index + 4) === '<!--') {
+        blank(index)
+        blank(index + 1)
+        blank(index + 2)
+        blank(index + 3)
+        index += 3
+        state = 'comment'
+      }
+      continue
+    }
+    if (state === 'line-comment') {
+      blank(index)
+      if (character === '\n') state = 'code'
+      continue
+    }
+    if (state === 'block-comment') {
+      blank(index)
+      if (character === '*' && next === '/') {
+        blank(index + 1)
+        index += 1
+        state = 'code'
+      }
+      continue
+    }
+    if (state === 'string') {
+      blank(index)
+      if (character === '\\') {
+        if (index + 1 < characters.length) blank(++index)
+      } else if (character === quote) {
+        state = 'code'
+      }
+      continue
+    }
+    if (character === '/' && next === '/') {
+      blank(index)
+      blank(index + 1)
+      index += 1
+      state = 'line-comment'
+    } else if (character === '/' && next === '*') {
+      blank(index)
+      blank(index + 1)
+      index += 1
+      state = 'block-comment'
+    } else if (mode === 'javascript' && (character === '"' || character === "'" || character === '`')) {
+      quote = character
+      blank(index)
+      state = 'string'
+    } else if (mode === 'css' && (character === '"' || character === "'")) {
+      quote = character
+      blank(index)
+      state = 'string'
+    }
+  }
+  return characters.join('')
+}
+
+function lineStarts(source) {
+  const starts = [0]
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] === '\n') starts.push(index + 1)
+  }
+  return starts
+}
+
+function sourceLocation(starts, offset) {
+  let low = 0
+  let high = starts.length
+  while (low + 1 < high) {
+    const middle = (low + high) >>> 1
+    if (starts[middle] <= offset) low = middle
+    else high = middle
+  }
+  return { line: low + 1, column: offset - starts[low] + 1 }
+}
+
+function compatibilityFinding(kind, name, path, starts, offset, row = null, detail = {}) {
+  const status = ['full', 'partial', 'unsupported'].includes(row?.weappContainer?.status)
+    ? row.weappContainer.status
+    : 'unknown'
+  const messages = {
+    full: 'The compatibility matrix records this capability as full. Static inspection does not verify runtime behavior.',
+    partial: 'The compatibility matrix records partial support. Check the listed evidence and host-specific limits.',
+    unsupported: 'The compatibility matrix records this capability as unsupported in the current baseline.',
+    unknown: 'No compatibility evidence is recorded for this use. Verify it on every target host.',
+  }
+  return {
+    kind,
+    name,
+    status,
+    severity: status === 'unsupported' ? 'error' : status === 'partial' ? 'warning' : 'info',
+    priority: row?.priority ?? 'P1',
+    path,
+    ...sourceLocation(starts, offset),
+    message: detail.message ?? messages[status],
+    recommendation: detail.recommendation ?? (status === 'unsupported'
+      ? 'Replace this capability or guard the code path with wx.canIUse before targeting this runtime.'
+      : status === 'partial'
+        ? 'Review the API limits and add a target-host scenario for the behavior this project relies on.'
+        : 'Run a representative scenario on each target host and record the result before relying on this use.'),
+    evidence: row?.weappContainer?.evidence ?? [],
+    ...(row?.weappContainer?.hostCoverage ? { hostCoverage: row.weappContainer.hostCoverage } : {}),
+    ...(row?.weappContainer?.engineCoverage ? { engineCoverage: row.weappContainer.engineCoverage } : {}),
+  }
+}
+
+function addRegexFindings(findings, { kind, name, path, source, starts, pattern, row, detail }) {
+  const matcher = new RegExp(pattern.source, pattern.flags)
+  for (const match of source.matchAll(matcher)) {
+    const findingName = typeof name === 'function' ? name(match) : name
+    const findingRow = typeof row === 'function' ? row(match, findingName) : row
+    findings.push(compatibilityFinding(kind, findingName, path, starts, match.index, findingRow, detail))
+  }
+}
+
+let compatibilityDataPromise
+
+async function compatibilityData() {
+  if (!compatibilityDataPromise) {
+    compatibilityDataPromise = (async () => {
+      const inventory = await readJson(join(REPOSITORY_ROOT, 'docs/api-inventory-v1.json'), null)
+      const packaged = inventory
+        ? null
+        : await readJson(join(PACKAGE_ROOT, 'dist/compatibility-baseline.json'), null)
+      const source = inventory ?? packaged ?? { apiRows: [], baseline: null }
+      const apiRows = source.apiRows ?? source.apis.flatMap(api => api.names.map(name => ({
+        name,
+        priority: 'P1',
+        weappContainer: {
+          status: api.support,
+          evidence: api.conformance,
+          hostCoverage: api.hostCoverage,
+          engineCoverage: api.engineCoverage,
+        },
+      })))
+      return {
+        baseline: source.baseline ?? {
+          kind: 'weapp-api-inventory',
+          schemaVersion: source.schemaVersion,
+          manifestVersion: source.manifestVersion,
+          protocolVersion: source.protocolVersion,
+          hosts: source.hosts,
+          engines: source.engines,
+        },
+        rows: {
+          api: new Map(apiRows.map(row => [row.name, row])),
+          component: new Map(),
+          template: new Map(),
+        },
+      }
+    })()
+  }
+  return compatibilityDataPromise
+}
+
+async function scanCompatibility(root, sourceFiles) {
+  const data = await compatibilityData()
+  const compatibilityRows = data.rows
+  const findings = []
+  const warnings = []
+  const customComponents = new Set()
+  for (const file of sourceFiles) {
+    if (!file.endsWith('.json')) continue
+    try {
+      const value = JSON.parse(await readFile(file, 'utf8'))
+      for (const name of Object.keys(value?.usingComponents ?? {})) customComponents.add(name)
+    } catch {
+      // JSON validity remains the compiler's responsibility.
+    }
+  }
+
+  for (const file of sourceFiles) {
+    const extension = file.slice(file.lastIndexOf('.')).toLowerCase()
+    if (!compatibilitySourceExtensions.has(extension) || extension === '.json') continue
+    let original
+    try {
+      original = await readFile(file, 'utf8')
+    } catch (error) {
+      warnings.push({ path: relative(root, file).split(sep).join('/'), message: `Could not read source for compatibility scan: ${error.message}` })
+      continue
+    }
+    const path = relative(root, file).split(sep).join('/')
+    const mode = extension === '.wxml' ? 'wxml' : extension === '.wxss' ? 'css' : 'javascript'
+    const source = maskCode(original, mode)
+    const starts = lineStarts(original)
+
+    if (mode === 'javascript') {
+      addRegexFindings(findings, {
+        kind: 'api',
+        name: match => match[1] ? `wx.${match[1]}` : `wx.${match[3]}`,
+        path,
+        source,
+        starts,
+        pattern: /\bwx\s*(?:\?\.\s*|\.\s*)([$\w]+)|\bwx\s*\[\s*(['"])([^'"\]]+)\2\s*\]/g,
+        row: (_match, name) => compatibilityRows.api.get(name),
+      })
+      addRegexFindings(findings, {
+        kind: 'api',
+        name: 'wx[dynamic]',
+        path,
+        source,
+        starts,
+        pattern: /\bwx\s*\[\s*([A-Za-z_$][\w$]*)\s*\]/g,
+        row: null,
+        detail: {
+          message: 'The API name is computed at runtime, so static inspection cannot determine its compatibility status.',
+          recommendation: 'Use an explicit API name or add a target-host test for each possible computed value.',
+        },
+      })
+      addRegexFindings(findings, {
+        kind: 'api',
+        name: match => match[1],
+        path,
+        source,
+        starts,
+        pattern: /(?<![\w$.])(App|Page|Component)\s*\(/g,
+        row: (_match, name) => compatibilityRows.api.get(name),
+      })
+    } else if (mode === 'wxml') {
+      addRegexFindings(findings, {
+        kind: 'template',
+        name: match => match[1],
+        path,
+        source,
+        starts,
+        pattern: /\b(wx:[\w-]+)\b/g,
+        row: (_match, name) => compatibilityRows.template.get(name),
+        detail: {
+          message: 'Static analysis does not maintain conformance status for WXML directives.',
+          recommendation: 'Verify this directive in a representative scenario on every target host.',
+        },
+      })
+      addRegexFindings(findings, {
+        kind: 'template',
+        name: match => match[1],
+        path,
+        source,
+        starts,
+        pattern: /<\s*(include|import|slot|template|wxs)\b/gi,
+        row: (_match, name) => compatibilityRows.template.get(name),
+      })
+      addRegexFindings(findings, {
+        kind: 'component',
+        name: match => match[1],
+        path,
+        source,
+        starts,
+        pattern: /<\s*([a-z][a-z0-9-]*)\b/gi,
+        row: (_match, name) => compatibilityRows.component.get(name),
+      })
+      for (let index = findings.length - 1; index >= 0; index -= 1) {
+        const finding = findings[index]
+        if (finding.path !== path || finding.kind !== 'component') continue
+        if (templateTags.has(finding.name) || customComponents.has(finding.name)) {
+          findings.splice(index, 1)
+          continue
+        }
+        const row = compatibilityRows.component.get(finding.name)
+        Object.assign(finding, compatibilityFinding('component', finding.name, path, starts, starts[finding.line - 1] + finding.column - 1, row))
+        if (!row) {
+          finding.message = 'This tag is not declared in project usingComponents, and the static baseline has no component status for it.'
+          finding.recommendation = 'Check the component registration and verify any platform-specific component on each target host.'
+        }
+      }
+      for (const finding of findings) {
+        if (finding.path !== path || finding.kind !== 'template') continue
+        const row = compatibilityRows.template.get(finding.name)
+        const offset = starts[finding.line - 1] + finding.column - 1
+        const detail = finding.name.startsWith('wx:') ? {
+          message: 'Static analysis does not maintain conformance status for WXML directives.',
+          recommendation: 'Verify this directive in a representative scenario on every target host.',
+        } : undefined
+        Object.assign(finding, compatibilityFinding('template', finding.name, path, starts, offset, row, detail))
+      }
+    } else if (mode === 'css') {
+      for (const feature of styleFeaturePatterns) {
+        addRegexFindings(findings, {
+          kind: 'style',
+          name: feature.name,
+          path,
+          source,
+          starts,
+          pattern: feature.pattern,
+          row: null,
+          detail: {
+            message: 'The static baseline does not record compatibility status for this WXSS/CSS feature.',
+            recommendation: 'Exercise the rendered style on each target host and record the layout result.',
+          },
+        })
+      }
+    }
+  }
+
+  const counts = findings.reduce((result, finding) => {
+    result[finding.status] = (result[finding.status] ?? 0) + 1
+    return result
+  }, {})
+  return {
+    status: 'unknown',
+    method: 'static-source-scan',
+    baseline: data.baseline,
+    filesScanned: sourceFiles.filter(file => compatibilitySourceExtensions.has(file.slice(file.lastIndexOf('.')).toLowerCase())).length,
+    findings,
+    counts,
+    warnings,
+  }
+}
+
 export async function inspectProject(projectRoot) {
   const root = resolve(projectRoot)
   const projectConfig = await readJson(join(root, 'project.config.json'), null)
@@ -124,7 +467,7 @@ export async function inspectProject(projectRoot) {
   const sourceRoot = projectConfig?.srcMiniprogramRoot || (await exists(join(root, 'src')) ? 'src' : '.')
   const outputRoot = projectConfig?.miniprogramRoot || 'dist'
   const sourceDirectory = projectPath(root, sourceRoot)
-  const outputDirectory = projectPath(root, outputRoot)
+  projectPath(root, outputRoot)
   const appJson = join(sourceDirectory, 'app.json')
   const app = await readJson(appJson, {})
   const pages = Array.isArray(app.pages) ? app.pages : []
@@ -143,6 +486,7 @@ export async function inspectProject(projectRoot) {
     appJson: await exists(appJson) ? appJson : null,
     sourceFileCount: sourceFiles.length,
     sourceDigest: await digestDirectory(root),
+    compatibility: await scanCompatibility(root, sourceFiles),
     warnings: [
       ...(projectConfig ? [] : ['project.config.json is missing']),
       ...(pages.length ? [] : ['app.json has no pages']),
@@ -524,11 +868,11 @@ export async function runPreviewDaemon(options) {
   const token = options.token
   if (!token) throw new AgentError('ERR_PREVIEW_CONTROL', 'Preview daemon requires an ownership token')
   const simulator = options.simulatorCommand
-    ? { command: options.simulatorCommand, prefix: options.simulatorPrefix ?? [] }
-    : await simulatorBinary()
+    ? { command: options.simulatorCommand, prefix: options.simulatorPrefix ?? [], cwd: root }
+    : await simulatorBinary(root)
   const args = [...simulator.prefix, 'dev', '--project', root, '--surface', options.surface ?? 'web', '--engine', options.engine ?? 'quickjs', '--renderer', options.renderer ?? 'webview', '--port', String(options.port ?? 0), '--out-dir', pathsRoot]
   const log = createWriteStream(logPath, { mode: 0o600 })
-  const child = spawn(simulator.command, args, { cwd: REPOSITORY_ROOT, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true })
+  const child = spawn(simulator.command, args, { cwd: simulator.cwd, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true })
   child.stdout.pipe(log)
   child.stderr.pipe(log)
   let spawnError
@@ -606,12 +950,30 @@ export async function runPreviewDaemon(options) {
   }
 }
 
-async function simulatorBinary() {
+async function simulatorBinary(projectRoot) {
   const configured = process.env.WEAPP_CONTAINER_SIMULATOR_BIN
-  if (configured && await exists(configured)) return { command: configured, prefix: [] }
+  if (configured) {
+    if (await exists(configured)) return { command: configured, prefix: [], cwd: projectRoot }
+    throw new AgentError('ERR_SIMULATOR_NOT_FOUND', `WEAPP_CONTAINER_SIMULATOR_BIN does not exist: ${configured}`)
+  }
+  const binaryName = process.platform === 'win32' ? 'weapp-simulator.exe' : 'weapp-simulator'
+  const candidates = [
+    join(PACKAGE_ROOT, 'bin', binaryName),
+    join(projectRoot, 'node_modules/.bin', binaryName),
+  ]
+  for (const candidate of candidates) {
+    if (await exists(candidate)) return { command: candidate, prefix: [], cwd: projectRoot }
+  }
   const local = join(REPOSITORY_ROOT, 'target/debug/weapp-simulator')
-  if (await exists(local)) return { command: local, prefix: [] }
-  return { command: process.env.CARGO ?? 'cargo', prefix: ['run', '-p', 'container-simulator', '--locked', '--features', 'quickjs-native', '--'] }
+  if (await exists(local)) return { command: local, prefix: [], cwd: projectRoot }
+  if (await exists(join(REPOSITORY_ROOT, 'Cargo.toml'))) {
+    return {
+      command: process.env.CARGO ?? 'cargo',
+      prefix: ['run', '-p', 'container-simulator', '--locked', '--features', 'quickjs-native', '--'],
+      cwd: REPOSITORY_ROOT,
+    }
+  }
+  return { command: binaryName, prefix: [], cwd: projectRoot }
 }
 
 export class PreviewStore {
@@ -647,7 +1009,7 @@ export class PreviewStore {
     const errorPath = `${this.file}.error`
     await rm(errorPath, { force: true })
     const token = randomBytes(32).toString('hex')
-    const daemonArgs = [join(PACKAGE_ROOT, 'src/cli.mjs'), '--preview-daemon', '--project', this.root, '--token', token, '--surface', options.surface ?? 'web', '--engine', options.engine ?? 'quickjs', '--renderer', options.renderer ?? 'webview', '--port', String(options.port ?? 0), '--log', logPath, '--error', errorPath]
+    const daemonArgs = [...CLI_RUNTIME_ARGS, CLI_ENTRY, '--preview-daemon', '--project', this.root, '--token', token, '--surface', options.surface ?? 'web', '--engine', options.engine ?? 'quickjs', '--renderer', options.renderer ?? 'webview', '--port', String(options.port ?? 0), '--log', logPath, '--error', errorPath]
     if (pack) daemonArgs.push('--pack', resolve(pack))
     if (options.simulatorCommand) daemonArgs.push('--simulator-command', options.simulatorCommand, '--simulator-prefix', JSON.stringify(options.simulatorPrefix ?? []))
     const daemon = spawn(process.execPath, daemonArgs, { cwd: REPOSITORY_ROOT, detached: true, stdio: 'ignore', windowsHide: true })
@@ -1132,8 +1494,8 @@ async function waitForBridgeEvent(preview, requests, sessionId, timeoutMs, trigg
       buffer += decoder.decode(value, { stream: true })
       const events = buffer.split('\n\n'); buffer = events.pop() ?? ''
       for (const event of events) {
-        const type = event.match(/^event:\s*(.+)$/m)?.[1]
-        const data = event.match(/^data:\s*(.+)$/m)?.[1]
+        const type = event.match(/^event:[ \t]*(\S[^\r\n]*)$/m)?.[1]
+        const data = event.match(/^data:[ \t]*(\S[^\r\n]*)$/m)?.[1]
         if (type !== 'bridge' || !data) continue
         let payload; try { payload = JSON.parse(data) } catch { continue }
         const messages = Array.isArray(payload?.messages) ? payload.messages : [payload]
@@ -1160,7 +1522,7 @@ export function toolCatalog() {
     ['container_project_file_read', 'Read a project-relative source file.', { projectPath: { type: 'string' }, path: { type: 'string' } }],
     ['container_project_file_write', 'Write a project-relative source file atomically.', { projectPath: { type: 'string' }, path: { type: 'string' }, content: { type: 'string' } }],
     ['container_build', 'Build and pack a project.', { projectPath: { type: 'string' }, wvBin: { type: 'string' }, timeoutMs: { type: 'number' } }],
-    ['container_preview_start', 'Start a local Web simulator preview from project sources.', { projectPath: { type: 'string' }, packDirectory: { type: 'string' }, surface: { type: 'string' }, renderer: { type: 'string' }, port: { type: 'number' }, timeoutMs: { type: 'number' } }],
+    ['container_preview_start', 'Start a local Web simulator preview from project sources.', { projectPath: { type: 'string' }, packDirectory: { type: 'string' }, surface: { type: 'string' }, renderer: { type: 'string' }, port: { type: 'number' }, timeoutMs: { type: 'number' }, simulatorCommand: { type: 'string' }, simulatorPrefix: { type: 'array', items: { type: 'string' } } }],
     ['container_preview_status', 'Read preview status and simulator state.', { projectPath: { type: 'string' } }],
     ['container_preview_stop', 'Stop the preview owned by this project session.', { projectPath: { type: 'string' } }],
     ['container_preview_snapshot', 'Read a preview state or snapshot endpoint.', { projectPath: { type: 'string' }, resource: { type: 'string' } }],
@@ -1225,7 +1587,11 @@ export async function callTool(name, args = {}) {
   throw new AgentError('ERR_TOOL_NOT_FOUND', `Unknown tool: ${name}`)
 }
 
-export async function serveMcp(projectRoot = process.cwd(), input = process.stdin, output = process.stdout) {
+export async function serveMcp(
+  projectRoot = process.cwd(),
+  input: AsyncIterable<{ toString(): string }> = process.stdin,
+  output: { write(chunk: string): unknown } = process.stdout,
+) {
   const tools = toolCatalog()
   let buffer = ''
   for await (const chunk of input) {

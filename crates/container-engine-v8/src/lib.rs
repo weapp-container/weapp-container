@@ -1148,9 +1148,9 @@ function __container_path_parts(path) {
   }
   return parts;
 }
-function __container_apply_data_path(target, parts, value, deleting) {
-  if (!parts.length) return deleting ? null : __container_clone(value);
-  const part = parts[0];
+function __container_apply_data_path(target, parts, value, deleting, index) {
+  if (index === parts.length) return deleting ? null : __container_clone(value);
+  const part = parts[index];
   const array = typeof part === "number";
   const matching = array ? Array.isArray(target)
     : target !== null && typeof target === "object" && !Array.isArray(target);
@@ -1160,28 +1160,31 @@ function __container_apply_data_path(target, parts, value, deleting) {
   }
   const owned = Object.prototype.hasOwnProperty.call(target, part);
   if (deleting && !owned) return target;
-  if (deleting && parts.length === 1) {
+  if (deleting && index === parts.length - 1) {
     if (array) target[part] = null;
     else delete target[part];
     return target;
   }
-  const next = __container_apply_data_path(owned ? target[part] : null, parts.slice(1), value, deleting);
+  const next = __container_apply_data_path(owned ? target[part] : null, parts, value, deleting, index + 1);
   // Own data properties also keep __proto__/constructor paths from walking
   // or mutating JavaScript's prototypes through a portable JSON data key.
   Object.defineProperty(target, part, { value: next, enumerable: true, writable: true, configurable: true });
   return target;
 }
-function __container_set_path(target, path, value) {
-  const parts = __container_path_parts(path);
-  if (!parts) throw new TypeError("setData:fail invalid data path " + String(path));
-  return __container_apply_data_path(target, parts, value, value === undefined);
-}
 function __container_get_path(target, path) {
   const parts = __container_path_parts(path);
   if (!parts) return undefined;
+  return __container_get_path_parts(target, parts);
+}
+const __container_get_path_parts = function(target, parts) {
   return parts.reduce(function(value, part) {
     return value == null || !Object.prototype.hasOwnProperty.call(Object(value), part) ? undefined : value[part];
   }, target);
+};
+function __container_set_path(target, path, value) {
+  const parts = __container_path_parts(path);
+  if (!parts) throw new TypeError("setData:fail invalid data path " + String(path));
+  return __container_apply_data_path(target, parts, value, value === undefined, 0);
 }
 function __container_apply_set_data(page, patch) {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) {
@@ -1190,15 +1193,17 @@ function __container_apply_set_data(page, patch) {
   if (!page.data || typeof page.data !== "object") page.data = {};
   const changes = [];
   const paths = Object.keys(patch);
-  paths.forEach(function(path) {
-    if (!__container_path_parts(path)) throw new TypeError("setData:fail invalid data path " + String(path));
+  const pathParts = paths.map(function(path) {
+    const parts = __container_path_parts(path);
+    if (!parts) throw new TypeError("setData:fail invalid data path " + String(path));
+    return parts;
   });
-  const write = __receiver_write_begin(page, paths);
+  const write = __receiver_write_begin(page, paths, true, pathParts);
   let writeCompleted = false;
   try {
-  paths.forEach(function(path) {
+  paths.forEach(function(path, index) {
     const value = patch[path];
-    page.data = __container_set_path(page.data, path, value);
+    page.data = __container_apply_data_path(page.data, pathParts[index], value, value === undefined, 0);
     changes.push({ path: path, op: value === undefined ? "delete" : "set", value: __container_clone(value) });
   });
   if (page.observers && typeof page.observers === "object") {
@@ -1257,43 +1262,47 @@ function __container_component_apply_patch(component, patch, source) {
   }
   const changes = [];
   const changedPaths = [];
+  const changedRoots = [];
   const oldValues = Object.create(null);
   const paths = Object.keys(patch);
-  paths.forEach(function(path) {
-    if (!__container_path_parts(path)) throw new TypeError("setData:fail invalid data path " + String(path));
+  const pathParts = paths.map(function(path) {
+    const parts = __container_path_parts(path);
+    if (!parts) throw new TypeError("setData:fail invalid data path " + String(path));
+    return parts;
   });
   // Reserve before any component write or observer. Exhaustion and exceptions
   // cannot leave changed data carrying the previously accepted input stamp.
-  const write = __receiver_write_begin(component, paths, source === "setData");
+  const write = __receiver_write_begin(component, paths, source === "setData", pathParts);
   let mutation = null;
   let completed = false;
   try {
   mutation = paths.length ? __receiver_component_begin(component) : null;
   if (!component.data || typeof component.data !== "object") component.data = {};
   if (!component.properties || typeof component.properties !== "object") component.properties = {};
-  paths.forEach(function(path) {
-    const parts = __container_component_path_parts(path);
+  paths.forEach(function(path, index) {
+    const parts = pathParts[index];
     if (!parts.length) return;
     const root = parts[0];
+    const value = patch[path];
     const descriptor = component.__container_property_descriptors && component.__container_property_descriptors[root];
-    const oldValue = __container_clone(__container_get_path(component.data, path));
-    if (!Object.prototype.hasOwnProperty.call(oldValues, root)) oldValues[root] = __container_clone(__container_get_path(component.data, root));
+    const oldValue = __container_clone(__container_get_path_parts(component.data, parts));
+    if (!Object.prototype.hasOwnProperty.call(oldValues, root)) oldValues[root] = __container_clone(__container_get_path_parts(component.data, [root]));
     oldValues[path] = oldValue;
-    component.data = __container_set_path(component.data, path, patch[path]);
+    component.data = __container_apply_data_path(component.data, parts, value, value === undefined, 0);
     // `setData` updates the component's internal data. External properties are
     // owned by the parent and change only through mount/property.update;
     // keeping the two stores separate matches the observable Component API.
-    if (descriptor && source !== "setData") component.properties = __container_set_path(component.properties, path, patch[path]);
-    const nextValue = __container_clone(__container_get_path(component.data, path));
+    if (descriptor && source !== "setData") component.properties = __container_apply_data_path(component.properties, parts, value, value === undefined, 0);
+    const nextValue = __container_clone(__container_get_path_parts(component.data, parts));
     if (__container_component_equal(oldValue, nextValue)) return;
     changedPaths.push(path);
+    changedRoots.push(root);
     changes.push({ path: path, op: nextValue === undefined ? "delete" : "set", value: nextValue, oldValue: oldValue });
   });
   if (!changes.length) { completed = true; return changes; }
   const descriptors = component.__container_property_descriptors || {};
   const seenRoots = Object.create(null);
-  changedPaths.forEach(function(path) {
-    const root = __container_component_path_parts(path)[0];
+  changedRoots.forEach(function(root) {
     if (seenRoots[root]) return;
     seenRoots[root] = true;
     const descriptor = descriptors[root];
@@ -5145,7 +5154,7 @@ mod tests {
         assert_eq!(engine.mode(), EngineMode::V8);
         let module = container_core::JsEngine::load_module(
             &mut engine,
-            br#"Page({ data: { user: { name: 'Ada' }, stale: true } });
+            br#"Page({ data: { user: { name: 'Ada' }, stale: true }, readData: function() { return this.data; } });
                 exports.run = function() {
                   wx.setStorageSync({ key: 'profile', data: { name: 'Ada' } });
                   wx.setStorage({ key: 'async', data: 7 });
@@ -5170,6 +5179,28 @@ mod tests {
                 "info": {"keys": ["async", "profile"], "currentSize": 1, "limitSize": 10240, "errMsg": "getStorageInfo:ok"}
             })]
         );
+        let invalid = container_core::JsEngine::call(
+            &mut engine,
+            container_core::CallTarget::Global {
+                name: "__container_invoke_page".into(),
+            },
+            vec![
+                serde_json::json!(0),
+                serde_json::json!("setData"),
+                serde_json::json!([{"user.name": "partial", "invalid..path": "rejected"}]),
+            ],
+        );
+        assert!(invalid.is_err(), "invalid paths reject the whole setData batch");
+        let state = container_core::JsEngine::call(
+            &mut engine,
+            container_core::CallTarget::Global {
+                name: "__container_invoke_page".into(),
+            },
+            vec![serde_json::json!(0), serde_json::json!("readData"), serde_json::json!([])],
+        )
+        .expect("page data remains readable after a rejected batch");
+        assert_eq!(state[0]["user"]["name"], "Ada");
+        assert_eq!(state[0]["stale"], true);
         let page = container_core::JsEngine::call(
             &mut engine,
             container_core::CallTarget::Global {
@@ -5178,17 +5209,42 @@ mod tests {
             vec![
                 serde_json::json!(0),
                 serde_json::json!("setData"),
-                serde_json::json!([{"user.name": "Lin"}]),
+                serde_json::json!([{"user.name": "Lin", "user.age": 37, "items[2].label": "third"}]),
             ],
         )
         .expect("setData hook is callable");
-        assert_eq!(page[0]["path"], "user.name");
+        assert_eq!(page.len(), 3);
+        let mut paths = page
+            .iter()
+            .map(|change| change["path"].as_str().unwrap())
+            .collect::<Vec<_>>();
+        paths.sort_unstable();
+        assert_eq!(paths, vec!["items[2].label", "user.age", "user.name"]);
+        let state = container_core::JsEngine::call(
+            &mut engine,
+            container_core::CallTarget::Global {
+                name: "__container_invoke_page".into(),
+            },
+            vec![serde_json::json!(0), serde_json::json!("readData"), serde_json::json!([])],
+        )
+        .expect("page data reflects the accepted batch");
+        assert_eq!(state[0]["user"]["name"], "Lin");
+        assert_eq!(state[0]["user"]["age"], 37);
+        assert_eq!(state[0]["items"][2]["label"], "third");
         let events = engine.drain_host_events().expect("events drain");
         assert_eq!(events[0]["events"][0]["type"], "storage.patch.batch");
         assert_eq!(events[0]["events"][0]["patches"][0]["key"], "profile");
         assert_eq!(events[0]["events"][1]["type"], "storage.patch.batch");
         assert_eq!(events[0]["events"][1]["patches"][0]["key"], "async");
         assert_eq!(events[0]["events"][2]["type"], "data.patch.batch");
+        let mut event_paths = events[0]["events"][2]["patches"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|patch| patch["path"].as_str().unwrap())
+            .collect::<Vec<_>>();
+        event_paths.sort_unstable();
+        assert_eq!(event_paths, vec!["items[2].label", "user.age", "user.name"]);
     }
 
     #[cfg(feature = "v8-native")]
@@ -7997,7 +8053,7 @@ mod tests {
             br#"
               App({ globalData: { ready: true }, onLaunch() { return this.globalData.ready; } });
               const Base = Behavior({ data: { fromBehavior: true }, methods: { ping() { return 'pong'; } } });
-              Component({ behaviors: [Base], properties: { title: { type: String, value: 'Default' } }, observers: { 'title': function(value) { this.observed = value; } }, lifetimes: { created() { this.created = true; } } });
+              Component({ behaviors: [Base], data: { profile: { name: 'Ada' }, items: [{ label: 'one' }] }, properties: { title: { type: String, value: 'Default' } }, observers: { 'title': function(value) { this.observed = value; } }, lifetimes: { created() { this.created = true; } } });
             "#,
         )
         .expect("registration module evaluates");
@@ -8031,7 +8087,7 @@ mod tests {
             vec![
                 serde_json::json!(0),
                 serde_json::json!("setData"),
-                serde_json::json!([{ "title": "Updated" }]),
+                serde_json::json!([{ "title": "Updated", "profile.name": "Lin", "items[1].label": "two", "": { "replacement": true } }]),
             ],
         )
         .expect("component setData is callable");
@@ -8047,6 +8103,9 @@ mod tests {
         assert_eq!(snapshot[0]["properties"]["title"], "Default");
         assert_eq!(snapshot[0]["created"], true);
         assert_eq!(snapshot[0]["observed"], "Updated");
+        assert_eq!(snapshot[0]["data"]["profile"]["name"], "Lin");
+        assert_eq!(snapshot[0]["data"]["items"][1]["label"], "two");
+        assert!(snapshot[0]["data"].get("replacement").is_none());
     }
 
     #[cfg(feature = "v8-native")]
