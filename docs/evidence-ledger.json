@@ -623,6 +623,15 @@
       "scope": "Android emulator emulator-5554 running the current-source QuickJS debug APK with portable-pack-reference-v1",
       "conclusion": "Passed exact-source APK build and emulator smoke. app.init, render.commit, RGBA render.snapshot, correlated GLES frame, Canvas draw and snapshot, wx.canIUse, and attached skia-gpu-gles surface all passed; the original installed APK was restored after the run",
       "limitations": "This is debuggable-emulator evidence. It does not certify production signing, physical-device behavior, Android V8 on current source, full API conformance, official WeChat behavior or performance acceptance"
+    },
+    {
+      "id": "network-task-events-2026-11-26",
+      "tool": "cargo test -p container-runtime --features quickjs-native,v8-native host_services_contract::engines",
+      "version": "current working tree; QuickJS and V8 native providers",
+      "analysisTime": "2026-11-26",
+      "scope": "Host-service task factories for wx.request, wx.downloadFile and wx.uploadFile, including ChunkReceived, HeadersReceived and ProgressUpdate subscriptions, ArrayBuffer decoding, unsubscribe and stale-event rejection",
+      "conclusion": "Passed 46 selected host-service engine tests, including the new symmetric task-event regression for QuickJS and V8",
+      "limitations": "This is auxiliary source/runtime evidence. It does not establish official WeChat DevTools behavior, Android/iOS/Harmony/Desktop provider execution, physical-device behavior or performance parity"
     }
   ]
 }

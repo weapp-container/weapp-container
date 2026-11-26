@@ -10,7 +10,7 @@ Commands:
   init --project <dir>
   inspect --project <dir>
   build --project <dir> [--wv-bin <file>]
-  preview start|status|stop --project <dir> [--pack <dir>] [--surface web|desktop]
+  preview start|status|stop --project <dir> [--pack <dir>] [--surface web|desktop] [--simulator-bin <file>]
   test run --project <dir> --scenario <file>
   release prepare|commit|list|rollback|publish --project <dir> [--version <version>]
   job status|events|cancel --project <dir> --job <id>
@@ -56,7 +56,7 @@ try {
     else if (command === 'build') result = await callTool('container_build', { projectPath: project, wvBin: value(args, '--wv-bin', undefined) })
     else if (command === 'preview') {
     const action = args[1]
-    if (action === 'start') result = await callTool('container_preview_start', { projectPath: project, packDirectory: value(args, '--pack', undefined), surface: value(args, '--surface', 'web'), renderer: value(args, '--renderer', 'webview'), port: Number(value(args, '--port', '0')), timeoutMs: Number(value(args, '--timeout-ms', '120000')) })
+    if (action === 'start') result = await callTool('container_preview_start', { projectPath: project, packDirectory: value(args, '--pack', undefined), surface: value(args, '--surface', 'web'), renderer: value(args, '--renderer', 'webview'), port: Number(value(args, '--port', '0')), timeoutMs: Number(value(args, '--timeout-ms', '120000')), simulatorCommand: value(args, '--simulator-bin', undefined), simulatorPrefix: JSON.parse(value(args, '--simulator-prefix', '[]')) })
     else if (action === 'status') result = await callTool('container_preview_status', { projectPath: project })
     else if (action === 'stop') result = await callTool('container_preview_stop', { projectPath: project })
     else throw new Error('preview requires start, status or stop')

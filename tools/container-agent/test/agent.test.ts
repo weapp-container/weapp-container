@@ -47,6 +47,48 @@ test('inspectProject returns bounded project facts and a digest', async () => {
   assert.match(project.sourceDigest, /^[a-f0-9]{64}$/)
 })
 
+test('inspectProject reports source compatibility findings with locations and evidence', async () => {
+  const root = await fixture()
+  await mkdir(join(root, 'pages/index'), { recursive: true })
+  await writeFile(join(root, 'pages/index/index.js'), `Page({
+  onLoad() {
+    wx.getSystemInfo({ success() {} })
+    wx.canIUse('button')
+    wx.unknownCapability()
+    const api = 'getSystemInfo'
+    wx[api]()
+    // wx.commentOnly()
+  },
+})\n`)
+  await writeFile(join(root, 'pages/index/index.wxml'), `<view wx:if="{{ready}}">
+  <button>Continue</button>
+  <template is="row" />
+  <unknown-widget />
+</view>\n`)
+  await writeFile(join(root, 'pages/index/index.wxss'), `.page { display: grid; position: sticky; }\n.box { padding: 12rpx; }\n`)
+
+  const compatibility = (await inspectProject(root)).compatibility
+  assert.equal(compatibility.method, 'static-source-scan')
+  assert.equal(compatibility.baseline.kind, 'weapp-api-inventory')
+  const findings = compatibility.findings
+  const systemInfo = findings.find(finding => finding.kind === 'api' && finding.name === 'wx.getSystemInfo')
+  assert.equal(systemInfo.status, 'partial')
+  assert.equal(systemInfo.path, 'pages/index/index.js')
+  assert.equal(systemInfo.line, 3)
+  assert.deepEqual(systemInfo.evidence, ['api-unsupported-004', 'provider-system-001', 'provider-system-003', 'provider-system-004', 'provider-account-001', 'provider-ext-config-001', 'provider-system-005', 'provider-system-006', 'provider-system-007', 'provider-system-008'])
+  assert.equal(findings.find(finding => finding.name === 'wx.canIUse').status, 'full')
+  assert.equal(findings.find(finding => finding.name === 'wx.unknownCapability').status, 'unknown')
+  assert.equal(findings.find(finding => finding.name === 'wx[dynamic]').status, 'unknown')
+  assert.equal(findings.some(finding => finding.name === 'wx.commentOnly'), false)
+  assert.equal(findings.find(finding => finding.kind === 'template' && finding.name === 'wx:if').status, 'unknown')
+  assert.equal(findings.find(finding => finding.kind === 'component' && finding.name === 'button').status, 'unknown')
+  assert.equal(findings.find(finding => finding.kind === 'component' && finding.name === 'unknown-widget').status, 'unknown')
+  assert.equal(findings.find(finding => finding.kind === 'style' && finding.name === 'css-grid').status, 'unknown')
+  assert.equal(findings.find(finding => finding.kind === 'style' && finding.name === 'wxss-rpx-units').status, 'unknown')
+  assert.ok(compatibility.counts.partial >= 1)
+  assert.ok(compatibility.counts.unknown >= 1)
+})
+
 test('digestDirectory changes when project source changes', async () => {
   const root = await fixture()
   const before = await digestDirectory(root)

@@ -3,25 +3,38 @@
 MCP server and CLI for AI-driven mini-program development.
 
 ```sh
-npm install @weapp-container/agent
+npm install --save-dev @weapp-container/agent weapp-vite
 npx playwright install chromium
 ```
 
 ## CLI
 
 ```sh
-pnpm container:agent init --project <project>
-pnpm container:agent inspect --project <project>
-pnpm container:agent build --project <project>
-pnpm container:agent preview start --project <project>
-pnpm container:agent preview status --project <project>
-pnpm container:agent preview stop --project <project>
-pnpm container:agent test run --project <project> --scenario scenario.json
-pnpm container:agent job status --project <project> --job <job-id>
-pnpm container:agent release prepare --project <project> --version 1.0.0
-pnpm container:agent release commit --project <project> --version 1.0.0 --confirm
-pnpm container:agent release publish --project <project> --version 1.0.0 --confirm --private-key /abs/path/private.key
-pnpm container:agent job status --project <project> --job <job-id>
+npx weapp-container-agent init --project <project>
+npx weapp-container-agent inspect --project <project>
+npx weapp-container-agent build --project <project>
+npx weapp-container-agent preview start --project <project> --simulator-bin /abs/path/weapp-simulator
+npx weapp-container-agent preview status --project <project>
+npx weapp-container-agent preview stop --project <project>
+npx weapp-container-agent test run --project <project> --scenario scenario.json
+npx weapp-container-agent job status --project <project> --job <job-id>
+npx weapp-container-agent release prepare --project <project> --version 1.0.0
+npx weapp-container-agent release commit --project <project> --version 1.0.0 --confirm
+npx weapp-container-agent release publish --project <project> --version 1.0.0 --confirm --private-key /abs/path/private.key
+```
+
+`build` uses the project's `weapp-vite` installation. `preview start` uses a locally built simulator from this repository, or the executable passed through `--simulator-bin` / `WEAPP_CONTAINER_SIMULATOR_BIN` when installed as a package.
+
+对于已有的原生微信小程序，先运行 `inspect`。输出中的 `compatibility.findings` 会扫描 JavaScript/TypeScript、WXML 和 WXSS 的实际使用点，并为每条记录提供文件、行号、`full`/`partial`/`unsupported`/`unknown` 状态、证据和修复建议。它是迁移预检，不会把静态扫描结果当成官方 DevTools 或真机通过。
+
+最快的本地闭环如下：
+
+```sh
+npx weapp-container-agent inspect --project ./my-miniprogram
+npx weapp-container-agent build --project ./my-miniprogram
+npx weapp-container-agent preview start --project ./my-miniprogram --simulator-bin /abs/path/weapp-simulator
+npx weapp-container-agent test run --project ./my-miniprogram --scenario scenario.json
+npx weapp-container-agent preview stop --project ./my-miniprogram
 ```
 
 `preview start` owns the simulator through a loopback daemon with a random token. `preview stop` refuses to guess ownership from a stale PID. Test jobs are persisted under `.weapp-container/agent/jobs` and return a job ID before the scenario runs.

@@ -157,7 +157,7 @@ function __receiver_register(receiver, pageId, scopeId) {
 // Successful write attempts have an independent private ledger: equal writes
 // must not become dirty mutations or observer notifications. Reserve bounded
 // storage before getters/writes; finish performs only preallocated cell moves.
-function __receiver_write_begin(receiver, paths, local) {
+function __receiver_write_begin(receiver, paths, local, parsedPaths) {
   const entry = receiver && typeof receiver === "object" ? __receiver_get(__receiver_weak, receiver) : null;
   if (!__host_is_array(paths)) throw "invalid native write paths";
   // Legacy component bridge instances have no Page/managed occurrence owner.
@@ -173,11 +173,12 @@ function __receiver_write_begin(receiver, paths, local) {
   for (let index = 0; index < length; index++) {
     const raw = __receiver_value(paths, __host_string(index));
     if (typeof raw !== "string" || raw.length > 2796202) throw "native write path byte budget exceeded";
-    const parts = __container_path_parts(raw);
-    if (!parts || parts.length > 256) throw "invalid native write path";
+    const parts = parsedPaths ? __receiver_value(parsedPaths, __host_string(index)) : __container_path_parts(raw);
+    if (!__host_is_array(parts) || parts.length > 256) throw "invalid native write path";
     const copy = [];
     for (let part = 0; part < parts.length; part++) {
-      const value = parts[part];
+      const value = __receiver_value(parts, __host_string(part));
+      if (typeof value !== "string" && !(typeof value === "number" && value >= 0 && value < 1048576 && value % 1 === 0)) throw "invalid native write path";
       charge += typeof value === "string" ? value.length * 3 + 24 : 24;
       __host_define(copy, __host_string(part), {__proto__:null,value:value,writable:true,enumerable:true,configurable:true});
     }

@@ -32,7 +32,7 @@
   "sideEffects": false,
   "scripts": {
     "dev": "tsdown -w",
-    "build": "tsdown",
+    "build": "tsdown && node scripts/generate-compatibility-baseline.mjs",
     "test": "vitest run",
     "test:dev": "vitest",
     "typecheck": "tsc -p tsconfig.json",
