@@ -41,6 +41,7 @@
     "tsd": "pnpm run build && tsd --files test-d/**/*.test-d.ts"
   },
   "dependencies": {
+    "@sonofmagic/container-manifest": "workspace:*",
     "playwright": "1.64.1"
   },
   "devDependencies": {

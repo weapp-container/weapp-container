@@ -44,6 +44,7 @@ export function weappContainer(options: WeappContainerViteOptions = {}): WeappCo
   let config: ResolvedConfig | undefined
   let vitestConfig = false
   let watcher: ArtifactWatcher | undefined
+  let starting = Promise.resolve()
   let current: ContainerArtifact | undefined
   let closed = false
   let closing: Promise<void> | undefined
@@ -98,6 +99,7 @@ export function weappContainer(options: WeappContainerViteOptions = {}): WeappCo
 
   const close = () => closing ??= (async () => {
     closed = true
+    await starting.catch(() => undefined)
     const results = await Promise.allSettled([Promise.resolve().then(() => watcher?.close())])
     results.push(...await Promise.allSettled(pendingPublishes))
     const errors = results.filter(result => result.status === 'rejected').map(result => result.reason)
@@ -125,7 +127,8 @@ export function weappContainer(options: WeappContainerViteOptions = {}): WeappCo
       vitestConfig = isVitestConfig(resolved)
     },
     async configureServer(server) {
-      await startViteWatch(server)
+      starting = startViteWatch(server)
+      await starting
     },
     async writeBundle(output: { dir?: string | undefined }) {
       if (!config || vitestConfig || config.command !== 'build' || closed) return

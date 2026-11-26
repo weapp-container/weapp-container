@@ -1,11 +1,11 @@
 // @ts-nocheck
 import assert from 'node:assert/strict'
-import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Readable, Writable } from 'node:stream'
 import { test } from 'vitest'
-import { JobStore, PreviewStore, callTool, commitRelease, digestDirectory, initProject, inspectProject, listProjectFiles, listReleases, prepareRelease, publishRelease, readProjectFile, rollbackRelease, runScenario, serveMcp, writeProjectFile } from '../src/index.ts'
+import { JobStore, PreviewStore, buildProject, callTool, commitRelease, digestDirectory, initProject, inspectProject, listProjectFiles, listReleases, prepareRelease, publishRelease, readProjectFile, rollbackRelease, runScenario, serveMcp, toolCatalog, writeProjectFile } from '../src/index.ts'
 
 const errorCode = (error: unknown) => (error as { code?: string } | null)?.code
 
@@ -29,6 +29,7 @@ const broadcast = value => { const wire = 'event: bridge\\ndata: ' + JSON.string
 const server = createServer(async (request, response) => {
   if (request.url === '/') { response.writeHead(200, { 'content-type': 'text/html' }); response.end('<!doctype html><html><body><h1 id="status">ready</h1><button id="increment">increment</button><output id="count">0</output><script>document.querySelector("#increment").addEventListener("click", () => { document.querySelector("#count").textContent = String(Number(document.querySelector("#count").textContent) + 1) })</script></body></html>'); return }
   if (request.url === '/api/state') { response.writeHead(200, { 'content-type': 'application/json' }); response.end(JSON.stringify(state())); return }
+  if (request.url === '/host') { response.writeHead(200, { 'content-type': 'text/html' }); response.end('<iframe id="mini-program" src="/"></iframe>'); return }
   if (request.url === '/api/preview' && request.method === 'POST') { const value = await body(request); if (value.op === 'connect') owner = value.clientId; if (value.op === 'release' && value.clientId === owner) owner = null; response.writeHead(202, { 'content-type': 'application/json' }); response.end(JSON.stringify({ queued: true, requestId: value.requestId })); return }
   if (request.url === '/api/events') { response.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache' }); response.write(': ready\\n\\n'); clients.add(response); request.on('close', () => clients.delete(response)); return }
   if (request.url === '/api/bridge' && request.method === 'POST') { const value = await body(request); const messages = (value.messages ?? [value]).map(message => ({ ...message, kind: 'response', payload: { ok: true, echoedPreview: value.preview ?? null } })); response.writeHead(200, { 'content-type': 'application/json' }); response.end(JSON.stringify({ queued: true })); setTimeout(() => broadcast({ messages }), 10); return }
@@ -94,6 +95,49 @@ test('digestDirectory changes when project source changes', async () => {
   const before = await digestDirectory(root)
   await writeFile(join(root, 'app.js'), 'App({ data: { changed: true } })\n')
   assert.notEqual(await digestDirectory(root), before)
+})
+
+test('buildProject compiles one target and creates portable packs only for weapp', async () => {
+  const root = await fixture()
+  const calls = []
+  const commandRunner = async (command, args) => {
+    calls.push({ command, args })
+    await rm(join(root, 'dist'), { recursive: true, force: true })
+    await mkdir(join(root, 'dist/pages/index'), { recursive: true })
+    await writeFile(join(root, 'dist/app.json'), JSON.stringify({ pages: ['pages/index/index'] }))
+    await writeFile(join(root, 'dist/app.js'), 'App({})\n')
+    await writeFile(join(root, 'dist/pages/index/index.json'), '{}')
+    await writeFile(join(root, 'dist/pages/index/index.js'), 'Page({ data: { count: 0 } })\n')
+    await writeFile(join(root, 'dist/pages/index/index.wxml'), '<view>{{count}}</view>\n')
+    return { code: 0, signal: null, stdout: 'compiled', stderr: '' }
+  }
+
+  try {
+    const alipay = await buildProject(root, { platform: 'alipay', commandRunner })
+    assert.equal(alipay.platform, 'alipay')
+    assert.equal(alipay.packDirectory, null)
+    assert.equal(alipay.manifest, null)
+    assert.deepEqual(calls[0].args.slice(0, 4), ['build', root, '-p', 'alipay'])
+
+    const weapp = await buildProject(root, {
+      commandRunner,
+      packContainer: async (_input, destination) => {
+        await mkdir(destination, { recursive: true })
+        await writeFile(join(destination, 'manifest.json'), JSON.stringify({ platform: 'weapp', compiler: { commit: 'test' } }))
+      },
+    })
+    assert.equal(weapp.platform, 'weapp')
+    assert.equal(weapp.manifest.platform, 'weapp')
+    assert.match(weapp.packDirectory, /\.weapp-container\/builds\/.+\/pack$/)
+    assert.equal(calls[1].args[3], 'weapp')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('container_build MCP schema exposes the requested compiler target', () => {
+  const tool = toolCatalog().find(entry => entry.name === 'container_build')
+  assert.equal(tool.inputSchema.properties.platform.type, 'string')
 })
 
 test('project file tools expose source files and write atomically within the project', async () => {
@@ -241,10 +285,10 @@ test('scenario drives a browser page and writes a screenshot artifact', async t 
       result = await runScenario({ request: (path, options) => preview.request(path, options), status: () => preview.status() }, {
         browser: { headless: true },
         steps: [
-          { op: 'browser', action: 'goto' },
-          { op: 'browser', action: 'locator', selector: '#status', property: 'text', expect: { value: 'ready' } },
-          { op: 'browser', action: 'click', selector: '#increment' },
-          { op: 'browser', action: 'locator', selector: '#count', property: 'text', expect: { value: '1' } },
+          { op: 'browser', action: 'goto', url: '/host' },
+          { op: 'browser', action: 'locator', frame: '#mini-program', selector: '#status', property: 'text', expect: { value: 'ready' } },
+          { op: 'browser', action: 'click', frame: '#mini-program', selector: '#increment' },
+          { op: 'browser', action: 'locator', frame: '#mini-program', selector: '#count', property: 'text', expect: { value: '1' } },
           { op: 'browser', action: 'screenshot', path: 'browser/flow.png', expect: { action: 'screenshot' } },
         ],
       }, { projectRoot: root, artifactRoot: join(root, '.weapp-container/agent/artifacts/browser-test') })

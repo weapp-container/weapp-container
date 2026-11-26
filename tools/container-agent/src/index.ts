@@ -657,26 +657,36 @@ export async function buildProject(projectRoot, options = {}) {
   const output = projectPath(root, options.outputRoot ?? project.outputRoot)
   await mkdir(buildRoot, { recursive: true })
   const wv = await resolveWv(root, options.wvBin)
-  const buildArgs = ['build', root, '-p', options.platform ?? 'weapp', '--outDir', output]
-  const build = await runCommand(wv, buildArgs, { cwd: root, timeoutMs: options.timeoutMs })
+  const platform = options.platform ?? 'weapp'
+  const buildArgs = ['build', root, '-p', platform, '--outDir', output]
+  const runner = options.commandRunner ?? runCommand
+  const build = await runner(wv, buildArgs, { cwd: root, timeoutMs: options.timeoutMs })
   if (build.code !== 0) throw new AgentError('ERR_BUILD_FAILED', build.stderr || build.stdout || 'weapp-vite build failed', { cause: build })
-  const packDirectory = join(buildRoot, 'pack')
-  const packScript = join(REPOSITORY_ROOT, 'tools/container-manifest/bin/container-pack.mjs')
-  const pack = await runCommand(process.execPath, [packScript, output, '--out', packDirectory, '--compiler-commit', await compilerCommit()], {
-    cwd: REPOSITORY_ROOT,
-    timeoutMs: options.timeoutMs,
-  })
-  if (pack.code !== 0) throw new AgentError('ERR_PACK_FAILED', pack.stderr || pack.stdout || 'container pack failed', { cause: pack })
-  const manifest = await readJson(join(packDirectory, 'manifest.json'), {})
+  let packDirectory
+  let pack
+  let manifest
+  if (platform === 'weapp') {
+    const packContainer = options.packContainer ?? (await import('@sonofmagic/container-manifest')).packContainer
+    packDirectory = join(buildRoot, 'pack')
+    const compiler = await compilerCommit()
+    try {
+      await packContainer(output, packDirectory, { compilerCommit: compiler, platform })
+    } catch (error) {
+      throw new AgentError('ERR_PACK_FAILED', error?.message ?? 'container pack failed', { cause: error })
+    }
+    manifest = await readJson(join(packDirectory, 'manifest.json'), {})
+    pack = { code: 0, signal: null, stdout: 'Portable pack created', stderr: '' }
+  }
   const result = {
     project,
+    platform,
     build: commandResult(wv, buildArgs, build),
-    pack: commandResult(process.execPath, [packScript, output, '--out', packDirectory], pack),
-    packDirectory,
+    pack,
+    packDirectory: packDirectory ?? null,
     outputDirectory: output,
-    compilerCommit: manifest.compiler?.commit ?? await compilerCommit(),
+    compilerCommit: manifest?.compiler?.commit ?? await compilerCommit(),
     sourceDigest: await digestDirectory(root),
-    manifest,
+    manifest: manifest ?? null,
     generatedAt: now(),
   }
   await writeJson(join(buildRoot, 'build-report.json'), result)
@@ -1092,6 +1102,8 @@ export async function prepareRelease(projectRoot, version, options = {}) {
   if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) throw new AgentError('ERR_INVALID_VERSION', `Invalid release version: ${version}`)
   const root = resolve(projectRoot)
   const build = options.buildResult ?? await buildProject(root, options)
+  if (build.platform && build.platform !== 'weapp') throw new AgentError('ERR_RELEASE_PLATFORM', 'Container releases require a weapp portable pack')
+  if (!build.packDirectory) throw new AgentError('ERR_RELEASE_PACK_REQUIRED', 'Container releases require a successful weapp portable pack')
   const releaseRoot = projectPath(root, options.releaseRoot ?? '.weapp-container/releases')
   const destination = join(releaseRoot, version)
   if (await exists(destination)) throw new AgentError('ERR_RELEASE_EXISTS', `Release already exists: ${version}`)
@@ -1133,7 +1145,7 @@ export async function prepareRelease(projectRoot, version, options = {}) {
 }
 
 async function runRuntimeSmoke(build, options = {}) {
-  const simulator = await simulatorBinary()
+  const simulator = await simulatorBinary(build.project.root)
   const reportPath = join(dirname(build.packDirectory), 'runtime-smoke.json')
   const route = build.project.pages?.[0]
   const args = [...simulator.prefix, 'run', '--pack', build.packDirectory, ...(route ? ['--route', route] : []), '--report', reportPath]
@@ -1292,7 +1304,11 @@ async function runBrowserStep(browserState, step, root, artifactRoot, timeoutMs)
   const page = browserState.page
   page.setDefaultTimeout(timeoutMs)
   const selector = step.selector
-  const locator = selector ? page.locator(selector) : null
+  if (step.frame !== undefined && (typeof step.frame !== 'string' || !step.frame.trim())) {
+    throw new AgentError('ERR_SCENARIO_INVALID', 'Browser frame requires a non-empty selector')
+  }
+  const scope = step.frame ? page.frameLocator(step.frame) : page
+  const locator = selector ? scope.locator(selector) : null
   if (step.action === 'goto') {
     const targetUrl = new URL(step.url ?? '/', browserState.baseUrl)
     if (targetUrl.origin !== new URL(browserState.baseUrl).origin) throw new AgentError('ERR_SCENARIO_URL', 'Browser navigation must stay on the local preview origin')
@@ -1521,7 +1537,7 @@ export function toolCatalog() {
     ['container_project_files', 'List source files available to the coding agent.', { projectPath: { type: 'string' } }],
     ['container_project_file_read', 'Read a project-relative source file.', { projectPath: { type: 'string' }, path: { type: 'string' } }],
     ['container_project_file_write', 'Write a project-relative source file atomically.', { projectPath: { type: 'string' }, path: { type: 'string' }, content: { type: 'string' } }],
-    ['container_build', 'Build and pack a project.', { projectPath: { type: 'string' }, wvBin: { type: 'string' }, timeoutMs: { type: 'number' } }],
+    ['container_build', 'Build a project for one compiler target and create a portable pack for weapp output.', { projectPath: { type: 'string' }, platform: { type: 'string' }, wvBin: { type: 'string' }, timeoutMs: { type: 'number' } }],
     ['container_preview_start', 'Start a local Web simulator preview from project sources.', { projectPath: { type: 'string' }, packDirectory: { type: 'string' }, surface: { type: 'string' }, renderer: { type: 'string' }, port: { type: 'number' }, timeoutMs: { type: 'number' }, simulatorCommand: { type: 'string' }, simulatorPrefix: { type: 'array', items: { type: 'string' } } }],
     ['container_preview_status', 'Read preview status and simulator state.', { projectPath: { type: 'string' } }],
     ['container_preview_stop', 'Stop the preview owned by this project session.', { projectPath: { type: 'string' } }],

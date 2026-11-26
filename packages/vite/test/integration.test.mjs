@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import { build } from 'vite'
-import { weappContainer } from '../dist/index.mjs'
+import { createWeappViteArtifactFactory, weappContainer } from '../dist/index.mjs'
+import { disposeOwnedArtifact } from '@weapp-container/node/artifact'
 
 async function artifactRoot(t, managed) {
   const root = await mkdtemp(join(tmpdir(), 'weapp-container-vite-'))
@@ -67,6 +68,35 @@ test('runs through the Vite build lifecycle', async t => {
   await assert.rejects(access(artifact.generationRoot), { code: 'ENOENT' })
 })
 
+test('default compiler resolves from the mini-program project and packs its output', async t => {
+  const root = await mkdtemp(join(tmpdir(), 'weapp-container-compiler-project-'))
+  const output = join(root, 'dist')
+  const compilerPackage = join(root, 'node_modules/weapp-vite')
+  const page = join(output, 'pages/index')
+  await mkdir(compilerPackage, { recursive: true })
+  await mkdir(page, { recursive: true })
+  await writeFile(join(root, 'package.json'), JSON.stringify({ name: 'consumer-mini-program', private: true }))
+  await writeFile(join(compilerPackage, 'package.json'), JSON.stringify({ name: 'weapp-vite', exports: { './test': { import: './test.mjs' } } }))
+  await writeFile(join(compilerPackage, 'test.mjs'), `export async function buildTestArtifact(options) {
+  return { projectPath: options.cwd, miniprogramRootPath: ${JSON.stringify(output)}, appConfigPath: 'app.json', sourceRootPath: options.cwd }
+}
+`)
+  await writeFile(join(output, 'app.json'), JSON.stringify({ pages: ['pages/index/index'] }))
+  await writeFile(join(output, 'app.js'), 'App({})\n')
+  await writeFile(join(page, 'index.json'), '{}')
+  await writeFile(join(page, 'index.js'), 'Page({ data: { count: 0 } })\n')
+  await writeFile(join(page, 'index.wxml'), '<view>{{count}}</view>\n')
+  t.after(() => rm(root, { recursive: true, force: true }))
+
+  const artifact = await createWeappViteArtifactFactory({ cwd: root }).build()
+  try {
+    await access(join(artifact.packPath, 'manifest.json'))
+    assert.equal(artifact.sourceRoot.startsWith(artifact.generationRoot), true)
+  } finally {
+    await disposeOwnedArtifact(artifact)
+  }
+})
+
 test('dev watch publishes rebuilt generations and closes the watcher', async t => {
   const initial = await artifactRoot(t, true)
   const rebuilt = await artifactRoot(t, true)
@@ -102,6 +132,48 @@ test('dev watch publishes rebuilt generations and closes the watcher', async t =
   assert.equal(watcherClosed, true)
   await assert.rejects(access(initial.generationRoot), { code: 'ENOENT' })
   await assert.rejects(access(rebuilt.generationRoot), { code: 'ENOENT' })
+})
+
+test('closing during watcher startup waits for and disposes its generations', async t => {
+  const initial = await artifactRoot(t, true)
+  const published = []
+  let startWatch
+  let watchStarted
+  const started = new Promise(resolve => { watchStarted = resolve })
+  const watcherResult = new Promise(resolve => { startWatch = resolve })
+  let watcherClosed = false
+  const plugin = weappContainer({
+    artifact: {
+      build: async () => initial,
+      watch: async () => {
+        watchStarted()
+        return watcherResult
+      },
+    },
+    onArtifact: value => published.push(value),
+  })
+  const server = {
+    config: resolvedConfig({ command: 'serve' }),
+    watcher: { on() {} },
+  }
+
+  plugin.configResolved(server.config)
+  const startup = plugin.configureServer(server)
+  await started
+  let closeFinished = false
+  const closing = plugin.api.close().then(() => { closeFinished = true })
+  await Promise.resolve()
+  assert.equal(closeFinished, false)
+  startWatch({
+    artifact: initial,
+    generations: [initial],
+    close: async () => { watcherClosed = true },
+  })
+  await Promise.all([startup, closing])
+
+  assert.equal(watcherClosed, true)
+  assert.deepEqual(published, [])
+  await assert.rejects(access(initial.generationRoot), { code: 'ENOENT' })
 })
 
 test('disposeArtifacts false leaves custom generations for the factory', async t => {

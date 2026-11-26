@@ -2,7 +2,17 @@
 
 [简体中文](README.md) · **English**
 
-The Vitest plugin owns immutable pack generations for each Vitest project. Supply an explicit artifact factory; compilation stays outside this package. Fixtures create a separate real QuickJS subprocess per test.
+Vitest fixtures create a separate real QuickJS subprocess per test. Ordinary projects should use `weappContainer()` from `@weapp-container/vite` in the Vite configuration so the project's `weapp-vite` installation produces artifact generations automatically:
+
+```ts
+import { defineConfig } from 'vitest/config'
+import { weapp } from 'weapp-vite/vite'
+import { weappContainer } from '@weapp-container/vite'
+
+export default defineConfig({ plugins: [weapp(), weappContainer()] })
+```
+
+Projects with a custom compiler can use the explicit artifact-factory configuration below and own the compiler lifecycle.
 
 ```ts
 // vitest.config.ts

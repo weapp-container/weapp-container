@@ -9,7 +9,6 @@ export interface WeappContainerTestOptions {
 }
 export interface ArtifactContext { artifact?: ContainerArtifact; options?: ContainerOptions; error?: string }
 declare module 'vitest' { interface ProvidedContext { weappContainerArtifact?: ArtifactContext } }
-
 export const ARTIFACT_KEY = 'weappContainerArtifact';
 
 /** Config entry never loads Vitest's worker-only APIs. */

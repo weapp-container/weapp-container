@@ -22,7 +22,8 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@weapp-container/node": "workspace:*"
+    "@weapp-container/node": "workspace:*",
+    "import-meta-resolve": "^4.2.0"
   },
   "peerDependencies": {
     "vite": ">=5.0.0",

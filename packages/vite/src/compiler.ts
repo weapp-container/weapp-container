@@ -1,14 +1,19 @@
 import type { ArtifactFactory, ArtifactWatcher, ContainerArtifact } from '@weapp-container/node/artifact'
-import { packArtifact } from '@weapp-container/node/artifact'
-import type { WeappViteBuildOptions, WeappViteCompiledArtifact, WeappViteTestCompiler } from './types.ts'
+import { disposeOwnedArtifact, packArtifact } from '@weapp-container/node/artifact'
+import { resolve as resolveImport } from 'import-meta-resolve'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import type { WeappViteArtifactWatcher, WeappViteBuildOptions, WeappViteCompiledArtifact, WeappViteTestCompiler } from './types.ts'
 
 const compilerModule = 'weapp-vite/test'
 
-async function loadCompiler(): Promise<WeappViteTestCompiler> {
+async function loadCompiler(options: WeappViteBuildOptions): Promise<WeappViteTestCompiler> {
   try {
-    return await import(compilerModule) as WeappViteTestCompiler
+    const cwd = resolve(options.cwd ?? process.cwd())
+    const compilerUrl = resolveImport(compilerModule, pathToFileURL(resolve(cwd, 'package.json')).href)
+    return await import(compilerUrl) as WeappViteTestCompiler
   } catch (error) {
-    throw new Error('The default artifact compiler requires weapp-vite with the "./test" export. Install a compatible weapp-vite release or pass an artifact factory.', { cause: error })
+    throw new Error('The default artifact compiler requires weapp-vite with the "./test" export installed in the mini-program project. Install a compatible weapp-vite release or pass an artifact factory.', { cause: error })
   }
 }
 
@@ -25,7 +30,7 @@ export function createWeappViteArtifactFactory(
   compiler?: WeappViteTestCompiler,
 ): ArtifactFactory {
   let compilerPromise: Promise<WeappViteTestCompiler> | undefined
-  const getCompiler = () => compilerPromise ??= compiler ? Promise.resolve(compiler) : loadCompiler()
+  const getCompiler = () => compilerPromise ??= compiler ? Promise.resolve(compiler) : loadCompiler(options)
 
   return {
     async build() {
@@ -35,22 +40,38 @@ export function createWeappViteArtifactFactory(
     async watch(hooks): Promise<ArtifactWatcher> {
       const artifactCompiler = await getCompiler()
       const generations = new Set<ContainerArtifact>()
-      const watcher = await artifactCompiler.watchTestArtifact({
-        ...options,
-        onError: hooks.onError,
-        onRebuilt: async compiled => {
-          const artifact = await pack(compiled)
-          generations.add(artifact)
-          await hooks.onRebuilt(artifact)
-        },
-      })
-
+      let watcher: WeappViteArtifactWatcher | undefined
       try {
-        const artifact = await pack(watcher.artifact)
+        const compiledWatcher = await artifactCompiler.watchTestArtifact({
+          ...options,
+          onError: hooks.onError,
+          onRebuilt: async compiled => {
+            const artifact = await pack(compiled)
+            generations.add(artifact)
+            await hooks.onRebuilt(artifact)
+          },
+        })
+        watcher = compiledWatcher
+        const artifact = await pack(compiledWatcher.artifact)
         generations.add(artifact)
-        return { artifact, generations, close: () => watcher.close() }
+        return { artifact, generations, close: () => compiledWatcher.close() }
       } catch (error) {
-        try { await watcher.close() } catch {}
+        const errors = [error]
+        try {
+          await watcher?.close()
+        } catch (closeError) {
+          errors.push(closeError)
+        }
+        for (const artifact of generations) {
+          try {
+            await disposeOwnedArtifact(artifact)
+          } catch (disposeError) {
+            errors.push(disposeError)
+          }
+        }
+        if (errors.length > 1) {
+          throw new AggregateError(errors, 'Weapp Vite artifact watcher startup failed')
+        }
         throw error
       }
     },

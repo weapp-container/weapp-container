@@ -25,6 +25,8 @@ pnpm api:inventory:verify
 
 Node 绑定只消费源码目录或已生成的 portable pack。编译器、宿主服务和外部网络由调用方自行选择和管理。
 
+普通小程序开发者可以从[小程序开发闭环](docs/mini-program-closed-loop.md)开始，按项目检查、编译、预览、场景测试和可审计发布的顺序接入。
+
 ## Native SDK 示例与发行状态
 
 Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于 `sdk/` 子模块中，包含 pack 加载、会话、视图、消息、导航、存储和生命周期用法。公开注册源当前提供 `0.1.0-preview.7.1` 预览包，尚无稳定版本。各平台的普通安装方式、限制和示例运行步骤见[SDK 发行状态](docs/public-sdk-release.md)及各 SDK README。[源码构建指南](docs/sdk-source-build.md)只适用于维护 SDK 或重建发行物。

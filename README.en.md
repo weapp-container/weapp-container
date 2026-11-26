@@ -25,6 +25,8 @@ pnpm api:inventory:verify
 
 The Node bindings consume source directories or prebuilt portable packs. Callers choose and manage any compiler, host service, or external network integration themselves.
 
+Application developers can start with the [mini-program development loop](docs/mini-program-closed-loop.en.md), which connects inspection, compilation, preview, scenario testing, and auditable release in one path.
+
 ## Native SDK Examples and Release Status
 
 Reference consumers for Android, iOS, React Native, Flutter, and Desktop live in the `sdk/` submodules. They cover pack loading, sessions, views, messages, navigation, storage, and lifecycle ownership. Public registries currently provide the `0.1.0-preview.7.1` prerelease, and no stable version is available. See the [SDK release status](docs/public-sdk-release.en.md) and each SDK README for normal installation methods, limitations, and runnable examples. The [source build guide](docs/sdk-source-build.en.md) is for SDK maintainers rebuilding release artifacts.
