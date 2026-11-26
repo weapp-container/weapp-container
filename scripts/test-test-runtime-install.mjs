@@ -14,7 +14,7 @@ const artifact = await packArtifact({ projectPath: resolve(root, 'packages/node/
 function run(command, args, cwd) { return execFileSync(command, args, { cwd, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }); }
 try {
   const tarballs = [];
-  const packages = ['tools/container-manifest', `packages/runtime/${process.platform}-${process.arch}`, 'packages/node', 'packages/vitest'];
+  const packages = ['tools/container-manifest', `packages/runtime/${process.platform}-${process.arch}`, 'packages/node', 'packages/vite', 'packages/vitest'];
   for (const path of packages) {
     const output = run('pnpm', ['pack', '--pack-destination', temp], resolve(root, path));
     const name = output.trim().split('\n').findLast(line => line.endsWith('.tgz'));
