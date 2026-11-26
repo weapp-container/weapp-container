@@ -1,9 +1,9 @@
-# @weapp-conatiner/agent
+# @weapp-container/agent
 
 MCP server and CLI for AI-driven mini-program development.
 
 ```sh
-npm install @weapp-conatiner/agent
+npm install @weapp-container/agent
 npx playwright install chromium
 ```
 

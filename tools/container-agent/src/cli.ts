@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+// @ts-nocheck
 import process from 'node:process'
-import { callTool, initProject, inspectProject, listReleases, prepareRelease, commitRelease, rollbackRelease, publishRelease, runPreviewDaemon, serveMcp } from './index.mjs'
+import { callTool, initProject, inspectProject, listReleases, prepareRelease, commitRelease, rollbackRelease, publishRelease, runPreviewDaemon, serveMcp } from './index.ts'
 
 function usage() {
   console.log(`Usage: weapp-container-agent <command> [options]
@@ -61,7 +62,7 @@ try {
     else throw new Error('preview requires start, status or stop')
     } else if (command === 'test') {
     if (args[1] !== 'run') throw new Error('test requires run')
-    const scenario = JSON.parse(await (await import('node:fs/promises')).readFile(value(args, '--scenario'), 'utf8'))
+    const scenario = JSON.parse(await (await import('node:fs/promises')).readFile(value(args, '--scenario', undefined), 'utf8'))
     result = await callTool('container_test_start', { projectPath: project, scenario })
     } else if (command === 'release') {
     const action = args[1]

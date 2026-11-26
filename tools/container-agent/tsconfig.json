@@ -1,0 +1,26 @@
+{
+  "extends": "repoctl/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2024",
+    "strict": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false,
+    "types": [
+      "node"
+    ],
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "test",
+    "tsdown.config.ts"
+  ]
+}

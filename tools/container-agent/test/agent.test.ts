@@ -1,10 +1,13 @@
+// @ts-nocheck
 import assert from 'node:assert/strict'
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Readable, Writable } from 'node:stream'
-import test from 'node:test'
-import { JobStore, PreviewStore, callTool, commitRelease, digestDirectory, initProject, inspectProject, listProjectFiles, listReleases, prepareRelease, publishRelease, readProjectFile, rollbackRelease, runScenario, serveMcp, writeProjectFile } from '../src/index.mjs'
+import { test } from 'vitest'
+import { JobStore, PreviewStore, callTool, commitRelease, digestDirectory, initProject, inspectProject, listProjectFiles, listReleases, prepareRelease, publishRelease, readProjectFile, rollbackRelease, runScenario, serveMcp, writeProjectFile } from '../src/index.ts'
+
+const errorCode = (error: unknown) => (error as { code?: string } | null)?.code
 
 async function fixture() {
   const root = await mkdtemp(join(tmpdir(), 'container-agent-test-'))
@@ -58,8 +61,8 @@ test('project file tools expose source files and write atomically within the pro
   const written = await writeProjectFile(root, 'pages/index/index.wxml', '<view>hello</view>\n')
   assert.equal(written.path, 'pages/index/index.wxml')
   assert.equal((await readProjectFile(root, 'pages/index/index.wxml')).content, '<view>hello</view>\n')
-  await assert.rejects(() => writeProjectFile(root, '../outside.js', 'bad'), error => error.code === 'ERR_SOURCE_PATH')
-  await assert.rejects(() => writeProjectFile(root, 'node_modules/pkg.js', 'bad'), error => error.code === 'ERR_SOURCE_PATH')
+  await assert.rejects(() => writeProjectFile(root, '../outside.js', 'bad'), error => errorCode(error) === 'ERR_SOURCE_PATH')
+  await assert.rejects(() => writeProjectFile(root, 'node_modules/pkg.js', 'bad'), error => errorCode(error) === 'ERR_SOURCE_PATH')
 })
 
 test('release lifecycle writes a manifest and current pointer', async () => {
@@ -72,11 +75,11 @@ test('release lifecycle writes a manifest and current pointer', async () => {
   await writeFile(join(pack, 'manifest.json'), '{}')
   const prepared = await prepareRelease(root, '1.0.0', { buildResult: build, evidence: [{ type: 'fixture', status: 'passed' }] })
   assert.equal(prepared.status, 'verified')
-  await assert.rejects(() => commitRelease(root, '1.0.0'), error => error.code === 'ERR_CONFIRMATION_REQUIRED')
+  await assert.rejects(() => commitRelease(root, '1.0.0'), error => errorCode(error) === 'ERR_CONFIRMATION_REQUIRED')
   const committed = await commitRelease(root, '1.0.0', { confirmed: true })
   assert.equal(committed.status, 'committed')
   assert.equal((await listReleases(root)).current.version, '1.0.0')
-  await assert.rejects(() => rollbackRelease(root, '1.0.0'), error => error.code === 'ERR_CONFIRMATION_REQUIRED')
+  await assert.rejects(() => rollbackRelease(root, '1.0.0'), error => errorCode(error) === 'ERR_CONFIRMATION_REQUIRED')
   assert.equal((await rollbackRelease(root, '1.0.0', { confirmed: true })).current, '1.0.0')
   const release = JSON.parse(await readFile(join(root, '.weapp-container/releases/1.0.0/release.json'), 'utf8'))
   assert.equal(release.version, '1.0.0')
@@ -93,7 +96,7 @@ test('concurrent release preparation publishes one complete version', async () =
     prepareRelease(root, '1.1.0', { buildResult: build, evidence: [{ type: 'fixture', status: 'passed' }] }),
   ])
   assert.equal(prepared.filter(result => result.status === 'fulfilled').length, 1)
-  assert.equal(prepared.filter(result => result.status === 'rejected' && result.reason.code === 'ERR_RELEASE_EXISTS').length, 1)
+  assert.equal(prepared.filter(result => result.status === 'rejected' && errorCode(result.reason) === 'ERR_RELEASE_EXISTS').length, 1)
   const listing = await listReleases(root)
   assert.equal(listing.releases.length, 1)
   assert.equal(listing.releases[0].status, 'verified')
@@ -104,7 +107,7 @@ test('initProject creates an explicit local agent marker once', async () => {
   const root = await fixture()
   const initialized = await initProject(root)
   assert.equal(initialized.projectRoot, root)
-  await assert.rejects(() => initProject(root), error => error.code === 'ERR_ALREADY_INITIALIZED')
+  await assert.rejects(() => initProject(root), error => errorCode(error) === 'ERR_ALREADY_INITIALIZED')
 })
 
 test('JobStore starts work asynchronously and persists durable events', async () => {
@@ -204,8 +207,8 @@ test('scenario drives a browser page and writes a screenshot artifact', async t 
         ],
       }, { projectRoot: root, artifactRoot: join(root, '.weapp-container/agent/artifacts/browser-test') })
     } catch (error) {
-      if (error?.code === 'ERR_BROWSER_UNAVAILABLE' || /browser|executable|chromium|chrome/i.test(error?.message ?? '')) {
-        t.skip(`browser unavailable: ${error.message}`)
+      if (errorCode(error) === 'ERR_BROWSER_UNAVAILABLE' || /browser|executable|chromium|chrome/i.test((error as { message?: string } | null)?.message ?? '')) {
+        t.skip(`browser unavailable: ${(error as { message?: string } | null)?.message ?? String(error)}`)
         return
       }
       throw error
@@ -239,10 +242,10 @@ test('rollback rejects a prepared release and release commit detects pack tamper
   await (await import('node:fs/promises')).mkdir(pack, { recursive: true })
   await writeFile(join(pack, 'manifest.json'), '{}')
   await prepareRelease(root, '2.0.0', { buildResult: build, evidence: [{ type: 'fixture', status: 'passed' }] })
-  await assert.rejects(() => rollbackRelease(root, '2.0.0', { confirmed: true }), error => error.code === 'ERR_RELEASE_INVALID_STATE')
+  await assert.rejects(() => rollbackRelease(root, '2.0.0', { confirmed: true }), error => errorCode(error) === 'ERR_RELEASE_INVALID_STATE')
   await commitRelease(root, '2.0.0', { confirmed: true })
   await writeFile(join(root, '.weapp-container/releases/2.0.0/pack/tampered.txt'), 'tampered')
-  await assert.rejects(() => commitRelease(root, '2.0.0', { confirmed: true }), error => error.code === 'ERR_RELEASE_INTEGRITY')
+  await assert.rejects(() => commitRelease(root, '2.0.0', { confirmed: true }), error => errorCode(error) === 'ERR_RELEASE_INTEGRITY')
 })
 
 test('publishRelease requires a committed release and writes a redacted upload receipt', async () => {
