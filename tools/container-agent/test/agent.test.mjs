@@ -82,6 +82,24 @@ test('release lifecycle writes a manifest and current pointer', async () => {
   assert.equal(release.version, '1.0.0')
 })
 
+test('concurrent release preparation publishes one complete version', async () => {
+  const root = await fixture()
+  const pack = join(root, 'pack')
+  await mkdir(pack, { recursive: true })
+  await writeFile(join(pack, 'manifest.json'), '{}')
+  const build = { packDirectory: pack, sourceDigest: await digestDirectory(root), compilerCommit: 'unknown', project: await inspectProject(root), generatedAt: new Date().toISOString(), manifest: {} }
+  const prepared = await Promise.allSettled([
+    prepareRelease(root, '1.1.0', { buildResult: build, evidence: [{ type: 'fixture', status: 'passed' }] }),
+    prepareRelease(root, '1.1.0', { buildResult: build, evidence: [{ type: 'fixture', status: 'passed' }] }),
+  ])
+  assert.equal(prepared.filter(result => result.status === 'fulfilled').length, 1)
+  assert.equal(prepared.filter(result => result.status === 'rejected' && result.reason.code === 'ERR_RELEASE_EXISTS').length, 1)
+  const listing = await listReleases(root)
+  assert.equal(listing.releases.length, 1)
+  assert.equal(listing.releases[0].status, 'verified')
+  assert.equal(await readFile(join(root, '.weapp-container/releases/1.1.0/pack/manifest.json'), 'utf8'), '{}')
+})
+
 test('initProject creates an explicit local agent marker once', async () => {
   const root = await fixture()
   const initialized = await initProject(root)
@@ -126,6 +144,27 @@ server.listen(0, '127.0.0.1', () => process.stdout.write('weapp-simulator: web s
     await preview.stop()
   }
   assert.equal((await preview.status()).status, 'closed')
+})
+
+test('PreviewStore rejects control targets outside loopback before making a request', async () => {
+  const root = await fixture()
+  const stateRoot = join(root, '.weapp-container')
+  await mkdir(stateRoot, { recursive: true })
+  await writeFile(join(stateRoot, 'preview.json'), JSON.stringify({
+    schemaVersion: 2,
+    project: root,
+    controlUrl: 'http://example.invalid:1234/',
+    token: 'a'.repeat(64),
+  }))
+  const originalFetch = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = async () => { calls += 1; throw new Error('unexpected network request') }
+  try {
+    assert.equal((await new PreviewStore(root).status()).status, 'unknown')
+    assert.equal(calls, 0)
+  } finally {
+    globalThis.fetch = originalFetch
+  }
 })
 
 test('scenario waits for ready and accepts only matching SSE bridge responses', async () => {

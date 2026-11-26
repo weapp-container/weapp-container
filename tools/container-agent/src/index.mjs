@@ -504,6 +504,16 @@ function ownedToken(value, expected) {
   return actual.length === target.length && timingSafeEqual(actual, target)
 }
 
+function isLoopbackUrl(value) {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' && url.hostname === '127.0.0.1' && Number(url.port) > 0
+      && !url.username && !url.password
+  } catch {
+    return false
+  }
+}
+
 export async function runPreviewDaemon(options) {
   const root = resolve(options.projectRoot)
   const pathsRoot = join(root, '.weapp-container', 'preview')
@@ -614,7 +624,15 @@ export class PreviewStore {
     const session = await readJson(this.file, null)
     if (!session) return { status: 'closed' }
     if (!session.controlUrl || !session.token) return { status: 'unknown', reason: 'legacy preview session has no ownership control' }
-    try { return await controlRequest(session.controlUrl, session.token, '/status') } catch { return { status: 'unknown', reason: 'preview control endpoint is unreachable' } }
+    if (session.project !== this.root || !isLoopbackUrl(session.controlUrl) || !/^[a-f0-9]{64}$/i.test(session.token)) {
+      return { status: 'unknown', reason: 'preview session ownership data is invalid' }
+    }
+    try {
+      const status = await controlRequest(session.controlUrl, session.token, '/status')
+      return isLoopbackUrl(status.url) ? status : { status: 'unknown', reason: 'preview URL is not a loopback address' }
+    } catch {
+      return { status: 'unknown', reason: 'preview control endpoint is unreachable' }
+    }
   }
 
   async start(options = {}) {
@@ -721,22 +739,34 @@ export async function prepareRelease(projectRoot, version, options = {}) {
   const releaseStatus = evidence.some(item => item.status === 'failed')
     ? 'failed'
     : evidence.length > 0 && evidence.every(item => item.status === 'passed') ? 'verified' : 'draft'
-  await mkdir(destination, { recursive: true })
-  await copyDirectory(build.packDirectory, join(destination, 'pack'))
-  const manifest = {
-    schemaVersion: 1,
-    version,
-    projectDigest: await digestDirectory(root),
-    sourceDigest: build.sourceDigest,
-    compilerIdentity: build.compilerCommit,
-    packDigest: await digestDirectory(join(destination, 'pack'), { includeHidden: true, ignoredDirectories: new Set() }),
-    evidence,
-    createdAt: now(),
-    status: releaseStatus,
-    buildReport: 'build-report.json',
+  const staging = join(releaseRoot, `.prepare-${version}-${randomUUID()}`)
+  await mkdir(releaseRoot, { recursive: true })
+  let manifest
+  try {
+    await mkdir(staging)
+    await copyDirectory(build.packDirectory, join(staging, 'pack'))
+    manifest = {
+      schemaVersion: 1,
+      version,
+      projectDigest: await digestDirectory(root),
+      sourceDigest: build.sourceDigest,
+      compilerIdentity: build.compilerCommit,
+      packDigest: await digestDirectory(join(staging, 'pack'), { includeHidden: true, ignoredDirectories: new Set() }),
+      evidence,
+      createdAt: now(),
+      status: releaseStatus,
+      buildReport: 'build-report.json',
+    }
+    await writeJson(join(staging, 'build-report.json'), { ...build, evidence })
+    await writeJson(join(staging, 'release.json'), manifest)
+    await rename(staging, destination)
+  } catch (error) {
+    await rm(staging, { recursive: true, force: true })
+    if (error?.code === 'EEXIST' || error?.code === 'ENOTEMPTY') {
+      throw new AgentError('ERR_RELEASE_EXISTS', `Release already exists: ${version}`, { cause: error })
+    }
+    throw error
   }
-  await writeJson(join(destination, 'build-report.json'), { ...build, evidence })
-  await writeJson(join(destination, 'release.json'), manifest)
   return { ...manifest, path: destination }
 }
 
