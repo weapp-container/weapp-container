@@ -346,7 +346,8 @@ jobs:
           aws --version
           aws s3api head-bucket \
             --bucket weapp-container-devtools-downloads \
-            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com" \
+            --region auto
 
       - name: Create signed stable update manifest
         if: ${{ !contains(github.ref_name, '-preview.') }}
@@ -512,7 +513,8 @@ jobs:
           aws --version
           aws s3api head-bucket \
             --bucket weapp-container-devtools-downloads \
-            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com" \
+            --region auto
 
       - name: Publish latest DevTools installers to R2
         env:
