@@ -322,6 +322,21 @@ jobs:
           sha256sum weapp-container-devtools-* > SHA256SUMS
           sha256sum --check SHA256SUMS
 
+      - name: Validate R2 publishing credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$AWS_ACCESS_KEY_ID"
+          test -n "$AWS_SECRET_ACCESS_KEY"
+          test -n "$R2_ACCOUNT_ID"
+          aws --version
+          aws s3api head-bucket \
+            --bucket weapp-container-devtools-downloads \
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+
       - name: Create signed stable update manifest
         if: ${{ !contains(github.ref_name, '-preview.') }}
         env:
@@ -394,6 +409,18 @@ jobs:
           release_state="$(gh release view "$GITHUB_REF_NAME" --json isDraft,isPrerelease --jq '[.isDraft, .isPrerelease] | @tsv')"
           if [[ "$GITHUB_REF_NAME" == *-preview.* ]]; then expected_state=$'false\ttrue'; else expected_state=$'false\tfalse'; fi
           test "$release_state" = "$expected_state"
+
+      - name: Publish latest DevTools installers to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+        run: |
+          node scripts/devtools-r2-release.mjs \
+            --assets artifacts \
+            --version "${GITHUB_REF_NAME#devtools-v}" \
+            --tag "$GITHUB_REF_NAME" \
+            --base-url https://download.container.weapp.dev
 
           version="${GITHUB_REF_NAME#devtools-v}"
           if [[ "$version" =~ ^(.+-preview\.[0-9]+)\.([0-9]+)$ ]]; then
