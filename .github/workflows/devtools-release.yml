@@ -3,6 +3,12 @@ name: DevTools release
 on:
   push:
     tags: ['devtools-v*']
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing DevTools GitHub Release tag to publish to R2
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -13,6 +19,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name == 'push'
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -446,3 +453,78 @@ jobs:
               fi
             fi
           fi
+
+  republish-existing-release:
+    name: Republish existing DevTools release to R2
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+
+      - name: Download existing GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          case "$RELEASE_TAG" in
+            devtools-v[0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "Invalid DevTools release tag: $RELEASE_TAG" >&2; exit 1 ;;
+          esac
+          mkdir -p artifacts
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir artifacts \
+            --pattern 'SHA256SUMS' \
+            --pattern 'weapp-container-devtools-*.dmg' \
+            --pattern 'weapp-container-devtools-*.deb' \
+            --pattern 'weapp-container-devtools-*.msi' \
+            --clobber
+          expected=(
+            SHA256SUMS
+            weapp-container-devtools-macos-arm64.dmg
+            weapp-container-devtools-macos-x86_64.dmg
+            weapp-container-devtools-linux-x86_64.deb
+            weapp-container-devtools-windows-x86_64.msi
+          )
+          for asset in "${expected[@]}"; do test -f "artifacts/$asset"; done
+
+      - name: Validate R2 publishing credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$AWS_ACCESS_KEY_ID"
+          test -n "$AWS_SECRET_ACCESS_KEY"
+          test -n "$R2_ACCOUNT_ID"
+          aws --version
+          aws s3api head-bucket \
+            --bucket weapp-container-devtools-downloads \
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+
+      - name: Publish latest DevTools installers to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#devtools-v}"
+          node scripts/devtools-r2-release.mjs \
+            --assets artifacts \
+            --version "$version" \
+            --tag "$RELEASE_TAG" \
+            --base-url https://download.container.weapp.dev
