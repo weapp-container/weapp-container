@@ -25,6 +25,8 @@ npx weapp-container-agent release publish --project <project> --version 1.0.0 --
 
 `build` uses the project's `weapp-vite` installation. `preview start` uses a locally built simulator from this repository, or the executable passed with `--simulator-bin` / `WEAPP_CONTAINER_SIMULATOR_BIN` when installed as a package.
 
+`build --platform <target>` runs one compiler target. It creates a container portable pack only for `weapp`; other targets return their compiler output directory for validation with the matching platform tools.
+
 Run `inspect` first for an existing native WeChat mini-program. The `compatibility.findings` field scans the actual JavaScript/TypeScript, WXML, and WXSS use sites and reports a file, line, `full`/`partial`/`unsupported`/`unknown` status, evidence, and a recommendation for each finding. This is a migration preflight. Static findings are not official DevTools or device conformance results.
 
 The shortest local loop is:

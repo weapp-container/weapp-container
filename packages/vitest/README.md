@@ -2,7 +2,17 @@
 
 **简体中文** · [English](README.en.md)
 
-Vitest 配置插件负责每个 project 的不可变 pack 代际。请显式提供 artifact 工厂，编译器由调用方管理；fixture 为每个测试创建独立的 QuickJS 子进程。
+Vitest fixture 为每个测试创建独立的 QuickJS 子进程。普通项目应在 Vite 配置中使用 `@weapp-container/vite` 的 `weappContainer()`，由项目中的 `weapp-vite` 自动生成 artifact 代际：
+
+```ts
+import { defineConfig } from 'vitest/config'
+import { weapp } from 'weapp-vite/vite'
+import { weappContainer } from '@weapp-container/vite'
+
+export default defineConfig({ plugins: [weapp(), weappContainer()] })
+```
+
+已有自定义编译器的项目可以使用下面的显式 artifact 工厂配置，编译器生命周期由调用方管理。
 
 ```ts
 // vitest.config.ts

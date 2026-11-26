@@ -25,6 +25,8 @@ npx weapp-container-agent release publish --project <project> --version 1.0.0 --
 
 `build` uses the project's `weapp-vite` installation. `preview start` uses a locally built simulator from this repository, or the executable passed through `--simulator-bin` / `WEAPP_CONTAINER_SIMULATOR_BIN` when installed as a package.
 
+`build --platform <target>` runs one compiler target. It creates a container portable pack only for `weapp`; other targets return their compiler output directory for validation with the matching platform tools.
+
 对于已有的原生微信小程序，先运行 `inspect`。输出中的 `compatibility.findings` 会扫描 JavaScript/TypeScript、WXML 和 WXSS 的实际使用点，并为每条记录提供文件、行号、`full`/`partial`/`unsupported`/`unknown` 状态、证据和修复建议。它是迁移预检，不会把静态扫描结果当成官方 DevTools 或真机通过。
 
 最快的本地闭环如下：

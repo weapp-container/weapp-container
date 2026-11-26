@@ -9,7 +9,7 @@ function usage() {
 Commands:
   init --project <dir>
   inspect --project <dir>
-  build --project <dir> [--wv-bin <file>]
+  build --project <dir> [--platform weapp|alipay|swan|tt|jd|xhs] [--wv-bin <file>]
   preview start|status|stop --project <dir> [--pack <dir>] [--surface web|desktop] [--simulator-bin <file>]
   test run --project <dir> --scenario <file>
   release prepare|commit|list|rollback|publish --project <dir> [--version <version>]
@@ -53,7 +53,7 @@ try {
     let result
     if (command === 'init') result = await initProject(project)
     else if (command === 'inspect') result = await inspectProject(project)
-    else if (command === 'build') result = await callTool('container_build', { projectPath: project, wvBin: value(args, '--wv-bin', undefined) })
+    else if (command === 'build') result = await callTool('container_build', { projectPath: project, platform: value(args, '--platform', 'weapp'), wvBin: value(args, '--wv-bin', undefined) })
     else if (command === 'preview') {
     const action = args[1]
     if (action === 'start') result = await callTool('container_preview_start', { projectPath: project, packDirectory: value(args, '--pack', undefined), surface: value(args, '--surface', 'web'), renderer: value(args, '--renderer', 'webview'), port: Number(value(args, '--port', '0')), timeoutMs: Number(value(args, '--timeout-ms', '120000')), simulatorCommand: value(args, '--simulator-bin', undefined), simulatorPrefix: JSON.parse(value(args, '--simulator-prefix', '[]')) })
