@@ -1,6 +1,6 @@
 import type { ArtifactFactory, ArtifactWatcher, ContainerArtifact } from '@weapp-container/node/artifact'
 import { disposeOwnedArtifact, packArtifact } from '@weapp-container/node/artifact'
-import { createRequire } from 'node:module'
+import { resolve as resolveImport } from 'import-meta-resolve'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { WeappViteArtifactWatcher, WeappViteBuildOptions, WeappViteCompiledArtifact, WeappViteTestCompiler } from './types.ts'
@@ -10,9 +10,8 @@ const compilerModule = 'weapp-vite/test'
 async function loadCompiler(options: WeappViteBuildOptions): Promise<WeappViteTestCompiler> {
   try {
     const cwd = resolve(options.cwd ?? process.cwd())
-    const require = createRequire(pathToFileURL(resolve(cwd, 'package.json')))
-    const compilerPath = require.resolve(compilerModule)
-    return await import(pathToFileURL(compilerPath).href) as WeappViteTestCompiler
+    const compilerUrl = resolveImport(compilerModule, pathToFileURL(resolve(cwd, 'package.json')).href)
+    return await import(compilerUrl) as WeappViteTestCompiler
   } catch (error) {
     throw new Error('The default artifact compiler requires weapp-vite with the "./test" export installed in the mini-program project. Install a compatible weapp-vite release or pass an artifact factory.', { cause: error })
   }

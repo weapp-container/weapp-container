@@ -4,7 +4,9 @@
 
 ## 1. 安装
 
-在小程序项目根目录执行：
+以下命令适用于相关包已发布到 npm 的版本。当前可在仓库根目录执行 `pnpm install --frozen-lockfile`、`pnpm build` 和 `pnpm simulator:build`，并用 `pnpm container:agent <命令> --project <项目目录>` 从源码运行 CLI。Vite 与 Vitest 包的本地 tarball 验证入口为 `pnpm testing:install:test`。
+
+使用 npm 已发布的版本时，在小程序项目根目录执行：
 
 ```sh
 pnpm add -D @weapp-container/agent @weapp-container/vite @weapp-container/vitest weapp-vite vitest
@@ -57,10 +59,11 @@ pnpm exec weapp-container-agent inspect --project .
 pnpm exec weapp-container-agent build --project .
 pnpm exec weapp-container-agent preview start --project . --simulator-bin /abs/path/weapp-simulator
 pnpm exec weapp-container-agent test run --project . --scenario scenario.json
+pnpm exec weapp-container-agent job status --project . --job <job-id>
 pnpm exec weapp-container-agent preview stop --project .
 ```
 
-`inspect` 的兼容性结果是源码静态预检。`build` 默认选择 `weapp`，输出编译目录和 portable pack。预览服务通过 loopback 控制端点和随机 token 归属当前项目。测试任务会持久化到 `.weapp-container/agent/jobs`，场景截图写入对应 job 的 artifacts 目录。
+`inspect` 的兼容性结果是源码静态预检。`build` 默认选择 `weapp`，输出编译目录和 portable pack。预览服务通过 loopback 控制端点和随机 token 归属当前项目。`test run` 返回 job ID。通过 `job status` 确认结果后关闭预览。默认 WebView 的截图使用场景中的浏览器 `screenshot` 操作，输出写入对应 job 的 artifacts 目录。
 
 最小浏览器场景示例：
 
@@ -113,10 +116,9 @@ pnpm exec weapp-container-agent release rollback --project . --version 0.1.0 --c
 ```sh
 export WEAPP_CI_PRIVATE_KEY_PATH=/secure/path/private.key
 pnpm exec weapp-container-agent release publish --project . --version 0.1.0 --confirm
-pnpm exec weapp-container-agent job status --project . --job <job-id>
 ```
 
-上传命令会返回 job ID，使用 `job status` 查询结果。缺少 `WEAPP_CI_PRIVATE_KEY_PATH` 或私钥文件不存在时，job 状态为 `blocked`，不会伪造上传结果。上传只代表开发者版本提交，审核和公开发布仍由平台控制台完成。
+CLI 等待上传完成并返回回执。通过 MCP 调用 `container_release_publish` 时，使用返回的 job ID 查询任务状态。缺少上传私钥时，CLI 返回 `ERR_PUBLISH_CREDENTIALS`，MCP 任务显示 `blocked`。上传只代表开发者版本提交，审核和公开发布仍由平台控制台完成。
 
 ## 6. 维护者检查
 

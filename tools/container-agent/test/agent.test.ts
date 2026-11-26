@@ -272,25 +272,6 @@ test('scenario waits for ready and accepts only matching SSE bridge responses', 
   }
 })
 
-test('scenario waits for the first committed snapshot after a transient 409', async () => {
-  let attempts = 0
-  const result = await runScenario({
-    request: async path => {
-      assert.equal(path, '/api/snapshot')
-      attempts += 1
-      if (attempts === 1) {
-        const error = new Error('/api/snapshot HTTP 409')
-        error.code = 'ERR_PREVIEW_HTTP'
-        throw error
-      }
-      return { width: 375, height: 667, pixels: [] }
-    },
-    status: async () => ({ url: 'http://127.0.0.1:1/' }),
-  }, { steps: [{ op: 'snapshot', timeoutMs: 500 }] })
-  assert.equal(result.status, 'passed')
-  assert.equal(attempts, 2)
-})
-
 test('scenario drives a browser page and writes a screenshot artifact', async t => {
   const root = await fixture()
   const simulator = await fakeSimulator(root)

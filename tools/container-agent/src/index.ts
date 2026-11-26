@@ -1370,7 +1370,7 @@ export async function runScenario(preview, scenario = {}, options = {}) {
     if (step.op === 'state') {
       const value = await preview.request('/api/state'); assertExpected(value, step.expect, index); results.push({ index, op: step.op, value })
     } else if (step.op === 'snapshot') {
-      const value = await requestScenarioSnapshot(preview, step.timeoutMs ?? scenario.timeoutMs ?? 10_000, options.signal); assertExpected(value, step.expect, index); results.push({ index, op: step.op, value })
+      const value = await preview.request('/api/snapshot'); assertExpected(value, step.expect, index); results.push({ index, op: step.op, value })
     } else if (step.op === 'bridge') {
       const state = await preview.request('/api/state')
       if (state.status !== 'ready' || typeof state.sessionId !== 'string') throw new AgentError('ERR_SCENARIO_RUNTIME_NOT_READY', 'Simulator runtime is not ready for bridge requests')
@@ -1524,21 +1524,6 @@ async function waitForBridgeEvent(preview, requests, sessionId, timeoutMs, trigg
     if (timeoutController.signal.aborted) throw new AgentError('ERR_SCENARIO_TIMEOUT', `Timed out waiting for bridge requests ${requests.map(request => request.requestId).join(', ')}`)
     throw error
   } finally { clearTimeout(timer); timeoutController.abort() }
-}
-
-async function requestScenarioSnapshot(preview, timeoutMs, signal) {
-  const deadline = Date.now() + timeoutMs
-  let lastError
-  while (Date.now() < deadline) {
-    try {
-      return await preview.request('/api/snapshot', { signal })
-    } catch (error) {
-      lastError = error
-      if (error?.code !== 'ERR_PREVIEW_HTTP' || !/\/api\/snapshot HTTP 409/.test(error.message ?? '')) throw error
-      await sleep(Math.min(100, Math.max(1, deadline - Date.now())), signal)
-    }
-  }
-  throw new AgentError('ERR_SCENARIO_SNAPSHOT_TIMEOUT', `Simulator did not expose a snapshot within ${timeoutMs}ms`, { cause: lastError })
 }
 
 export function toolCatalog() {

@@ -76,8 +76,8 @@ test('default compiler resolves from the mini-program project and packs its outp
   await mkdir(compilerPackage, { recursive: true })
   await mkdir(page, { recursive: true })
   await writeFile(join(root, 'package.json'), JSON.stringify({ name: 'consumer-mini-program', private: true }))
-  await writeFile(join(compilerPackage, 'package.json'), JSON.stringify({ name: 'weapp-vite', exports: { './test': './test.js' } }))
-  await writeFile(join(compilerPackage, 'test.js'), `export async function buildTestArtifact(options) {
+  await writeFile(join(compilerPackage, 'package.json'), JSON.stringify({ name: 'weapp-vite', exports: { './test': { import: './test.mjs' } } }))
+  await writeFile(join(compilerPackage, 'test.mjs'), `export async function buildTestArtifact(options) {
   return { projectPath: options.cwd, miniprogramRootPath: ${JSON.stringify(output)}, appConfigPath: 'app.json', sourceRootPath: options.cwd }
 }
 `)

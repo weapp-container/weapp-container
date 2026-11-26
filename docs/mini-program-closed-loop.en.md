@@ -4,7 +4,9 @@ This path covers project inspection, compilation, portable packs, preview, scena
 
 ## 1. Install
 
-Run this in the mini-program project root:
+The installation commands below require the packages to be available on npm. To try the current source, run `pnpm install --frozen-lockfile`, `pnpm build`, and `pnpm simulator:build` from the repository root. Then use `pnpm container:agent <command> --project <project-directory>` to run the CLI from source. Run `pnpm testing:install:test` to verify the local Vite and Vitest tarballs.
+
+When using published packages, run this in the mini-program project root:
 
 ```sh
 pnpm add -D @weapp-container/agent @weapp-container/vite @weapp-container/vitest weapp-vite vitest
@@ -57,10 +59,11 @@ pnpm exec weapp-container-agent inspect --project .
 pnpm exec weapp-container-agent build --project .
 pnpm exec weapp-container-agent preview start --project . --simulator-bin /abs/path/weapp-simulator
 pnpm exec weapp-container-agent test run --project . --scenario scenario.json
+pnpm exec weapp-container-agent job status --project . --job <job-id>
 pnpm exec weapp-container-agent preview stop --project .
 ```
 
-`inspect` is a static source compatibility preflight. `build` defaults to `weapp` and reports both the compiler output and portable pack. Preview uses a loopback control endpoint and a random project-owned token. Test jobs persist under `.weapp-container/agent/jobs`, and screenshots are written to the job artifact directory.
+`inspect` is a static source compatibility preflight. `build` defaults to `weapp` and reports both the compiler output and portable pack. Preview uses a loopback control endpoint and a random project-owned token. `test run` returns a job ID. Check its result with `job status` before stopping the preview. Use the browser `screenshot` action with the default WebView preview to save a screenshot in the job artifact directory.
 
 Minimal browser scenario:
 
@@ -113,10 +116,9 @@ With a code-upload private key and the project upload dependency installed, uplo
 ```sh
 export WEAPP_CI_PRIVATE_KEY_PATH=/secure/path/private.key
 pnpm exec weapp-container-agent release publish --project . --version 0.1.0 --confirm
-pnpm exec weapp-container-agent job status --project . --job <job-id>
 ```
 
-The upload command returns a job ID. Query it with `job status`. Without `WEAPP_CI_PRIVATE_KEY_PATH`, or when the key file is missing, the job status is `blocked` and does not claim an upload. The upload is a developer-version submission. Review and public release remain platform-console operations.
+The CLI waits for the upload receipt. When calling `container_release_publish` over MCP, query the returned job ID for its status. If the upload key is missing, the CLI returns `ERR_PUBLISH_CREDENTIALS` and the MCP job reports `blocked`. The upload is a developer-version submission. Review and public release remain platform-console operations.
 
 ## 6. Maintainer checks
 
