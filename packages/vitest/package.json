@@ -28,7 +28,8 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@weapp-container/node": "workspace:*"
+    "@weapp-container/node": "workspace:*",
+    "@weapp-container/vite": "workspace:*"
   },
   "peerDependencies": {
     "vitest": ">=5.0.0"

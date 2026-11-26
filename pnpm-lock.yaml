@@ -71,11 +71,30 @@ importers:
 
   packages/runtime/linux-x64: {}
 
+  packages/vite:
+    dependencies:
+      '@weapp-container/node':
+        specifier: workspace:*
+        version: link:../node
+    devDependencies:
+      tsd:
+        specifier: 0.33.0
+        version: 0.33.0
+      vite:
+        specifier: 8.3.8
+        version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
+      vitest:
+        specifier: 5.1.0
+        version: 5.1.0(@types/node@26.6.6)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
+
   packages/vitest:
     dependencies:
       '@weapp-container/node':
         specifier: workspace:*
         version: link:../node
+      '@weapp-container/vite':
+        specifier: workspace:*
+        version: link:../vite
     devDependencies:
       vitest:
         specifier: 5.1.0
