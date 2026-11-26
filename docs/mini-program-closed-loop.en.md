@@ -72,8 +72,9 @@ Minimal browser scenario:
   "browser": { "viewport": { "width": 390, "height": 844 } },
   "steps": [
     { "op": "browser", "action": "goto", "url": "/" },
-    { "op": "browser", "action": "click", "selector": "#increment" },
-    { "op": "browser", "action": "locator", "selector": "#count", "property": "text", "expect": { "value": "1" } },
+    { "op": "browser", "action": "click", "frame": "#domScreen iframe:visible", "selector": "#increment" },
+    { "op": "browser", "action": "wait", "frame": "#domScreen iframe:visible", "selector": "#count:text-is('1')" },
+    { "op": "browser", "action": "locator", "frame": "#domScreen iframe:visible", "selector": "#count", "property": "text", "expect": { "value": "1" } },
     { "op": "browser", "action": "screenshot", "path": "counter.png" }
   ]
 }
@@ -83,7 +84,7 @@ An MCP client can run `pnpm exec weapp-container-agent mcp --project .` and use 
 
 ## 4. Single-target compilation
 
-Build each compiler target separately when the project supports it:
+Configure the project for each target before building it. Alipay uses `mini.project.json`, and Baidu uses `project.swan.json`.
 
 ```sh
 pnpm exec weapp-container-agent build --project . --platform weapp

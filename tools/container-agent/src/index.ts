@@ -1304,7 +1304,11 @@ async function runBrowserStep(browserState, step, root, artifactRoot, timeoutMs)
   const page = browserState.page
   page.setDefaultTimeout(timeoutMs)
   const selector = step.selector
-  const locator = selector ? page.locator(selector) : null
+  if (step.frame !== undefined && (typeof step.frame !== 'string' || !step.frame.trim())) {
+    throw new AgentError('ERR_SCENARIO_INVALID', 'Browser frame requires a non-empty selector')
+  }
+  const scope = step.frame ? page.frameLocator(step.frame) : page
+  const locator = selector ? scope.locator(selector) : null
   if (step.action === 'goto') {
     const targetUrl = new URL(step.url ?? '/', browserState.baseUrl)
     if (targetUrl.origin !== new URL(browserState.baseUrl).origin) throw new AgentError('ERR_SCENARIO_URL', 'Browser navigation must stay on the local preview origin')

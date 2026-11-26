@@ -72,8 +72,9 @@ pnpm exec weapp-container-agent preview stop --project .
   "browser": { "viewport": { "width": 390, "height": 844 } },
   "steps": [
     { "op": "browser", "action": "goto", "url": "/" },
-    { "op": "browser", "action": "click", "selector": "#increment" },
-    { "op": "browser", "action": "locator", "selector": "#count", "property": "text", "expect": { "value": "1" } },
+    { "op": "browser", "action": "click", "frame": "#domScreen iframe:visible", "selector": "#increment" },
+    { "op": "browser", "action": "wait", "frame": "#domScreen iframe:visible", "selector": "#count:text-is('1')" },
+    { "op": "browser", "action": "locator", "frame": "#domScreen iframe:visible", "selector": "#count", "property": "text", "expect": { "value": "1" } },
     { "op": "browser", "action": "screenshot", "path": "counter.png" }
   ]
 }
@@ -83,7 +84,7 @@ pnpm exec weapp-container-agent preview stop --project .
 
 ## 4. 单目标编译
 
-编译器支持按目标分别执行构建：
+先为项目配置目标平台，再按目标分别执行构建。支付宝使用 `mini.project.json`，百度使用 `project.swan.json`。
 
 ```sh
 pnpm exec weapp-container-agent build --project . --platform weapp
