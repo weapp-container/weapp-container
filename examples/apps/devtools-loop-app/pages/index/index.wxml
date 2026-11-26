@@ -1,0 +1,5 @@
+<view class="screen">
+  <text class="title">DevTools development loop</text>
+  <text id="count" class="count">Count: {{count}}</text>
+  <view id="increment" class="button" bindtap="onTap">Increment</view>
+</view>

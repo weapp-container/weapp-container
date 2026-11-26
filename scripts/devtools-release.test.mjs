@@ -8,7 +8,7 @@ import { basename, join, resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import test from 'node:test'
 import { buildDebRoot, createDmg, debianPackageVersion, msiProductCode, msiProductVersion, renderDebControl, renderMsiSource, validateInstallerSigningEnvironment } from './lib/devtools-installers.mjs'
-import { collectLicenses, createArchive, packageDevtools } from './package-devtools-release.mjs'
+import { collectLicenses, copyCompiler, createArchive, packageDevtools } from './package-devtools-release.mjs'
 import { createLauncher, simulatorArguments } from './devtools-launcher.mjs'
 import { canonicalUpdatePayload, checkForUpdate, verifyUpdateManifest } from './lib/devtools-update.mjs'
 import { inspectProject } from './devtools-compatibility.mjs'
@@ -46,6 +46,8 @@ test('simulator CLI arguments keep paths with spaces as one argument', () => {
   assert.deepEqual(simulatorArguments(project, 'web'), ['dev', '--project', project, '--surface', 'web'])
   assert.deepEqual(simulatorArguments(project, 'desktop'), ['dev', '--project', project, '--surface', 'desktop'])
   assert.throws(() => simulatorArguments(project, 'mobile'), /请选择 Web Player 或 Desktop Player/)
+  assert.deepEqual(simulatorArguments(project, 'web', { software: true }), ['dev', '--project', project, '--surface', 'web', '--software'])
+  assert.deepEqual(simulatorArguments(project, 'web', { outDir: '/tmp/devtools output' }), ['dev', '--project', project, '--surface', 'web', '--out-dir', '/tmp/devtools output'])
 })
 
 test('launcher serves a loopback-only authenticated API and owns child shutdown', async t => {
@@ -127,6 +129,7 @@ test('launcher serves a loopback-only authenticated API and owns child shutdown'
   assert.equal(webStart.status, 202)
   assert.deepEqual(spawnArguments, ['dev', '--project', await realpath(project), '--surface', 'web'])
   await api('/api/stop', {})
+  await Promise.all([launcher.close(), launcher.close()])
 })
 
 test('launcher validates the project and reports malformed project metadata', async t => {
@@ -219,6 +222,41 @@ test('Linux and macOS archives contain the package root and preserve relative pa
   await createArchive(source, archive, 'linux-x86_64')
   const listing = execFileSync('tar', ['-tzf', archive], { encoding: 'utf8' })
   assert.match(listing, new RegExp(`^${basename(source)}/bin/weapp-devtools$`, 'm'))
+})
+
+test('compiler packaging preserves the runnable CLI entry in both package locations', async t => {
+  const directory = await temporaryDirectory(t)
+  const sourceWorkspace = join(directory, 'source-workspace')
+  const compilerSource = join(sourceWorkspace, 'packages/weapp-vite')
+  const targetRoot = join(directory, 'staging')
+  const temporaryRoot = join(directory, 'temporary')
+  await mkdir(join(compilerSource, 'bin'), { recursive: true })
+  await mkdir(join(compilerSource, 'dist'), { recursive: true })
+  await writeFile(join(compilerSource, 'package.json'), JSON.stringify({
+    name: 'weapp-vite',
+    version: '7.5.0',
+    type: 'module',
+    main: './dist/index.mjs',
+    exports: { './*': './*' },
+    files: ['bin', 'dist'],
+    dependencies: {},
+  }))
+  await writeFile(join(compilerSource, 'bin/weapp-vite.js'), '#!/usr/bin/env node\n')
+  await writeFile(join(compilerSource, 'dist/index.mjs'), 'export {}\n')
+  await writeFile(join(compilerSource, 'dist/cli.mjs'), 'export {}\n')
+  await mkdir(join(compilerSource, 'src'), { recursive: true })
+  await mkdir(join(compilerSource, 'test'), { recursive: true })
+  await writeFile(join(compilerSource, 'src/index.ts'), 'export {}\n')
+  await writeFile(join(compilerSource, 'test/compiler.test.ts'), 'test.skip()\n')
+
+  await copyCompiler(targetRoot, { node: 'darwin-arm64', os: 'darwin', cpu: 'arm64' }, temporaryRoot, sourceWorkspace)
+
+  for (const location of ['packages/weapp-vite', 'node_modules/weapp-vite']) {
+    const packagePath = join(targetRoot, 'vendor/weapp-vite', location)
+    assert.equal(await readFile(join(packagePath, 'dist/cli.mjs'), 'utf8'), 'export {}\n')
+    await assert.rejects(readFile(join(packagePath, 'src/index.ts')))
+    await assert.rejects(readFile(join(packagePath, 'test/compiler.test.ts')))
+  }
 })
 
 test('installer metadata maps preview versions to native package formats', () => {

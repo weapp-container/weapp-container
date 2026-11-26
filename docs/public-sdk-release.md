@@ -40,6 +40,8 @@ Android、Flutter、Contract 和 React Native 包版本已通过 Maven Central�
 
 当前 `devtools-v0.1.0-preview.7.3` 的 macOS 和 Windows 安装包没有平台签名，首次启动可能显示系统警告。macOS 下载时按处理器架构选择 arm64 或 x86_64 DMG。只从对应 GitHub Release 下载，并先将下载文件的 SHA-256 与发布页的 `SHA256SUMS` 对照。确认来源和哈希后，按平台移除下载隔离标记。
 
+维护者可以运行 `pnpm devtools:loop:smoke`，用仓库最小项目验证本地 Web Player 的 launcher、项目预检、首屏与交互、WXSS 原位重载、JS 重启、构建错误保留和恢复。`--project <dir>` 可对其他受支持项目执行预检、启动和首屏检查。JSON 报告默认写入 `~/.codex/private-validation/weapp-container/devtools-loop/report.json`。此检查使用本机构建的 simulator 与 headless Chromium，不代表官方微信开发者工具、GPU、模拟器或真实设备通过。
+
 macOS 先打开 `.dmg`，将 `Weapp Container DevTools.app` 拖到 Applications，再执行：
 
 ```sh

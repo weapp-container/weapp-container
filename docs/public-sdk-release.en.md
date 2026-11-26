@@ -40,6 +40,8 @@ Android, Flutter, Contract, and React Native package versions were checked throu
 
 The current `devtools-v0.1.0-preview.7.3` macOS and Windows installers are not platform-signed, so the first launch may show an operating-system warning. Choose the macOS DMG that matches the processor architecture, either arm64 or x86_64. Download only from the matching GitHub Release and compare the downloaded file's SHA-256 with the `SHA256SUMS` entry published there before removing its download marker.
 
+Maintainers can run `pnpm devtools:loop:smoke` to exercise the local Web Player launcher, project preflight, first-screen rendering and interaction, in-place WXSS reload, JS restart, failed-build retention and recovery with the repository's minimal project. Pass `--project <dir>` to preflight, launch and inspect the first screen of another supported project. The JSON report defaults to `~/.codex/private-validation/weapp-container/devtools-loop/report.json`. This check uses the locally built simulator and headless Chromium. It does not establish conformance for official WeChat DevTools, GPU rendering, emulators or physical devices.
+
 On macOS, open the `.dmg`, drag `Weapp Container DevTools.app` to Applications, then run:
 
 ```sh

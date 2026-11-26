@@ -15,9 +15,13 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const runFile = promisify(execFile)
 const limitLogLines = 120
 
-export function simulatorArguments(project, surface) {
+export function simulatorArguments(project, surface, { software = false, outDir } = {}) {
   if (!['web', 'desktop'].includes(surface)) throw new Error('请选择 Web Player 或 Desktop Player')
-  return ['dev', '--project', project, '--surface', surface]
+  return [
+    'dev', '--project', project, '--surface', surface,
+    ...(software ? ['--software'] : []),
+    ...(outDir ? ['--out-dir', outDir] : []),
+  ]
 }
 
 async function chooseProjectDirectory(platform = process.platform) {
@@ -75,6 +79,8 @@ export async function createLauncher({
   },
   chooseProject = chooseProjectDirectory,
   spawnProcess = spawn,
+  software = false,
+  outputRoot,
 } = {}) {
   let metadata = compatibilityMetadata()
   try {
@@ -97,6 +103,7 @@ export async function createLauncher({
   let project
   let previewUrl
   let exitCode
+  let closePromise
   let stopping = false
   let preflight
   const addLog = line => {
@@ -165,7 +172,7 @@ export async function createLauncher({
         preflight = await inspectProject(input.project, { metadata, requireDependencies: true })
         project = preflight.project
         surface = input.surface ?? 'desktop'
-        const args = simulatorArguments(project, surface)
+        const args = simulatorArguments(project, surface, { software, outDir: outputRoot })
         previewUrl = undefined
         exitCode = undefined
         stopping = false
@@ -226,12 +233,17 @@ export async function createLauncher({
   if (openBrowser) openBrowser(page)
   return {
     page,
-    async close() {
-      if (child && child.exitCode === null && child.signalCode === null) {
-        stopping = true
-        await stopChild(child)
-      }
-      await new Promise(resolveClose => server.close(resolveClose))
+    close() {
+      closePromise ??= Promise.resolve().then(async () => {
+        if (child && child.exitCode === null && child.signalCode === null) {
+          stopping = true
+          await stopChild(child)
+        }
+        await new Promise((resolveClose, rejectClose) => {
+          server.close(error => error ? rejectClose(error) : resolveClose())
+        })
+      })
+      return closePromise
     },
   }
 }

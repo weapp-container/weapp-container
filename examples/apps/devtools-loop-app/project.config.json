@@ -1,0 +1,13 @@
+{
+  "description": "Minimal DevTools development-loop fixture",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist/",
+  "srcMiniprogramRoot": ".",
+  "appid": "touristappid",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "postcss": false,
+    "enhance": true
+  }
+}

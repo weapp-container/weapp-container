@@ -42,6 +42,14 @@ The desktop DevTools packages include pinned Node.js, weapp-vite, the manifest p
 
 Each package includes `weapp-devtools.json` with source, compiler, Node, compatibility and file-hash metadata. Stable releases use a signed update manifest, Developer ID signing and notarization for macOS, and Authenticode signing for Windows MSI. The release workflow fails before publishing when stable signing inputs are missing. Preview releases do not participate in stable updates. Release signing, platform installation and official-tool evidence remain platform-specific and are not replaced by local headless checks.
 
+Maintainers can exercise the launcher, project preflight, Web Player rendering and interaction, in-place WXSS reload, JS restart, failed-build retention and recovery with the repository's minimal project:
+
+```sh
+pnpm devtools:loop:smoke
+```
+
+The report defaults to `~/.codex/private-validation/weapp-container/devtools-loop/report.json`. Pass `--project <dir>` to preflight, launch and inspect the first screen of another supported project. The full hot-reload regression uses the repository's minimal project. This check uses the locally built simulator and headless Chromium. It covers the local Web development loop. The official WeChat DevTools baseline and real devices remain separate gates.
+
 ### Launch unsigned prereleases
 
 The current GitHub prerelease macOS and Windows installers are not platform-signed, so the first launch may show an operating-system warning. Download only from the matching GitHub Release and compare the file with the `SHA256SUMS` entry published there before removing the download marker.

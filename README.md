@@ -42,6 +42,14 @@ Android、iOS、React Native、Flutter 与 Desktop 的 reference consumer 位于
 
 发行包中的 `weapp-devtools.json` 记录源码、编译器、Node、兼容矩阵和文件哈希。稳定版使用签名更新清单，macOS 安装包使用 Developer ID 签名并完成公证，Windows MSI 使用 Authenticode 签名。缺少稳定版签名材料时发布工作流会在发布前失败。预览版不会自动参与稳定更新。发行签名、平台安装和官方工具证据按平台单独记录，不能由本地 headless 检查替代。
 
+维护者可以用仓库自带的最小项目验证 launcher、项目预检、Web Player 首屏与交互、WXSS 原位重载、JS 重启、构建失败保留和恢复：
+
+```sh
+pnpm devtools:loop:smoke
+```
+
+报告默认写入 `~/.codex/private-validation/weapp-container/devtools-loop/report.json`。可以用 `--project <dir>` 对其他受支持项目执行预检、启动和首屏检查，完整热重载回归仍使用仓库最小项目。该检查使用本机构建的 simulator 和 headless Chromium，只验证本地 Web 开发链路。官方微信开发者工具基线和真实设备仍需分别通过对应门禁。
+
 ### 未签名预览版启动
 
 当前 GitHub prerelease 的 macOS 和 Windows 安装包没有平台签名，首次启动可能显示系统警告。只从对应 GitHub Release 下载，并先用发布页的 `SHA256SUMS` 核对文件哈希。确认来源和哈希后，可以按平台移除下载隔离标记。

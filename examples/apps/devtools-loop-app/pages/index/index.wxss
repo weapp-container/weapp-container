@@ -1,0 +1,35 @@
+.screen {
+  position: relative;
+  width: 327px;
+  height: 619px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.title,
+.count {
+  display: block;
+  color: #17324d;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.count {
+  margin-top: 24px;
+  font-size: 20px;
+}
+
+.button {
+  position: absolute;
+  left: 24px;
+  top: 120px;
+  width: 220px;
+  height: 56px;
+  line-height: 56px;
+  text-align: center;
+  color: #ffffff;
+  background: #2463b8;
+}

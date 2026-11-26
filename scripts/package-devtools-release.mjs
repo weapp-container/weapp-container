@@ -166,7 +166,10 @@ async function copyPackageFiles(source, destination) {
   }
   addExportPaths(pkg.exports)
   const requiredPaths = [pkg.main, pkg.module, ...exportPaths]
-    .filter(value => typeof value === 'string' && !value.startsWith('../') && !value.startsWith('/'))
+    .filter(value => typeof value === 'string'
+      && !value.startsWith('../')
+      && !value.startsWith('/')
+      && !/[?*{}]/.test(value))
     .map(value => value.replace(/^\.\//, ''))
   const includePatterns = [...(pkg.files?.filter(file => !file.startsWith('!')) ?? []), ...requiredPaths]
   const excludePatterns = pkg.files?.filter(file => file.startsWith('!')).map(file => file.slice(1)) ?? []
@@ -235,24 +238,31 @@ async function collectPackage({ name, version, from, sourceRoot, workspaceRoot, 
   }
 }
 
-async function copyCompiler(targetRoot, target, temporaryRoot) {
+export async function copyCompiler(targetRoot, target, temporaryRoot, sourceWorkspace = join(root, 'vendor/weapp-vite')) {
   const workspaceRoot = join(targetRoot, 'vendor/weapp-vite')
-  const sourceWorkspace = join(root, 'vendor/weapp-vite')
   const compilerSource = join(sourceWorkspace, 'packages/weapp-vite')
   const compilerEntry = join(compilerSource, 'dist/cli.mjs')
   if (!(await stat(compilerEntry).then(value => value.isFile()).catch(() => false))) {
     throw new Error(`Pinned weapp-vite compiler is not built: ${compilerEntry}; run corepack pnpm@12.11.2 --dir vendor/weapp-vite run build:pkgs`)
   }
   await mkdir(join(workspaceRoot, 'packages'), { recursive: true })
-  await copyPackageFiles(compilerSource, join(workspaceRoot, 'packages/weapp-vite'))
+  const sourcePackageDestination = join(workspaceRoot, 'packages/weapp-vite')
+  await copyPackageFiles(compilerSource, sourcePackageDestination)
   const packageManifest = await packageJson(compilerSource)
   const destinationRoot = join(workspaceRoot, 'node_modules')
   const seen = new Set()
   for (const dependency of Object.keys({ ...packageManifest.dependencies, ...packageManifest.optionalDependencies })) {
     await collectPackage({ name: dependency, from: compilerSource, sourceRoot: sourceWorkspace, workspaceRoot: sourceWorkspace, destinationRoot, importerDestination: join(destinationRoot, 'weapp-vite'), target, temporaryRoot, seen })
   }
-  await mkdir(join(destinationRoot, 'weapp-vite/bin'), { recursive: true })
-  await copyPackageFiles(compilerSource, join(destinationRoot, 'weapp-vite'))
+  const installedPackageDestination = join(destinationRoot, 'weapp-vite')
+  await mkdir(join(installedPackageDestination, 'bin'), { recursive: true })
+  await copyPackageFiles(compilerSource, installedPackageDestination)
+  for (const destination of [sourcePackageDestination, installedPackageDestination]) {
+    const packagedEntry = join(destination, 'dist/cli.mjs')
+    if (!(await stat(packagedEntry).then(value => value.isFile()).catch(() => false))) {
+      throw new Error(`Packaged weapp-vite compiler is missing its CLI entry: ${packagedEntry}`)
+    }
+  }
   await writeFile(join(workspaceRoot, 'package.json'), json({ name: 'weapp-vite-runtime', private: true, packageManager: 'pnpm@12.11.2' }))
 }
 
