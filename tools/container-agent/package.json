@@ -1,0 +1,43 @@
+{
+  "name": "@weapp-conatiner/agent",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "AI control plane for building, previewing, testing and uploading mini-program projects",
+  "bin": {
+    "weapp-container-agent": "src/cli.mjs"
+  },
+  "files": [
+    "README.md",
+    "src"
+  ],
+  "scripts": {
+    "build": "node --check src/index.mjs && node --check src/cli.mjs",
+    "typecheck": "node --check src/index.mjs && node --check src/cli.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:types": "node --check src/index.mjs && node --check src/cli.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.64.1"
+  },
+  "engines": {
+    "node": ">=24.22.2 <25"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/weapp-container/weapp-container/tree/main/tools/container-agent",
+  "keywords": [
+    "weapp",
+    "mini-program",
+    "mcp",
+    "agent"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weapp-container/weapp-container.git",
+    "directory": "tools/container-agent"
+  }
+}
