@@ -1,5 +1,7 @@
 # Weapp Container
 
+Create a branded mini-program, preview it locally, and embed one portable pack in Android and iOS hosts. Existing projects can start with compatibility inspection. [Vendor quickstart](docs/vendor-onboarding.en.md)
+
 [简体中文](README.md) · **English**
 
 An independent open-source portable runtime for loading mini-program-shaped pages, components, scripts, and styles in a controlled process. It also accepts unpacked, unencrypted mini-game output through a schema-v4 manifest, with a Canvas 2D subset and host-delivered platform-neutral game events. The repository contains a manifest packer, Rust runtime, QuickJS/V8 engines, a simulator, and Node test bindings.

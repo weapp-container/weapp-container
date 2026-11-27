@@ -1,18 +1,16 @@
 # @weapp-container/agent
 
-MCP server and CLI for AI-driven mini-program development.
+MCP server and CLI for mini-program development. See the [vendor quickstart](https://github.com/weapp-container/weapp-container/blob/main/docs/vendor-onboarding.en.md) for standalone installation, branded projects, and host integration.
 
-```sh
-npm install --save-dev @weapp-container/agent weapp-vite
-npx playwright install chromium
-```
+Run `npx playwright install chromium` before running browser scenario tests.
 
 ## CLI
 
 ```sh
 npx weapp-container-agent init --project <project>
+npx weapp-container-agent create --project <new-project> --name <display-name>
 npx weapp-container-agent inspect --project <project>
-npx weapp-container-agent build --project <project>
+npx weapp-container-agent build --project <project> --out <pack-directory>
 npx weapp-container-agent preview start --project <project> --simulator-bin /abs/path/weapp-simulator
 npx weapp-container-agent preview status --project <project>
 npx weapp-container-agent preview stop --project <project>

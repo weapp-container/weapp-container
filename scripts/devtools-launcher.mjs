@@ -299,7 +299,7 @@ async function main(arguments_) {
     process.stdout.write('Weapp Container DevTools\n\nUsage: weapp-devtools [gui | dev --project <dir> --surface web|desktop]\n')
     return
   }
-  if (command === 'dev') return runDirect(arguments_.slice(1))
+  if (command === 'dev') return runDirect(arguments_)
   if (command === 'native') {
     const launcher = await createLauncher({ openBrowser: null })
     let closing

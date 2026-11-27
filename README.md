@@ -12,6 +12,10 @@
 
 在应用中集成时，从对应平台的公开 SDK 包或发行归档开始，见下方[SDK 发行状态](docs/public-sdk-release.md)。
 
+### 厂商小程序定制
+
+用 CLI 创建可独立维护的品牌项目，修改首页、Logo 和颜色，在本地 Web Player 迭代，再导出 Android 和 iOS 都可加载的 portable pack。已有项目可从兼容性检查开始。 [厂商快速开始](docs/vendor-onboarding.md)
+
 ## 仓库开发检查
 
 下面的命令面向维护和贡献者，不是普通应用的安装或预览步骤。

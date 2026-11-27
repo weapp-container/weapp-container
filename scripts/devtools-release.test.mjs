@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
 import { generateKeyPairSync, sign } from 'node:crypto'
 import { PassThrough } from 'node:stream'
-import { chmod, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
+import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { execFileSync } from 'node:child_process'
@@ -48,6 +48,20 @@ test('simulator CLI arguments keep paths with spaces as one argument', () => {
   assert.throws(() => simulatorArguments(project, 'mobile'), /请选择 Web Player 或 Desktop Player/)
   assert.deepEqual(simulatorArguments(project, 'web', { software: true }), ['dev', '--project', project, '--surface', 'web', '--software'])
   assert.deepEqual(simulatorArguments(project, 'web', { outDir: '/tmp/devtools output' }), ['dev', '--project', project, '--surface', 'web', '--out-dir', '/tmp/devtools output'])
+})
+
+test('direct DevTools CLI forwards the dev subcommand and host fixture path', { skip: process.platform === 'win32' }, async t => {
+  const directory = await realpath(await temporaryDirectory(t))
+  await mkdir(join(directory, 'bin'))
+  await cp('scripts', join(directory, 'scripts'), {
+    recursive: true,
+    filter: source => /(?:^|\/)(?:scripts|lib|devtools-launcher\.mjs|devtools-compatibility\.mjs|devtools-update\.mjs)$/.test(source),
+  })
+  const binary = join(directory, 'bin/weapp-simulator')
+  await writeFile(binary, '#!/bin/sh\nprintf "%s\\n" "$@"\n', { mode: 0o755 })
+  const args = ['dev', '--project', 'example with spaces', '--host-fixtures', 'example replies.json']
+  const output = execFileSync(process.execPath, [join(directory, 'scripts/devtools-launcher.mjs'), ...args], { encoding: 'utf8' })
+  assert.deepEqual(output.trimEnd().split('\n'), args)
 })
 
 test('launcher serves a loopback-only authenticated API and owns child shutdown', async t => {

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Readable, Writable } from 'node:stream'
 import { test } from 'vitest'
-import { JobStore, PreviewStore, buildProject, callTool, commitRelease, digestDirectory, initProject, inspectProject, listProjectFiles, listReleases, prepareRelease, publishRelease, readProjectFile, rollbackRelease, runScenario, serveMcp, toolCatalog, writeProjectFile } from '../src/index.ts'
+import { JobStore, PreviewStore, buildProject, callTool, commitRelease, createProject, digestDirectory, initProject, inspectProject, listProjectFiles, listReleases, prepareRelease, publishRelease, readProjectFile, rollbackRelease, runScenario, serveMcp, toolCatalog, writeProjectFile } from '../src/index.ts'
 
 const errorCode = (error: unknown) => (error as { code?: string } | null)?.code
 
@@ -46,6 +46,50 @@ test('inspectProject returns bounded project facts and a digest', async () => {
   assert.equal(project.kind, 'native')
   assert.deepEqual(project.pages, ['pages/index/index'])
   assert.match(project.sourceDigest, /^[a-f0-9]{64}$/)
+})
+
+test('scaffolds editable projects and never overwrites an occupied destination', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'container-starter-'))
+  try {
+    const first = join(root, 'first')
+    const second = join(root, 'second')
+    await mkdir(first)
+    await Promise.all([createProject(first, '青禾 "生活"'), createProject(second, '远山')])
+    const app = JSON.parse(await readFile(join(first, 'src/app.json'), 'utf8'))
+    assert.equal(app.window.navigationBarTitleText, '青禾 "生活"')
+    const project = await inspectProject(second)
+    assert.equal(project.pages[0], 'pages/index/index')
+    assert.ok(project.diagnostics.some(diagnostic => diagnostic.code === 'WARN_COMPILER_NOT_INSTALLED'))
+    await assert.rejects(() => createProject(first, 'replacement'), error => errorCode(error) === 'ERR_PROJECT_EXISTS')
+    assert.deepEqual(JSON.parse(await readFile(join(first, 'src/app.json'), 'utf8')), app)
+    await writeFile(join(second, 'src/app.json'), '{invalid')
+    assert.ok((await inspectProject(second)).diagnostics.some(diagnostic => diagnostic.code === 'ERR_INVALID_JSON'))
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('a native source directory can be inspected and packed without compiling into itself', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'container-native-build-'))
+  try {
+    const project = join(root, 'project')
+    await createProject(project, 'Example')
+    await writeFile(join(project, 'project.config.json'), JSON.stringify({ miniprogramRoot: 'src/' }))
+    const compiler = join(project, 'node_modules/weapp-vite')
+    await mkdir(compiler, { recursive: true })
+    await writeFile(join(compiler, 'package.json'), JSON.stringify({ name: 'weapp-vite', bin: { wv: 'cli.cjs' } }))
+    await writeFile(join(compiler, 'cli.cjs'), `const { cpSync } = require('node:fs');
+      const out = process.argv[process.argv.indexOf('--outDir') + 1];
+      cpSync('src', out, { recursive: true });`)
+    const pack = join(root, 'pack')
+    const result = await buildProject(project, { out: pack })
+    assert.equal(result.packDirectory, pack)
+    assert.notEqual(result.outputDirectory, join(project, 'src'))
+    assert.equal(result.integrityRoot, JSON.parse(await readFile(join(pack, 'manifest.json'), 'utf8')).integrity.root)
+    await assert.rejects(() => buildProject(project, { out: pack }), error => errorCode(error) === 'ERR_PACK_EXISTS')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })
 
 test('inspectProject reports source compatibility findings with locations and evidence', async () => {
