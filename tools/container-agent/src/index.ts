@@ -1,11 +1,13 @@
 // @ts-nocheck
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
-import { access, appendFile, lstat, mkdir, readFile, readdir, realpath, rename, rm, writeFile } from 'node:fs/promises'
+import { access, appendFile, lstat, mkdir, mkdtemp, open, readFile, readdir, realpath, rename, rm, rmdir, writeFile } from 'node:fs/promises'
 import { createReadStream, createWriteStream } from 'node:fs'
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:http'
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { createRequire } from 'node:module'
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { starterFiles } from './starter.ts'
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const SOURCE_ENTRY = resolve(dirname(fileURLToPath(import.meta.url))) === resolve(PACKAGE_ROOT, 'src')
@@ -462,16 +464,43 @@ async function scanCompatibility(root, sourceFiles) {
 
 export async function inspectProject(projectRoot) {
   const root = resolve(projectRoot)
-  const projectConfig = await readJson(join(root, 'project.config.json'), null)
-  const packageJson = await readJson(join(root, 'package.json'), {})
-  const sourceRoot = projectConfig?.srcMiniprogramRoot || (await exists(join(root, 'src')) ? 'src' : '.')
-  const outputRoot = projectConfig?.miniprogramRoot || 'dist'
+  const diagnostics = []
+  async function readConfig(path, fallback) {
+    try {
+      return await readJson(join(root, path), fallback)
+    } catch (error) {
+      if (!(error instanceof SyntaxError)) throw error
+      diagnostics.push({ code: 'ERR_INVALID_JSON', path, message: error.message, hint: `Correct the JSON in ${path} and run inspect again.` })
+      return fallback
+    }
+  }
+  const projectConfig = await readConfig('project.config.json', null)
+  const packageJson = await readConfig('package.json', {}) ?? {}
+  const configuredOutput = projectConfig?.miniprogramRoot
+  const declaredSource = projectConfig?.srcMiniprogramRoot
+  let sourceRoot = declaredSource
+  if (!sourceRoot) {
+    if (await exists(join(root, 'src/app.json'))) sourceRoot = 'src'
+    else if (await exists(join(root, 'app.json'))) sourceRoot = '.'
+    else if (configuredOutput && await exists(join(projectPath(root, configuredOutput), 'app.json'))) sourceRoot = configuredOutput
+    else sourceRoot = await exists(join(root, 'src')) ? 'src' : '.'
+  }
+  const outputRoot = configuredOutput || 'dist'
   const sourceDirectory = projectPath(root, sourceRoot)
   projectPath(root, outputRoot)
   const appJson = join(sourceDirectory, 'app.json')
-  const app = await readJson(appJson, {})
+  const app = await readConfig(relative(root, appJson), {}) ?? {}
   const pages = Array.isArray(app.pages) ? app.pages : []
-  const sourceFiles = await walkFiles(sourceDirectory)
+  const sourceFiles = await walkFiles(sourceDirectory).catch(error => {
+    if (error.code !== 'ENOENT') throw error
+    diagnostics.push({ code: 'ERR_SOURCE_ROOT_MISSING', path: sourceRoot, message: 'Mini-program source directory is missing.', hint: 'Check srcMiniprogramRoot in project.config.json.' })
+    return []
+  })
+  if (!projectConfig) diagnostics.push({ code: 'WARN_PROJECT_CONFIG', path: 'project.config.json', message: 'Project configuration is missing or unreadable.', hint: 'Set compileType to miniprogram and srcMiniprogramRoot to the folder containing app.json.' })
+  if (!pages.length) diagnostics.push({ code: 'WARN_APP_PAGES', path: relative(root, appJson), message: 'No mini-program pages are configured.', hint: 'Add the first page route to the pages array in app.json.' })
+  if (packageJson.devDependencies?.['weapp-vite'] || packageJson.dependencies?.['weapp-vite']) {
+    if (!projectCompiler(root)) diagnostics.push({ code: 'WARN_COMPILER_NOT_INSTALLED', path: 'package.json', message: 'The project compiler is missing.', hint: 'Install the dependencies declared by this project, then run inspect again.' })
+  }
   return {
     root,
     kind: pages.length > 0 || projectConfig ? 'native' : 'unknown',
@@ -487,10 +516,62 @@ export async function inspectProject(projectRoot) {
     sourceFileCount: sourceFiles.length,
     sourceDigest: await digestDirectory(root),
     compatibility: await scanCompatibility(root, sourceFiles),
+    diagnostics,
     warnings: [
       ...(projectConfig ? [] : ['project.config.json is missing']),
       ...(pages.length ? [] : ['app.json has no pages']),
     ],
+  }
+}
+
+export async function createProject(projectRoot, name) {
+  const root = resolve(projectRoot)
+  if (typeof name !== 'string' || !name.trim() || [...name].some(character => character.charCodeAt(0) < 32)) {
+    throw new AgentError('ERR_PROJECT_NAME', 'Pass a non-empty, single-line display name with --name.')
+  }
+  const createdRoot = await mkdir(root, { recursive: true })
+  if (!(await lstat(root)).isDirectory()) {
+    throw new AgentError('ERR_PROJECT_EXISTS', `Project destination must be an empty directory: ${root}`)
+  }
+  const lock = join(root, '.weapp-container-create')
+  const owned = []
+  try {
+    await mkdir(lock)
+  } catch (error) {
+    if (error.code !== 'EEXIST') throw error
+    throw new AgentError('ERR_PROJECT_EXISTS', `Project creation already in progress: ${root}`)
+  }
+  try {
+    if ((await readdir(root)).some(entry => entry !== basename(lock))) {
+      throw new AgentError('ERR_PROJECT_EXISTS', `Project destination must be empty: ${root}`)
+    }
+    const files = starterFiles(name.trim())
+    for (const [path, content] of Object.entries(files)) {
+      const target = join(root, path)
+      const parent = await mkdir(dirname(target), { recursive: true })
+      if (parent) {
+        for (let directory = dirname(target); inside(parent, directory); directory = dirname(directory)) {
+          owned.push({ path: directory, directory: true })
+        }
+      }
+      const file = await open(target, 'wx')
+      owned.push({ path: target, directory: false })
+      try {
+        await file.writeFile(content)
+      } finally {
+        await file.close()
+      }
+    }
+    return { projectRoot: root, name: name.trim(), files: Object.keys(files) }
+  } catch (error) {
+    for (const entry of owned.filter(entry => !entry.directory)) await rm(entry.path, { force: true })
+    for (const entry of owned.filter(entry => entry.directory).sort((a, b) => b.path.length - a.path.length)) {
+      await rmdir(entry.path).catch(cleanup => { if (cleanup.code !== 'ENOTEMPTY') throw cleanup })
+    }
+    throw error
+  } finally {
+    await rmdir(lock)
+    if (createdRoot) await rmdir(root).catch(error => { if (error.code !== 'ENOTEMPTY') throw error })
   }
 }
 
@@ -633,12 +714,25 @@ export function runCommand(command, args, options = {}) {
   })
 }
 
+function projectCompiler(projectRoot) {
+  try {
+    const require = createRequire(join(projectRoot, 'package.json'))
+    const entry = require.resolve('weapp-vite/package.json')
+    const metadata = require(entry)
+    const bin = typeof metadata.bin === 'string' ? metadata.bin : metadata.bin?.wv
+    return bin ? { entry: resolve(dirname(entry), bin), commit: metadata.gitHead } : null
+  } catch (error) {
+    if (!['MODULE_NOT_FOUND', 'ERR_PACKAGE_PATH_NOT_EXPORTED'].includes(error.code)) throw error
+    return null
+  }
+}
+
 async function resolveWv(projectRoot, explicit) {
   if (explicit) return explicit
   if (process.env.WEAPP_CONTAINER_WV_BIN) return process.env.WEAPP_CONTAINER_WV_BIN
   const candidates = [
-    join(REPOSITORY_ROOT, 'vendor/weapp-vite/node_modules/.bin/wv'),
-    join(projectRoot, 'node_modules/.bin/wv'),
+    join(projectRoot, 'node_modules/.bin', process.platform === 'win32' ? 'wv.cmd' : 'wv'),
+    ...(SOURCE_ENTRY ? [join(REPOSITORY_ROOT, 'vendor/weapp-vite/node_modules/.bin/wv')] : []),
   ]
   for (const candidate of candidates) if (await exists(candidate)) return candidate
   return 'wv'
@@ -654,43 +748,105 @@ export async function buildProject(projectRoot, options = {}) {
   const root = project.root
   const stateRoot = projectPath(root, options.stateRoot ?? '.weapp-container')
   const buildRoot = join(stateRoot, 'builds', options.jobId ?? randomUUID())
-  const output = projectPath(root, options.outputRoot ?? project.outputRoot)
-  await mkdir(buildRoot, { recursive: true })
-  const wv = await resolveWv(root, options.wvBin)
+  const configuredOutput = options.outputRoot ?? project.outputRoot
+  const output = options.outputRoot === undefined
+    && resolve(root, configuredOutput) === resolve(root, project.sourceRoot)
+    ? join(buildRoot, 'raw')
+    : projectPath(root, configuredOutput)
+  if (output === root || inside(output, resolve(root, project.sourceRoot))) {
+    throw new AgentError('ERR_BUILD_OUTPUT', 'Set miniprogramRoot to a build directory separate from the source.')
+  }
   const platform = options.platform ?? 'weapp'
-  const buildArgs = ['build', root, '-p', platform, '--outDir', output]
-  const runner = options.commandRunner ?? runCommand
-  const build = await runner(wv, buildArgs, { cwd: root, timeoutMs: options.timeoutMs })
-  if (build.code !== 0) throw new AgentError('ERR_BUILD_FAILED', build.stderr || build.stdout || 'weapp-vite build failed', { cause: build })
-  let packDirectory
-  let pack
-  let manifest
-  if (platform === 'weapp') {
-    const packContainer = options.packContainer ?? (await import('@sonofmagic/container-manifest')).packContainer
-    packDirectory = join(buildRoot, 'pack')
-    const compiler = await compilerCommit()
-    try {
-      await packContainer(output, packDirectory, { compilerCommit: compiler, platform })
-    } catch (error) {
-      throw new AgentError('ERR_PACK_FAILED', error?.message ?? 'container pack failed', { cause: error })
+  const createsPack = platform === 'weapp'
+  const packDirectory = createsPack ? (options.out ? resolve(root, options.out) : join(buildRoot, 'pack')) : null
+  if (packDirectory && (inside(packDirectory, root) || inside(output, packDirectory) || inside(packDirectory, output))) {
+    throw new AgentError('ERR_PACK_OUTPUT', 'Choose a pack destination separate from the project root and compiler output.')
+  }
+  await mkdir(stateRoot, { recursive: true })
+  const buildLock = join(stateRoot, 'build.lock')
+  const packParent = packDirectory ? dirname(packDirectory) : null
+  if (packParent) await mkdir(packParent, { recursive: true })
+  const packLock = packDirectory ? join(packParent, `.${basename(packDirectory)}.weapp-pack-lock`) : null
+  try {
+    await mkdir(buildLock)
+  } catch (error) {
+    if (error.code !== 'EEXIST') throw error
+    throw new AgentError('ERR_BUILD_BUSY', `A build is already using ${output}`)
+  }
+  let packLockOwned = false
+  let staging
+  try {
+    if (packLock) {
+      try {
+        await mkdir(packLock)
+        packLockOwned = true
+      } catch (error) {
+        if (error.code !== 'EEXIST') throw error
+        throw new AgentError('ERR_PACK_EXISTS', `Pack destination is in use: ${packDirectory}`)
+      }
+      const destination = await lstat(packDirectory).catch(error => {
+        if (error.code !== 'ENOENT') throw error
+      })
+      if (destination) throw new AgentError('ERR_PACK_EXISTS', `Pack destination already exists: ${packDirectory}`)
     }
-    manifest = await readJson(join(packDirectory, 'manifest.json'), {})
-    pack = { code: 0, signal: null, stdout: 'Portable pack created', stderr: '' }
+    const compiler = !options.commandRunner && !options.wvBin && !process.env.WEAPP_CONTAINER_WV_BIN ? projectCompiler(root) : null
+    const wv = compiler ? process.execPath : await resolveWv(root, options.wvBin)
+    const buildArgs = ['build', root, '-p', platform, '--outDir', output]
+    if (compiler) buildArgs.unshift(compiler.entry)
+    const runner = options.commandRunner ?? runCommand
+    const build = await runner(wv, buildArgs, { cwd: root, timeoutMs: options.timeoutMs }).catch(error => {
+      if (error.code !== 'ENOENT') throw error
+      throw new AgentError('ERR_COMPILER_NOT_FOUND', 'Install the project compiler or provide --wv-bin.', { cause: error })
+    })
+    if (build.code !== 0) throw new AgentError('ERR_BUILD_FAILED', build.stderr || build.stdout || 'weapp-vite build failed', { cause: build })
+    await mkdir(buildRoot, { recursive: true })
+    const sourceDigest = await digestDirectory(root)
+    if (!createsPack) {
+      const result = {
+        project,
+        platform,
+        build: commandResult(wv, buildArgs, build),
+        pack: null,
+        packDirectory: null,
+        outputDirectory: output,
+        compilerCommit: compiler?.commit ?? 'unknown',
+        sourceDigest,
+        manifest: null,
+        generatedAt: now(),
+      }
+      await writeJson(join(buildRoot, 'build-report.json'), result)
+      return result
+    }
+    const commit = compiler?.commit ?? (SOURCE_ENTRY && wv.startsWith(join(REPOSITORY_ROOT, 'vendor/weapp-vite') + sep) ? await compilerCommit() : 'unknown')
+    staging = await mkdtemp(join(packParent, '.weapp-pack-'))
+    const packContainer = options.packContainer ?? (await import('@sonofmagic/container-manifest')).packContainer
+    const pack = await packContainer(output, staging, { compilerCommit: commit, project: root, resolveRoot: root, platform }).catch(error => {
+      const details = error.diagnostics?.filter(diagnostic => diagnostic.severity === 'error')
+        .map(diagnostic => [diagnostic.path, diagnostic.message].filter(Boolean).join(' ')).join('\n')
+      throw new AgentError('ERR_PACK_FAILED', details || error.message, { cause: error })
+    })
+    const manifest = pack?.manifest ?? await readJson(join(staging, 'manifest.json'), {})
+    const result = {
+      project,
+      platform,
+      build: commandResult(wv, buildArgs, build),
+      pack: pack ? { diagnostics: pack.diagnostics, blobCount: pack.blobCount } : { code: 0, signal: null, stdout: 'Portable pack created', stderr: '' },
+      packDirectory,
+      outputDirectory: output,
+      compilerCommit: manifest.compiler?.commit ?? commit,
+      integrityRoot: manifest.integrity?.root,
+      sourceDigest,
+      manifest,
+      generatedAt: now(),
+    }
+    await writeJson(join(buildRoot, 'build-report.json'), result)
+    await rename(staging, packDirectory)
+    return result
+  } finally {
+    if (staging) await rm(staging, { recursive: true, force: true })
+    if (packLockOwned) await rmdir(packLock)
+    await rmdir(buildLock)
   }
-  const result = {
-    project,
-    platform,
-    build: commandResult(wv, buildArgs, build),
-    pack,
-    packDirectory: packDirectory ?? null,
-    outputDirectory: output,
-    compilerCommit: manifest?.compiler?.commit ?? await compilerCommit(),
-    sourceDigest: await digestDirectory(root),
-    manifest: manifest ?? null,
-    generatedAt: now(),
-  }
-  await writeJson(join(buildRoot, 'build-report.json'), result)
-  return result
 }
 
 export class JobStore {
@@ -881,6 +1037,9 @@ export async function runPreviewDaemon(options) {
     ? { command: options.simulatorCommand, prefix: options.simulatorPrefix ?? [], cwd: root }
     : await simulatorBinary(root)
   const args = [...simulator.prefix, 'dev', '--project', root, '--surface', options.surface ?? 'web', '--engine', options.engine ?? 'quickjs', '--renderer', options.renderer ?? 'webview', '--port', String(options.port ?? 0), '--out-dir', pathsRoot]
+  if (options.hostFixtures) args.push('--host-fixtures', options.hostFixtures)
+  const compiler = options.wvBin ?? process.env.WEAPP_CONTAINER_WV_BIN ?? projectCompiler(root)?.entry
+  if (compiler) args.push('--wv-bin', compiler)
   const log = createWriteStream(logPath, { mode: 0o600 })
   const child = spawn(simulator.command, args, { cwd: simulator.cwd, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true })
   child.stdout.pipe(log)
@@ -1021,6 +1180,8 @@ export class PreviewStore {
     const token = randomBytes(32).toString('hex')
     const daemonArgs = [...CLI_RUNTIME_ARGS, CLI_ENTRY, '--preview-daemon', '--project', this.root, '--token', token, '--surface', options.surface ?? 'web', '--engine', options.engine ?? 'quickjs', '--renderer', options.renderer ?? 'webview', '--port', String(options.port ?? 0), '--log', logPath, '--error', errorPath]
     if (pack) daemonArgs.push('--pack', resolve(pack))
+    if (options.hostFixtures) daemonArgs.push('--host-fixtures', resolve(this.root, options.hostFixtures))
+    if (options.wvBin) daemonArgs.push('--wv-bin', options.wvBin)
     if (options.simulatorCommand) daemonArgs.push('--simulator-command', options.simulatorCommand, '--simulator-prefix', JSON.stringify(options.simulatorPrefix ?? []))
     const daemon = spawn(process.execPath, daemonArgs, { cwd: REPOSITORY_ROOT, detached: true, stdio: 'ignore', windowsHide: true })
     daemon.unref()
@@ -1537,8 +1698,8 @@ export function toolCatalog() {
     ['container_project_files', 'List source files available to the coding agent.', { projectPath: { type: 'string' } }],
     ['container_project_file_read', 'Read a project-relative source file.', { projectPath: { type: 'string' }, path: { type: 'string' } }],
     ['container_project_file_write', 'Write a project-relative source file atomically.', { projectPath: { type: 'string' }, path: { type: 'string' }, content: { type: 'string' } }],
-    ['container_build', 'Build a project for one compiler target and create a portable pack for weapp output.', { projectPath: { type: 'string' }, platform: { type: 'string' }, wvBin: { type: 'string' }, timeoutMs: { type: 'number' } }],
-    ['container_preview_start', 'Start a local Web simulator preview from project sources.', { projectPath: { type: 'string' }, packDirectory: { type: 'string' }, surface: { type: 'string' }, renderer: { type: 'string' }, port: { type: 'number' }, timeoutMs: { type: 'number' }, simulatorCommand: { type: 'string' }, simulatorPrefix: { type: 'array', items: { type: 'string' } } }],
+    ['container_build', 'Build a project for one compiler target and create a portable pack for weapp output.', { projectPath: { type: 'string' }, platform: { type: 'string' }, out: { type: 'string' }, wvBin: { type: 'string' }, timeoutMs: { type: 'number' } }],
+    ['container_preview_start', 'Start a local Web simulator preview from project sources.', { projectPath: { type: 'string' }, packDirectory: { type: 'string' }, hostFixtures: { type: 'string' }, wvBin: { type: 'string' }, surface: { type: 'string' }, renderer: { type: 'string' }, port: { type: 'number' }, timeoutMs: { type: 'number' }, simulatorCommand: { type: 'string' }, simulatorPrefix: { type: 'array', items: { type: 'string' } } }],
     ['container_preview_status', 'Read preview status and simulator state.', { projectPath: { type: 'string' } }],
     ['container_preview_stop', 'Stop the preview owned by this project session.', { projectPath: { type: 'string' } }],
     ['container_preview_snapshot', 'Read a preview state or snapshot endpoint.', { projectPath: { type: 'string' }, resource: { type: 'string' } }],

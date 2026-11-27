@@ -28,6 +28,7 @@ use std::sync::{
 use std::time::Duration;
 
 fn usage() {
+    eprintln!("Web dev host fixtures: --host-fixtures <json-file> (loopback only)");
     eprintln!("Usage: weapp-simulator <run|dispatch> --pack <dir> [options]\n       weapp-simulator dev --project <dir> [options]\n\nRun/dispatch options:\n  --pack <dir>       container-pack output directory\n  --engine <name>    quickjs (default) or v8\n  --route <path>     initial page route\n  --viewport <WxH>   logical viewport (default 375x667)\n  --data-json <json> initial WXML data object\n  --trace <file>     write normalized JSON bridge trace\n  --snapshot <file>  write RGBA snapshot JSON\n  --report <file>    write simulator report JSON\n  --script <file>    JSONL bridge fixture; run executes after startup, dispatch is complete input; '-' reads stdin\n\nDev options:\n  --project <dir>    weapp-vite project root\n  --surface <name>   web, desktop, both, or devices\n  --engine <name>    quickjs (default) or v8\n  --route <path>     initial page route\n  --viewport <WxH>   logical viewport (default 375x667)\n  --data-json <json> initial WXML data object\n  --render-scale <value> auto (display DPR, explicit target budget), 1, 1.5, 2, 3 or 4\n  --renderer <name> auto (default), skia or webview\n  --web-runtime <name> remote (default) or browser\n  --browser-runtime-dir <dir> completed, independently pinned Worker producer\n  --browser-runtime-pins <file> independent producer pins (required with browser)\n  --renderer-assets <dir> pinned CanvasKit/font asset bundle\n  --software         explicitly use legacy CPU raster + RGBA preview\n  --fps <number>    automatic presentation target: 15, 30, 60 (default), 120\n  --host <address>   Web surface bind address (default: 127.0.0.1)\n  --port <number>    Web surface port (default: 5179)\n  --device-host <ip> native device bind (default: 0.0.0.0)\n  --device-port <n> native device TLS port (default: 5180)\n  --device-advertise-host <host> LAN/VPN address for pairing\n  --wv-bin <path>    wv executable (default: wv)\n  --node-bin <path>  node executable (default: node)\n  --out-dir <dir>    pack generations directory\n  --open             open the Web surface in the default browser\n\nThe desktop surface requires `--features desktop-window`; `both` requires the\nsame feature and shares one simulator session with the Web surface.\nBrowser development requires web + quickjs + explicit webview or skia and IPv4\nloopback. Skia requires an independently pinned CanvasKit runtime producer. It uses --viewport/default 375x667, not saved remote presentation\npreferences. Skia accepts --render-scale (default auto, display DPR with explicit target budget); DOM uses browser density. It rejects --software, --wv-bin, renderer assets and FPS.\nKeep its original preview open until Stop reports closed; page loss has no takeover.");
 }
 
@@ -177,6 +178,7 @@ fn run_dev_cli(arguments: Vec<String>) -> Result<(), Box<dyn std::error::Error>>
     let mut wv_bin = None;
     let mut node_bin = None;
     let mut out_dir = None;
+    let mut host_fixtures = None;
     let mut browser_runtime_dir = None;
     let mut browser_runtime_pins = None;
     let mut config = SimulatorConfig::default();
@@ -216,6 +218,11 @@ fn run_dev_cli(arguments: Vec<String>) -> Result<(), Box<dyn std::error::Error>>
                 out_dir = Some(PathBuf::from(
                     args.next().ok_or("--out-dir requires a path")?,
                 ))
+            }
+            "--host-fixtures" => {
+                host_fixtures = Some(PathBuf::from(
+                    args.next().ok_or("--host-fixtures requires a JSON file")?,
+                ));
             }
             "--browser-runtime-dir" => {
                 let path =
@@ -326,6 +333,15 @@ fn run_dev_cli(arguments: Vec<String>) -> Result<(), Box<dyn std::error::Error>>
         }
     }
     let project = project.ok_or("dev requires --project <path>")?;
+    if let Some(path) = host_fixtures {
+        if surface != "web" || web_runtime != "remote" || !host.is_loopback() {
+            return Err(
+                "--host-fixtures requires the default Web runtime on a loopback address".into(),
+            );
+        }
+        config.host_fixtures = container_simulator::HostFixtures::read(&path)
+            .map_err(|error| format!("Invalid host fixtures {}: {error}", path.display()))?;
+    }
     if !matches!(surface.as_str(), "web" | "desktop" | "both" | "devices") {
         return Err(
             format!("unknown surface {surface}; expected web, desktop, both, or devices").into(),

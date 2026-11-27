@@ -156,6 +156,9 @@ fn route_for_manifest(
         .or_else(|| manifest.routes.first().map(|route| route.path.clone()))
 }
 
+mod host_fixtures;
+pub use host_fixtures::HostFixtures;
+
 #[derive(Clone, Debug)]
 pub struct SimulatorConfig {
     pub engine: EngineKind,
@@ -174,6 +177,7 @@ pub struct SimulatorConfig {
     pub route: Option<String>,
     pub launch_options: Value,
     pub initial_data: Value,
+    pub host_fixtures: HostFixtures,
     /// Finite View execution policy forwarded to the runtime, including across
     /// development reloads. Defaults to the runtime's 50 ms batch limit; outer
     /// engine and bridge deadlines can only shorten this allowance.
@@ -198,6 +202,7 @@ impl Default for SimulatorConfig {
             route: None,
             launch_options: json!({}),
             initial_data: json!({}),
+            host_fixtures: HostFixtures::default(),
             view_execution: container_runtime::ViewExecutionPolicy::default(),
         }
     }
@@ -563,6 +568,12 @@ impl Simulator {
             ..SessionConfig::default()
         };
         let mut host = HostSession::from_manifest_json(&manifest_bytes, host_config)?;
+        if !config.host_fixtures.is_empty() {
+            host.session_mut()
+                .ok_or(HostSessionError::NotLoaded)?
+                .set_host_methods(config.host_fixtures.methods())
+                .map_err(HostSessionError::from)?;
+        }
         match policy {
             RasterPresentationPolicy::Synchronous => {}
             RasterPresentationPolicy::ExplicitDev => host
@@ -1199,6 +1210,27 @@ impl Simulator {
             return Ok(BridgeBatch::new(Vec::new()));
         }
         let mut batch = self.host.poll_timers(now_ns)?;
+        if !self.config.host_fixtures.is_empty() {
+            let session = self.host.session_mut().ok_or(HostSessionError::NotLoaded)?;
+            for request in session.take_host_requests() {
+                if let container_runtime::HostRequest::Call {
+                    call_id,
+                    method,
+                    context: None,
+                    ..
+                } = request
+                {
+                    if let Some(result) = self.config.host_fixtures.response(&method) {
+                        batch.messages.extend(
+                            session
+                                .complete_host_call(&call_id, result)
+                                .map_err(HostSessionError::from)?
+                                .messages,
+                        );
+                    }
+                }
+            }
+        }
         if !batch.messages.is_empty() {
             let request_id = format!("sim-{}", self.next_request);
             self.next_request = self.next_request.saturating_add(1);
